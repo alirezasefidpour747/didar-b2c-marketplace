@@ -21,3 +21,9 @@
 - Applied requested Oracle Always Free target: Ubuntu ARM64 A1, maximum 2 OCPUs / 12 GB, staging-only host marker, source-only SSH deployment, no provisioning or paid fallback. Static native dependency/integrity audit and 8 mocked deployment-guard tests passed; ARM Compose config and scripts validated.
 - All four image manifest queries returned HTTP 503. Native ARM builds/runtime and Oracle deployment remain unverified, with no VM/SSH target or capacity supplied. Local MVP is not blocked by those external steps. No production deployment or OCI resource provisioning occurred.
 - Saved updated install/start environment draft and prepared DELIVERY.md with exact results, architecture boundaries and remaining blockers. Source commits remain local; portable Git bundle will include final delivery history.
+
+## 2026-10-15 — Full mission audit resumed
+
+- Original checkout/bundle preserved; clean main at c71e313. Remote main and fetched HEAD verified at the same full SHA (publication succeeded in recovery; prior delivery text saying local-only is historical and superseded).
+- Read the complete pasted 14-section mission, repository instructions/docs, business ledger, storefront, tests and deployment. Created REQUIREMENTS_MATRIX.md before application edits and DECISIONS.md with bounded implementation decisions.
+- Audit confirms missing catalog hierarchy/assets/detail pages, supplier approval/product requests, provider init/callback/cancel and fulfillment/tracking. Historical tests are not current-run evidence. Continuing implementation without deployment attempts.
