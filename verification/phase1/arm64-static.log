@@ -1,0 +1,9 @@
+PASS ARM64 artifact: @swc/core-linux-arm64-gnu
+PASS ARM64 artifact: @next/swc-linux-arm64-gnu
+PASS ARM64 artifact: @img/sharp-linux-arm64
+PASS ARM64 artifact: @esbuild/linux-arm64
+PASS ARM64 artifact: @rollup/rollup-linux-arm64-gnu
+PASS ARM64 artifact: @unrs/resolver-binding-linux-arm64-gnu
+PASS ARM64 artifact: @turbo/linux-arm64
+PASS: no Linux x64-only hard dependency found in lockfile metadata
+Native ARM64 build/runtime and registry image-manifest verification remain required.

@@ -1,0 +1,10 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/phase1.test.ts:
+(pass) supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it [194.65ms]
+
+ 1 pass
+ 14 filtered out
+ 0 fail
+ 15 expect() calls
+Ran 1 test across 1 file. [1.76s]

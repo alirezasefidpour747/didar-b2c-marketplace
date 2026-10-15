@@ -95,12 +95,17 @@ test("mobile RTL catalog and product detail fit the viewport", async ({
     path: "/tmp/didar-evidence/mobile-catalog.png",
     fullPage: true,
   });
-  await page
+  const detailLink = page
     .getByRole("heading", { name: "انگشتر طلای ماه" })
-    .getByRole("link")
-    .click();
+    .getByRole("link");
+  await expect(detailLink).toHaveAttribute("href", "/products/ring");
+  await Promise.all([page.waitForURL("**/products/ring"), detailLink.click()]);
   await expect(
-    page.getByRole("heading", { name: "انگشتر طلای ماه", exact: true }),
+    page.getByRole("heading", {
+      name: "انگشتر طلای ماه",
+      exact: true,
+      level: 1,
+    }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "انتخاب وزن دقیق و تأمین‌کننده" }),

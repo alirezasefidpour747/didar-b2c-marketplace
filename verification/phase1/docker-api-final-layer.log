@@ -1,0 +1,29 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 160B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/didar-gold-api:staging
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 95B done
+#3 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 161.07kB 0.1s done
+#4 DONE 0.1s
+
+#5 [1/2] FROM docker.io/library/didar-gold-api:staging
+#5 DONE 0.1s
+
+#6 [2/2] COPY . /app
+#6 DONE 151.4s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 42.1s done
+#7 writing image sha256:9f645c7b9c19ae8b4bedee3a01fc241a0470daf0f21bed6655d8dcebc17f6193 done
+#7 naming to docker.io/library/didar-gold-api:staging 0.0s done
+#7 DONE 42.1s

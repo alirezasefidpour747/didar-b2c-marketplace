@@ -1,0 +1,58 @@
+[
+  {
+    "Service": "api",
+    "State": "running",
+    "Health": "healthy",
+    "Image": "didar-gold-api:staging",
+    "Publishers": [
+      {
+        "URL": "127.0.0.1",
+        "TargetPort": 9000,
+        "PublishedPort": 9000,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "postgres",
+    "State": "running",
+    "Health": "healthy",
+    "Image": "postgres:17-alpine",
+    "Publishers": [
+      {
+        "URL": "",
+        "TargetPort": 5432,
+        "PublishedPort": 0,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "redis",
+    "State": "running",
+    "Health": "healthy",
+    "Image": "redis:7-alpine",
+    "Publishers": [
+      {
+        "URL": "",
+        "TargetPort": 6379,
+        "PublishedPort": 0,
+        "Protocol": "tcp"
+      }
+    ]
+  },
+  {
+    "Service": "storefront",
+    "State": "running",
+    "Health": "healthy",
+    "Image": "didar-gold-storefront:staging",
+    "Publishers": [
+      {
+        "URL": "127.0.0.1",
+        "TargetPort": 3000,
+        "PublishedPort": 3000,
+        "Protocol": "tcp"
+      }
+    ]
+  }
+]

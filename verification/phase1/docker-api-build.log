@@ -1,0 +1,38 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load remote build context
+#1 DONE 148.1s
+
+#1 [internal] load remote build context
+#1 DONE 148.1s
+
+#2 copy /context /
+#2 DONE 43.0s
+
+#3 [internal] load metadata for docker.io/library/node:24-bookworm-slim
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/oven/bun:1.4.3
+#4 DONE 0.0s
+
+#5 [prepared 1/4] FROM docker.io/library/node:24-bookworm-slim
+#5 CACHED
+
+#6 FROM docker.io/oven/bun:1.4.3
+#6 DONE 0.1s
+
+#7 [prepared 2/4] COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
+#7 DONE 6.9s
+
+#8 [prepared 3/4] WORKDIR /app
+#8 DONE 2.2s
+
+#9 [prepared 4/4] COPY . .
+#9 DONE 47.0s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 63.7s done
+#10 writing image sha256:e113109e358848421b10d9c8ddb29697fd389b2bc02be7935d5b0aa6df057dac done
+#10 naming to docker.io/library/didar-gold-api:staging done
+#10 DONE 63.8s

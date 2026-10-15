@@ -1,0 +1,17 @@
+Running isolated local Compose checks with fixtures bound to the API database; credentials withheld.
+$ playwright test
+
+Running 8 tests using 1 worker
+
+(node:33599) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/expiry.spec.ts:60:5 › expired reservation is shown to the customer and restores available pieces (4.7s)
+  ✓  2 tests/browser/marketplace.spec.ts:2:5 › RTL catalog, supplier comparison, login, checkout and payment (3.3s)
+  ✓  3 tests/browser/marketplace.spec.ts:44:5 › supplier interface displays only owned stock (1.9s)
+  ✓  4 tests/browser/marketplace.spec.ts:59:5 › admin interface manages gold rate and catalog (2.1s)
+  ✓  5 tests/browser/marketplace.spec.ts:81:5 › mobile RTL catalog and product detail fit the viewport (1.6s)
+  ✓  6 tests/browser/operational.spec.ts:136:5 › admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered (21.8s)
+  ✓  7 tests/browser/phase1.spec.ts:43:5 › admin UI creates supplier/product, weighs and tags units, posts stock; supplier read-only; real UID sale and RFID variance (21.8s)
+  ✓  8 tests/browser/proxy.spec.ts:4:5 › storefront proxy rejects oversized chunked JSON before forwarding to the API (50ms)
+
+  8 passed (1.0m)

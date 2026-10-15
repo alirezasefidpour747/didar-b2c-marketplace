@@ -1,0 +1,5 @@
+ Container didar-gold-storefront-1  Restarting
+ Container didar-gold-api-1  Restarting
+ Container didar-gold-storefront-1  Started
+ Container didar-gold-api-1  Started
+Storefront proxy healthy after restart
