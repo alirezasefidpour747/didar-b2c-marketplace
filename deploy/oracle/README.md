@@ -5,9 +5,9 @@ Target an **existing, eligible Ubuntu ARM64 VM.Standard.A1.Flex** staging VM: re
 ## Verified and pending
 
 - The source lockfile contains integrity-pinned ARM64 GNU/Linux artifacts for SWC 1.11.31, Next SWC 15.5.24, Sharp/libvips, esbuild, Rollup, the resolver and Turbo. `check-dependencies.py` also audits Linux/ARM-applicable hard-dependency architecture restrictions. Static audit passed.
-- Eight guard tests passed: the requested A1 limits are accepted; production, unmarked hosts, x64 hosts, other shapes, >2 OCPUs, >12 GB RAM and unconfirmed eligibility are rejected. These are mocked policy tests, not tests on an Oracle VM.
+- Twenty-three environment/deployment tests passed (eight host guards, four staging configuration tests, four mocked SSH transfer tests, three mocked backup tests and four local configuration migration tests). The host guards verify: the requested A1 limits are accepted; production, unmarked hosts, x64 hosts, other shapes, >2 OCPUs, >12 GB RAM and unconfirmed eligibility are rejected. These are mocked policy tests, not tests on an Oracle VM.
 - The current machine is x86_64. Local Compose integration/E2E testing passed on x86_64, including production Next/Medusa containers. No ARM emulator or Oracle VM was used.
-- Live manifest queries for **node:24-bookworm-slim**, **oven/bun:1.4.3**, **postgres:17-alpine**, and **redis:7-alpine** all failed with registry HTTP 503. Current-tag ARM image availability and a complete native ARM build/runtime are therefore **not yet verified**. `verify-images.sh` requires a linux/arm64 descriptor for every image and fails closed on missing metadata.
+- Live manifest queries on 2026-10-15 verified linux/arm64 variants for **node:24-bookworm-slim**, **oven/bun:1.4.3**, **postgres:17-alpine**, and **redis:7-alpine**. Registry availability has recovered since the earlier HTTP 503 failures. A complete native ARM build/runtime is **not yet verified**. `verify-images.sh` requires a linux/arm64 descriptor for every image and fails closed on missing metadata.
 - Oracle capacity, VM address and SSH access are not available in this session. No remote deployment or provisioning was performed. These external prerequisites do not block the working local MVP.
 
 ## External steps — free-tier capacity only
@@ -27,7 +27,7 @@ Target an **existing, eligible Ubuntu ARM64 VM.Standard.A1.Flex** staging VM: re
    ```
 
 4. The script checks read-only Oracle instance metadata, rejects unsupported hosts/limits, verifies all official image manifests, generates destination-only runtime secrets, performs **native ARM64 source builds**, checks final image architectures, runs Compose migrations/seeding and makes functional API/storefront requests. It builds targets sequentially; runtime limits total less than 2 CPUs and 6 GB RAM. The one-shot migration runs before the API and has a separate build/migration memory budget. No paid cloud service is required.
-5. The deployment creates no demo accounts by default. Provision a gold administrator securely with `scripts/create-account.ts` using password input on stdin; see the root README. Customers can register normally; create supplier records through the gold admin interface and provision supplier accounts with their IDs.
+5. The deployment refuses demo-enabled/local destination configuration and creates no demo accounts. Provision a gold administrator securely with `scripts/create-account.ts` using password input on stdin; see the root README. Customers can register normally; create supplier records through the gold admin interface and provision supplier accounts with their IDs.
 6. Access the private staging site from your own machine using a verified SSH tunnel:
 
    ```sh
@@ -39,9 +39,9 @@ Target an **existing, eligible Ubuntu ARM64 VM.Standard.A1.Flex** staging VM: re
 
 ## Important architecture rule
 
-Never ship this machine's x64 prepared images, `node_modules`, or compiled standalone output to A1. The native ARM source build selects the correct optional artifacts from the frozen lockfile. `compose.arm64.yaml` pins all four application services and migration to linux/arm64. The SSH upload sends committed HEAD through git archive, excluding untracked credentials and machine-specific dependencies/outputs. Commit intended source changes before deploying.
+Never ship this machine's x64 prepared images, `node_modules`, or compiled standalone output to A1. The native ARM source build selects the correct optional artifacts from the frozen lockfile. `compose.arm64.yaml` pins all four application services and migration to linux/arm64. The SSH upload sends committed HEAD through git archive into a fresh release directory, excluding untracked credentials and machine-specific dependencies/outputs. Runtime secrets stay in the shared destination-only directory. Commit intended source changes before deploying.
 
-The source Docker build may need registries to recover from HTTP 503. The prepared-image fallback is for an already-built checkout on the **same architecture**, not cross-architecture deployment. Native manifest checks and functional readiness checks must succeed before reporting Oracle ARM staging as verified.
+Source builds require registry access; manifest verification is repeated on each deployment. The prepared-image fallback is for an already-built checkout on the **same architecture**, not cross-architecture deployment. See [ARM64_VERIFICATION.md](ARM64_VERIFICATION.md) for registry descriptor evidence and the precise limits of local verification. Native manifest checks and functional readiness checks must succeed before reporting Oracle ARM staging as verified.
 
 Local validation of deployment guards/configuration:
 
@@ -50,3 +50,5 @@ python3 deploy/oracle/check-dependencies.py
 python3 -m unittest discover -s deploy/oracle -p 'test_*.py'
 docker compose -f compose.yaml -f deploy/oracle/compose.arm64.yaml config --quiet
 ```
+
+For existing stacks, deployment first creates a private PostgreSQL backup, captures native uploads and retains current application image tags before migrations/builds. Read [ROLLBACK.md](ROLLBACK.md) before an update. The current-release symlink changes only after functional readiness succeeds. Backups consume existing free-tier disk; monitor retention without purchasing storage or deleting the active database volume.

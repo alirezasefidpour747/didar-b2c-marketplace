@@ -11,8 +11,16 @@ key_path=$(realpath -- "$OCI_STAGING_SSH_KEY")
 test -f "$key_path"
 case "$key_path" in "$PWD"/*) printf '%s\n' 'Keep the SSH private key outside the source checkout' >&2; exit 1;; esac
 ssh_args=(-i "$key_path" -o BatchMode=yes -o ConnectTimeout=15 -o StrictHostKeyChecking=yes)
-ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" 'test "$(cat /etc/didar-staging-only)" = didar-staging-only && mkdir -p ~/didar-staging'
-# Source only. Never upload x64 node_modules, build outputs, local credentials or Git metadata.
+# Every release gets a fresh directory; removed source files cannot survive an update.
+# A fixed Compose project name preserves the database and upload volumes across releases.
+release=$(git rev-parse HEAD)
+[[ "$release" =~ ^[0-9a-f]{40}$ ]]
+if ! git diff --quiet HEAD --; then
+  printf '%s\n' 'Commit tracked source changes before deploying; upload is exactly committed HEAD' >&2
+  exit 1
+fi
+ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" "test \"\$(cat /etc/didar-staging-only)\" = didar-staging-only && mkdir -p ~/didar-staging/releases ~/didar-staging/shared && test ! -e ~/didar-staging/releases/$release && mkdir ~/didar-staging/releases/$release"
+# Source only: no .git, local credentials, dependencies, or machine-specific build outputs.
 git archive --format=tar.gz HEAD |
-  ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" 'tar -xzf - -C ~/didar-staging'
-ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" 'cd ~/didar-staging && DIDAR_DEPLOY_ENV=staging OCI_ALWAYS_FREE_CONFIRMED=yes bash deploy/oracle/deploy-on-vm.sh'
+  ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" "tar -xzf - -C ~/didar-staging/releases/$release"
+ssh "${ssh_args[@]}" "ubuntu@$OCI_STAGING_HOST" "cd ~/didar-staging/releases/$release && printf '%s\\n' '$release' > DEPLOYED_COMMIT && (cd ../../shared && python3 ../releases/$release/deploy/oracle/init-env.py) && ln -s ../../shared/.env .env && DIDAR_DEPLOY_ENV=staging OCI_ALWAYS_FREE_CONFIRMED=yes bash deploy/oracle/deploy-on-vm.sh && cd ../.. && ln -sfn releases/$release current"

@@ -165,6 +165,24 @@ test("stale prices, fractional quantities and duplicate lines rejected", async (
     customer,
   );
   expect(d.message).toBe("CONFLICT_RATE_CHANGED");
+  const current = (
+    await db.query("SELECT version FROM didar_offer WHERE id=$1", [oid])
+  ).rows[0];
+  const duplicate = await api(
+    "checkout",
+    {
+      idempotency_key: crypto.randomUUID(),
+      rate_version: rateVersion,
+      address: addr,
+      lines: [
+        { offer_id: oid, quantity: 1, version: current.version },
+        { offer_id: oid, quantity: 1, version: current.version },
+      ],
+    },
+    customer,
+  );
+  expect(duplicate.status).toBe(400);
+  expect(duplicate.message).toBe("INVALID_DUPLICATE_OFFER");
 });
 test("two concurrent purchases cannot oversell and paid stock remains deducted", async () => {
   const {

@@ -1,8 +1,8 @@
 .git
 **/node_modules
 **/.env
-**/.env.local
-**/.env.*.local
+**/.env.*
+!**/.env.template
 **/.next
 **/.medusa
 **/.mercur
@@ -17,3 +17,14 @@ README.md
 MERCUR_STARTER.md
 
 **/__pycache__/
+
+**/.aws
+**/.ssh
+**/.oci
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.dump
+**/*.bundle
+**/backups

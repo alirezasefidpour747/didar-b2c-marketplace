@@ -8,6 +8,8 @@ trap 'rm -f "$context"' EXIT
 # Deliberately include prepared dependencies/build outputs, exclude credentials and Git.
 # Exclude .dockerignore so the normal source-build filter does not drop those outputs.
 tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=.dockerignore \
+  --exclude=.aws --exclude=.ssh --exclude=.oci --exclude='*.pem' --exclude='*.key' \
+  --exclude='*.p12' --exclude='*.pfx' --exclude='*.dump' --exclude='*.bundle' --exclude=backups \
   --exclude=coverage --exclude=test-results --exclude=playwright-report \
   --exclude=.turbo --exclude='*/.next/cache' -czf "$context" .
 docker build -f Dockerfile.prebuilt --target api -t didar-gold-api:staging - < "$context"

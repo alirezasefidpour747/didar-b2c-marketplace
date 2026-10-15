@@ -43,9 +43,16 @@ test("invalid quantities and rates cannot enter arithmetic", () => {
   expect(() => price({ ...base, rate_irr: 0 })).toThrow();
 });
 
-
 test("percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts", () => {
-  expect(price({ ...base, labor_mode: "percent", labor_bps: 250, fee_irr: 1234, rounding_step: 1000 })).toEqual({
+  expect(
+    price({
+      ...base,
+      labor_mode: "percent",
+      labor_bps: 250,
+      fee_irr: 1234,
+      rounding_step: 1000,
+    }),
+  ).toEqual({
     metal_irr: 152750000,
     labor_irr: 3818750,
     margin_irr: 10959813,
@@ -58,7 +65,15 @@ test("percentage making charge, fixed fees and configurable rounding preserve ha
 });
 
 test("default margin is configurable while an explicit zero margin stays zero", () => {
-  const policy = { ...base, weight_mg: 1000, rate_irr: 100000, labor_irr: 0, margin_bps: undefined, default_margin_bps: 100, tax_bps: 0 };
+  const policy = {
+    ...base,
+    weight_mg: 1000,
+    rate_irr: 100000,
+    labor_irr: 0,
+    margin_bps: undefined,
+    default_margin_bps: 100,
+    tax_bps: 0,
+  };
   expect(price(policy).margin_irr).toBe(1000);
   expect(price({ ...policy, margin_bps: 0 }).margin_irr).toBe(0);
 });

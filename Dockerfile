@@ -14,7 +14,7 @@ ENV MERCUR_BACKEND_URL=$MERCUR_BACKEND_URL
 RUN --mount=type=secret,id=cloud_ca \
     if [ -f /run/secrets/cloud_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/cloud_ca; fi; \
     cd packages/api && bun run codegen
-RUN bun run --cwd apps/admin build && bun run --cwd apps/vendor build
+RUN node scripts/build-panels.mjs
 RUN bun run --cwd packages/api build
 RUN bun run --cwd apps/storefront build
 # Full workspace retained so native modules resolve and migration commands remain available.

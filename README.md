@@ -16,7 +16,7 @@ bun run dev:api
 bun run dev:web
 ```
 
-`cloud-env.mjs` generates ignored local environment files, preserves existing files, and opts into **local sandbox demo accounts**. All three use the public development-only password `DidarDemo2026!`: `customer@didar.test`, `supplier@didar.test`, `admin@didar.test`. Never seed these on a public deployment. Native Mercur panels have separate Medusa authentication; Didar gold roles sign in through the Persian storefront.
+`cloud-env.mjs` generates ignored local environment files, preserves existing values (appending the local environment flag only when absent from restored files), and opts into **local sandbox demo accounts**. All three use the public development-only password `DidarDemo2026!`: `customer@didar.test`, `supplier@didar.test`, `admin@didar.test`. Never seed these on a public deployment. Native Mercur panels have separate Medusa authentication; Didar gold roles sign in through the Persian storefront.
 
 The Persian storefront runs on port 3000, API on 9000. Native Mercur admin and seller panels are served under `/dashboard` and `/seller` on the API. Gold administration and supplier operations are in **مدیریت طلا** after signing in through the storefront. Each cloud task already has an isolated checkout: use it directly; don't create a worktree unless explicitly requested.
 
@@ -39,7 +39,7 @@ The HTTP suites use the actual server; test offers have unique IDs and are clean
 - `didar_supplier` and `didar_offer` extend the application for simple gold inventory. An offer is a supplier + shared product + exact integer milligram weight, with available quantity. No individual-piece UID, bins, warehouses or advanced warehouse management.
 - Didar's gold commerce ledger is authoritative for gold stock, sessions, rate snapshots, reservations, orders and sandbox payments. These are custom PostgreSQL tables served by real Medusa API routes. They are **not mirrored into generic Mercur offers, Medusa carts/orders, commissions or payouts**; avoid creating competing stock records in native panels. Native panels remain available for the master catalog and further generic Mercur customization.
 - Currency is **IRR (rial)** throughout. One gram = 1,000 mg. Rate = IRR per gram of 750-fineness (18K) gold.
-- Metal = ceil(weight_mg × purity × rate / 750,000). Margin = ceil((metal + labor) × margin_bps / 10,000). Tax = ceil((labor + margin) × tax_bps / 10,000). Tax never applies to gold principal. Total = metal + labor + margin + tax. Integer/BigInt arithmetic prevents floating point drift; configurable rates need business/legal approval before real trading.
+- Metal = ceil(weight_mg × purity × rate / 750,000). Labor is either fixed IRR or ceil(metal × labor_bps / 10,000). Margin = ceil((metal + labor) × margin_bps / 10,000). Tax = ceil((labor + margin) × tax_bps / 10,000); the sample policy excludes gold principal and the per-piece service fee from the tax base. Add the configured per-piece fee, then round the total upward to the configured integer IRR rounding step. Snapshots expose `fee_irr` and `rounding_irr` alongside metal, labor, margin and tax. Integer/BigInt arithmetic prevents floating point drift. The replaceable rate-source interface currently uses the manually managed rate; no live market feed is claimed. Supplier offers store their own margin terms; configurable business/tax policies need legal approval before real trading.
 - Orders snapshot every component and rate. Checkout locks stock rows, validates rate and offer versions, rejects rates older than 24 hours, and reserves stock for 15 minutes. A customer idempotency key serializes checkout retries. Failed/expired payments restore stock once; paid orders retain the deduction. A cron job plus requests expire reservations.
 - Suppliers can create offers on shared products, edit their available quantity/labor/margin, and read only their order lines. Admin manages catalog, suppliers, offers and pricing. Customers register, compare suppliers, maintain a local cart, enter delivery details, check out and view orders.
 - Authentication uses scrypt hashes and expiring, opaque sessions hashed in the database. Browser tokens stay in session storage and are sent through a fixed-destination same-origin Next proxy. All writes are parameterized SQL. Gold order and stock actions are audited.
@@ -52,7 +52,7 @@ node scripts/configure.mjs     # creates ignored .env with generated passwords; 
 docker compose up -d --build
 ```
 
-Compose includes password-protected PostgreSQL with persistent data, Redis, one-shot migration/seed, one API replica and a production Next server. Ports bind loopback; put a TLS reverse proxy in front for remote staging. Native panel API origin is baked at build time via `MERCUR_BACKEND_URL`. No demo users are created by default. Set up real role accounts using `scripts/create-account.ts`; it accepts the password from standard input and never logs it. Example inside a container, with password supplied securely on stdin:
+Compose includes password-protected PostgreSQL with persistent data, Redis, one-shot migration/seed, one API replica and a production Next server. Ports bind loopback; put a TLS reverse proxy in front for remote staging. Native panel API origin is baked at build time via `MERCUR_BACKEND_URL`. No demo users are created by default. `DIDAR_ENVIRONMENT=staging` and `DIDAR_SEED_DEMO=false` are the Compose defaults; destination validation refuses demo-enabled or insecure staging configuration. Set up real role accounts using `scripts/create-account.ts`; it accepts the password from standard input and never logs it. Example inside a container, with password supplied securely on stdin:
 
 ```sh
 docker compose exec -T api sh -c 'cd /app && bun scripts/create-account.ts admin@example.com "Operator" admin'
@@ -77,7 +77,7 @@ When registries are unavailable but this checkout has installed dependencies, `s
 
 ## Preferred external staging: Oracle Always Free
 
-See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks passed, while live image manifests and ARM execution remain externally blocked as documented.
+See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks and live linux/arm64 image manifests pass. Native ARM build/runtime still needs access to an eligible VM; it has not been executed here.
 
 For the local loopback Compose test stack, run the commerce suite **inside** the API container so its fixtures and API share the same database:
 
@@ -86,4 +86,20 @@ docker compose exec -T api bun test ./tests/pricing.test.ts ./tests/commerce.tes
 bun run test:e2e
 ```
 
-These tests require the explicitly opted-in local demo accounts. Do not seed or run demo commerce tests against a public staging/production database. The ordinary host `bun run test` command targets the development API and database described above.
+These tests require `DIDAR_ENVIRONMENT=local` and explicitly opted-in local demo accounts. Do not seed or run demo commerce tests against a public staging/production database. The ordinary host `bun run test` command targets the development API and database described above.
+
+Environment variables, data ownership and account provisioning are documented in [ENVIRONMENT.md](ENVIRONMENT.md). Existing staging updates create a private pre-migration database/archive backup and retain prior image tags; see [rollback instructions](deploy/oracle/ROLLBACK.md). No destructive restore is automated.
+
+## Marketplace routes and operations
+
+The storefront has independent home, catalog (`/products`), product detail, category and collection pages, plus `/cart`, `/checkout`, `/login`, `/account`, `/orders` and per-order tracking. Gold role panels live at `/manage/admin` and `/manage/supplier`; `/manage` selects the signed-in role. These are the operational gold interfaces, distinct from native Mercur panel authentication.
+
+Administrators manage shared product metadata, publication, hierarchical categories, collections, approved suppliers, product requests, exact-weight stock, pricing policies, payment states, per-line fulfillment and audited changes. Suppliers register pending approval, select shared products, create multiple exact milligram offers, use fixed or percentage making charges, set terms/availability, request new master products and prepare/dispatch their own paid allocations. Customers compare offers, save a profile/address, pay through the sandbox and track delivery.
+
+Product photographs are supplied through the administrator's upload form (PNG/JPEG/WebP, 768 KiB each, ten per product). Validated image bytes live in PostgreSQL; backups include them. Draft image previews require administrator authentication. Samples intentionally have missing-photo placeholders rather than invented jewelry pictures.
+
+A catalog price is available only while its manual rate is fresh (24 hours); rate and offer versions are checked again on the server. Confirmed checkout snapshots hold their quoted price for the 15-minute reservation. Sandbox payment initialization persists one attempt per order; owner-authenticated confirmations/callback simulations are idempotent, support cancellation and release failed/expired stock once. Live Iranian payment operations fail closed until an approved integration is implemented and authorized.
+
+`DIDAR_ENVIRONMENT=local` is required for the public demo identities; staging rejects those identities even if old demo rows are present. `DIDAR_SEED_DEMO=true` also requires local, non-production seeding. The Next proxy bounds JSON while reading its stream, and routes private image bytes only from the configured backend. See [ENVIRONMENT.md](ENVIRONMENT.md), [REQUIREMENTS_MATRIX.md](REQUIREMENTS_MATRIX.md) and [DELIVERY.md](DELIVERY.md) for the full configuration and verification contract.
+
+Panel builds use `bun run build:panels`, which generates temporary child-process authentication values for config discovery. Runtime secrets are still mandatory; no build credentials are stored in Docker ENV or source. This ensures native assets use `/dashboard` and `/seller` on clean builds without providing runtime secrets to the build context.
