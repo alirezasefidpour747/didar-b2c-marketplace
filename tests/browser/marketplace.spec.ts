@@ -66,7 +66,11 @@ test("admin interface manages gold rate and catalog", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "مدیریت بازار دیدار" }),
   ).toBeVisible();
-  await expect(page.locator(".inventory-form")).toHaveCount(8);
+  for (const product of ["ring", "necklace", "bracelet", "earring"])
+    for (const supplier of ["s1", "s2"])
+      await expect(
+        page.locator(`[data-offer-id="${product}-${supplier}"]`),
+      ).toBeVisible();
   await page
     .getByRole("button", { name: "نرخ و تنظیمات", exact: true })
     .click();

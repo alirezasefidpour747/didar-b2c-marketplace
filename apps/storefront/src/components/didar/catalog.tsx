@@ -59,7 +59,11 @@ export function ProductImage({
       className="product-photo"
       src={image.url}
       alt={image.alt || product.title}
-      privateImage={product.active === false || product.published === false}
+      privateImage={
+        product.active === false ||
+        product.published === false ||
+        product.approved === false
+      }
     />
   ) : (
     <div className="photo-placeholder">
@@ -72,9 +76,14 @@ export function ProductImage({
 export function OfferCard({ offer: o }: { offer: Offer }) {
   const { add, busy } = useDidar()
   return (
-    <div className="offer">
+    <div className="offer" data-offer-id={o.id}>
       <div>
         <strong>{o.supplier}</strong>
+        <small>
+          {o.stock_mode === 'itemized'
+            ? 'موجودی قطعات تأییدشده'
+            : 'موجودی تجمیعی قدیمی'}
+        </small>
         <span>
           {weight(o.weight_mg)} · موجودی {number(o.quantity)}
         </span>
@@ -92,9 +101,10 @@ export function OfferCard({ offer: o }: { offer: Offer }) {
             <br />
             اجرت: {money(o.price.labor_irr)}
             <br />
-            سود: {money(o.price.margin_irr)}
+            توزیع: {money(o.price.distribution_irr ?? 0)} · خرده‌فروشی:{' '}
+            {money(o.price.retail_irr ?? o.price.margin_irr)}
             <br />
-            مالیات اجرت و سود: {money(o.price.tax_irr)}
+            مالیات واقعی VAT به ریال: {money(o.price.tax_irr)}
             <br />
             هزینه‌ها: {money(o.price.fee_irr || 0)}
           </p>
@@ -390,6 +400,12 @@ export function ProductDetail({ id }: { id: string }) {
             {p.description || 'توضیحات تکمیلی این محصول هنوز ثبت نشده است.'}
           </p>
           <dl className="specs">
+            {Object.entries(p.attributes || {}).map(([k, v]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd>{String(v)}</dd>
+              </div>
+            ))}
             <div>
               <dt>مدل / مرجع</dt>
               <dd>{p.reference || 'ثبت نشده'}</dd>
@@ -425,5 +441,29 @@ export function ProductDetail({ id }: { id: string }) {
         </div>
       </div>
     </section>
+  )
+}
+
+export function PricingBreakdown({ value: p }: { value: any }) {
+  if (!p) return null
+  return (
+    <details className="price-breakdown">
+      <summary>اجزای قیمت به ریال</summary>
+      <p>
+        اصل طلا: {money(p.metal_irr)} · اجرت: {money(p.labor_irr)}
+      </p>
+      <p>
+        توزیع: {money(p.distribution_irr ?? 0)} · خرده‌فروشی:{' '}
+        {money(p.retail_irr ?? p.margin_irr)}
+      </p>
+      <p>
+        مالیات واقعی VAT: {money(p.vat_irr ?? p.tax_irr)} · هزینه:{' '}
+        {money(p.fee_irr ?? 0)} · گرد کردن: {money(p.rounding_irr ?? 0)}
+      </p>
+      <p>
+        مجموع هر قطعه: {money(p.total_irr)} · نسخه سیاست:{' '}
+        {p.pricing_policy_id ?? 'تاریخی'}
+      </p>
+    </details>
   )
 }

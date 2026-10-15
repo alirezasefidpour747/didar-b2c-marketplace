@@ -19,6 +19,12 @@ export const copy = {
   manage: 'مدیریت طلا',
 }
 export const states: Record<string, string> = {
+  reserved: 'رزرو شده',
+  sold: 'فروخته شده',
+  returned: 'مرجوعی',
+  requested: 'درخواست مرجوعی',
+  received: 'دریافت فیزیکی',
+  restocked: 'بازگشت به فروش',
   pending: 'در انتظار پرداخت',
   initialized: 'آماده پرداخت',
   paid: 'پرداخت شده',
@@ -36,6 +42,23 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  INVALID_UID:
+    'UID باید ۳ تا ۸۰ نویسه شامل حروف لاتین، عدد، خط تیره یا زیرخط باشد.',
+  INVALID_EPC: 'EPC باید کد هگز با طول زوج، بین ۸ و ۱۲۸ نویسه باشد.',
+  CONFLICT_RECONCILIATION:
+    'تعداد یا مجموع وزن قطعات با فاکتور تطبیق ندارد؛ اختلاف ردیف‌ها را بررسی کنید.',
+  CONFLICT_VERIFIED_BATCH:
+    'پذیرش تأییدشده قابل ویرایش نیست؛ سوابق قطعات باید حفظ شوند.',
+  CONFLICT_DERIVED_STOCK:
+    'تعداد موجودی از قطعات واقعی محاسبه می‌شود؛ اصلاح را از بخش قطعات انجام دهید.',
+  CONFLICT_ITEM_STATE: 'این عملیات با وضعیت فعلی قطعه سازگار نیست.',
+  CONFLICT_AMBIGUOUS_SCAN:
+    'این ورودی با UID و EPC دو قطعه متفاوت تطبیق دارد؛ در بخش جستجوی قطعه بررسی کنید.',
+  INVALID_UNLINKED_PRODUCT:
+    'پیش از تأیید، همه ردیف‌ها باید به محصول مشترک متصل شوند.',
+  INVALID_PRODUCT_PURITY: 'عیار ردیف با عیار محصول مشترک مطابقت ندارد.',
+  CONFLICT_CLOSED_COUNT: 'جلسه شمارش بسته شده است؛ جلسه جدیدی شروع کنید.',
+
   CONFLICT_OFFER_CHANGED:
     'قیمت یا موجودی عرضه تغییر کرده است؛ قیمت تازه را بررسی کنید.',
   CONFLICT_STOCK: 'موجودی کافی نیست؛ سبد را اصلاح کنید.',

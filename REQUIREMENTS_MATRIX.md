@@ -1,3 +1,29 @@
+# Phase 1 implementation matrix (2026-10-16)
+
+Authoritative scope: `docs/PHASE1_UID_RFID_INTAKE.md` plus the mandatory Gold-First/governance addendum. The historical MVP matrix below records the earlier baseline and does not exclude current physical UID/RFID work. Final execution results and limitations are in `DELIVERY.md`; operator/API details are in `docs/PHASE1_OPERATIONS.md`.
+
+| Requirement | Implemented path | Verification |
+|---|---|---|
+| Existing shared masters/categories/images/collections, approve/publish/unpublish, attributes | Existing Mercur workflows + `catalog.ts`, `/manage` | Original catalog/image regressions, existing Playwright management journey |
+| Admin creates supplier/account and operates for any supplier | `manage` supplier/account, all intake/inventory/RFID services with audited admin overrides | Backend fixtures and browser supplier creation/intake journey |
+| Supplier reads own assigned/unpublished products, invoices, units/EPCs/states/sales/fulfillment | Scoped catalog/intake/inventory/orders/returns/count APIs; operational portal | Cross-supplier read/write denial tests; supplier read-only browser |
+| Eight independent permissions, disabled by default, immediate revocation | `permissions.ts`, supplier row locks, `/permissions`, admin permission screen | Per-field grants/revokes, pairing/intake/fulfillment/revocation and isolation tests |
+| Gold-First percent/fixed-equivalent making, independent additive distribution/retail, selected taxable components, IRR VAT | `pricing.ts`, immutable `didar_pricing_policy`, admin settings, PDP/cart/order details | Mandatory 100 g → 124.2 g-equivalent test, fixed making, tax selection, old snapshots unchanged |
+| Grouped invoice → separately measured pieces → reconciliation → verification/posting | `phase1-schema.sql`, `phase1.ts`, `/manage/operations` | 19 units: 5/135 g, 2/127 g, 12/117 g; mismatch blocks; source immutability; admin-only posting |
+| Explicit tolerance exception with version/reason, count always exact | Append-only intake policy and verification snapshot | Zero default, admin denial, reason required, old approved version still posts after policy update |
+| Permanent UID, optional globally unique active EPC, replacement/unpair, raw audit | Database uniqueness/triggers; `/rfid` and pairing UI | Duplicate/concurrent UID/EPC, cross-supplier constraints, retagging without UID changes |
+| Exact unit reservation, sale once, failure/cancel/expiry release once | `item-stock.ts`, checkout/payment/expiry transactions, unique active reservation index | Two customer identities racing, successful duplicate callback, identical UID release, equal-weight quantity-two grouping |
+| Physical return, quarantine, restock once; later resale preserves history | `/returns`, customer requests, admin receive/restock UI | Retry-safe physical return/resale; old successful payment cannot re-sell returned UID |
+| Item-associated customer/supplier/admin order history and fulfillment | `/orders` item mappings, native existing delivery workflow extended to reservations | Supplier privacy/grant tests, browser paid → preparing → dispatched → delivered |
+| Counting snapshot, distinct items, duplicate aliases, unknown/sold/missing/absent flags | Count tables and report; focused Enter input with queue | Five distinct EPCs, UID alias dedup, unknown/missing/sold flags, supplier report isolation, browser remaining-stock count |
+| Mock and keyboard-wedge adapter, no unverified hardware claims | `rfid-reader.ts`, visibly labeled simulated mode | Playwright text/Enter scans; physical RF hardware and scales remain unverified |
+| Legacy stock/orders preserved, no fabricated physical identifiers | Separate legacy/itemized modes; additive migrations | Fresh/repeat migrations retain quantity + historic price JSON, zero legacy-linked physical units |
+| Derived quantity integrity | Database trigger-maintained available cache, direct edits blocked | Global cache invariant reports zero mismatches |
+| Docker/ARM64, regressions and source preservation | Existing four-service Compose/source build, no new native dependencies | Fresh source builds and current regression evidence; native ARM runtime remains external |
+| No multi-warehouse, ERP, supplier liabilities, procurement, wallets, treasury, GL, settlement or Tahesab writes | Phase boundary maintained; external invoice reference metadata only | Source review and implementation path; no Phase 2 tables/services added |
+
+## Historical MVP matrix (baseline through `6a206bf`)
+
 # Didar Gold requirements matrix
 
 Audit date: 2026-10-15. Baseline: `c71e31354ce9e34c65b5919fc75ccd38d73fee49`, fetched remote main and confirmed identical to HEAD. Initial statuses are preserved in audit commit a3ca078. The table below reflects current-run source, API and browser verification; Docker runtime acceptance is recorded separately below. Historical results are not counted as current evidence.

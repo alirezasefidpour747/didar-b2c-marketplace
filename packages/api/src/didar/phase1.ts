@@ -507,6 +507,7 @@ async function rfid(req: any, u: any) {
       if (!item) throw new Error("NOT_FOUND");
       await authorize(c, u, item.supplier_id, "PAIR_OWN_RFID");
       if (
+        !(b.operation === "unpair" && item.status === "void") &&
         !["draft", "verified", "available", "withdrawn", "returned"].includes(
           item.status,
         )

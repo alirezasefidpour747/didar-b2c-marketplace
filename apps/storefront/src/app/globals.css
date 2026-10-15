@@ -954,3 +954,14 @@ details[open] > summary {
     scroll-behavior: auto;
   }
 }
+
+/* Lightweight single-location intake: readable on the Persian mobile portal. */
+.operations .card,.operations .order{min-width:0;overflow-wrap:anywhere}
+.operations pre{max-width:100%;overflow:auto;font-size:.8rem}
+.operations code{direction:ltr;unicode-bidi:isolate;overflow-wrap:anywhere}
+.operations .unit-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:1rem}
+.permission-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:.75rem 0}
+.permission-row input{width:auto}
+.inventory-form fieldset{border:0;padding:0;min-width:0}
+fieldset:disabled{opacity:.7}
+.price-breakdown{font-size:.85rem;line-height:1.9}

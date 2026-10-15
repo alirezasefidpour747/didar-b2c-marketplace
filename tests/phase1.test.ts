@@ -1097,3 +1097,76 @@ test("equal-weight physical units share a derived offer and reserve/release an e
   await pay(order.order.id, "failure");
   expect((await current(offer.id)).quantity).toBe(2);
 });
+
+test("voided physical UID remains permanent; authorized unpair releases its tag without recreating stock", async () => {
+  const draft = (
+    await ok("intake", {
+      operation: "create",
+      supplier_id: supplierId,
+      invoice_number: tag + "-void",
+      reference_purity: 750,
+    })
+  ).id;
+  const line = (
+    await ok("intake", {
+      operation: "line",
+      batch_id: draft,
+      product_id: product,
+      description: "Void registry fixture",
+      quantity: 1,
+      total_weight_mg: 1000,
+      purity: 750,
+      making_mode: "percent",
+      making_bps: 0,
+    })
+  ).id;
+  const uid = tag + "-void-unit";
+  await ok("intake", {
+    operation: "item",
+    batch_id: draft,
+    line_id: line,
+    weight_mg: 1000,
+    uid,
+  });
+  const item = (await ok("inventory?search=" + uid)).items[0];
+  await ok("rfid", {
+    operation: "pair",
+    item_id: item.id,
+    epc: epc(95),
+    reason: "draft tag",
+  });
+  await ok("intake", {
+    operation: "void_item",
+    batch_id: draft,
+    line_id: line,
+    item_id: item.id,
+  });
+  expect(
+    (
+      await api("rfid", {
+        operation: "pair",
+        item_id: item.id,
+        epc: epc(96),
+        reason: "invalid void pairing",
+      })
+    ).http,
+  ).toBe(409);
+  await ok("rfid", {
+    operation: "unpair",
+    item_id: item.id,
+    reason: "release tag from void draft; retain UID",
+  });
+  expect(
+    (
+      await api("intake", {
+        operation: "item",
+        batch_id: draft,
+        line_id: line,
+        weight_mg: 1000,
+        uid,
+      })
+    ).http,
+  ).toBe(409);
+  expect((await unit(item.id)).status).toBe("void");
+  expect((await ok("inventory?search=" + epc(95))).items).toHaveLength(0);
+});

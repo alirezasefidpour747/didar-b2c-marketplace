@@ -79,3 +79,16 @@
 - Stock invariant inspection: **zero derived-quantity mismatches** across all itemized offers at this milestone. Clean/repeat additive migrations preserve a legacy quantity and historical paid price JSON without creating units.
 - Existing 23 local deployment guards passed; no cloud operation occurred. Secret pattern/history review found zero token/private-key/credential-URL findings across 246 candidate source files and 605 reachable Git blobs before this commit.
 - Browser acceptance and fresh production builds remain in progress. Earlier UI scan-queue and permission-checkbox defects were identified through real Playwright runs and repaired; this milestone does not claim full browser acceptance.
+
+### Publication checkpoint
+- Normally pushed verified backend milestone `fb99850dee98d60560e18b38733c7ac2e00f4a11` to the requested feature branch; remote branch SHA confirmed. No force push, main update, PR merge or Oracle action.
+- GitHub API/CLI remains `Forbidden`; Git transport's `refs/pull/1/head` still advertises the prior specification commit despite the feature branch advancing. PR head/status/description cannot yet be independently reconciled through the permitted API. Final source publication will be verified through the remote branch/tree; this is a separate PR metadata verification limitation, not a reason to discard work.
+- Main also received an independently committed copy of the same authoritative specification (`7868b54`); its document content is byte-identical. No application changes from main were missed or overwritten.
+
+### Compiled application acceptance
+- Fresh official route codegen, native admin/vendor panel builds, API compilation and Next production build passed (18 storefront routes including `/manage/operations`). Rebuilt the API after the final void-tag correction and verified the compiled handler contains it.
+- Ran **51 backend/integration/migration tests, 492 assertions, all passed** against the actual compiled API. Added a permanent-void-UID case: pairing a void unit is denied, authorized unpair can release its tag, and its UID cannot be reused.
+- Ran the **entire Playwright suite in one successful production-runtime run: 8 passed** against compiled Mercur API and Next standalone server. Existing catalog, mobile RTL, image, approval, checkout, expiry, fulfillment and bounded-upload checks pass alongside the complete Phase 1 browser intake/sale/count journey.
+- Native Medusa HTTP health: **1 passed** against compiled runtime. Deployment guard suite: **23 passed**, local/mocked only. ARM64 lock/native-artifact static audit passes; no new dependencies were added and no physical ARM64 execution is claimed.
+- Four actual runtime secret values were compared against source and built application files with **zero matches**. Public local-only demo credentials and unauthenticated/documented local service URLs are deliberately distinguished from runtime deployment secrets.
+- Scanner reads are queued and repeat reads deduplicate; the permission screen updates its pending checkbox state and rolls back on save errors. Previewed the resulting Persian counting screenshot. No hardware RF integration or real scale measurement is claimed.

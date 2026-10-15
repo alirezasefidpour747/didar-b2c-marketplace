@@ -11,6 +11,10 @@ import {
 } from 'react'
 import { copy, errors, number } from './locale'
 export type Price = {
+  distribution_irr?: number
+  retail_irr?: number
+  pricing_policy_id?: number
+  price_model?: string
   metal_irr: number
   labor_irr: number
   margin_irr: number
@@ -19,6 +23,10 @@ export type Price = {
   total_irr: number
 }
 export type Offer = {
+  stock_mode?: string
+  making_mode?: string
+  making_bps?: number
+  making_weight_mg?: number
   id: string
   supplier_id: string
   supplier: string
@@ -46,6 +54,8 @@ export type Product = {
   min_weight_mg?: number
   max_weight_mg?: number
   active?: boolean
+  approved?: boolean
+  attributes?: Record<string, string>
   published?: boolean
   collection_ids?: string[]
   images?: Image[]

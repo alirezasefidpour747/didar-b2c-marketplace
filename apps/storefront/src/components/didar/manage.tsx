@@ -11,6 +11,7 @@ type FieldProps = {
   min?: number
   max?: number
   required?: boolean
+  disabled?: boolean
   type?: string
 }
 function Field({
@@ -20,12 +21,14 @@ function Field({
   min,
   max,
   required = true,
+  disabled = false,
   type = 'text',
 }: FieldProps) {
   return (
     <label>
       {label}
       <input
+        disabled={disabled}
         name={name}
         type={type}
         defaultValue={value}
@@ -51,6 +54,8 @@ function productData(f: FormData) {
     max_weight_mg: num(f, 'max_weight_mg') || null,
     active: f.get('active') === 'on',
     published: f.get('published') === 'on',
+    approved: f.get('approved') === 'on',
+    attributes: JSON.parse(String(f.get('attributes') || '{}')),
   }
 }
 function ProductFields({
@@ -64,6 +69,25 @@ function ProductFields({
 }) {
   return (
     <>
+      {!request && (
+        <>
+          <label>
+            ویژگی‌ها JSON
+            <textarea
+              name="attributes"
+              defaultValue={JSON.stringify(p?.attributes || {})}
+            />
+          </label>
+          <label className="check">
+            <input
+              name="approved"
+              type="checkbox"
+              defaultChecked={p?.approved ?? true}
+            />
+            تأیید محصول مشترک
+          </label>
+        </>
+      )}
       <Field name="title" label="نام" value={p?.title} />
       <label>
         توضیحات
@@ -157,6 +181,16 @@ function Management() {
   const [managed, setManaged] = useState<any>(null),
     [tab, setTab] = useState('inventory')
   const admin = user?.role === 'admin'
+  const can = (p: string) =>
+    admin ||
+    managed?.permissions?.some(
+      (r: any) =>
+        r.supplier_id === user?.supplier_id && r.permission === p && r.granted,
+    )
+  const canEdit =
+    can('EDIT_OWN_OFFER') ||
+    can('EDIT_OWN_INVENTORY') ||
+    can('EDIT_OWN_MAKING_CHARGE')
   async function load() {
     setManaged(await api('manage'))
   }
@@ -223,6 +257,7 @@ function Management() {
             {l}
           </button>
         ))}
+        <Link href="/manage/operations">پذیرش، UID و RFID و مجوزها</Link>
         <Link href="/orders">سفارش‌ها و ارسال</Link>
       </nav>
       {!admin &&
@@ -244,106 +279,87 @@ function Management() {
         ))}
       {tab === 'inventory' && (
         <>
-          <form
-            className="card form-grid"
-            data-testid="new-offer-form"
-            onSubmit={submit(async (f) =>
-              mutate(
-                {
-                  kind: 'new_offer',
-                  product_id: f.get('product_id'),
-                  ...(admin ? { supplier_id: f.get('supplier_id') } : {}),
-                  weight_mg: num(f, 'weight_mg'),
-                  quantity: num(f, 'quantity'),
-                  labor_irr: num(f, 'labor_irr'),
-                  labor_bps: num(f, 'labor_bps'),
-                  labor_mode: f.get('labor_mode'),
-                  margin_bps: num(f, 'margin_bps'),
-                  terms: f.get('terms'),
-                  active: true,
-                },
-                'عرضه شما ثبت شد.',
-              ),
-            )}
-          >
-            <h2>{admin ? 'عرضه با وزن دقیق' : 'عرضه در کاتالوگ مشترک'}</h2>
-            <label>
-              محصول
-              <select name="product_id" required>
-                {managed.products.map((p: Product) => (
-                  <option key={p.id} value={p.id}>
-                    {p.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {admin && (
+          {can('CREATE_OWN_OFFER') && (
+            <form
+              className="card form-grid"
+              data-testid="new-offer-form"
+              onSubmit={submit(async (f) =>
+                mutate(
+                  {
+                    kind: 'new_offer',
+                    product_id: f.get('product_id'),
+                    ...(admin ? { supplier_id: f.get('supplier_id') } : {}),
+                    weight_mg: num(f, 'weight_mg'),
+                    quantity: num(f, 'quantity'),
+                    making_mode: f.get('making_mode'),
+                    making_bps: num(f, 'making_bps'),
+                    making_weight_mg: num(f, 'making_weight_mg'),
+                    labor_irr: 0,
+                    terms: f.get('terms'),
+                    active: true,
+                  },
+                  'عرضه شما ثبت شد.',
+                ),
+              )}
+            >
+              <h2>{admin ? 'عرضه با وزن دقیق' : 'عرضه در کاتالوگ مشترک'}</h2>
               <label>
-                تأمین‌کننده
-                <select name="supplier_id" required>
-                  {managed.suppliers.map((s: any) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} · {states[s.status] || s.status}
+                محصول
+                <select name="product_id" required>
+                  {managed.products.map((p: Product) => (
+                    <option key={p.id} value={p.id}>
+                      {p.title}
                     </option>
                   ))}
                 </select>
               </label>
-            )}
-            <Field
-              name="weight_mg"
-              label="وزن میلی‌گرم"
-              type="number"
-              min={1}
-              max={1000000}
-            />
-            <Field
-              name="quantity"
-              label="تعداد قابل فروش"
-              type="number"
-              min={0}
-              max={100000}
-            />
-            <label>
-              روش اجرت
-              <select name="labor_mode">
-                <option value="fixed">مبلغ ثابت</option>
-                <option value="percent">درصد اصل طلا</option>
-              </select>
-            </label>
-            <Field
-              name="labor_irr"
-              label="اجرت ریال"
-              type="number"
-              min={0}
-              value={0}
-            />
-            <Field
-              name="labor_bps"
-              label="اجرت درصدی bps"
-              type="number"
-              min={0}
-              max={10000}
-              value={0}
-            />
-            <Field
-              name="margin_bps"
-              label="سود bps"
-              type="number"
-              min={0}
-              max={10000}
-              value={managed.rate.default_margin_bps ?? 700}
-            />
-            <label>
-              شرایط تأمین
-              <textarea name="terms" maxLength={1000} />
-            </label>
-            <button
-              className="primary"
-              disabled={busy || !managed.products.length}
-            >
-              {admin ? 'ثبت عرضه' : 'ثبت عرضه من'}
-            </button>
-          </form>
+              {admin && (
+                <label>
+                  تأمین‌کننده
+                  <select name="supplier_id" required>
+                    {managed.suppliers.map((s: any) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} · {states[s.status] || s.status}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <Field
+                name="weight_mg"
+                label="وزن میلی‌گرم"
+                type="number"
+                min={1}
+                max={1000000}
+              />
+              <Field
+                name="quantity"
+                label="تعداد قابل فروش"
+                type="number"
+                min={0}
+                max={100000}
+              />
+              <GoldFields />
+              <p>
+                عرضه تجمیعی قدیمی؛ برای موجودی فیزیکی از پذیرش UID استفاده کنید.
+              </p>
+              <label>
+                شرایط تأمین
+                <textarea name="terms" maxLength={1000} />
+              </label>
+              <button
+                className="primary"
+                disabled={busy || !managed.products.length}
+              >
+                {admin ? 'ثبت عرضه' : 'ثبت عرضه من'}
+              </button>
+            </form>
+          )}
+          {!canEdit && (
+            <p className="notice">
+              عرضه‌ها فقط خواندنی‌اند؛ مجوز نوشتن باید توسط مدیر اعطا شود.
+            </p>
+          )}
           {managed.products.map(
             (p: Product) =>
               p.offers.length > 0 && (
@@ -360,62 +376,58 @@ function Management() {
                             kind: 'offer',
                             id: o.id,
                             version: o.version,
-                            quantity: num(f, 'quantity'),
-                            labor_irr: num(f, 'labor'),
-                            labor_bps: num(f, 'labor_bps'),
-                            labor_mode: f.get('labor_mode'),
-                            margin_bps: num(f, 'margin'),
-                            terms: f.get('terms'),
-                            active: f.get('active') === 'on',
+                            ...(can('EDIT_OWN_INVENTORY') &&
+                            o.stock_mode !== 'itemized'
+                              ? { quantity: num(f, 'quantity') }
+                              : {}),
+                            ...(can('EDIT_OWN_MAKING_CHARGE') &&
+                            f.get('making_mode')
+                              ? {
+                                  making_mode: f.get('making_mode'),
+                                  making_bps: num(f, 'making_bps'),
+                                  making_weight_mg: num(f, 'making_weight_mg'),
+                                }
+                              : {}),
+                            ...(can('EDIT_OWN_OFFER')
+                              ? {
+                                  terms: f.get('terms'),
+                                  active: f.get('active') === 'on',
+                                }
+                              : {}),
                           },
                           'موجودی ذخیره شد.',
                         ),
                       )}
                     >
                       <strong>
-                        {o.supplier} · {weight(o.weight_mg)}
+                        {o.stock_mode === 'itemized'
+                          ? 'قطعات واقعی؛ تعداد مشتق‌شده'
+                          : 'موجودی تجمیعی قدیمی؛ بدون UID'}{' '}
+                        · {o.supplier} · {weight(o.weight_mg)}
                       </strong>
                       <Field
                         name="quantity"
                         label="تعداد"
                         type="number"
                         min={0}
+                        disabled={
+                          o.stock_mode === 'itemized' ||
+                          !can('EDIT_OWN_INVENTORY')
+                        }
                         value={o.quantity}
                       />
-                      <Field
-                        name="labor"
-                        label="اجرت ریال"
-                        type="number"
-                        min={0}
-                        value={o.labor_irr}
-                      />
-                      <label>
-                        روش اجرت
-                        <select
-                          name="labor_mode"
-                          defaultValue={o.labor_mode || 'fixed'}
-                        >
-                          <option value="fixed">مبلغ ثابت</option>
-                          <option value="percent">درصد اصل طلا</option>
-                        </select>
-                      </label>
-                      <Field
-                        name="labor_bps"
-                        label="اجرت درصدی bps"
-                        type="number"
-                        min={0}
-                        max={10000}
-                        value={o.labor_bps || 0}
+                      {!o.making_mode && (
+                        <p>
+                          اجرت قدیمی ریالی: {o.labor_irr}؛ تبدیل به شرایط طلایی
+                          نیازمند تأیید مستقل است.
+                        </p>
+                      )}
+                      <GoldFields
+                        offer={o}
+                        disabled={!can('EDIT_OWN_MAKING_CHARGE')}
                       />
                       <Field
-                        name="margin"
-                        label="سود bps"
-                        type="number"
-                        min={0}
-                        max={10000}
-                        value={o.margin_bps}
-                      />
-                      <Field
+                        disabled={!can('EDIT_OWN_OFFER')}
                         name="terms"
                         label="شرایط تأمین"
                         value={o.terms || ''}
@@ -423,13 +435,14 @@ function Management() {
                       />
                       <label className="check">
                         <input
+                          disabled={!can('EDIT_OWN_OFFER')}
                           name="active"
                           type="checkbox"
                           defaultChecked={o.active ?? true}
                         />
                         عرضه فعال
                       </label>
-                      <button disabled={busy}>ذخیره</button>
+                      <button disabled={busy || !canEdit}>ذخیره</button>
                     </form>
                   ))}
                 </article>
@@ -628,12 +641,14 @@ function Management() {
                 ),
               )}
             >
-              <h2>درخواست محصول جدید</h2>
-              <p>محصول پس از بررسی مدیر به کاتالوگ مشترک اضافه می‌شود.</p>
-              <ProductFields categories={categories} request />
-              <button className="primary" disabled={busy}>
-                ارسال درخواست محصول
-              </button>
+              <fieldset disabled={!can('REQUEST_PRODUCT_CREATION')}>
+                <h2>درخواست محصول جدید</h2>
+                <p>محصول پس از بررسی مدیر به کاتالوگ مشترک اضافه می‌شود.</p>
+                <ProductFields categories={categories} request />
+                <button className="primary" disabled={busy}>
+                  ارسال درخواست محصول
+                </button>
+              </fieldset>
             </form>
           )}
           <h2>درخواست‌های محصول</h2>
@@ -689,15 +704,33 @@ function Management() {
         <>
           <form
             className="card"
+            data-testid="supplier-form"
             onSubmit={submit(async (f) =>
               mutate(
-                { kind: 'supplier', name: f.get('name') },
+                {
+                  kind: 'supplier',
+                  name: f.get('name'),
+                  email: f.get('email') || undefined,
+                  password: f.get('password') || undefined,
+                },
                 'تأمین‌کننده ایجاد شد.',
               ),
             )}
           >
             <h2>تأمین‌کننده جدید</h2>
             <Field name="name" label="نام تأمین‌کننده" />
+            <Field
+              name="email"
+              label="ایمیل حساب تأمین‌کننده (اختیاری)"
+              type="email"
+              required={false}
+            />
+            <Field
+              name="password"
+              label="رمز اولیه حداقل ۱۲ نویسه (اختیاری)"
+              type="password"
+              required={false}
+            />
             <button disabled={busy}>ثبت تأمین‌کننده</button>
             <p className="muted">
               تأمین‌کنندگان می‌توانند از صفحه عضویت حساب خود را ثبت کنند. حساب
@@ -786,7 +819,9 @@ function Management() {
                 tax_bps: num(f, 'tax'),
                 fee_irr: num(f, 'fee_irr'),
                 rounding_step: num(f, 'rounding_step'),
-                default_margin_bps: num(f, 'default_margin_bps'),
+                distribution_bps: num(f, 'distribution_bps'),
+                retail_bps: num(f, 'retail_bps'),
+                taxable_components: f.getAll('taxable_components'),
               },
               'نرخ ذخیره شد.',
             ),
@@ -827,13 +862,42 @@ function Management() {
             value={managed.rate.rounding_step || 1}
           />
           <Field
-            name="default_margin_bps"
-            label="سود پیش‌فرض bps"
+            name="distribution_bps"
+            label="حاشیه توزیع bps"
             type="number"
-            min={0}
             max={10000}
-            value={managed.rate.default_margin_bps ?? 700}
+            value={managed.rate.distribution_bps}
           />
+          <Field
+            name="retail_bps"
+            label="حاشیه خرده‌فروشی bps"
+            type="number"
+            max={10000}
+            value={managed.rate.retail_bps}
+          />
+          <fieldset>
+            <legend>اجزای مشمول VAT؛ تعهد مالیات به ریال ثبت می‌شود</legend>
+            {[
+              ['gold', 'اصل طلا'],
+              ['making', 'اجرت'],
+              ['distribution', 'توزیع'],
+              ['retail', 'خرده‌فروشی'],
+            ].map(([k, l]) => (
+              <label className="check" key={k}>
+                <input
+                  type="checkbox"
+                  name="taxable_components"
+                  value={k}
+                  defaultChecked={managed.rate.taxable_components?.includes(k)}
+                />
+                {l}
+              </label>
+            ))}
+          </fieldset>
+          <p>
+            همه درصدها به‌صورت جمعی بر پایه مشترک وزن طلا محاسبه می‌شوند. نسخه
+            سیاست: {managed.rate.pricing_policy_id}
+          </p>
           <button className="primary" disabled={busy}>
             ذخیره نرخ
           </button>
@@ -987,5 +1051,48 @@ function ImageManager({
         <p>هنوز تصویری برای این محصول بارگذاری نشده است.</p>
       )}
     </div>
+  )
+}
+
+function GoldFields({
+  offer,
+  disabled = false,
+}: {
+  offer?: Offer
+  disabled?: boolean
+}) {
+  return (
+    <>
+      <label>
+        روش اجرت طلایی
+        <select
+          name="making_mode"
+          defaultValue={offer ? offer.making_mode || '' : 'percent'}
+          disabled={disabled}
+        >
+          {offer && !offer.making_mode && (
+            <option value="">حفظ اجرت تاریخی تا بازبینی</option>
+          )}
+          <option value="percent">درصد وزن پایه</option>
+          <option value="fixed_gold">وزن معادل ثابت برای هر قطعه</option>
+        </select>
+      </label>
+      <Field
+        name="making_bps"
+        label="اجرت طلایی bps"
+        type="number"
+        max={10000}
+        value={offer?.making_bps ?? 0}
+        disabled={disabled}
+      />
+      <Field
+        name="making_weight_mg"
+        label="اجرت ثابت معادل ۷۵۰؛ میلی‌گرم"
+        type="number"
+        max={1000000}
+        value={offer?.making_weight_mg ?? 0}
+        disabled={disabled}
+      />
+    </>
   )
 }
