@@ -1,0 +1,14 @@
+# Offline packaging of an already built, tested checkout. See scripts/build-prepared-images.sh.
+FROM node:24-bookworm-slim AS prepared
+COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
+WORKDIR /app
+COPY . .
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 MERCUR_DISABLE_TELEMETRY=true
+FROM prepared AS api
+EXPOSE 9000
+CMD ["sh","-c","cd packages/api/.medusa/server && node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]
+FROM prepared AS storefront
+ENV HOSTNAME=0.0.0.0 PORT=3000
+RUN cp -r apps/storefront/.next/static apps/storefront/.next/standalone/apps/storefront/.next/static && cp -r apps/storefront/public apps/storefront/.next/standalone/apps/storefront/public
+EXPOSE 3000
+CMD ["node","apps/storefront/.next/standalone/apps/storefront/server.js"]

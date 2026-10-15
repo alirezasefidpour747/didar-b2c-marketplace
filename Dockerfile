@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# Uses the BuildKit frontend included with Docker; no moving frontend download.
 FROM node:24-bookworm-slim AS base
 ENV NODE_USE_ENV_PROXY=1
 COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
