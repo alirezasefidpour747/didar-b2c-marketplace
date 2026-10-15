@@ -51,3 +51,17 @@
 - Visually reviewed desktop and mobile screenshots under /tmp/didar-evidence. Samples use explicit missing-photo placeholders; test uploads are clearly synthetic image fixtures, not invented product photographs.
 - Build-only panel-secret helper passed under NODE_ENV=production with `/dashboard/assets` and `/seller/assets` paths and no configuration fallback warnings. Runtime secret enforcement is unchanged. Clean source Docker build has installed frozen dependencies and built both panels/backend; final Next/container acceptance is continuing.
 - Updated reusable environment start_skill saved to a nonblocking review draft; existing install script and network/secret settings retained. Draft save does not publish a new environment snapshot.
+
+## Clean containers and source preservation
+
+- Fresh source Docker install/build passed with frozen dependencies and verified TLS. Both native panel asset bases, Medusa and Next built inside the image. Packaged standalone storefront directly from that source-built output (no host dependency fallback), avoiding a redundant rebuild after documentation changed.
+- Default Compose: repeatable native/Didar migrations and seed exit0, four services healthy, matching catalog requests and demo login401 under staging. Image ENV contains no runtime database/auth secrets.
+- VFS duplicates a roughly5GB API filesystem during recreation and exhausted the32GB overlay; sandbox shell startup briefly failed with ENOSPC. Cleared obsolete task diagnostic logs and removed only the completed one-shot migration container, preserving final test evidence/source/bundles/all database volumes. Default app remained healthy. Switching to explicit local testing is being retried after stopping/removing its API container first to avoid duplicate-copy disk usage.
+- Added a Compose-aware test helper that refuses staging/public app ports and privately targets the API's actual database; it correctly rejected the default staging runtime. Full local Compose tests are the remaining acceptance step.
+
+## Final container acceptance
+
+- Compose-aware regression passed: **36 tests /210 assertions /0fail**, followed by **7 Playwright checks /0fail**, against the actual source-built API, production standalone storefront and private Compose database. The test helper's Linux bridge path and default-staging refusal were both exercised.
+- Stdin-only secure administrator provisioning/login/fixture removal passed. Both native Mercur panels and their correctly prefixed JavaScript assets returned200. Sixty-eight application/build source files in the API image exactly match committed inputs.
+- Restarted API/storefront; all four services healthy, matching persisted catalog. Native offers/stock levels/orders remain0 after gold workflows, confirming no competing generic commerce ledger. Runtime is explicitly local sandbox and loopback-bound, not external staging.
+- Final DELIVERY, full requirements matrix and durable logs/screenshots/JSON evidence prepared. Software MVP locally complete. Only native ARM execution/authorized Oracle access and production provider/legal/commercial/operational prerequisites remain external; no deployment/provisioning attempted.

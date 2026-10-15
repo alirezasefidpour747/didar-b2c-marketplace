@@ -79,16 +79,14 @@ When registries are unavailable but this checkout has installed dependencies, `s
 
 See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks and live linux/arm64 image manifests pass. Native ARM build/runtime still needs access to an eligible VM; it has not been executed here.
 
-For the local loopback Compose test stack, run the commerce suite **inside** the API container so its fixtures and API share the same database:
+For an isolated Linux loopback Compose test stack, explicitly enable local sandbox accounts and use the database-aware test helper:
 
 ```sh
-docker compose exec -T api bun test ./tests/pricing.test.ts ./tests/commerce.test.ts
-bun run test:e2e
+DIDAR_ENVIRONMENT=local DIDAR_SEED_DEMO=true docker compose up -d --no-build
+node scripts/test-compose.mjs
 ```
 
-These tests require `DIDAR_ENVIRONMENT=local` and explicitly opted-in local demo accounts. Do not seed or run demo commerce tests against a public staging/production database. The ordinary host `bun run test` command targets the development API and database described above.
-
-Environment variables, data ownership and account provisioning are documented in [ENVIRONMENT.md](ENVIRONMENT.md). Existing staging updates create a private pre-migration database/archive backup and retain prior image tags; see [rollback instructions](deploy/oracle/ROLLBACK.md). No destructive restore is automated.
+The helper refuses non-local runtime/public application ports and binds both HTTP and browser SQL fixtures to the API's private Compose database, without printing credentials or publishing PostgreSQL. `api` or `browser` can be supplied to select a suite. Never seed or run demo tests against staging/production. Ordinary host development uses `bun run test` and `bun run test:e2e` against the development database described above.
 
 ## Marketplace routes and operations
 

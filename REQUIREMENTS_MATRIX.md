@@ -1,63 +1,66 @@
 # Didar Gold requirements matrix
 
-Audit date: 2026-10-15. Baseline: `c71e31354ce9e34c65b5919fc75ccd38d73fee49`, fetched remote main and confirmed identical to HEAD. This initial audit records source inspection; historical tests in DELIVERY are not new-run evidence. Status will be updated with current verification.
+Audit date: 2026-10-15. Baseline: `c71e31354ce9e34c65b5919fc75ccd38d73fee49`, fetched remote main and confirmed identical to HEAD. Initial statuses are preserved in audit commit a3ca078. The table below reflects current-run source, API and browser verification; Docker runtime acceptance is recorded separately below. Historical results are not counted as current evidence.
 
 Statuses: VERIFIED; IMPLEMENTED BUT UNTESTED; PARTIALLY IMPLEMENTED; MISSING; BLOCKED BY EXTERNAL DEPENDENCY.
 
-| Mission section / requirement | Initial status | Implementation / evidence | Remaining action |
+| Mission section / requirement | Current status | Implementation / evidence | Remaining action |
 |---|---|---|---|
-| 1 Autonomous incremental execution, progress, decisions, commits | PARTIALLY IMPLEMENTED | PROGRESS.md, existing six commits | Maintain decisions/matrix; publish verified milestones |
-| 2 Official supported Mercur starter, pinned TS/Medusa/React/Next | VERIFIED | MERCUR_STARTER.md, package.json, initial implementation history | Preserve architecture and pins |
-| 2 PostgreSQL, Redis, Docker, Playwright | IMPLEMENTED BUT UNTESTED | compose.yaml, playwright.config.ts | Start restored services and verify current workflow |
-| 3 Didar customer seller, shared catalog, multiple upstream suppliers | IMPLEMENTED BUT UNTESTED | didar/schema.sql, service.ts, README | Make customer-facing operator responsibility clear |
-| 3 No commissions, splits, automatic payouts, ERP/B2B | VERIFIED | Didar service checkout creates gold order only | Keep generic native commerce separate |
-| 4 Categories, subcategories, collections | PARTIALLY IMPLEMENTED | product.category text only | Add hierarchical category/collection management and pages |
-| 4 Shared products, names, descriptions, purity | PARTIALLY IMPLEMENTED | didar_product, native_id; create only | Add edit controls and native mirror consistency |
-| 4 Reference, jewelry type, declared weight range | MISSING | No schema fields/forms | Add validated fields and display |
-| 4 Multiple images, management, honest placeholders | MISSING | Decorative glyphs only | Secure upload/removal/alt text/gallery, no invented photos |
-| 4 Search, category, exact/range weight filters | PARTIALLY IMPLEMENTED | homepage title/category search | Expand search and weight filters |
-| 4 Activation/publication and admin edit | PARTIALLY IMPLEMENTED | active column, no controls | Add publish/deactivate/edit workflows |
-| 4 Responsive detail/category/collection pages | MISSING | Monolithic page.tsx | Add independent routes and reusable components |
-| 5 Existing-product exact mg stock/quantity, multiple weights | IMPLEMENTED BUT UNTESTED | offer uniqueness product/supplier/weight; management forms | Verify multi-weight supplier path and improve forms |
-| 5 Supplier onboarding approval/activation/deactivation | MISSING | Admin can create active supplier; CLI account only | Pending registration and admin lifecycle |
-| 5 Supplier product requests/admin approval | MISSING | No request table or workflow | Implement request/review and shared publication |
-| 5 Making fees, terms, offer deactivation | PARTIALLY IMPLEMENTED | fixed labor/margin only | Percent labor, terms, active control |
-| 5 Allocation and fulfillment updates | PARTIALLY IMPLEMENTED | Orders filter own lines; no statuses | Add per-line fulfillment transitions/tracking |
-| 5 No physical UIDs/advanced warehouse | VERIFIED | Integer milligrams + grouped quantities | Preserve simple model |
-| 5 Atomic stock under concurrent/retry/fail/expiry/update/paid | IMPLEMENTED BUT UNTESTED | pg row/advisory locks; existing commerce tests | Run regression and extend reserved-stock update coverage |
-| 6 Integer IRR/mg/BigInt metal/fixed labor/margin/tax | IMPLEMENTED BUT UNTESTED | pricing.ts, pricing.test.ts | Rerun and extend policies |
-| 6 Percent labor, fees, rounding, configurable commercial policies | PARTIALLY IMPLEMENTED | fixed labor/tax/margin only | Add explicit configurable options, document legal assumptions |
-| 6 Manual rate + replaceable source interface | PARTIALLY IMPLEMENTED | didar_rate/manual admin | Introduce feed interface without external calls |
-| 6 Quote expiry/server price validation/immutable snapshot | PARTIALLY IMPLEMENTED | rate age/version and snapshots | Explicit quote validity, publish/offer checks, prevent stale price display |
-| 7 Persian RTL responsive layout/localized numbers | IMPLEMENTED BUT UNTESTED | globals.css, layout.tsx, Intl | Verify desktop/mobile and accessibility |
-| 7 Home, listing, detail, category/collection, search | PARTIALLY IMPLEMENTED | Single page state views | Real pages and meaningful navigation |
-| 7 Cart and checkout | IMPLEMENTED BUT UNTESTED | local cart, server checkout | Dedicated routes, stale/missing cart line handling |
-| 7 Auth/profile/history/tracking | PARTIALLY IMPLEMENTED | auth/history, no profile or fulfillment | Add profile and detailed tracking |
-| 7 Reusable components, future English, loading/error/empty | PARTIALLY IMPLEMENTED | monolith, inline strings and basic states | Extract shared UI/context/i18n foundations |
-| 8 Server pricing/reserve/order/expiry | IMPLEMENTED BUT UNTESTED | service checkout/expireOrders + cron | Regression and snapshot tests |
-| 8 Provider init/confirm/idempotent callback/cancel | PARTIALLY IMPLEMENTED | sandbox outcome updates order directly | Persist payment attempt, provider interface and callback handling |
-| 8 Sandbox works; Iranian rial gateway boundary | PARTIALLY IMPLEMENTED | sandbox success/failure, no adapter | Build sandbox provider and disabled live adapter contract |
-| 8 No duplicate charges/deductions, failure/expiry release | IMPLEMENTED BUT UNTESTED | terminal order guard + stock transaction | Callback/retry/cancel/expiry tests |
-| 8 Success + failure browser tests | PARTIALLY IMPLEMENTED | Failure browser path only | Add successful operational journey |
-| 9 Product/category/supplier/publication operations | PARTIALLY IMPLEMENTED | partial admin forms | Finish complete clear workflows |
-| 9 Inventory/pricing/orders/payments/fulfillment/audit UI | PARTIALLY IMPLEMENTED | inventory/rate and orders only | Payment/fulfillment/audit/config UI |
-| 10 Role auth/supplier isolation/validation/server authority | IMPLEMENTED BUT UNTESTED | auth.ts, scoped manage/orders, SQL binds | Review new paths + negative tests |
-| 10 Transactions/idempotency/audit/errors/secrets | PARTIALLY IMPLEMENTED | checkout/pay audit; no expiry audit | Audit all critical transitions, safe errors and secret review |
-| 10 Production demo guard/session/rate limit/payment restrictions | PARTIALLY IMPLEMENTED | NODE_ENV seed check, hashed bearer 12h, peremail/IP login limit | Explicit demo runtime flag and sandbox guard; strengthen shared abuse controls |
-| 11 Unit pricing/inventory | PARTIALLY IMPLEMENTED | 4 pricing tests, no inventory unit module | Add meaningful availability cases |
-| 11 Integration stock/checkouts/reservations/concurrency/isolation | IMPLEMENTED BUT UNTESTED | 8 historical commerce tests | Preserve and rerun with new workflow tests |
-| 11 Callback retries and all failure states | PARTIALLY IMPLEMENTED | repeated payment + expiry tests | Add attempt ownership/callback/cancel and config tests |
-| 11 Full admin→supplier→customer→paid→allocated→fulfilled→tracking E2E | MISSING | 3 narrower browser tests | Add operational journey incl images and stock evidence |
-| 12 Docker/migration/sample data/account/env/build/test docs | IMPLEMENTED BUT UNTESTED | Dockerfiles, compose, scripts, README | Reverify after changes, migrations repeatable, secure accounts |
-| 12 Rollback instructions | PARTIALLY IMPLEMENTED | Oracle scripts | Document backups/image rollback/schema cautions |
-| 12 Oracle Always Free A1 <=2 CPU/12GB staging safeguards | IMPLEMENTED BUT UNTESTED | deploy/oracle guards + 8 mocked tests | Rerun static/guard tests; preserve no provisioning |
-| 12 Native ARM64 manifests/build/runtime and external staging | BLOCKED BY EXTERNAL DEPENDENCY | No authorized VM/SSH/capacity; x86 host | Verify available manifests; native authorized A1 run remains required |
-| 13 Working integrated software + delivery evidence | PARTIALLY IMPLEMENTED | Historical DELIVERY only covers smaller scope | Complete actual workflows and current evidence; distinguish external/production pending |
-| 13 External live gateway/feed/email/shipping/legal credentials | BLOCKED BY EXTERNAL DEPENDENCY | None configured | Preserve sandbox/manual adapters and document production prerequisites |
-| 14 Seven integrated slices, incremental commits/push | PARTIALLY IMPLEMENTED | This audit begins slice 1 | Implement remaining slices, test and publish |
+| 1 Autonomous incremental execution, progress, decisions, commits | VERIFIED | PROGRESS.md, DECISIONS.md, preserved baseline and incremental normal pushes | Continue normal release discipline |
+| 2 Official supported Mercur starter, pinned TS/Medusa/React/Next | VERIFIED | MERCUR_STARTER.md, pinned package.json/bun.lock; no regeneration or upgrade | None for MVP |
+| 2 PostgreSQL, Redis, Docker, Playwright | VERIFIED | compose.yaml; real PostgreSQL/Redis workflow; production builds + Playwright7 pass | Container acceptance ledger below |
+| 3 Didar customer seller, shared catalog, multiple upstream suppliers | VERIFIED | schema/service and explicit customer seller labels; multi-supplier integration/browser flows | None for MVP |
+| 3 No commissions, splits, automatic payouts, ERP/B2B | VERIFIED | Didar checkout creates only gold orders; SQL native orders/offers/stock levels all zero | Keep native generic commerce outside gold operations |
+| 4 Categories, subcategories, collections | VERIFIED | catalog.ts hierarchy/collections; integration cycle/edit and browser parent/child/collection paths | None for MVP |
+| 4 Shared products, names, descriptions, purity | VERIFIED | catalog.ts saveProduct, native workflows/compensation; API + browser admin create/edit | None for MVP |
+| 4 Reference, jewelry type, declared weight range | VERIFIED | schema.sql/productInput/ProductFields and detail specs; persisted integration assertions | None for MVP |
+| 4 Multiple images, management, honest placeholders | VERIFIED | bytea images, MIME/magic/size/count validation; image CRUD API + two-image gallery browser | Owner supplies actual product photographs |
+| 4 Search, category, exact/range weight filters | VERIFIED | Catalog exact/range offer filters, normalized Persian search/reference; browser exact weights/search | None for MVP |
+| 4 Activation/publication and admin edit | VERIFIED | catalog.ts admin active/published + offer flags; visibility/role tests | None for MVP |
+| 4 Responsive detail/category/collection pages | VERIFIED | Independent product/category/collection routes; Playwright390px no overflow + screenshots | None for MVP |
+| 5 Existing-product exact mg stock/quantity, multiple weights | VERIFIED | Supplier multiple grouped integer mg offers; integration + two-weight browser journey | None for MVP |
+| 5 Supplier onboarding approval/activation/deactivation | VERIFIED | Transactional pending signup, admin approval/state; activation/deactivation + existing-token tests | None for MVP |
+| 5 Supplier product requests/admin approval | VERIFIED | Product request/review; approved native-linked publication, rejection and repeated approval tests | None for MVP |
+| 5 Making fees, terms, offer deactivation | VERIFIED | labor_mode/labor_bps/terms/active; pricing and supplier CRUD tests + forms | Commercial terms need owner review before real trading |
+| 5 Allocation and fulfillment updates | VERIFIED | Authoritative order-line supplier allocation; scoped paid fulfillment and customer tracking; full E2E | None for MVP |
+| 5 No physical UIDs/advanced warehouse | VERIFIED | Internal row IDs only; integer mg grouped stock; no serialized/warehouse subsystem | None for MVP |
+| 5 Atomic stock under concurrent/retry/fail/expiry/update/paid | VERIFIED | Row/advisory locks, sorted stock, optimistic versions; concurrency/retry/update/failure/expiry/paid tests | None for MVP |
+| 6 Integer IRR/mg/BigInt metal/fixed labor/margin/tax | VERIFIED | BigInt pricing and 7 handchecked pricing tests; 3 inventory tests | None for MVP |
+| 6 Percent labor, fees, rounding, configurable commercial policies | VERIFIED | Configurable fixed/percent labor, offer margin/default, tax, perpiece fee, upward rounding step | Parameters are examples requiring commercial/legal approval |
+| 6 Manual rate + replaceable source interface | VERIFIED | Admin manual source and GoldRateSource interface in rate-source.ts; persisted version/freshness API tests | External live feed deliberately deferred |
+| 6 Quote expiry/server price validation/immutable snapshot | VERIFIED | Repeatable-read catalog, 24h rate validity; server rate/offer versions,15min committed reservation, immutable input/component snapshot tests | None for MVP |
+| 7 Persian RTL responsive layout/localized numbers | VERIFIED | lang fa/dir rtl, localized IRR/mg/date; responsive actual Chromium checks/screenshots | None for MVP |
+| 7 Home, listing, detail, category/collection, search | VERIFIED | Independent home/products/detail/categories/collections routes; search and browser navigation | None for MVP |
+| 7 Cart and checkout | VERIFIED | Dedicated cart/checkout, unavailable-line handling and persisted checkout intent; success/failure browser | None for MVP |
+| 7 Auth/profile/history/tracking | VERIFIED | Opaque auth, persisted profile/address, order history/detail and per-line tracking; API/browser tests | No email-based password recovery provider in MVP |
+| 7 Reusable components, future English, loading/error/empty | VERIFIED | Shared store/catalog/customer/manage components, locale foundation and loading/error/empty screens | English translations are a future locale, not enabled |
+| 8 Server pricing/reserve/order/expiry | VERIFIED | Existing locks/snapshots/expiration retained; old8 commerce tests + new integration regressions | None for MVP |
+| 8 Provider init/confirm/idempotent callback/cancel | VERIFIED | commerce.ts and persisted unique-order attempts; initialize/confirm/callback/cancel ownership/concurrent retry tests | Callbacks are authenticated sandbox simulations |
+| 8 Sandbox works; Iranian rial gateway boundary | VERIFIED | SandboxProvider works; IranianRialProvider interface fails closed without approved integration | Live gateway integration external/production prerequisite |
+| 8 No duplicate charges/deductions, failure/expiry release | VERIFIED | Terminal order guard + one attempt/order + transactional releases; forged/duplicate/concurrent/expiry tests | None for MVP |
+| 8 Success + failure browser tests | VERIFIED | Playwright full paid flow plus original failed and independent expiry flows | None for MVP |
+| 9 Product/category/supplier/publication operations | VERIFIED | Admin routed catalog/supplier/request/publication forms and role-guarded APIs; real browser operational flow | None for MVP |
+| 9 Inventory/pricing/orders/payments/fulfillment/audit UI | VERIFIED | Inventory/policy/payment state/audit UI; exact supplier allocation and fulfillment tracking | Allocation is selected offer supplier, no manual reassign of committed stock |
+| 10 Role auth/supplier isolation/validation/server authority | VERIFIED | Scoped identities in auth/SQL; supplier spoofing, crosssupplier, customer/admin/anonymous tests | None for MVP |
+| 10 Transactions/idempotency/audit/errors/secrets | VERIFIED | Stock/payment/expiry/fulfillment audits, safe SQL errors/retry conflicts, hashed sessions; secret history/current comparisons | Periodic operational security review remains production work |
+| 10 Production demo guard/session/rate limit/payment restrictions | VERIFIED | Explicit local demo guard; staging/production denied, persistent login/IP limits,5sessions, sandbox disabled production, bounded proxy, CSP | Use secure staging accounts/TLS access; no live credentials embedded |
+| 11 Unit pricing/inventory | VERIFIED | 7 pricing +3 inventory +5 security tests in consolidated36-test pass | None for MVP |
+| 11 Integration stock/checkouts/reservations/concurrency/isolation | VERIFIED | 8 preserved commerce +13 upgraded integration tests;36total/210assertions/0fail | None for MVP |
+| 11 Callback retries and all failure states | VERIFIED | Concurrent init/callback, owner/attempt binding, replay/cancel/expiry and unpaid fulfillment tests | None for MVP |
+| 11 Full admin→supplier→customer→paid→allocated→fulfilled→tracking E2E | VERIFIED | 7 Playwright checks pass; complete role journey, gallery/categories/collections, stock/paid/order/tracking and failure/expiry/mobile | None for MVP |
+| 12 Docker/migration/sample data/account/env/build/test docs | VERIFIED | Fresh frozen source build; additive repeated migrations, account/env/build/test docs; Docker ledger below | See exact container acceptance evidence below |
+| 12 Rollback instructions | VERIFIED | Read-only backups with failure/privacy/image-retention tests; deployment guard tests and rollback guide | Full restore drill remains operational prerequisite |
+| 12 Oracle Always Free A1 <=2 CPU/12GB staging safeguards | VERIFIED | 23 environment/Oracle/SSH/backup tests; shape/resources/marker/host-key/source-transfer safeguards | Use existing authorized Always Free VM only |
+| 12 Native ARM64 manifests/build/runtime and external staging | BLOCKED BY EXTERNAL DEPENDENCY | All4 official image ARM descriptors + frozen native artifact audit pass; host is x86_64 | Native ARM build/runtime needs eligible available UbuntuA1 VM, host/key/access |
+| 13 Working integrated software + delivery evidence | VERIFIED | Operational source/API/browser/build evidence in DELIVERY and verification artifacts | External staging and production readiness explicitly separate |
+| 13 External live gateway/feed/email/shipping/legal credentials | BLOCKED BY EXTERNAL DEPENDENCY | No live gateway/feed/email/shipping credentials or legal approval configured; sandbox/manual MVP complete | Approved providers and legal/commercial review before production |
+| 14 Seven integrated slices, incremental commits/push | VERIFIED | Initial pre-code audit + integrated vertical slices + regression, incremental commits and non-force GitHub publication | Preserve this matrix and progress on future releases |
 
 ## Verification ledger
 
-- Initial audit: clean existing checkout; remote `refs/heads/main` and FETCH_HEAD equal baseline; original bundle retained.
-- No application code changed before this audit. Reviewed AGENTS, README, DELIVERY, PROGRESS, schema, backend/auth/pricing, monolithic frontend/proxy, tests, Docker and Oracle scripts. DECISIONS did not exist.
-- Current-run feature/build results will be recorded here as they execute. No inference from historical passing counts.
+- Initial audit: clean original checkout; fetched remote main matched baseline c71e313. Audit/decisions committed before application edits (a3ca078); original bundle retained unchanged. Subsequent milestones normally pushed, no force/reset/regeneration.
+- Current run: 36 unit/integration tests, 210 assertions, zero failures; 7 Playwright checks pass. Both suites passed again through the Compose-aware helper against the containerized API/database/production storefront, including the full operational journey. Native HTTP health1 and environment/deployment23 pass.
+- Fresh frozen source Docker build compiled native panels/backend/Next; standalone web promotes that same clean output. Default staging rejects demo login401 and embeds no runtime secrets in image ENV. Secure stdin account creation/login/cleanup and both native panel assets200 verified.
+- All four Compose services healthy, matching catalog persists after API/web restart. Sixty-eight application/build source files in the source-built API image match committed inputs. Native offers, stock levels and orders remain zero after gold E2E, confirming one ledger.
+- Current evidence: verification/2026-10-15. API/source/frontend builds and typechecks pass; 390px and desktop screenshots reviewed. Four current ARM image manifests and locked native artifacts verified; no native ARM VM execution or external deployment occurred.
+- Software MVP complete; external staging pending authorized eligible Oracle Ubuntu ARM64 A1 access/capacity. Production pending approved real-money/provider/commercial/operational prerequisites. The two BLOCKED rows concern those external prerequisites, not incomplete local sandbox flows.

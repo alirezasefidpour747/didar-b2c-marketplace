@@ -1,0 +1,19 @@
+{
+  "api_catalog_status": 200,
+  "storefront_proxy_status": 200,
+  "products": 4,
+  "default_staging_demo_login": 401,
+  "image_runtime_secrets_baked": false,
+  "images": [
+    {
+      "id": "sha256:786837558f4dabce7b75f37b6c355ae59333b0ab3dc482f54e0b8c96228b3c85",
+      "architecture": "amd64",
+      "size_bytes": 2144434083
+    },
+    {
+      "id": "sha256:6f69d4df288405982f427e9b08fbb3458fcfb3e557b81aa794cbaef4cff838eb",
+      "architecture": "amd64",
+      "size_bytes": 506500816
+    }
+  ]
+}

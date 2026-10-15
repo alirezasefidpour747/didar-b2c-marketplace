@@ -1,0 +1,30 @@
+{
+  "services": [
+    {
+      "service": "api",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "postgres",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "redis",
+      "state": "running",
+      "health": "healthy"
+    },
+    {
+      "service": "storefront",
+      "state": "running",
+      "health": "healthy"
+    }
+  ],
+  "restart_catalog_persistence": true,
+  "shared_seed_products": 4,
+  "native_offers": 0,
+  "native_stock_levels": 0,
+  "native_orders": 0,
+  "runtime": "isolated local sandbox; loopback ports, private PostgreSQL"
+}

@@ -1,0 +1,17 @@
+{
+  "secure_stdin_account_provisioning": "passed",
+  "role_login": "admin",
+  "fixture_removed": true,
+  "panels": [
+    {
+      "path": "/dashboard",
+      "page_status": 200,
+      "asset_status": 200
+    },
+    {
+      "path": "/seller",
+      "page_status": 200,
+      "asset_status": 200
+    }
+  ]
+}

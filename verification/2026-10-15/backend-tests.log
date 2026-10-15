@@ -1,0 +1,53 @@
+$ bun test --env-file=packages/api/.env ./tests/pricing.test.ts ./tests/inventory.test.ts ./tests/security.test.ts ./tests/commerce.test.ts ./tests/upgraded-commerce.test.ts
+bun test v1.4.3 (c6da4a4d3)
+
+tests/pricing.test.ts:
+(pass) gold principal, labor, margin and tax have exact independently checked values [0.89ms]
+(pass) fractional gram uses integer upward rial rounding [0.06ms]
+(pass) tax excludes gold principal [0.02ms]
+(pass) invalid quantities and rates cannot enter arithmetic [0.64ms]
+(pass) percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts [0.40ms]
+(pass) default margin is configurable while an explicit zero margin stays zero [0.07ms]
+(pass) invalid commercial policy cannot silently influence customer totals [0.07ms]
+
+tests/inventory.test.ts:
+(pass) exact grouped stock permits the last piece but never an oversell [0.15ms]
+(pass) fractional, unsafe and invalid stock requests cannot be reserved [0.28ms]
+(pass) only pending reservations expire, including the exact expiry boundary [0.44ms]
+
+tests/security.test.ts:
+(pass) public demo identities require explicit local runtime, independent of build mode [0.18ms]
+(pass) payment selection fails closed for production, missing environment and live modes [0.34ms]
+(pass) live Iranian gateway boundary never initiates an unconfigured charge [0.56ms]
+(pass) sandbox authority has no money movement and rejects invalid money [0.41ms]
+(pass) password verification handles corrupt records without crashing and uses unique salted hashes [150.65ms]
+
+tests/commerce.test.ts:
+(pass) anonymous and customer users cannot change stock or rate [14.14ms]
+(pass) supplier cannot update or read another supplier inventory [13.55ms]
+(pass) supplier creates exact-weight offer only under own identity [12.30ms]
+(pass) stock reserve is idempotent and failed payment restores exactly once [32.26ms]
+(pass) stale prices, fractional quantities and duplicate lines rejected [16.40ms]
+(pass) two concurrent purchases cannot oversell and paid stock remains deducted [48.94ms]
+(pass) one checkout spans suppliers with isolated order views [31.34ms]
+(pass) expired reservation is released, cannot become paid [19.84ms]
+
+tests/upgraded-commerce.test.ts:
+(pass) supplier registration requires admin approval and cannot self-approve [50.90ms]
+(pass) admin category and product edits persist publication controls [262.65ms]
+(pass) subcategory hierarchy rejects cycles and collection membership is editable [60.14ms]
+(pass) product images require admin authorization and matching image bytes [48.40ms]
+(pass) supplier manages multiple weights, deactivates an offer, and cannot alter another supplier [76.15ms]
+(pass) supplier product requests remain pending until admin review [17.85ms]
+(pass) approved supplier product request becomes one shared native-linked product [162.10ms]
+(pass) stock edits during a reservation count available pieces and release exactly once [294.10ms]
+(pass) payment initialization and concurrent callbacks are idempotent and owner scoped [580.05ms]
+(pass) expired initialized payment releases stock and cannot confirm successfully [176.54ms]
+(pass) paid allocation progresses through valid fulfillment and protects customer privacy [104.29ms]
+(pass) product purity edits invalidate old offers without changing paid pricing snapshots [243.87ms]
+(pass) profile updates are private, validated and logout revokes the session [55.00ms]
+
+ 36 pass
+ 0 fail
+ 210 expect() calls
+Ran 36 tests across 5 files. [3.33s]

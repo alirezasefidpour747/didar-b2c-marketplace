@@ -48,3 +48,12 @@ For isolated development, follow the root README's install, local-service, schem
 The Compose project name is fixed as `didar-gold`; named PostgreSQL/uploads volumes survive container recreation. Do not use `docker compose down -v`, remove volumes, run schema reset tools, or expose demo ports publicly. Retain periodic backups outside the source checkout with private permissions. See [rollback instructions](deploy/oracle/ROLLBACK.md) for update recovery, backup boundaries and the explicit data-loss implications of restoring a database.
 
 Only one API replica is supported by this MVP while the native starter uses process-local event/workflow providers. PostgreSQL transactions coordinate Didar checkout. A production rollout needs shared provider configuration, notification/payment/rate integrations, operational review, verified backups and TLS/access policies. Sandbox completion does not certify real-money or production readiness.
+
+For the isolated Linux Docker test stack, explicitly opt into local demo mode, then use the helper so browser SQL fixtures target the same private Compose database as the API:
+
+```sh
+DIDAR_ENVIRONMENT=local DIDAR_SEED_DEMO=true docker compose up -d --no-build
+node scripts/test-compose.mjs
+```
+
+The helper refuses staging/production runtime and publicly bound application ports. It derives the private Linux Docker bridge database address and holds credentials only in child-process environment, without printing them or putting them in argv. PostgreSQL remains unpublished. This path requires a local Linux Docker bridge; on a remote Docker daemon, run the checks from the same authorized private test host. Ordinary host development uses `bun run test` and `bun run test:e2e` instead.
