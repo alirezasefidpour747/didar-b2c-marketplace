@@ -1170,3 +1170,67 @@ test("voided physical UID remains permanent; authorized unpair releases its tag 
   expect((await unit(item.id)).status).toBe("void");
   expect((await ok("inventory?search=" + epc(95))).items).toHaveLength(0);
 });
+
+test("supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it", async () => {
+  const foreign = (
+    await ok("intake", {
+      operation: "create",
+      supplier_id: "s1",
+      invoice_number: tag + "-count-privacy",
+      reference_purity: 750,
+    })
+  ).id;
+  const line = (
+    await ok("intake", {
+      operation: "line",
+      batch_id: foreign,
+      product_id: product,
+      description: "Count privacy regression",
+      quantity: 1,
+      total_weight_mg: 1000,
+      purity: 750,
+      making_mode: "percent",
+      making_bps: 0,
+    })
+  ).id;
+  const uid = (tag + "-PRIVATE-S1").toUpperCase();
+  await ok("intake", {
+    operation: "item",
+    batch_id: foreign,
+    line_id: line,
+    weight_mg: 1000,
+    uid,
+  });
+  const foreignItem = (await ok("inventory?search=" + uid)).items[0];
+  await ok("rfid", {
+    operation: "pair",
+    item_id: foreignItem.id,
+    epc: epc(98),
+    reason: "privacy fixture",
+  });
+  const session = (
+    await ok("rfid", { operation: "create_count", supplier_id: supplierId })
+  ).id;
+  const full = await ok("rfid", {
+    operation: "scan",
+    session_id: session,
+    value: epc(98),
+  });
+  expect(full.observations[0]).toMatchObject({
+    uid,
+    item_id: foreignItem.id,
+    classification: "out_of_scope",
+  });
+  const scoped = await ok("rfid?id=" + session, undefined, supplier);
+  expect(scoped.observations[0]).toMatchObject({
+    uid: null,
+    item_id: null,
+    token: "[out_of_scope]",
+    raw_value: "",
+    classification: "out_of_scope",
+  });
+  expect(JSON.stringify(scoped)).not.toContain(uid);
+  expect(JSON.stringify(scoped)).not.toContain(epc(98));
+  expect((await api("rfid?id=" + session, undefined, other)).http).toBe(404);
+  expect((await ok("rfid?id=" + session)).observations[0].uid).toBe(uid);
+});

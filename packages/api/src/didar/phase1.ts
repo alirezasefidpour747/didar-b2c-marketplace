@@ -456,13 +456,13 @@ async function inventory(req: any, u: any) {
     return { ok: true };
   });
 }
-async function scanReport(c: any, session: any) {
+async function scanReport(c: any, session: any, u: any) {
   const { rows: expected } = await c.query(
     "SELECT * FROM didar_scan_expected WHERE session_id=$1 ORDER BY uid",
     [session.id],
   );
   const { rows: observations } = await c.query(
-    "SELECT o.*,i.uid FROM didar_scan_observation o LEFT JOIN didar_inventory_item i ON i.id=o.item_id WHERE session_id=$1 ORDER BY created_at",
+    "SELECT o.*,i.uid,i.supplier_id observed_supplier_id FROM didar_scan_observation o LEFT JOIN didar_inventory_item i ON i.id=o.item_id WHERE session_id=$1 ORDER BY created_at",
     [session.id],
   );
   const seen = new Set(
@@ -473,7 +473,19 @@ async function scanReport(c: any, session: any) {
   return {
     session,
     expected,
-    observations,
+    observations: observations.map(({ observed_supplier_id, ...o }: any) =>
+      u.role === "supplier" &&
+      observed_supplier_id &&
+      observed_supplier_id !== u.supplier_id
+        ? {
+            ...o,
+            item_id: null,
+            uid: null,
+            token: "[out_of_scope]",
+            raw_value: "",
+          }
+        : o,
+    ),
     distinct_count: seen.size,
     missing: expected.filter((e: any) => !seen.has(e.item_id)),
     duplicate_reads:
@@ -493,7 +505,7 @@ async function rfid(req: any, u: any) {
         ? sessions.find((s: any) => s.id === req.query.id)
         : null;
       if (req.query?.id && !session) throw new Error("NOT_FOUND");
-      return { sessions, ...(session ? await scanReport(c, session) : {}) };
+      return { sessions, ...(session ? await scanReport(c, session, u) : {}) };
     });
   const b = req.body || {};
   return transaction(async (c) => {
@@ -569,7 +581,7 @@ async function rfid(req: any, u: any) {
       );
       session.status = "closed";
       await audit(c, u.id, "rfid_count_closed", { session_id: session.id });
-      return scanReport(c, session);
+      return scanReport(c, session, u);
     }
     if (b.operation !== "scan") throw new Error("INVALID_RFID_OPERATION");
     const raw = text(b.value, 250);
@@ -607,7 +619,7 @@ async function rfid(req: any, u: any) {
    ON CONFLICT(session_id,token) DO UPDATE SET read_count=didar_scan_observation.read_count+1,last_seen_at=now()`,
       [id(), session.id, token, raw, item?.id || null, classification],
     );
-    return scanReport(c, session);
+    return scanReport(c, session, u);
   });
 }
 async function returns(req: any, u: any) {
