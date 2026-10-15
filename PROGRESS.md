@@ -15,3 +15,9 @@
 
 - External GitHub/npm/Docker endpoints began returning HTTP 503. Vendored the official CLI route metadata already fetched over verified HTTPS and seeded its supported fallback cache; codegen succeeds offline.
 - Added prepared-artifact Docker packaging to reuse installed, verified dependencies during the outage. Clean source-image rebuild currently requires external registry recovery. Native panels/backend/storefront are rebuilding locally before packaging and Compose smoke tests.
+
+- Final prepared API image and slim standalone storefront built. Fixed private Docker PostgreSQL TLS selection; Compose migrations and repeated seed succeeded. All four services became healthy and restart checks preserved the expected catalog.
+- Re-ran against final containers: 12 pricing/commerce tests (40 assertions), 3 Chromium E2E tests and 1 Medusa health test passed.
+- Applied requested Oracle Always Free target: Ubuntu ARM64 A1, maximum 2 OCPUs / 12 GB, staging-only host marker, source-only SSH deployment, no provisioning or paid fallback. Static native dependency/integrity audit and 8 mocked deployment-guard tests passed; ARM Compose config and scripts validated.
+- All four image manifest queries returned HTTP 503. Native ARM builds/runtime and Oracle deployment remain unverified, with no VM/SSH target or capacity supplied. Local MVP is not blocked by those external steps. No production deployment or OCI resource provisioning occurred.
+- Saved updated install/start environment draft and prepared DELIVERY.md with exact results, architecture boundaries and remaining blockers. Source commits remain local; portable Git bundle will include final delivery history.

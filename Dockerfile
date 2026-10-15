@@ -23,8 +23,11 @@ FROM base AS api
 ENV NODE_ENV=production
 EXPOSE 9000
 CMD ["sh","-c","cd packages/api/.medusa/server && node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]
-FROM base AS storefront
-ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000
+FROM node:24-bookworm-slim AS storefront
+WORKDIR /app
+COPY --from=base /app/apps/storefront/.next/standalone ./
+COPY --from=base /app/apps/storefront/.next/static ./apps/storefront/.next/static
+COPY --from=base /app/apps/storefront/public ./apps/storefront/public
+ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
-RUN cp -r apps/storefront/.next/static apps/storefront/.next/standalone/apps/storefront/.next/static && cp -r apps/storefront/public apps/storefront/.next/standalone/apps/storefront/public
-CMD ["node","apps/storefront/.next/standalone/apps/storefront/server.js"]
+CMD ["node","apps/storefront/server.js"]

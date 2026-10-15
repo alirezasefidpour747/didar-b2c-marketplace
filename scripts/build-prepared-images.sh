@@ -10,6 +10,7 @@ trap 'rm -f "$context"' EXIT
 tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=.dockerignore \
   --exclude=coverage --exclude=test-results --exclude=playwright-report \
   --exclude=.turbo --exclude='*/.next/cache' -czf "$context" .
-for target in api storefront; do
-  docker build -f Dockerfile.prebuilt --target "$target" -t "didar-gold-$target:staging" - < "$context"
-done
+docker build -f Dockerfile.prebuilt --target api -t didar-gold-api:staging - < "$context"
+cp -r apps/storefront/.next/static apps/storefront/.next/standalone/apps/storefront/.next/static
+cp -r apps/storefront/public apps/storefront/.next/standalone/apps/storefront/public
+docker build -f "$(pwd)/Dockerfile.storefront" -t didar-gold-storefront:staging apps/storefront/.next/standalone

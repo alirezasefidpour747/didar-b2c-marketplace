@@ -1,0 +1,8 @@
+# Package the standalone output after bun run --cwd apps/storefront build.
+# Context must be apps/storefront/.next/standalone, with static/public copied in.
+FROM node:24-bookworm-slim
+WORKDIR /app
+COPY . .
+ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 NEXT_TELEMETRY_DISABLED=1
+EXPOSE 3000
+CMD ["node","apps/storefront/server.js"]

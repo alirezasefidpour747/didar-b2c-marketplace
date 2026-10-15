@@ -27,7 +27,7 @@ services:
       args:
         MERCUR_BACKEND_URL: ${MERCUR_BACKEND_URL:-http://localhost:9000}
     environment: &api-env
-      DATABASE_URL: postgres://didar:${DIDAR_DB_PASSWORD}@postgres:5432/didar
+      DATABASE_URL: postgres://didar:${DIDAR_DB_PASSWORD}@postgres:5432/didar?sslmode=disable
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:?Run scripts/configure.mjs first}
       COOKIE_SECRET: ${COOKIE_SECRET:?Run scripts/configure.mjs first}
@@ -76,6 +76,11 @@ services:
     depends_on:
       api: { condition: service_healthy }
     ports: ["127.0.0.1:3000:3000"]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://localhost:3000/api/didar/catalog').then(r=>r.json()).then(d=>process.exit(d.products?.length?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
 volumes:
   postgres:
   uploads:

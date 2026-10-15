@@ -74,3 +74,16 @@ Sandbox payment is explicitly enabled with `DIDAR_PAYMENT_MODE=sandbox`. No real
 When registries are unavailable but this checkout has installed dependencies, `scripts/build-prepared-images.sh` builds the current code and packages those prepared outputs into the same API/storefront image tags, without downloading dependencies. It excludes environment files and Git metadata from the packaging context. Run `docker compose up -d --no-build` afterward. The source-building `Dockerfile` remains the clean-machine path; the prepared path requires existing verified dependencies and the local Node/Bun base images.
 
 `prepare-codegen-cache.mjs` seeds Mercur's officially supported fallback cache from the route manifest downloaded over verified HTTPS by CLI 2.3.7 on 2026-10-15. Its provenance is the CLI's default canary manifest endpoint, not a claim that a release-tagged manifest was downloaded. The tracked metadata snapshot keeps codegen working during GitHub HTTP 503 outages. Refresh it together with pinned Mercur package upgrades.
+
+## Preferred external staging: Oracle Always Free
+
+See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks passed, while live image manifests and ARM execution remain externally blocked as documented.
+
+For the local loopback Compose test stack, run the commerce suite **inside** the API container so its fixtures and API share the same database:
+
+```sh
+docker compose exec -T api bun test ./tests/pricing.test.ts ./tests/commerce.test.ts
+bun run test:e2e
+```
+
+These tests require the explicitly opted-in local demo accounts. Do not seed or run demo commerce tests against a public staging/production database. The ordinary host `bun run test` command targets the development API and database described above.
