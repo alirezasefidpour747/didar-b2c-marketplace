@@ -6,8 +6,12 @@ import {
   digest,
   requireUser,
   sessionUser,
+  demoAccountAllowed,
 } from "./auth";
 import { integer, price } from "./pricing";
+import { catalog, manage } from "./catalog";
+import { performCommerce } from "./commerce";
+import { isAvailable } from "./inventory";
 
 const text = (v: unknown, max = 250) => {
   if (typeof v !== "string" || !v.trim() || v.length > max)
@@ -39,32 +43,34 @@ export async function expireOrders() {
       await c.query("UPDATE didar_order SET status='expired' WHERE id=$1", [
         o.id,
       ]);
+      await c.query(
+        "UPDATE didar_payment_attempt SET status='expired' WHERE order_id=$1 AND status='initialized'",
+        [o.id],
+      );
+      await audit(c, null as any, "order_expired", { order_id: o.id });
     }
   });
 }
-async function catalog() {
-  const {
-    rows: [rate],
-  } = await db.query("SELECT * FROM didar_rate WHERE id=1");
-  const { rows: products } = await db.query(
-    `SELECT p.*,coalesce(json_agg(json_build_object('id',o.id,'supplier_id',o.supplier_id,'supplier',s.name,'weight_mg',o.weight_mg,'quantity',o.quantity,'labor_irr',o.labor_irr::text,'margin_bps',o.margin_bps,'version',o.version) ORDER BY o.id) FILTER (WHERE s.active), '[]') offers FROM didar_product p LEFT JOIN didar_offer o ON o.product_id=p.id LEFT JOIN didar_supplier s ON s.id=o.supplier_id WHERE p.active GROUP BY p.id ORDER BY p.id`,
-  );
-  for (const p of products)
-    p.offers = p.offers.map((o: any) => ({
-      ...o,
-      labor_irr: Number(o.labor_irr),
-      price: price({
-        ...o,
-        labor_irr: Number(o.labor_irr),
-        purity: p.purity,
-        rate_irr: Number(rate.rate_irr),
-        tax_bps: rate.tax_bps,
-      }),
-    }));
-  return { products, rate: { ...rate, rate_irr: Number(rate.rate_irr) } };
-}
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (!["GET", "POST"].includes(req.method))
+    throw new Error("METHOD_NOT_ALLOWED");
+  if (
+    [
+      "register",
+      "login",
+      "logout",
+      "checkout",
+      "payment",
+      "fulfillment",
+      "profile",
+    ].includes(action) &&
+    req.method !== "POST" &&
+    action !== "profile"
+  )
+    throw new Error("METHOD_NOT_ALLOWED");
+  const extended = await performCommerce(action, req);
+  if (extended.handled) return extended.result;
   if (action === "catalog" && req.method === "GET") {
     await expireOrders();
     return catalog();
@@ -77,6 +83,14 @@ export async function perform(action: string, req: any): Promise<any> {
       throw new Error("INVALID_EMAIL");
     const password = text(b.password, 128);
     if (password.length < 12) throw new Error("INVALID_PASSWORD_MIN_12");
+    if (!demoAccountAllowed(email)) throw new Error("UNAUTHORIZED");
+    const {
+      rows: [ipLimit],
+    } = await db.query(
+      `INSERT INTO didar_login_attempt(key,attempts,reset_at) VALUES($1,1,now()+interval '15 minutes') ON CONFLICT(key) DO UPDATE SET attempts=CASE WHEN didar_login_attempt.reset_at<now() THEN 1 ELSE didar_login_attempt.attempts+1 END,reset_at=CASE WHEN didar_login_attempt.reset_at<now() THEN now()+interval '15 minutes' ELSE didar_login_attempt.reset_at END RETURNING attempts`,
+      [digest(`ip:${req.ip}`)],
+    );
+    if (ipLimit.attempts > 200) throw new Error("RATE_LIMIT");
     // Persistent, shared rate limit; no in-memory bypass on worker restart.
     const key = digest(`${req.ip}:${email}`);
     const {
@@ -86,21 +100,52 @@ export async function perform(action: string, req: any): Promise<any> {
       [key],
     );
     if (limit.attempts > 20) throw new Error("RATE_LIMIT");
-    if (action === "register")
-      await db.query(
-        "INSERT INTO didar_user(id,email,name,password,role) VALUES($1,$2,$3,$4,'customer')",
-        [uid(), email, text(b.name, 100), hashPassword(password)],
-      );
+    if (action === "register") {
+      await transaction(async (c) => {
+        const id = uid(),
+          name = text(b.name, 100);
+        if (b.role === "supplier") {
+          const supplierId = uid();
+          await c.query(
+            "INSERT INTO didar_supplier(id,name,active,status) VALUES($1,$2,false,'pending')",
+            [supplierId, text(b.supplier_name || name, 100)],
+          );
+          await c.query(
+            "INSERT INTO didar_user(id,email,name,password,role,supplier_id) VALUES($1,$2,$3,$4,'supplier',$5)",
+            [id, email, name, hashPassword(password), supplierId],
+          );
+          await audit(c, id, "supplier_registered", {
+            supplier_id: supplierId,
+          });
+        } else {
+          if (b.role && b.role !== "customer") throw new Error("INVALID_ROLE");
+          await c.query(
+            "INSERT INTO didar_user(id,email,name,password,role) VALUES($1,$2,$3,$4,'customer')",
+            [id, email, name, hashPassword(password)],
+          );
+        }
+      });
+    }
     const {
       rows: [u],
     } = await db.query("SELECT * FROM didar_user WHERE email=$1", [email]);
     if (!u || !verifyPassword(password, u.password))
       throw new Error("UNAUTHORIZED");
     const token = randomBytes(32).toString("hex");
-    await db.query(
-      "INSERT INTO didar_session VALUES($1,$2,now()+interval '12 hours')",
-      [digest(token), u.id],
-    );
+    await transaction(async (c) => {
+      await c.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+        `session:${u.id}`,
+      ]);
+      await c.query("DELETE FROM didar_session WHERE expires_at<=now()");
+      await c.query(
+        "DELETE FROM didar_session WHERE user_id=$1 AND token_hash NOT IN (SELECT token_hash FROM didar_session WHERE user_id=$1 ORDER BY expires_at DESC,token_hash LIMIT 4)",
+        [u.id],
+      );
+      await c.query(
+        "INSERT INTO didar_session VALUES($1,$2,now()+interval '12 hours')",
+        [digest(token), u.id],
+      );
+    });
     return {
       token,
       user: {
@@ -173,18 +218,37 @@ export async function perform(action: string, req: any): Promise<any> {
         const {
           rows: [o],
         } = await c.query(
-          "SELECT o.*,p.title,p.purity,p.active,s.active supplier_active FROM didar_offer o JOIN didar_product p ON p.id=o.product_id JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.id=$1 FOR UPDATE OF o",
+          "SELECT o.*,p.title,p.purity,p.active product_active,p.published,s.active supplier_active,s.status supplier_status FROM didar_offer o JOIN didar_product p ON p.id=o.product_id JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.id=$1 FOR UPDATE OF o",
           [l.offer_id],
         );
-        if (!o || !o.active || !o.supplier_active || o.quantity < l.quantity)
+        if (
+          !o ||
+          !o.active ||
+          !o.product_active ||
+          !o.published ||
+          !o.supplier_active ||
+          o.supplier_status !== "approved" ||
+          !isAvailable(o.quantity, l.quantity)
+        )
           throw new Error("CONFLICT_STOCK");
         if (o.version !== l.version) throw new Error("CONFLICT_OFFER_CHANGED");
-        const breakdown = price({
-          ...o,
-          labor_irr: Number(o.labor_irr),
-          rate_irr: Number(rate.rate_irr),
-          tax_bps: rate.tax_bps,
-        });
+        const breakdown = {
+          ...price({
+            ...rate,
+            ...o,
+            labor_irr: Number(o.labor_irr),
+            rate_irr: Number(rate.rate_irr),
+            fee_irr: Number(rate.fee_irr ?? 0),
+            tax_bps: rate.tax_bps,
+          }),
+          policy: {
+            purity: o.purity,
+            labor_mode: o.labor_mode,
+            labor_bps: o.labor_bps,
+            fixed_labor_irr: Number(o.labor_irr),
+            margin_bps: o.margin_bps,
+          },
+        };
         total += breakdown.total_irr * l.quantity;
         snapshots.push({ ...o, quantity: l.quantity, breakdown });
       }
@@ -198,7 +262,7 @@ export async function perform(action: string, req: any): Promise<any> {
       );
       for (const l of snapshots) {
         await c.query(
-          "INSERT INTO didar_order_line VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+          "INSERT INTO didar_order_line(id,order_id,offer_id,supplier_id,title,weight_mg,quantity,breakdown) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
           [
             uid(),
             id,
@@ -219,164 +283,28 @@ export async function perform(action: string, req: any): Promise<any> {
       return { order };
     });
   }
-  if (action === "payment") {
-    const u = await requireUser(req, ["customer"]);
-    if (process.env.DIDAR_PAYMENT_MODE !== "sandbox")
-      throw new Error("PAYMENTS_DISABLED");
-    const id = text(b.order_id, 100);
-    if (!["success", "failure"].includes(b.outcome))
-      throw new Error("INVALID_OUTCOME");
-    return transaction(async (c) => {
-      const {
-        rows: [o],
-      } = await c.query(
-        "SELECT * FROM didar_order WHERE id=$1 AND customer_id=$2 FOR UPDATE",
-        [id, u.id],
-      );
-      if (!o) throw new Error("NOT_FOUND");
-      if (o.status !== "pending") return { order: o };
-      const expired = new Date(o.expires_at).getTime() <= Date.now();
-      const status = expired
-        ? "expired"
-        : b.outcome === "success"
-          ? "paid"
-          : "failed";
-      if (status !== "paid") {
-        const { rows } = await c.query(
-          "SELECT * FROM didar_order_line WHERE order_id=$1 ORDER BY offer_id",
-          [id],
-        );
-        for (const l of rows)
-          await c.query(
-            "UPDATE didar_offer SET quantity=quantity+$1,version=version+1 WHERE id=$2",
-            [l.quantity, l.offer_id],
-          );
-      }
-      const {
-        rows: [order],
-      } = await c.query(
-        "UPDATE didar_order SET status=$1 WHERE id=$2 RETURNING *",
-        [status, id],
-      );
-      await audit(c, u.id, "sandbox_payment", { order_id: id, status });
-      return { order };
-    });
-  }
   if (action === "orders") {
     const u = await requireUser(req, ["customer", "supplier", "admin"]);
+    if (u.role === "supplier") {
+      const {
+        rows: [supplier],
+      } = await db.query(
+        "SELECT active,status FROM didar_supplier WHERE id=$1",
+        [u.supplier_id],
+      );
+      if (!supplier?.active || supplier.status !== "approved")
+        throw new Error("FORBIDDEN");
+    }
     await expireOrders();
     const { rows: orders } = await db.query(
-      `SELECT o.id,o.status,o.created_at,o.expires_at,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id)) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100`,
+      `SELECT o.id,o.status,o.created_at,o.expires_at,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id)) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100`,
       [u.role, u.id, u.supplier_id],
     );
     return { orders };
   }
   if (action === "manage") {
     const u = await requireUser(req, ["supplier", "admin"]);
-    if (req.method === "GET") {
-      const data = await catalog();
-      if (u.role === "supplier")
-        for (const p of data.products)
-          p.offers = p.offers.filter(
-            (o: any) => o.supplier_id === u.supplier_id,
-          );
-      const { rows: suppliers } = await db.query(
-        "SELECT * FROM didar_supplier WHERE $1='admin' OR id=$2",
-        [u.role, u.supplier_id],
-      );
-      return { ...data, suppliers };
-    }
-    if (b.kind === "offer") {
-      const quantity = integer(b.quantity, "QUANTITY", 0, 100000);
-      const labor = integer(b.labor_irr, "LABOR");
-      const margin = integer(b.margin_bps, "MARGIN", 0, 10000);
-      return transaction(async (c) => {
-        const {
-          rows: [o],
-        } = await c.query("SELECT * FROM didar_offer WHERE id=$1 FOR UPDATE", [
-          text(b.id),
-        ]);
-        if (!o) throw new Error("NOT_FOUND");
-        if (u.role === "supplier" && o.supplier_id !== u.supplier_id)
-          throw new Error("FORBIDDEN");
-        if (o.version !== b.version) throw new Error("CONFLICT_VERSION");
-        await c.query(
-          "UPDATE didar_offer SET quantity=$1,labor_irr=$2,margin_bps=$3,version=version+1 WHERE id=$4",
-          [quantity, labor, margin, o.id],
-        );
-        await audit(c, u.id, "offer_updated", {
-          id: o.id,
-          quantity,
-          labor_irr: labor,
-          margin_bps: margin,
-        });
-        return { ok: true };
-      });
-    }
-    if (b.kind === "new_offer") {
-      const id = uid();
-      await db.query(
-        "INSERT INTO didar_offer(id,product_id,supplier_id,weight_mg,quantity,labor_irr,margin_bps) VALUES($1,$2,$3,$4,$5,$6,$7)",
-        [
-          id,
-          text(b.product_id),
-          u.role === "supplier" ? u.supplier_id : text(b.supplier_id),
-          integer(b.weight_mg, "WEIGHT", 1, 1000000),
-          integer(b.quantity, "QUANTITY", 0, 100000),
-          integer(b.labor_irr, "LABOR"),
-          integer(b.margin_bps, "MARGIN", 0, 10000),
-        ],
-      );
-      await audit(db, u.id, "offer_created", { id });
-      return { id };
-    }
-    if (u.role !== "admin") throw new Error("FORBIDDEN");
-    if (b.kind === "rate") {
-      await db.query(
-        "UPDATE didar_rate SET rate_irr=$1,tax_bps=$2,version=version+1,updated_at=now() WHERE id=1",
-        [integer(b.rate_irr, "RATE", 1), integer(b.tax_bps, "TAX", 0, 10000)],
-      );
-      await audit(db, u.id, "rate_updated", {
-        rate_irr: b.rate_irr,
-        tax_bps: b.tax_bps,
-      });
-      return { ok: true };
-    }
-    if (b.kind === "supplier") {
-      const id = uid();
-      await db.query("INSERT INTO didar_supplier(id,name) VALUES($1,$2)", [
-        id,
-        text(b.name, 100),
-      ]);
-      await audit(db, u.id, "supplier_created", { id });
-      return { id };
-    }
-    if (b.kind === "product") {
-      const id = uid();
-      const title = text(b.title, 150);
-      const purity = integer(b.purity, "PURITY", 1, 1000);
-      const { createProductsWorkflow } =
-        await import("@mercurjs/core/workflows");
-      const { result } = await createProductsWorkflow(req.scope).run({
-        input: {
-          created_by: u.id,
-          products: [
-            {
-              title,
-              handle: `didar-${id}`,
-              status: "published",
-              variants: [{ title: "Standard" }],
-            },
-          ],
-        },
-      });
-      await db.query(
-        "INSERT INTO didar_product(id,title,category,purity,native_id) VALUES($1,$2,$3,$4,$5)",
-        [id, title, text(b.category, 100), purity, result[0].id],
-      );
-      return { id };
-    }
-    throw new Error("INVALID_KIND");
+    return manage(req, u);
   }
   throw new Error("NOT_FOUND");
 }
@@ -399,11 +327,20 @@ export async function handler(req: any, res: any) {
             ? 404
             : msg === "RATE_LIMIT"
               ? 429
-              : msg.startsWith("CONFLICT") || e.code === "23505"
-                ? 409
-                : msg.startsWith("INVALID") || msg === "METHOD_NOT_ALLOWED"
-                  ? 400
-                  : 500;
+              : [
+                    "PAYMENTS_DISABLED",
+                    "RATE_UNAVAILABLE",
+                    "LIVE_GATEWAY_NOT_CONFIGURED",
+                  ].includes(msg)
+                ? 503
+                : msg.startsWith("CONFLICT") ||
+                    ["23505", "40P01", "40001"].includes(e.code)
+                  ? 409
+                  : msg.startsWith("INVALID") ||
+                      msg === "METHOD_NOT_ALLOWED" ||
+                      ["23503", "23514"].includes(e.code)
+                    ? 400
+                    : 500;
     if (status === 500)
       console.error("Didar request failed", e.code || e.message);
     res.status(status).json({
@@ -412,7 +349,11 @@ export async function handler(req: any, res: any) {
           ? "INTERNAL_ERROR"
           : e.code === "23505"
             ? "CONFLICT_DUPLICATE"
-            : msg,
+            : ["40P01", "40001"].includes(e.code)
+              ? "CONFLICT_RETRY"
+              : ["23503", "23514"].includes(e.code)
+                ? "INVALID_REFERENCE"
+                : msg,
     });
   }
 }
