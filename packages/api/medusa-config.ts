@@ -5,6 +5,15 @@ import path from 'path'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+const secret = (name: string) => {
+  const value = process.env[name]
+  if (process.env.NODE_ENV === 'production' && (!value || value.length < 32)) {
+    throw new Error(`${name} must be configured with at least 32 characters`)
+  }
+  return value || 'development-only-do-not-use-in-production'
+}
+
+
 // Resolves where a dashboard app lives:
 // - in the source tree (development): ../../apps/<name>
 // - in the production build artifact: hosts that deploy only `.medusa/server` (for example
@@ -25,8 +34,8 @@ module.exports = withMercur({
       adminCors: process.env.ADMIN_CORS!,
       vendorCors: process.env.VENDOR_CORS!,
       authCors: process.env.AUTH_CORS!,
-      jwtSecret: process.env.JWT_SECRET || "supersecret",
-      cookieSecret: process.env.COOKIE_SECRET || "supersecret",
+      jwtSecret: secret('JWT_SECRET'),
+      cookieSecret: secret('COOKIE_SECRET'),
     }
   },
   featureFlags: {

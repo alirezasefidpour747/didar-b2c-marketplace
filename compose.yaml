@@ -1,0 +1,81 @@
+name: didar-gold
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: didar
+      POSTGRES_DB: didar
+      POSTGRES_PASSWORD: ${DIDAR_DB_PASSWORD:?Run scripts/configure.mjs first}
+    volumes: [postgres:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U didar -d didar"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  migrate:
+    image: didar-gold-api:staging
+    build: &api-build
+      context: .
+      target: api
+      args:
+        MERCUR_BACKEND_URL: ${MERCUR_BACKEND_URL:-http://localhost:9000}
+    environment: &api-env
+      DATABASE_URL: postgres://didar:${DIDAR_DB_PASSWORD}@postgres:5432/didar
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?Run scripts/configure.mjs first}
+      COOKIE_SECRET: ${COOKIE_SECRET:?Run scripts/configure.mjs first}
+      STORE_CORS: ${STOREFRONT_URL:-http://localhost:3000}
+      ADMIN_CORS: ${MERCUR_BACKEND_URL:-http://localhost:9000}
+      VENDOR_CORS: ${MERCUR_BACKEND_URL:-http://localhost:9000}
+      AUTH_CORS: ${MERCUR_BACKEND_URL:-http://localhost:9000}
+      FILE_BACKEND_URL: ${MERCUR_BACKEND_URL:-http://localhost:9000}/static
+      DIDAR_PAYMENT_MODE: sandbox
+      MERCUR_DISABLE_TELEMETRY: "true"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    command:
+      [
+        sh,
+        -c,
+        "cd packages/api && NODE_ENV=development bun x --no-install medusa db:migrate && NODE_ENV=development bun x --no-install medusa exec ./src/scripts/didar-seed.ts",
+      ]
+  api:
+    image: didar-gold-api:staging
+    build: *api-build
+    environment: *api-env
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    ports: ["127.0.0.1:9000:9000"]
+    volumes: [uploads:/app/packages/api/.medusa/server/static]
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://localhost:9000/didar/catalog').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+  storefront:
+    image: didar-gold-storefront:staging
+    build:
+      <<: *api-build
+      target: storefront
+    environment:
+      MEDUSA_BACKEND_URL: http://api:9000
+    depends_on:
+      api: { condition: service_healthy }
+    ports: ["127.0.0.1:3000:3000"]
+volumes:
+  postgres:
+  uploads:

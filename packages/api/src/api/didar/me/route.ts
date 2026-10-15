@@ -1,2 +1,2 @@
-import { handler } from '../../../didar/service'
-export const GET = handler
+import { handler } from "../../../didar/service";
+export const GET = handler;

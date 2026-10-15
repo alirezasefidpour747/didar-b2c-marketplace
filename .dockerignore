@@ -1,0 +1,17 @@
+.git
+**/node_modules
+**/.env
+**/.env.local
+**/.env.*.local
+**/.next
+**/.medusa
+**/.mercur
+**/dist
+**/.turbo
+**/*.tsbuildinfo
+test-results
+playwright-report
+PROGRESS.md
+DELIVERY.md
+README.md
+MERCUR_STARTER.md
