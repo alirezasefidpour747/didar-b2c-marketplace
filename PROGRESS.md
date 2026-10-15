@@ -65,3 +65,17 @@
 - Stdin-only secure administrator provisioning/login/fixture removal passed. Both native Mercur panels and their correctly prefixed JavaScript assets returned200. Sixty-eight application/build source files in the API image exactly match committed inputs.
 - Restarted API/storefront; all four services healthy, matching persisted catalog. Native offers/stock levels/orders remain0 after gold workflows, confirming no competing generic commerce ledger. Runtime is explicitly local sandbox and loopback-bound, not external staging.
 - Final DELIVERY, full requirements matrix and durable logs/screenshots/JSON evidence prepared. Software MVP locally complete. Only native ARM execution/authorized Oracle access and production provider/legal/commercial/operational prerequisites remain external; no deployment/provisioning attempted.
+
+## Phase 1 UID/RFID implementation — in progress (2026-10-16)
+- Continued existing branch `didar/phase1-intake-uid-rfid` at `3bddce5`, preserving verified MVP and historical stock.
+- Restored persisted local services without reinstalling; baseline: **36 tests, 210 assertions passed** (fresh execution).
+- Implementing additive item registry/intake/RFID and versioned Gold-First policies. This entry is **not Phase 1 acceptance**; fresh integration/browser verification follows.
+- Git transport is available. GitHub GraphQL/REST access is currently proxy-forbidden; branch pushes can still update PR #1 and its head can be verified through Git refs. No merge or Oracle deployment attempted.
+
+### Phase 1 backend verification milestone
+- **50 backend/integration/migration tests passed, 480 assertions** on the restored local PostgreSQL/Mercur runtime. Includes all original 36 regressions with intentional additive Gold-First expectations and explicitly granted supplier write fixtures.
+- Verified 19 separately weighed units (5/135 g, 2/127 g, 12/117 g), global UID/EPC constraints across suppliers, audited retagging, scoped counting, immediate permission revocation, exact-item concurrent checkout with two customer identities, once-only payment/release/expiry, physical return/quarantine/restock, equal-weight item grouping and immutable intake/pricing history.
+- Verified versioned tolerance exceptions remain valid for posting after a newer policy version, without changing the recorded verification; ordinary weight/count mismatch still blocks verification. Default tolerance restored to zero after QA.
+- Stock invariant inspection: **zero derived-quantity mismatches** across all itemized offers at this milestone. Clean/repeat additive migrations preserve a legacy quantity and historical paid price JSON without creating units.
+- Existing 23 local deployment guards passed; no cloud operation occurred. Secret pattern/history review found zero token/private-key/credential-URL findings across 246 candidate source files and 605 reachable Git blobs before this commit.
+- Browser acceptance and fresh production builds remain in progress. Earlier UI scan-queue and permission-checkbox defects were identified through real Playwright runs and repaired; this milestone does not claim full browser acceptance.

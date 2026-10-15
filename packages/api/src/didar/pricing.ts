@@ -15,62 +15,136 @@ export function integer(
   return value;
 }
 const ceil = (n: bigint, d: bigint) => (n + d - 1n) / d;
-export function price(input: {
-  weight_mg: number;
-  purity: number;
-  rate_irr: number;
-  labor_irr: number;
-  margin_bps?: number;
-  default_margin_bps?: number;
-  labor_mode?: "fixed" | "percent";
-  labor_bps?: number;
-  fee_irr?: number;
-  rounding_step?: number;
-  tax_bps: number;
-}) {
+/** Gold-first: all margins use the same 750-equivalent base, never compounded.
+ * Legacy fixed-IRR making charges remain explicit; no gold weight is invented. */
+export function price(input: any) {
   const weight = BigInt(integer(input.weight_mg, "WEIGHT", 1, 1_000_000));
   const purity = BigInt(integer(input.purity, "PURITY", 1, 1000));
-  const rate = BigInt(integer(input.rate_irr, "RATE", 1));
-  const fixedLabor = BigInt(integer(input.labor_irr, "LABOR"));
+  const rate = BigInt(integer(Number(input.rate_irr), "RATE", 1));
+  const labor = BigInt(integer(Number(input.labor_irr ?? 0), "LABOR"));
+  const lb = BigInt(integer(input.labor_bps ?? 0, "LABOR_PERCENT", 0, 10000));
   if (input.labor_mode && !["fixed", "percent"].includes(input.labor_mode))
     throw new Error("INVALID_LABOR_MODE");
-  const laborBps = BigInt(
-    integer(input.labor_bps ?? 0, "LABOR_PERCENT", 0, 10000),
+  if (
+    input.making_mode &&
+    !["percent", "fixed_gold"].includes(input.making_mode)
+  )
+    throw new Error("INVALID_MAKING_MODE");
+  const mb = BigInt(integer(input.making_bps ?? 0, "MAKING", 0, 10000));
+  const mw = BigInt(
+    integer(input.making_weight_mg ?? 0, "MAKING_WEIGHT", 0, 1000000),
   );
-  const fee = BigInt(integer(input.fee_irr ?? 0, "FEE"));
-  const rounding = BigInt(
-    integer(input.rounding_step ?? 1, "ROUNDING", 1, 1000000),
+  const distribution = BigInt(
+    integer(input.distribution_bps ?? 0, "DISTRIBUTION", 0, 10000),
   );
-  const marginBps = BigInt(
+  const retail = BigInt(
     integer(
-      input.margin_bps ?? input.default_margin_bps ?? 700,
-      "MARGIN",
+      input.retail_bps ?? input.margin_bps ?? input.default_margin_bps ?? 700,
+      "RETAIL",
       0,
       10000,
     ),
   );
-  const taxBps = BigInt(integer(input.tax_bps, "TAX", 0, 10000));
-  // Rate is for one gram of 750-fineness (18K) gold. Round each component upward to a rial.
-  const metal = ceil(weight * purity * rate, 750000n);
-  const labor =
-    input.labor_mode === "percent"
-      ? ceil(metal * laborBps, 10000n)
-      : fixedLabor;
-  const margin = ceil((metal + labor) * marginBps, 10000n);
-  // Tax applies to labor and profit, never the gold principal.
-  const tax = ceil((labor + margin) * taxBps, 10000n);
-  const subtotal = metal + labor + margin + tax + fee;
-  const total = ceil(subtotal, rounding) * rounding;
+  const vat = BigInt(
+    integer(input.vat_bps ?? input.tax_bps ?? 0, "VAT", 0, 10000),
+  );
+  const fee = BigInt(integer(Number(input.fee_irr ?? 0), "FEE"));
+  const step = BigInt(
+    integer(input.rounding_step ?? 1, "ROUNDING", 1, 1000000),
+  );
+  const taxable = input.taxable_components ?? [
+    "making",
+    "distribution",
+    "retail",
+  ];
+  if (
+    !Array.isArray(taxable) ||
+    taxable.some(
+      (x: any) => !["gold", "making", "distribution", "retail"].includes(x),
+    )
+  )
+    throw new Error("INVALID_TAX_COMPONENTS");
+  const denom = 750n * 10000n * 1000n;
+  const base = weight * purity;
+  const numerators: Record<string, bigint> = {
+    gold: base * 10000n,
+    making:
+      input.making_mode === "fixed_gold"
+        ? mw * 750n * 10000n
+        : input.making_mode === "percent"
+          ? base * mb
+          : input.labor_mode === "percent"
+            ? base * lb
+            : 0n,
+    distribution: base * distribution,
+    retail: base * retail,
+  };
+  const legacy = !input.making_mode && input.labor_mode !== "percent";
+  const amounts = Object.fromEntries(
+    Object.entries(numerators).map(([k, n]) => [k, ceil(n * rate, denom)]),
+  );
+  if (legacy) amounts.making = labor;
+  const taxableNumerator = [...new Set<string>(taxable)].reduce(
+    (s, k) => s + numerators[k],
+    0n,
+  );
+  const tax = ceil(
+    (taxableNumerator * rate +
+      (legacy && taxable.includes("making") ? labor * denom : 0n)) *
+      vat,
+    denom * 10000n,
+  );
+  const subtotal =
+    amounts.gold +
+    amounts.making +
+    amounts.distribution +
+    amounts.retail +
+    tax +
+    fee;
+  const total = ceil(subtotal, step) * step;
   if (total > BigInt(Number.MAX_SAFE_INTEGER))
     throw new Error("PRICE_OVERFLOW");
   return {
-    metal_irr: Number(metal),
-    labor_irr: Number(labor),
-    margin_irr: Number(margin),
+    metal_irr: Number(amounts.gold),
+    labor_irr: Number(amounts.making),
+    margin_irr: Number(amounts.distribution + amounts.retail),
     tax_irr: Number(tax),
+    distribution_irr: Number(amounts.distribution),
+    retail_irr: Number(amounts.retail),
+    vat_irr: Number(tax),
     fee_irr: Number(fee),
     rounding_irr: Number(total - subtotal),
     total_irr: Number(total),
     currency: "IRR",
+    price_model: "gold_first_v1",
+    pricing_policy_id: input.pricing_policy_id ?? null,
+    making_basis: legacy
+      ? "legacy_fixed_irr_requires_review"
+      : (input.making_mode ?? "percent"),
+    gold_components: Object.fromEntries(
+      Object.entries(numerators).map(([k, n]) => [
+        k,
+        {
+          numerator: n.toString(),
+          denominator: denom.toString(),
+          unit: "g_750_equivalent",
+        },
+      ]),
+    ),
+  };
+}
+export async function withPolicy(c: any, rate: any) {
+  const {
+    rows: [policy],
+  } = await c.query("SELECT * FROM didar_pricing_policy WHERE id=$1", [
+    rate.pricing_policy_id,
+  ]);
+  return {
+    ...rate,
+    ...policy,
+    id: rate.id,
+    pricing_policy_id: policy.id,
+    rate_irr: Number(rate.rate_irr),
+    fee_irr: Number(rate.fee_irr ?? 0),
   };
 }

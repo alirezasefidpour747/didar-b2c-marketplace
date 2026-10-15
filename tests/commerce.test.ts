@@ -108,6 +108,15 @@ test("supplier cannot update or read another supplier inventory", async () => {
   ).toBe(403);
 });
 test("supplier creates exact-weight offer only under own identity", async () => {
+  expect(
+    (
+      await api(
+        "permissions",
+        { supplier_id: "s1", permission: "CREATE_OWN_OFFER", granted: true },
+        admin,
+      )
+    ).status,
+  ).toBe(200);
   const d = await api(
     "manage",
     {
@@ -128,6 +137,11 @@ test("supplier creates exact-weight offer only under own identity", async () => 
   expect(o.supplier_id).toBe("s1");
   expect(o.weight_mg).toBe(1235);
   await db.query("DELETE FROM didar_offer WHERE id=$1", [d.id]);
+  await api(
+    "permissions",
+    { supplier_id: "s1", permission: "CREATE_OWN_OFFER", granted: false },
+    admin,
+  );
 });
 test("stock reserve is idempotent and failed payment restores exactly once", async () => {
   const key = crypto.randomUUID();

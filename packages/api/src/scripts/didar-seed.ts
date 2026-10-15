@@ -17,6 +17,12 @@ export default async function seed({ container }: ExecArgs) {
   await db.query(
     "INSERT INTO didar_rate(id,rate_irr,tax_bps) VALUES(1,65000000,1000) ON CONFLICT DO NOTHING",
   );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/phase1-schema.sql"),
+      "utf8",
+    ),
+  );
   for (const [id, name] of [
     ["s1", "زرین دیدار"],
     ["s2", "گالری آفتاب"],

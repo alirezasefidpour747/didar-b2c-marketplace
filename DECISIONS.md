@@ -19,3 +19,10 @@ Use a persisted sandbox payment attempt and owner-authenticated sandbox confirma
 ## Customer experience and catalog assets
 
 Extend the current UI into real routes with shared components. Persian is primary; locale formatting/labels are reusable for later English. Product imagery must be uploaded by an operator and stored durably; absent images show an honest missing-photo placeholder. Do not generate product photographs. Preserve current backend transaction logic and existing meaningful tests while adding operational journeys.
+
+## Phase 1 (2026-10-16): authoritative scope and legacy bridge
+`docs/PHASE1_UID_RFID_INTAKE.md` and the mandatory user addendum supersede previous UID exclusions. New intake is serialized, single-location physical stock. Existing offers/orders retain an explicit `legacy` stock mode; migrations never invent unit weights or physical UIDs. Itemized available quantity is a trigger-maintained cache, not a separately editable source.
+
+Current pricing uses additive Gold-First making/distribution/retail components with IRR VAT and immutable policy/check-out snapshots. Historical breakdown JSON stays untouched. Legacy fixed-IRR making charges remain explicitly labeled pending commercial review, rather than being converted into invented gold weights; legacy offers use the same new additive markup policy. New physical intake requires percent or fixed gold-equivalent making terms. No supplier financial obligations, accounting, gold purchasing, wallets or settlements are created.
+
+Supplier operational writes require explicit per-action grants, disabled by default. Database supplier row locks serialize mutations with immediate revocation. Admin operational overrides are audited. RFID supports keyboard-wedge/manual input plus a clearly labeled mock adapter; no verified hardware integration is claimed.

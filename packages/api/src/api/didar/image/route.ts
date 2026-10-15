@@ -7,13 +7,25 @@ export async function GET(req: any, res: any) {
   const {
     rows: [image],
   } = await db.query(
-    "SELECT i.data,i.mime_type,p.active,p.published FROM didar_product_image i JOIN didar_product p ON p.id=i.product_id WHERE i.id=$1",
+    "SELECT i.data,i.mime_type,p.id product_id,p.active,p.published,p.approved FROM didar_product_image i JOIN didar_product p ON p.id=i.product_id WHERE i.id=$1",
     [id],
   );
   if (!image) return res.status(404).json({ message: "NOT_FOUND" });
-  if (!image.active || !image.published) {
+  if (!image.active || !image.published || !image.approved) {
     const u = await sessionUser(req);
-    if (u?.role !== "admin")
+    let own = false;
+    if (
+      u?.role === "supplier" &&
+      u.supplier_active &&
+      u.supplier_status === "approved"
+    ) {
+      const { rowCount } = await db.query(
+        "SELECT id FROM didar_offer WHERE product_id=$1 AND supplier_id=$2 UNION SELECT l.id FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=$1 AND b.supplier_id=$2",
+        [image.product_id, u.supplier_id],
+      );
+      own = !!rowCount;
+    }
+    if (u?.role !== "admin" && !own)
       return res.status(404).json({ message: "NOT_FOUND" });
   }
   res.setHeader("Content-Type", image.mime_type);

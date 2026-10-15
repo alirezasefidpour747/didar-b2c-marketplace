@@ -8,15 +8,15 @@ const base = {
   margin_bps: 700,
   tax_bps: 1000,
 };
-test("gold principal, labor, margin and tax have exact independently checked values", () => {
-  expect(price(base)).toEqual({
+test("gold-first legacy making compatibility uses additive base margin and IRR tax", () => {
+  expect(price(base)).toMatchObject({
     metal_irr: 152750000,
     labor_irr: 1500000,
-    margin_irr: 10797500,
-    tax_irr: 1229750,
+    margin_irr: 10692500,
+    tax_irr: 1219250,
     fee_irr: 0,
     rounding_irr: 0,
-    total_irr: 166277250,
+    total_irr: 166161750,
     currency: "IRR",
   });
 });
@@ -52,14 +52,14 @@ test("percentage making charge, fixed fees and configurable rounding preserve ha
       fee_irr: 1234,
       rounding_step: 1000,
     }),
-  ).toEqual({
+  ).toMatchObject({
     metal_irr: 152750000,
     labor_irr: 3818750,
-    margin_irr: 10959813,
-    tax_irr: 1477857,
+    margin_irr: 10692500,
+    tax_irr: 1451125,
     fee_irr: 1234,
-    rounding_irr: 346,
-    total_irr: 169008000,
+    rounding_irr: 391,
+    total_irr: 168714000,
     currency: "IRR",
   });
 });

@@ -134,9 +134,32 @@ beforeAll(async () => {
   supplier = registration.token;
   supplierId = registration.user.supplier_id;
   users.push(registration.user.id);
+  // Earlier MVP write tests now exercise explicitly delegated rights; production defaults remain read-only.
+  for (const permission of [
+    "REQUEST_PRODUCT_CREATION",
+    "CREATE_OWN_OFFER",
+    "EDIT_OWN_OFFER",
+    "EDIT_OWN_INVENTORY",
+    "EDIT_OWN_MAKING_CHARGE",
+    "CREATE_OWN_INTAKE",
+    "PAIR_OWN_RFID",
+    "UPDATE_OWN_FULFILLMENT",
+  ])
+    expect(
+      (
+        await api(
+          "permissions",
+          { supplier_id: supplierId, permission, granted: true },
+          admin,
+        )
+      ).status,
+    ).toBe(200);
 });
 
 afterAll(async () => {
+  await db.query("DELETE FROM didar_supplier_permission WHERE supplier_id=$1", [
+    supplierId,
+  ]);
   // Every deletion is scoped to this run's IDs; no seeded/demo stock is modified.
   // Native-linked product fixtures are retained unpublished to preserve catalog history.
   const orders = (
@@ -198,6 +221,7 @@ afterAll(async () => {
     users,
   ]);
   await db.query("DELETE FROM didar_user WHERE id=ANY($1::text[])", [users]);
+
   if (supplierId)
     await db.query("DELETE FROM didar_supplier WHERE id=$1", [supplierId]);
   await db.end();
