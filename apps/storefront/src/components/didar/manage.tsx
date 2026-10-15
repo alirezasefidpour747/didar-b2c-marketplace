@@ -1,0 +1,991 @@
+'use client'
+import Link from 'next/link'
+import { useEffect, useState, type FormEvent } from 'react'
+import { RequireUser, useDidar, type Product, type Offer } from './store'
+import { date, states, weight } from './locale'
+import { ImageAsset } from './catalog'
+type FieldProps = {
+  name: string
+  label: string
+  value?: any
+  min?: number
+  max?: number
+  required?: boolean
+  type?: string
+}
+function Field({
+  name,
+  label,
+  value,
+  min,
+  max,
+  required = true,
+  type = 'text',
+}: FieldProps) {
+  return (
+    <label>
+      {label}
+      <input
+        name={name}
+        type={type}
+        defaultValue={value}
+        min={min}
+        max={max}
+        required={required}
+        maxLength={type === 'text' ? 500 : undefined}
+      />
+    </label>
+  )
+}
+const num = (f: FormData, k: string) => Number(f.get(k) || 0)
+function productData(f: FormData) {
+  return {
+    title: f.get('title'),
+    description: f.get('description'),
+    category_id: f.get('category_id') || null,
+    category: f.get('category') || '',
+    reference: f.get('reference') || '',
+    jewelry_type: f.get('jewelry_type') || '',
+    purity: num(f, 'purity'),
+    min_weight_mg: num(f, 'min_weight_mg') || null,
+    max_weight_mg: num(f, 'max_weight_mg') || null,
+    active: f.get('active') === 'on',
+    published: f.get('published') === 'on',
+  }
+}
+function ProductFields({
+  p,
+  categories,
+  request = false,
+}: {
+  p?: Product
+  categories: any[]
+  request?: boolean
+}) {
+  return (
+    <>
+      <Field name="title" label="نام" value={p?.title} />
+      <label>
+        توضیحات
+        <textarea
+          name="description"
+          defaultValue={p?.description || ''}
+          maxLength={4000}
+        />
+      </label>
+      <Field
+        name="reference"
+        label="مدل / کد مرجع"
+        value={p?.reference}
+        required={false}
+      />
+      <Field
+        name="jewelry_type"
+        label="نوع زیور"
+        value={p?.jewelry_type}
+        required={false}
+      />
+      <label>
+        دسته
+        <select name="category_id" defaultValue={p?.category_id || ''}>
+          <option value="">انتخاب دسته</option>
+          {categories.map((c) => (
+            <option value={c.id} key={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <Field
+        name="purity"
+        label="عیار هزارگانی"
+        type="number"
+        value={p?.purity || 750}
+        min={1}
+        max={1000}
+      />
+      <Field
+        name="min_weight_mg"
+        label="حداقل وزن میلی‌گرم"
+        type="number"
+        value={p?.min_weight_mg || ''}
+        min={1}
+        max={1000000}
+        required={false}
+      />
+      <Field
+        name="max_weight_mg"
+        label="حداکثر وزن میلی‌گرم"
+        type="number"
+        value={p?.max_weight_mg || ''}
+        min={1}
+        max={1000000}
+        required={false}
+      />
+      {!request && (
+        <>
+          <label className="check">
+            <input
+              type="checkbox"
+              name="active"
+              defaultChecked={p?.active ?? true}
+            />
+            محصول فعال
+          </label>
+          <label className="check">
+            <input
+              type="checkbox"
+              name="published"
+              defaultChecked={p?.published ?? true}
+            />
+            انتشار در ویترین
+          </label>
+        </>
+      )}
+    </>
+  )
+}
+export function Manage({ role }: { role?: string }) {
+  return (
+    <RequireUser roles={role ? [role] : ['admin', 'supplier']}>
+      <Management />
+    </RequireUser>
+  )
+}
+function Management() {
+  const { user, api, run, busy, refresh, setMessage } = useDidar()
+  const [managed, setManaged] = useState<any>(null),
+    [tab, setTab] = useState('inventory')
+  const admin = user?.role === 'admin'
+  async function load() {
+    setManaged(await api('manage'))
+  }
+  useEffect(() => {
+    run(load)
+  }, [])
+  async function mutate(data: any, message = 'اطلاعات ذخیره شد.') {
+    await api('manage', data)
+    await load()
+    await refresh()
+    setMessage(message)
+  }
+  function submit(fn: (f: FormData) => Promise<void>) {
+    return (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      const f = new FormData(e.currentTarget)
+      run(() => fn(f))
+    }
+  }
+  if (!managed)
+    return (
+      <section>
+        <h1>{admin ? 'مدیریت بازار دیدار' : 'پنل تأمین‌کننده'}</h1>
+        <p role="status">در حال دریافت اطلاعات…</p>
+        <button onClick={() => run(load)}>تلاش دوباره</button>
+      </section>
+    )
+  const categories = managed.categories || [],
+    collections = managed.collections || [],
+    requests = managed.product_requests || []
+  return (
+    <section>
+      <div className="section-title">
+        <div>
+          <p className="eyebrow">عملیات دیدار گلد</p>
+          <h1>{admin ? 'مدیریت بازار دیدار' : 'پنل تأمین‌کننده'}</h1>
+        </div>
+        <button onClick={() => run(load)} disabled={busy}>
+          تازه‌سازی مدیریت
+        </button>
+      </div>
+      <p className="muted">
+        وزن بر حسب میلی‌گرم، قیمت بر حسب ریال و درصدها بر حسب صدم درصد (۷۰۰ =
+        ۷٪). موجودی، تعداد قابل فروش است و شامل قطعات رزروشده نیست.
+      </p>
+      <nav className="manage-tabs" aria-label="بخش‌های مدیریت">
+        {[
+          ['inventory', 'موجودی و عرضه'],
+          ['catalog', admin ? 'کاتالوگ و تصاویر' : 'درخواست محصول'],
+          ...(admin
+            ? [
+                ['suppliers', 'تأمین‌کنندگان'],
+                ['settings', 'نرخ و تنظیمات'],
+                ['audit', 'گزارش تغییرات'],
+              ]
+            : []),
+        ].map(([k, l]) => (
+          <button
+            key={k}
+            className={tab === k ? 'selected' : ''}
+            aria-pressed={tab === k}
+            onClick={() => setTab(k)}
+          >
+            {l}
+          </button>
+        ))}
+        <Link href="/orders">سفارش‌ها و ارسال</Link>
+      </nav>
+      {!admin &&
+        managed.suppliers?.map((s: any) => (
+          <div className="notice" key={s.id}>
+            وضعیت تأمین‌کننده {s.name}:{' '}
+            <strong>
+              {s.status === 'pending'
+                ? 'در انتظار تأیید'
+                : states[s.status] || s.status}
+            </strong>{' '}
+            · {s.active ? 'فعال' : 'غیرفعال'}
+            {s.status !== 'approved' && (
+              <p>
+                ثبت درخواست محصول، موجودی و فروش پس از تأیید مدیر فعال می‌شود.
+              </p>
+            )}
+          </div>
+        ))}
+      {tab === 'inventory' && (
+        <>
+          <form
+            className="card form-grid"
+            data-testid="new-offer-form"
+            onSubmit={submit(async (f) =>
+              mutate(
+                {
+                  kind: 'new_offer',
+                  product_id: f.get('product_id'),
+                  ...(admin ? { supplier_id: f.get('supplier_id') } : {}),
+                  weight_mg: num(f, 'weight_mg'),
+                  quantity: num(f, 'quantity'),
+                  labor_irr: num(f, 'labor_irr'),
+                  labor_bps: num(f, 'labor_bps'),
+                  labor_mode: f.get('labor_mode'),
+                  margin_bps: num(f, 'margin_bps'),
+                  terms: f.get('terms'),
+                  active: true,
+                },
+                'عرضه شما ثبت شد.',
+              ),
+            )}
+          >
+            <h2>{admin ? 'عرضه با وزن دقیق' : 'عرضه در کاتالوگ مشترک'}</h2>
+            <label>
+              محصول
+              <select name="product_id" required>
+                {managed.products.map((p: Product) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {admin && (
+              <label>
+                تأمین‌کننده
+                <select name="supplier_id" required>
+                  {managed.suppliers.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} · {states[s.status] || s.status}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <Field
+              name="weight_mg"
+              label="وزن میلی‌گرم"
+              type="number"
+              min={1}
+              max={1000000}
+            />
+            <Field
+              name="quantity"
+              label="تعداد قابل فروش"
+              type="number"
+              min={0}
+              max={100000}
+            />
+            <label>
+              روش اجرت
+              <select name="labor_mode">
+                <option value="fixed">مبلغ ثابت</option>
+                <option value="percent">درصد اصل طلا</option>
+              </select>
+            </label>
+            <Field
+              name="labor_irr"
+              label="اجرت ریال"
+              type="number"
+              min={0}
+              value={0}
+            />
+            <Field
+              name="labor_bps"
+              label="اجرت درصدی bps"
+              type="number"
+              min={0}
+              max={10000}
+              value={0}
+            />
+            <Field
+              name="margin_bps"
+              label="سود bps"
+              type="number"
+              min={0}
+              max={10000}
+              value={managed.rate.default_margin_bps ?? 700}
+            />
+            <label>
+              شرایط تأمین
+              <textarea name="terms" maxLength={1000} />
+            </label>
+            <button
+              className="primary"
+              disabled={busy || !managed.products.length}
+            >
+              {admin ? 'ثبت عرضه' : 'ثبت عرضه من'}
+            </button>
+          </form>
+          {managed.products.map(
+            (p: Product) =>
+              p.offers.length > 0 && (
+                <article className="order" key={p.id}>
+                  <h2>{p.title}</h2>
+                  {p.offers.map((o: Offer) => (
+                    <form
+                      className="inventory-form"
+                      key={o.id + ':' + o.version}
+                      data-offer-id={o.id}
+                      onSubmit={submit(async (f) =>
+                        mutate(
+                          {
+                            kind: 'offer',
+                            id: o.id,
+                            version: o.version,
+                            quantity: num(f, 'quantity'),
+                            labor_irr: num(f, 'labor'),
+                            labor_bps: num(f, 'labor_bps'),
+                            labor_mode: f.get('labor_mode'),
+                            margin_bps: num(f, 'margin'),
+                            terms: f.get('terms'),
+                            active: f.get('active') === 'on',
+                          },
+                          'موجودی ذخیره شد.',
+                        ),
+                      )}
+                    >
+                      <strong>
+                        {o.supplier} · {weight(o.weight_mg)}
+                      </strong>
+                      <Field
+                        name="quantity"
+                        label="تعداد"
+                        type="number"
+                        min={0}
+                        value={o.quantity}
+                      />
+                      <Field
+                        name="labor"
+                        label="اجرت ریال"
+                        type="number"
+                        min={0}
+                        value={o.labor_irr}
+                      />
+                      <label>
+                        روش اجرت
+                        <select
+                          name="labor_mode"
+                          defaultValue={o.labor_mode || 'fixed'}
+                        >
+                          <option value="fixed">مبلغ ثابت</option>
+                          <option value="percent">درصد اصل طلا</option>
+                        </select>
+                      </label>
+                      <Field
+                        name="labor_bps"
+                        label="اجرت درصدی bps"
+                        type="number"
+                        min={0}
+                        max={10000}
+                        value={o.labor_bps || 0}
+                      />
+                      <Field
+                        name="margin"
+                        label="سود bps"
+                        type="number"
+                        min={0}
+                        max={10000}
+                        value={o.margin_bps}
+                      />
+                      <Field
+                        name="terms"
+                        label="شرایط تأمین"
+                        value={o.terms || ''}
+                        required={false}
+                      />
+                      <label className="check">
+                        <input
+                          name="active"
+                          type="checkbox"
+                          defaultChecked={o.active ?? true}
+                        />
+                        عرضه فعال
+                      </label>
+                      <button disabled={busy}>ذخیره</button>
+                    </form>
+                  ))}
+                </article>
+              ),
+          )}
+        </>
+      )}
+      {tab === 'catalog' && (
+        <>
+          {admin ? (
+            <>
+              <form
+                className="card form-grid"
+                data-testid="product-form"
+                onSubmit={submit(async (f) =>
+                  mutate(
+                    { kind: 'product', ...productData(f) },
+                    'محصول در کاتالوگ ثبت شد.',
+                  ),
+                )}
+              >
+                <h2>محصول مشترک جدید</h2>
+                <ProductFields categories={categories} />
+                <button className="primary" disabled={busy}>
+                  ثبت در کاتالوگ Mercur
+                </button>
+              </form>
+              <div className="admin-grid">
+                <form
+                  className="card"
+                  data-testid="category-form"
+                  onSubmit={submit(async (f) =>
+                    mutate(
+                      {
+                        kind: 'category',
+                        name: f.get('name'),
+                        slug: f.get('slug'),
+                        parent_id: f.get('parent_id') || null,
+                      },
+                      'دسته ذخیره شد.',
+                    ),
+                  )}
+                >
+                  <h2>دسته و زیردسته جدید</h2>
+                  <Field name="name" label="نام دسته" />
+                  <Field name="slug" label="نشانی دسته (slug)" />
+                  <label>
+                    دسته والد
+                    <select name="parent_id">
+                      <option value="">بدون والد</option>
+                      {categories.map((c: any) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button disabled={busy}>ثبت دسته</button>
+                </form>
+                <form
+                  className="card"
+                  data-testid="collection-form"
+                  onSubmit={submit(async (f) =>
+                    mutate(
+                      {
+                        kind: 'collection',
+                        name: f.get('name'),
+                        slug: f.get('slug'),
+                        product_ids: f.getAll('product_ids'),
+                      },
+                      'مجموعه ذخیره شد.',
+                    ),
+                  )}
+                >
+                  <h2>مجموعه جدید</h2>
+                  <Field name="name" label="نام مجموعه" />
+                  <Field name="slug" label="نشانی مجموعه (slug)" />
+                  <label>
+                    محصولات مجموعه
+                    <select name="product_ids" multiple size={5}>
+                      {managed.products.map((p: Product) => (
+                        <option key={p.id} value={p.id}>
+                          {p.title}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button disabled={busy}>ثبت مجموعه</button>
+                </form>
+              </div>
+              <details className="card">
+                <summary>ویرایش دسته‌ها و مجموعه‌ها</summary>
+                {categories.map((c: any) => (
+                  <form
+                    key={c.id}
+                    className="inline-form"
+                    onSubmit={submit(async (f) =>
+                      mutate({
+                        kind: 'category',
+                        id: c.id,
+                        name: f.get('name'),
+                        slug: f.get('slug'),
+                        parent_id: f.get('parent_id') || null,
+                      }),
+                    )}
+                  >
+                    <Field name="name" label="نام دسته" value={c.name} />
+                    <Field name="slug" label="نشانی دسته" value={c.slug} />
+                    <label>
+                      والد
+                      <select name="parent_id" defaultValue={c.parent_id || ''}>
+                        <option value="">بدون والد</option>
+                        {categories
+                          .filter((x: any) => x.id !== c.id)
+                          .map((x: any) => (
+                            <option key={x.id} value={x.id}>
+                              {x.name}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <button disabled={busy}>ذخیره دسته</button>
+                  </form>
+                ))}
+                {collections.map((c: any) => (
+                  <form
+                    key={c.id}
+                    className="inline-form"
+                    onSubmit={submit(async (f) =>
+                      mutate({
+                        kind: 'collection',
+                        id: c.id,
+                        name: f.get('name'),
+                        slug: f.get('slug'),
+                        product_ids: f.getAll('product_ids'),
+                      }),
+                    )}
+                  >
+                    <Field name="name" label="نام مجموعه" value={c.name} />
+                    <Field name="slug" label="نشانی مجموعه" value={c.slug} />
+                    <label>
+                      محصولات
+                      <select
+                        name="product_ids"
+                        multiple
+                        defaultValue={c.product_ids || []}
+                        size={4}
+                      >
+                        {managed.products.map((p: Product) => (
+                          <option key={p.id} value={p.id}>
+                            {p.title}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button disabled={busy}>ذخیره مجموعه</button>
+                  </form>
+                ))}
+              </details>
+              {managed.products.map((p: Product) => (
+                <details
+                  className="card product-editor"
+                  key={p.id}
+                  data-product-id={p.id}
+                >
+                  <summary>
+                    {p.title} · {p.published ? 'منتشر شده' : 'پیش‌نویس'} ·{' '}
+                    {p.active ? 'فعال' : 'غیرفعال'}
+                  </summary>
+                  <form
+                    className="form-grid"
+                    onSubmit={submit(async (f) =>
+                      mutate(
+                        { kind: 'product', id: p.id, ...productData(f) },
+                        'محصول ویرایش شد.',
+                      ),
+                    )}
+                  >
+                    <ProductFields p={p} categories={categories} />
+                    <button className="primary" disabled={busy}>
+                      ذخیره محصول
+                    </button>
+                  </form>
+                  <ImageManager product={p} mutate={mutate} />
+                </details>
+              ))}
+            </>
+          ) : (
+            <form
+              className="card form-grid"
+              data-testid="product-request-form"
+              onSubmit={submit(async (f) =>
+                mutate(
+                  { kind: 'product_request', ...productData(f) },
+                  'درخواست محصول برای بررسی مدیر ثبت شد.',
+                ),
+              )}
+            >
+              <h2>درخواست محصول جدید</h2>
+              <p>محصول پس از بررسی مدیر به کاتالوگ مشترک اضافه می‌شود.</p>
+              <ProductFields categories={categories} request />
+              <button className="primary" disabled={busy}>
+                ارسال درخواست محصول
+              </button>
+            </form>
+          )}
+          <h2>درخواست‌های محصول</h2>
+          {!requests.length && (
+            <p className="empty">درخواست محصولی ثبت نشده است.</p>
+          )}
+          {requests.map((r: any) => (
+            <article className="card" key={r.id} data-request-id={r.id}>
+              <h3>
+                {r.title ||
+                  r.payload?.title ||
+                  r.data?.title ||
+                  'درخواست محصول'}
+              </h3>
+              <p>
+                {r.description || r.payload?.description || r.data?.description}
+              </p>
+              <p>
+                {r.supplier_name || r.supplier} ·{' '}
+                {r.status === 'pending' ? 'در انتظار بررسی' : states[r.status]}
+              </p>
+              {r.reason && <p>دلیل بررسی: {r.reason}</p>}
+              {admin && r.status === 'pending' && (
+                <form
+                  onSubmit={submit(async (f) =>
+                    mutate(
+                      {
+                        kind: 'review_request',
+                        id: r.id,
+                        decision: f.get('decision'),
+                        reason: f.get('reason'),
+                      },
+                      'درخواست بررسی شد.',
+                    ),
+                  )}
+                >
+                  <label>
+                    تصمیم
+                    <select name="decision">
+                      <option value="approved">تأیید</option>
+                      <option value="rejected">رد</option>
+                    </select>
+                  </label>
+                  <Field name="reason" label="توضیح بررسی" required={false} />
+                  <button disabled={busy}>ثبت تصمیم درخواست</button>
+                </form>
+              )}
+            </article>
+          ))}
+        </>
+      )}
+      {tab === 'suppliers' && admin && (
+        <>
+          <form
+            className="card"
+            onSubmit={submit(async (f) =>
+              mutate(
+                { kind: 'supplier', name: f.get('name') },
+                'تأمین‌کننده ایجاد شد.',
+              ),
+            )}
+          >
+            <h2>تأمین‌کننده جدید</h2>
+            <Field name="name" label="نام تأمین‌کننده" />
+            <button disabled={busy}>ثبت تأمین‌کننده</button>
+            <p className="muted">
+              تأمین‌کنندگان می‌توانند از صفحه عضویت حساب خود را ثبت کنند. حساب
+              مدیر فقط با ابزار امن ایجاد می‌شود.
+            </p>
+          </form>
+          {managed.suppliers.map((s: any) => (
+            <article className="card" key={s.id} data-supplier-id={s.id}>
+              <h2>{s.name}</h2>
+              <p>
+                {s.status === 'pending'
+                  ? 'در انتظار تأیید'
+                  : states[s.status] || s.status}{' '}
+                · {s.active ? 'فعال' : 'غیرفعال'}
+              </p>
+              <code>{s.id}</code>
+              <div className="actions">
+                {s.status !== 'approved' && (
+                  <button
+                    className="primary"
+                    disabled={busy}
+                    onClick={() =>
+                      run(() =>
+                        mutate(
+                          {
+                            kind: 'supplier_state',
+                            id: s.id,
+                            status: 'approved',
+                            active: true,
+                          },
+                          'تأمین‌کننده تأیید شد.',
+                        ),
+                      )
+                    }
+                  >
+                    تأیید تأمین‌کننده
+                  </button>
+                )}
+                <button
+                  disabled={busy}
+                  onClick={() =>
+                    run(() =>
+                      mutate({
+                        kind: 'supplier_state',
+                        id: s.id,
+                        status: s.status,
+                        active: !s.active,
+                      }),
+                    )
+                  }
+                >
+                  {s.active ? 'غیرفعال کردن' : 'فعال کردن'}
+                </button>
+                {s.status !== 'rejected' && (
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      run(() =>
+                        mutate({
+                          kind: 'supplier_state',
+                          id: s.id,
+                          status: 'rejected',
+                          active: false,
+                        }),
+                      )
+                    }
+                  >
+                    رد تأمین‌کننده
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+        </>
+      )}
+      {tab === 'settings' && admin && (
+        <form
+          className="card form-grid"
+          data-testid="rate-form"
+          key={managed.rate.version}
+          onSubmit={submit(async (f) =>
+            mutate(
+              {
+                kind: 'rate',
+                rate_irr: num(f, 'rate'),
+                tax_bps: num(f, 'tax'),
+                fee_irr: num(f, 'fee_irr'),
+                rounding_step: num(f, 'rounding_step'),
+                default_margin_bps: num(f, 'default_margin_bps'),
+              },
+              'نرخ ذخیره شد.',
+            ),
+          )}
+        >
+          <h2>نرخ و مالیات</h2>
+          <p>
+            منبع: دستی. این مقادیر نمونه تجاری هستند و پیش از فروش واقعی نیازمند
+            تأیید مالک و بررسی حقوقی‌اند.
+          </p>
+          <Field
+            name="rate"
+            label="ریال / گرم"
+            type="number"
+            min={1}
+            value={managed.rate.rate_irr}
+          />
+          <Field
+            name="tax"
+            label="مالیات (bps)"
+            type="number"
+            min={0}
+            max={10000}
+            value={managed.rate.tax_bps}
+          />
+          <Field
+            name="fee_irr"
+            label="هزینه ثابت ریال"
+            type="number"
+            min={0}
+            value={managed.rate.fee_irr || 0}
+          />
+          <Field
+            name="rounding_step"
+            label="گام گرد کردن ریال"
+            type="number"
+            min={1}
+            value={managed.rate.rounding_step || 1}
+          />
+          <Field
+            name="default_margin_bps"
+            label="سود پیش‌فرض bps"
+            type="number"
+            min={0}
+            max={10000}
+            value={managed.rate.default_margin_bps ?? 700}
+          />
+          <button className="primary" disabled={busy}>
+            ذخیره نرخ
+          </button>
+        </form>
+      )}
+      {tab === 'audit' && admin && (
+        <div className="card">
+          <h2>گزارش تغییرات و عملیات</h2>
+          <p>تغییرات موجودی، سفارش و پرداخت در دفتر دیدار ثبت می‌شوند.</p>
+          <div className="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>زمان</th>
+                  <th>عملیات</th>
+                  <th>عامل</th>
+                  <th>جزئیات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(managed.audits || managed.audit || []).map((a: any) => (
+                  <tr key={a.id}>
+                    <td>{date(a.created_at)}</td>
+                    <td dir="ltr">{a.action}</td>
+                    <td>
+                      <code>{a.actor_id || 'سیستم'}</code>
+                    </td>
+                    <td>
+                      <pre>{JSON.stringify(a.details, null, 2)}</pre>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}
+function ImageManager({
+  product: p,
+  mutate,
+}: {
+  product: Product
+  mutate: (d: any, s?: string) => Promise<void>
+}) {
+  const { run, busy } = useDidar()
+  return (
+    <div className="image-manager">
+      <h3>تصاویر واقعی محصول</h3>
+      <p className="muted">
+        فقط تصویر واقعی و مجاز بارگذاری کنید. PNG، JPEG یا WebP تا ۷۶۸ کیلوبایت؛
+        حداکثر ۱۰ تصویر.
+      </p>
+      <form
+        className="inline-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          const f = new FormData(e.currentTarget)
+          run(async () => {
+            const file = f.get('file') as File
+            if (!file || !file.size) throw new Error('تصویر را انتخاب کنید.')
+            if (
+              file.size > 768 * 1024 ||
+              !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)
+            )
+              throw new Error('فرمت یا اندازه تصویر مجاز نیست.')
+            const data = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(String(reader.result).split(',')[1])
+              reader.onerror = () => reject(new Error('خواندن تصویر ممکن نشد.'))
+              reader.readAsDataURL(file)
+            })
+            await mutate(
+              {
+                kind: 'image_upload',
+                product_id: p.id,
+                data,
+                mime_type: file.type,
+                alt: f.get('alt'),
+              },
+              'تصویر بارگذاری شد.',
+            )
+          })
+        }}
+      >
+        <label>
+          فایل تصویر
+          <input
+            aria-label={'بارگذاری تصاویر ' + p.title}
+            type="file"
+            name="file"
+            accept="image/png,image/jpeg,image/webp"
+            required
+          />
+        </label>
+        <Field name="alt" label="توضیح تصویر" />
+        <button disabled={busy}>بارگذاری تصویر</button>
+      </form>
+      <div className="image-grid">
+        {p.images?.map((im) => (
+          <div className="card" key={im.id}>
+            <ImageAsset
+              src={im.url}
+              alt={im.alt || p.title}
+              privateImage={p.active === false || p.published === false}
+            />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                const f = new FormData(e.currentTarget)
+                run(() =>
+                  mutate(
+                    {
+                      kind: 'image_update',
+                      id: im.id,
+                      alt: f.get('alt'),
+                      position: num(f, 'position'),
+                    },
+                    'تصویر ویرایش شد.',
+                  ),
+                )
+              }}
+            >
+              <Field name="alt" label="توضیح تصویر" value={im.alt} />
+              <Field
+                name="position"
+                label="ترتیب تصویر"
+                type="number"
+                min={0}
+                max={99}
+                value={im.position}
+              />
+              <button disabled={busy}>ذخیره تصویر</button>
+            </form>
+            <button
+              disabled={busy}
+              onClick={() =>
+                run(() =>
+                  mutate({ kind: 'image_delete', id: im.id }, 'تصویر حذف شد.'),
+                )
+              }
+            >
+              حذف تصویر
+            </button>
+          </div>
+        ))}
+      </div>
+      {!p.images?.length && (
+        <p>هنوز تصویری برای این محصول بارگذاری نشده است.</p>
+      )}
+    </div>
+  )
+}
