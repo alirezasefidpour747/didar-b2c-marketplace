@@ -14,7 +14,7 @@ Target an **existing, eligible Ubuntu ARM64 VM.Standard.A1.Flex** staging VM: re
 
 1. In Oracle Console, confirm an Always Free eligible Ampere A1 VM is available in the eligible region and within your **remaining account-wide** free allowance. Use Ubuntu ARM64, 2 OCPUs and 12 GB memory. A 50 GB boot volume must also fit the remaining free storage allowance. Do not select paid shapes, exceed quota, add paid storage/backups, buy a domain, add a load balancer or choose a paid fallback when capacity is unavailable. The repository does not create any of these resources.
 2. Ensure Docker Engine with Compose v2, Python 3, `tar`, and at least 20 GiB free build disk exist on the VM. Use the normal Ubuntu Docker installation procedure. Only SSH ingress is needed for the default deployment; application/database ports remain private. Confirm the VM is a dedicated staging host. Through the trusted console, create `/etc/didar-staging-only` containing exactly `didar-staging-only`; the deployment script never creates this marker and refuses unmarked hosts before uploading source. Verify its SSH host fingerprint through a trusted Oracle Console channel and add it to `known_hosts`.
-3. From a machine with source code and authorized SSH access, export `OCI_STAGING_HOST` (IP/DNS), `OCI_STAGING_SSH_KEY` (path to an existing secure key), and `OCI_ALWAYS_FREE_CONFIRMED=yes` **after checking eligibility and account quota**. Never send key contents in chat. Run:
+3. From a machine with source code and authorized SSH access, export `OCI_STAGING_HOST` (IP/DNS), `OCI_STAGING_SSH_KEY` (path to an existing secure key outside the source checkout), and `OCI_ALWAYS_FREE_CONFIRMED=yes` **after checking eligibility and account quota**. Never send key contents in chat. Run:
 
    ```sh
    bash deploy/oracle/deploy-ssh.sh
@@ -39,7 +39,7 @@ Target an **existing, eligible Ubuntu ARM64 VM.Standard.A1.Flex** staging VM: re
 
 ## Important architecture rule
 
-Never ship this machine's x64 prepared images, `node_modules`, or compiled standalone output to A1. The native ARM source build selects the correct optional artifacts from the frozen lockfile. `compose.arm64.yaml` pins all four application services and migration to linux/arm64. The SSH upload excludes machine-specific dependencies and outputs.
+Never ship this machine's x64 prepared images, `node_modules`, or compiled standalone output to A1. The native ARM source build selects the correct optional artifacts from the frozen lockfile. `compose.arm64.yaml` pins all four application services and migration to linux/arm64. The SSH upload sends committed HEAD through git archive, excluding untracked credentials and machine-specific dependencies/outputs. Commit intended source changes before deploying.
 
 The source Docker build may need registries to recover from HTTP 503. The prepared-image fallback is for an already-built checkout on the **same architecture**, not cross-architecture deployment. Native manifest checks and functional readiness checks must succeed before reporting Oracle ARM staging as verified.
 
