@@ -1,0 +1,117 @@
+Gate 5 predecessor: 9de843c56487ce4a06200682adebe359d41433a1
+Full production build passed in gate5-tests.log; final unchanged source/output/platform receipt verified.
+Only disposable QA database restarted; fourteen complete history-table fingerprints matched. MAC_UAT_PENDING; concrete Tahesab BLOCKED_BY_SPEC.
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [1.12ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.36ms]
+(pass) local tooling rejects staging environment [0.07ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.04ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.32ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.23ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.07ms]
+(pass) preflight refuses an occupied port without terminating its owner [6.73ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [38.22ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.20ms]
+(pass) failed child verification preserves the nonzero result [28.93ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.63ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.33ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.12ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [1.76ms]
+(pass) gold-first legacy making compatibility uses additive base margin and IRR tax [0.44ms]
+(pass) fractional gram uses integer upward rial rounding [0.10ms]
+(pass) tax excludes gold principal [0.04ms]
+(pass) invalid quantities and rates cannot enter arithmetic [0.08ms]
+(pass) percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts [0.04ms]
+(pass) default margin is configurable while an explicit zero margin stays zero [0.45ms]
+(pass) invalid commercial policy cannot silently influence customer totals [0.06ms]
+(pass) exact grouped stock permits the last piece but never an oversell [0.06ms]
+(pass) fractional, unsafe and invalid stock requests cannot be reserved [0.28ms]
+(pass) only pending reservations expire, including the exact expiry boundary [0.09ms]
+(pass) public demo identities require explicit local runtime, independent of build mode [0.13ms]
+(pass) payment selection fails closed for production, missing environment and live modes [0.11ms]
+(pass) live Iranian gateway boundary never initiates an unconfigured charge [0.11ms]
+(pass) sandbox authority has no money movement and rejects invalid money [0.21ms]
+(pass) password verification handles corrupt records without crashing and uses unique salted hashes [122.08ms]
+(pass) anonymous and customer users cannot change stock or rate [12.03ms]
+(pass) supplier cannot update or read another supplier inventory [21.57ms]
+(pass) supplier creates exact-weight offer only under own identity [51.06ms]
+(pass) stock reserve is idempotent and failed payment restores exactly once [39.82ms]
+(pass) stale prices, fractional quantities and duplicate lines rejected [23.72ms]
+(pass) two concurrent purchases cannot oversell and paid stock remains deducted [58.86ms]
+(pass) one checkout spans suppliers with isolated order views [149.86ms]
+(pass) expired reservation is released, cannot become paid [41.09ms]
+(pass) supplier registration requires admin approval and cannot self-approve [44.20ms]
+(pass) admin category and product edits persist publication controls [258.73ms]
+(pass) subcategory hierarchy rejects cycles and collection membership is editable [30.90ms]
+(pass) product images require admin authorization and matching image bytes [58.48ms]
+(pass) supplier manages multiple weights, deactivates an offer, and cannot alter another supplier [106.01ms]
+(pass) supplier product requests remain pending until admin review [33.75ms]
+(pass) approved supplier product request becomes one shared native-linked product [116.28ms]
+(pass) stock edits during a reservation count available pieces and release exactly once [50.95ms]
+(pass) payment initialization and concurrent callbacks are idempotent and owner scoped [81.40ms]
+(pass) expired initialized payment releases stock and cannot confirm successfully [47.26ms]
+(pass) paid allocation progresses through valid fulfillment and protects customer privacy [96.31ms]
+(pass) product purity edits invalidate old offers without changing paid pricing snapshots [97.59ms]
+(pass) profile updates are private, validated and logout revokes the session [14.16ms]
+(pass) mandatory 100g Gold-First 12+3+7, IRR VAT and fixed equivalent making are additive [0.57ms]
+(pass) all eight supplier mutations default denied; grants revoke immediately; reads isolated [405.52ms]
+(pass) 19 separately measured items reconcile 5/135g, 2/127g, 12/117g; mismatch and unverified stock blocked [305.03ms]
+(pass) EPC normalization, global uniqueness, audited replacement and independent pairing grant [84.40ms]
+(pass) count snapshot deduplicates five EPCs and UID aliases, flags missing/unknown, never changes stock [75.67ms]
+(pass) failed, cancelled and expired payments release the identical UID exactly once [99.37ms]
+(pass) concurrent checkout reserves/sells one exact UID; immutable pricing and supplier fulfillment permission [100.87ms]
+(pass) physical return quarantines then restocks once; old callback never re-sells returned UID [67.92ms]
+(pass) physical identity and posted source are database protected, legacy stock remains unserialized [41.90ms]
+(pass) UID and active EPC uniqueness spans suppliers, with no competitor disclosure [38.85ms]
+(pass) expiry sweep releases item UID exactly once and stock correction is independently authorized/audited [67.51ms]
+(pass) explicit tolerance is versioned, admin-only, reason required, quantity exceptions still forbidden [63.78ms]
+(pass) equal-weight physical units share a derived offer and reserve/release an exact set for quantity two [81.82ms]
+(pass) voided physical UID remains permanent; authorized unpair releases its tag without recreating stock [41.08ms]
+(pass) supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it [38.72ms]
+(pass) clean and repeat additive migrations preserve legacy stock and paid snapshots without invented units [198.94ms]
+(pass) Gate 1: contract-independent supplier entitlement uses exact fine gold, not customer margin/VAT [0.43ms]
+(pass) Gate 1: requests scoped, approval admin-only, future contracts not silently activated [29.27ms]
+(pass) Gate 1: intake creates no debt, verified payment is exactly once and checkout terms survive amendments [120.51ms]
+(pass) Gate 1: statements scoped and append-only; return-gated refund reverses without deleting history [61.34ms]
+(pass) Gate 1: effective rial contract and Didar-owned inventory never generate fictional external gold payable [143.64ms]
+(pass) Gate 1: additive migration replay preserves existing UID and price snapshots and creates no historical exposure [8.63ms]
+(pass) Gate 2: paid requests, two purchases/multiple allocations, separate title/custody and partial mixed settlement [748.77ms]
+(pass) Gate 2: concurrent over-allocation rejected, unexecuted facts reverse append-only and refunded request cannot be allocated [410.08ms]
+(pass) Gate 2: rial-only contracts remain actionable without a gold procurement request; migrations preserve facts [366.08ms]
+(pass) Gate 3: payable-to-wallet is one liability; pending/available/reserved/pledged and concurrent spending are enforced [395.95ms]
+(pass) Gate 3: database rejects unbalanced journals, wallet overdraft, posting edits and replayed projections [365.84ms]
+(pass) Gate 3: documented Didar-owned jewelry cost, sale COGS and full refund reconcile without fictitious supplier debt [330.18ms]
+(pass) Gate 4 standalone local mock enforces its own envelope, retries idempotently and persists across restart [128.87ms]
+(pass) Gate 4: merchant aggregate ties to journal, separate event types, no buyer/UID/EPC; stable close and retry intent [397.40ms]
+(pass) Gate 4: strict versioned envelope, Jalali dates, spec blocker and replay-safe migrations [16.26ms]
+(pass) Gate 5: one integrated 5/135g + 2/127g + 12/117g +100g UID/RFID sale, mixed finance, wallet, mock close and refund [784.74ms]
+(pass) Gate 5: disposable PostgreSQL restart preserves all physical, historical and financial rows and reconnects the API [1052.01ms]
+(pass) Gate 5 Mac UAT preparation creates an isolated exact 20-UID dataset and repeat keeps business records unchanged [1283.29ms]
+(pass) Gate 5 Persian integer formatting preserves IRR beyond JavaScript safe-number precision [0.87ms]
+ 93 pass
+ 0 fail
+ 1055 expect() calls
+PASS integration-tests/http/health.spec.ts
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+  ✓   1 tests/browser/acceptance.spec.ts:2:5 › Gate 5 Persian reconciliation screen records DB-derived checks without claiming Mac or live financial acceptance (1.3s)
+  ✓   2 tests/browser/expiry.spec.ts:43:5 › expired reservation is shown to the customer and restores available pieces (2.0s)
+  ✓   3 tests/browser/finance.spec.ts:2:5 › Gate 1 Persian finance: admin contract request/review and supplier isolation (3.1s)
+  ✓   4 tests/browser/marketplace.spec.ts:2:5 › RTL catalog, supplier comparison, login, checkout and payment (1.3s)
+  ✓   5 tests/browser/marketplace.spec.ts:44:5 › supplier interface displays only owned stock (747ms)
+  ✓   6 tests/browser/marketplace.spec.ts:59:5 › admin interface manages gold rate and catalog (985ms)
+  ✓   7 tests/browser/marketplace.spec.ts:81:5 › mobile RTL catalog and product detail fit the viewport (594ms)
+  ✓   8 tests/browser/operational.spec.ts:65:5 › admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered (9.6s)
+  ✓   9 tests/browser/phase1.spec.ts:43:5 › admin UI creates supplier/product, weighs and tags units, posts stock; supplier read-only; real UID sale and RFID variance (8.0s)
+  ✓  10 tests/browser/proxy.spec.ts:4:5 › storefront proxy rejects oversized chunked JSON before forwarding to the API (22ms)
+  ✓  11 tests/browser/tahesab.spec.ts:2:5 › Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempotent, vendor mapping remains blocked (4.1s)
+  ✓  12 tests/browser/treasury.spec.ts:2:5 › Gate 2 treasury UI records and approves a synthetic purchase through real APIs (4.0s)
+  ✓  13 tests/browser/wallet.spec.ts:11:5 › Gate 3 Persian wallet UI funds/releases synthetic money and customer reserves without admin funding privileges (3.1s)
+  13 passed (40.2s)
+Cloud/local automated verification passed. MAC_UAT_PENDING until the owner completes native Mac acceptance. RFID hardware remains unverified.

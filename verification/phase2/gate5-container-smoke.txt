@@ -1,0 +1,2 @@
+Container smoke: additive migrations and synthetic seed in separate private QA PostgreSQL.
+PASS: PostgreSQL/Redis private; compiled API + Next proxy + all six finance APIs healthy; application roots read-only; app ports loopback-only. Current prepared artifacts mounted read-only. No image build or native ARM/Mac claim.

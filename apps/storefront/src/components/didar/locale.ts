@@ -1,7 +1,9 @@
 // All formatters and navigation copy are centralized for a later English locale.
 export const locale = 'fa-IR'
 export const number = (n: number | string) =>
-  new Intl.NumberFormat(locale).format(Number(n))
+  new Intl.NumberFormat(locale).format(
+    typeof n === 'string' && /^-?\d+$/.test(n) ? BigInt(n) : Number(n),
+  )
 export const money = (n: number | string) => number(n) + ' ریال'
 export const weight = (n: number) =>
   new Intl.NumberFormat(locale, {
@@ -42,6 +44,22 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  CONFLICT_NO_UNEXPORTED_EVENTS:
+    'رویداد مالی تازه‌ای در این دوره وجود ندارد؛ دوره، تأمین‌کننده و خروجی قبلی را بررسی کنید.',
+  CONFLICT_MAPPING_REQUIRED:
+    'پیش از بستن دوره، نگاشت آزمایشی حساب تأمین‌کننده را ثبت کنید.',
+  CONFLICT_WALLET_OVERDRAFT:
+    'مانده آزاد کافی نیست؛ وجوه رزرو یا وثیقه قابل خرج نیستند.',
+  CONFLICT_OVER_ALLOCATION: 'مقدار تخصیص بیش از ظرفیت خرید یا تعهد است.',
+  CONFLICT_OVER_SETTLEMENT: 'مقدار تسویه بیش از مانده مجاز است.',
+  CONFLICT_TITLE_AND_CUSTODY_REQUIRED:
+    'پیش از تسویه طلا، انتقال مالکیت و وضعیت فیزیکی را مستقل تأیید کنید.',
+  CONFLICT_APPROVAL_REQUIRED:
+    'تأیید درخواست و خرید یا سند مالکیت خرید هنوز کامل نیست.',
+  CONFLICT_RETURN_REQUIRED:
+    'برای استرداد آزمایشی، ابتدا مرجوعی فیزیکی را دریافت کنید.',
+  CONFLICT_IDEMPOTENCY: 'این شناسه قبلاً با اطلاعات متفاوت ثبت شده است.',
+
   INVALID_UID:
     'UID باید ۳ تا ۸۰ نویسه شامل حروف لاتین، عدد، خط تیره یا زیرخط باشد.',
   INVALID_EPC: 'EPC باید کد هگز با طول زوج، بین ۸ و ۱۲۸ نویسه باشد.',

@@ -1,3 +1,5 @@
+> Phase 2 update (2026-10-16): the local financial sandbox and one integrated acceptance walkthrough are now implemented. Follow [MAC_UAT_CHECKLIST.md](MAC_UAT_CHECKLIST.md) and [PHASE2_FINANCIAL_CORE.md](PHASE2_FINANCIAL_CORE.md). Statements below that finance is excluded describe the preserved Gate 0/Phase 1 baseline, not the current source delivery. Concrete Tahesab mapping is BLOCKED_BY_SPEC; Mac/RFID acceptance remains pending. Existing setup/preservation commands remain authoritative.
+
 # Didar Gold — Codex Cloud Development, Mac Local Testing (No Oracle)
 
 ## Status and ownership

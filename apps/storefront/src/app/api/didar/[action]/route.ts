@@ -6,6 +6,7 @@ const allowed = new Set([
   'wallet',
   'ledger',
   'tahesab',
+  'acceptance',
   'me',
   'login',
   'register',

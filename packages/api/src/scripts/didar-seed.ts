@@ -1,5 +1,5 @@
-import {projectExisting} from "../didar/finance-ledger";
-import {transaction} from "../didar/db";
+import { projectExisting } from "../didar/finance-ledger";
+import { transaction } from "../didar/db";
 import type { ExecArgs } from "@medusajs/framework/types";
 import { createProductsWorkflow } from "@mercurjs/core/workflows";
 import { db } from "../didar/db";
@@ -25,10 +25,36 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
-  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-schema.sql"), "utf8"));
-  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-procurement-schema.sql"), "utf8"));
-  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-ledger-schema.sql"), "utf8"));
-  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/tahesab-schema.sql"), "utf8"));
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/finance-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/finance-procurement-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/finance-ledger-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/tahesab-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/finance-uat-schema.sql"),
+      "utf8",
+    ),
+  );
   await transaction(projectExisting);
   for (const [id, name] of [
     ["s1", "زرین دیدار"],

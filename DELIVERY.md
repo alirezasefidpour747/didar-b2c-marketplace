@@ -1,3 +1,25 @@
+## Gate 5 Linux release verification and Mac preparation — 2026-10-16
+
+**Published financial sandbox scope:** Gates 1–3 implemented; Gate 4 provider-independent mock/dry-run implemented, **concrete Tahesab mapping BLOCKED_BY_SPEC**; Gate 5 integrated Linux verification and Persian Mac preparation implemented. **MAC_UAT_PENDING / REAL_RFID_PENDING / accounting sign-off pending. The entire roadmap is not declared complete while these acceptance dependencies remain.** Gate 0 was already complete and was not reimplemented.
+
+New Gate 5 slice: additive `finance-uat-schema.sql`, DB-derived reconciliation/checkpoint service and `/didar/acceptance`, Persian `/manage/acceptance`; `uat:prepare` creates/reuses an isolated synthetic 20-UID dataset through real APIs; `docs/MAC_UAT_CHECKLIST.md` provides one complete Persian walkthrough. Existing financial modules were formatted for review. Persian integer rendering now preserves IRR beyond Number.MAX_SAFE_INTEGER. Pool idle errors reconnect after PostgreSQL restart. Disposable QA containers reserve explicit random loopback ports so Docker restart cannot silently change their API database endpoint; no persistent owner configuration changed.
+
+| Final verification | Actual result |
+|---|---|
+| Backend/workflow/security/migration/mock/integrated suites | **93 passed, 1055 assertions, zero failures/skips** |
+| Native Medusa HTTP test | **1 passed** |
+| Complete production Playwright suite | **13 passed** |
+| Official route generation, native panels, API and Next production builds | Passed; final source/output/platform receipt still matches |
+| Full financial journey | Exact 5/135g +2/127g +12/117g +100g UID/EPC intake, payment replay, 112g entitlement, mixed procurement/partial settlement, same-liability wallet, aggregate mock close, physical return/refund/restock passed |
+| Persistence and recovery | Actual disposable PostgreSQL restart; complete rows/fingerprints unchanged across **14 physical/commerce/financial history tables**; API reconnect and subsequent UAT preparation passed |
+| Repeatable owner dataset | 20 unique UID/EPC, separate100g master, synthetic own supplier/customer, unpublished products, mixed contract/mapping; repeat success preserves business rows; no automatic trade/payment |
+| Local container runtime/security smoke | Fresh private PostgreSQL/Redis; compiled API + Next proxy + six finance APIs healthy; application filesystem/source read-only; app ports loopback-only; data ports unpublished |
+| Source review | Per-instrument balances, cost/source provenance, idempotency, tenant/cost redaction, additive migrations and live-operation guards reviewed; credential-pattern scan zero findings; whitespace check passed |
+
+Container smoke mounts the same verified prepared artifacts read-only using cached Node24 containers. It is **not** a new production-image build, external deployment or native ARM/Mac claim. The private plain-PostgreSQL URL uses the existing Compose-local sslmode=disable convention; external HTTPS/TLS settings were not weakened. Standalone and integrated accounting mocks never call a real Tahesab service. Production accounting/chart/tax/legal/wallet assumptions remain provisional. Baseline repository history, prices, original stock and configuration were preserved; no Oracle, live financial transaction, volume reset or force push occurred.
+
+Evidence: `verification/phase2/gate5.txt`, `verification/phase2/gate5-container-smoke.txt`, `verification/phase2/build-receipt.json`. Prior gate evidence follows in this file and `verification/phase2/gate1.txt`–`gate4.txt`.
+
 ## Gate 4 offline adapter — CODEX_LINUX_VERIFIED; concrete API BLOCKED_BY_SPEC (2026-10-16)
 
 Implemented `tahesab-schema.sql`, strict `didar-aggregate-v1` validation, deterministic merchant/account/invoice mappings and source-claimed closes, persistent local mock documents, append-only attempts, retries and edited/deleted-document reconciliation. New explicit quantity memo projections distinguish assigned documented procurement, handover and owned receipts without adding a second physical inventory source. Real `/didar/tahesab` + Persian `/manage/tahesab`; optional standalone `tahesab:mock` and local-only nightly dry-run close. Export debit/credit totals match journals and exclude buyer/UID/EPC/order data. Full internal exports are admin-only.

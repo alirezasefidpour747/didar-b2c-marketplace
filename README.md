@@ -1,3 +1,5 @@
+> Phase 2 financial sandbox implementation: [architecture and limits](docs/PHASE2_FINANCIAL_CORE.md), [one integrated Persian Mac UAT](docs/MAC_UAT_CHECKLIST.md), [actual gate evidence](verification/phase2/). Concrete Tahesab mapping remains BLOCKED_BY_SPEC; Mac/RFID acceptance is pending. No real financial operations.
+
 > **Current workflow:** Codex Cloud development → verified GitHub `main` → macOS laptop acceptance on `localhost`. **No Oracle is required for development or testing.** Read [the unified Mac acceptance roadmap](docs/ROADMAP_TO_INTEGRATED_MAC_UAT.md), [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), [local workflow verification](verification/local-first/README.md) and [Phase 1 evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID is merged to `main`; supplier writes default to read-only and Phase 2 finance is excluded. Portable Playwright configuration and local commands are implemented; native Mac UAT remains **MAC_UAT_PENDING**.
 
 # Didar Gold — دیدار گلد

@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -30,7 +30,9 @@ export async function testLocal(processes, { reuseBuild = false } = {}) {
       [0, 'postgres:17-alpine', 5432, ['-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=didar_qa']],
       [1, 'redis:7-alpine', 6379, []],
     ]) {
-      capture('docker', ['run', '-d', '--name', names[index], '--label', 'didar.disposable-qa=true', '-p', `127.0.0.1::${port}`, ...extra, image])
+      // Explicit random loopback port stays stable when this disposable container restarts.
+      const publishedPort = await freePort()
+      capture('docker', ['run', '-d', '--name', names[index], '--label', 'didar.disposable-qa=true', '-p', `127.0.0.1:${publishedPort}:${port}`, ...extra, image])
       created.push(names[index])
     }
     function port(name, internal) {

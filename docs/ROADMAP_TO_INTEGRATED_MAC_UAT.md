@@ -1,9 +1,14 @@
 # DIDAR — Roadmap to One Integrated MacBook UAT
 
-Status: planning and execution gates, **not a claim of implementation**.
+Status: authoritative acceptance criteria. Implemented source and actual verification are in `../DELIVERY.md`; this roadmap alone is not proof of acceptance.
 Repository: `alirezasefidpour747/didar-b2c-marketplace`; canonical reviewed code branch: `main`.
 Testing/deployment decision: **No Oracle, no cloud staging**. Codex Cloud develops and runs its automated Linux/Docker tests; owner executes one consolidated business UAT on their macOS laptop with a persistent, isolated, synthetic dataset. See `docs/LOCAL_FIRST_MAC_WORKFLOW.md`.
 Scope decisions: complete current Phase 1 commerce and lightweight per-item intake; **all supplier finance, purchase requests, melted gold, wallets, GL and Tahesab journal posting are Phase 2**. Do not silently migrate them into Phase 1. Avoid new branches for each discussion; one task branch for substantial code, merge verified increments to main.
+
+## Execution checkpoint — 2026-10-16
+
+Gate 0 was complete before this mission. Gates 1–3 now have additive migrations, backend/API, Persian UI and verified integration coverage. Gate 4's independent aggregate format/local mocks, outbox and nightly dry-run are verified; concrete Tahesab vendor mapping remains **BLOCKED_BY_SPEC** because api-1.json is unavailable. Gate 5's integrated Linux regression, restart/persistence checks, reconciliation UI and Persian `MAC_UAT_CHECKLIST.md` are implemented. Latest source verification: 93 backend/workflow/mock tests /1055 assertions, 1 native HTTP test, 13 browser tests; production build and private/read-only container runtime smoke passed. The entire roadmap is **not** declared complete: native Mac business UAT, physical RFID, professional accounting approval and concrete vendor compatibility remain separately pending. `bun run uat:prepare` prepares the one synthetic owner walkthrough without transactions.
+
 
 ## Current baseline (2026-10-16)
 
