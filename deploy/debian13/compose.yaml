@@ -1,0 +1,109 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: didar
+      POSTGRES_DB: didar
+      POSTGRES_PASSWORD: ${DIDAR_DB_PASSWORD:?Run init-env.mjs}
+    volumes: [postgres:/var/lib/postgresql/data]
+    mem_limit: 1g
+    cpus: 0.75
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U didar -d didar"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    logging: &logging
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: [redis-server, --appendonly, "yes", --maxmemory, 128mb, --maxmemory-policy, noeviction]
+    volumes: [redis:/data]
+    mem_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    logging: *logging
+  migrate:
+    image: ${DIDAR_API_IMAGE:?Use update.sh}
+    build: &api-build
+      context: .
+      dockerfile: .staging/Dockerfile
+      target: api
+      args:
+        MERCUR_BACKEND_URL: http://localhost:19000
+      secrets: [cloud_ca]
+    environment: &api-env
+      DATABASE_URL: postgres://didar:${DIDAR_DB_PASSWORD}@postgres:5432/didar?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?Run init-env.mjs}
+      COOKIE_SECRET: ${COOKIE_SECRET:?Run init-env.mjs}
+      STORE_CORS: http://localhost:13000
+      ADMIN_CORS: http://localhost:19000
+      VENDOR_CORS: http://localhost:19000
+      AUTH_CORS: http://localhost:19000,http://localhost:13000
+      FILE_BACKEND_URL: http://localhost:19000/static
+      DIDAR_ENVIRONMENT: staging
+      DIDAR_SEED_DEMO: "false"
+      DIDAR_PAYMENT_MODE: sandbox
+      DIDAR_PUBLIC_ORIGIN: ""
+      DIDAR_PUBLIC_ORIGIN_VERIFIED: "false"
+      MERCUR_DISABLE_TELEMETRY: "true"
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    command: [sh, -c, "cd packages/api && NODE_ENV=development bun x --no-install medusa db:migrate && NODE_ENV=development bun x --no-install medusa exec ./src/scripts/didar-seed.ts"]
+    volumes: [uploads:/app/packages/api/static]
+    mem_limit: 2g
+    cpus: 1.5
+    logging: *logging
+  api:
+    image: ${DIDAR_API_IMAGE:?Use update.sh}
+    build: *api-build
+    restart: unless-stopped
+    environment: *api-env
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    ports: ["127.0.0.1:19000:9000"]
+    volumes: [uploads:/app/packages/api/.medusa/server/static]
+    mem_limit: 2g
+    cpus: 1.5
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:9000/didar/catalog').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    logging: *logging
+  storefront:
+    image: ${DIDAR_STOREFRONT_IMAGE:?Use update.sh}
+    build:
+      <<: *api-build
+      target: storefront
+    restart: unless-stopped
+    environment:
+      MEDUSA_BACKEND_URL: http://api:9000
+    depends_on:
+      api: {condition: service_healthy}
+    ports: ["127.0.0.1:13000:3000"]
+    mem_limit: 768m
+    cpus: 0.75
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/didar/catalog').then(r=>r.json()).then(d=>process.exit(Array.isArray(d.products)&&d.rate?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    logging: *logging
+volumes:
+  postgres:
+  redis:
+  uploads:
+secrets:
+  cloud_ca:
+    file: ${DIDAR_BUILD_CA:-/etc/ssl/certs/ca-certificates.crt}

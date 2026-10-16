@@ -1,0 +1,83 @@
+{
+  "application_commit": "00447d39ffa64881c35813b5242b95fd356c84bb",
+  "project": "didar-staging-review",
+  "fresh_staging_has_no_demo_users_or_products": true,
+  "health_homepage_panels_and_catalog_proxy": true,
+  "demo_login_denied": true,
+  "operator_provisioning_and_proxy_login": true,
+  "legacy_demo_row_still_denied": true,
+  "migration_replay_preserves_users_passwords_rate_configuration_and_uploads": true,
+  "backup_restored_to_separate_disposable_database": true,
+  "database_redis_restart_and_api_reconnection": true,
+  "running_services": [
+    {
+      "Service": "api",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "postgres",
+      "State": "running",
+      "Health": "starting"
+    },
+    {
+      "Service": "redis",
+      "State": "running",
+      "Health": "starting"
+    },
+    {
+      "Service": "storefront",
+      "State": "running",
+      "Health": "healthy"
+    }
+  ],
+  "status": "passed",
+  "final_healthy_services_and_enforced_limits": [
+    {
+      "service": "api",
+      "health": "healthy",
+      "memory_limit_bytes": 2147483648,
+      "nano_cpus": 1500000000,
+      "ports": {
+        "9000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "19000"
+          }
+        ]
+      },
+      "image_id": "sha256:f223f2b7df8e1fb3c534771304a8c3f5ddbe4c04c2c99986bddf74079c584349"
+    },
+    {
+      "service": "storefront",
+      "health": "healthy",
+      "memory_limit_bytes": 805306368,
+      "nano_cpus": 750000000,
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "13000"
+          }
+        ]
+      },
+      "image_id": "sha256:4ee21dda714d86151b19af3322ae79ce92373744ff4c630631faa7c80e5691e0"
+    },
+    {
+      "service": "postgres",
+      "health": "healthy",
+      "memory_limit_bytes": 1073741824,
+      "nano_cpus": 750000000,
+      "ports": {},
+      "image_id": "sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537"
+    },
+    {
+      "service": "redis",
+      "health": "healthy",
+      "memory_limit_bytes": 268435456,
+      "nano_cpus": 250000000,
+      "ports": {},
+      "image_id": "sha256:f84b0c4678011602b9b98c227a4dcd5468bf8b088b02fdd4165cb7758bad8058"
+    }
+  ]
+}
