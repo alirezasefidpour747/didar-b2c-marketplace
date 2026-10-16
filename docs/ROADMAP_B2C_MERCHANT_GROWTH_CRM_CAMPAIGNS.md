@@ -7,6 +7,12 @@
 **Runtime strategy:** Codex Cloud implements and tests on its available Linux runtime, submits verified changes to GitHub `main`; the owner performs final integrated MacBook UAT on localhost. No Oracle or live financial providers required.
 **Core goal:** One real retailer journey, from acquisition and own product intake to scoped storefront, product sharing, actual sandbox checkout, CRM visibility, campaign attribution and opt-in rewards — without exposing competing retailers or their customers.
 
+## Owner execution strategy v2 — build first (2026-10-16)
+
+**This decision updates implementation PRIORITIES and VALIDATION TIMING, not the feature list.** The authoritative execution addendum is [`EXECUTION_STRATEGY_V2_BUILD_FIRST.md`](EXECUTION_STRATEGY_V2_BUILD_FIRST.md). When the old chronological headings below conflict with the new schedule, the v2 strategy controls: **complete all agreed features before external merchant/customer usability and commercial tests**, while every phase MUST still pass full technical and security tests. Existing owner field/onboarding validation is accepted; no repeated user interviews required to unblock code. Critical Thinking is used to rank by business value, risks and technical dependencies without deleting promised features.
+
+**Stage Phase 2 immediately:** (2A) secure Merchant-scoped product/checkout, (2B) **navy/white luxury design system and first real responsive home/merchant/PDP UI**, and (2C) **minimal retailer-curated 10–20-product share page and safe traceable link**. Later Phase 5 extends this same share foundation into advanced campaigns, without duplicating URLs/data. Phase 4 initially delivers lightweight customer relationships, own purchase history, scoped notes/consents; advanced CRM/growth features stay in Phase 8. Phase 10 remains the **complete dynamic Visual CMS** with video/slider/asymmetric Mosaic, publishing/versioning/rollback, reusing Phase 2B design foundations. Phase 9 is technical Mac UAT, not a customer field pilot; after Phase 10 rerun final integrated technical/visual acceptance, THEN perform external usability/business evaluation separately.
+
 > **MANDATORY:** Inspect fresh main before every phase. Reuse existing classes, auth, modules, migrations and routes. Do not build parallel product/catalog/ledger systems. Complete each phase's **Database → Backend → API → Frontend → Automated Tests → Documentation** gate before marking it delivered. Ship useful vertical slices, not a large disconnected UI mock.
 
 ---
@@ -157,6 +163,8 @@ Work:
 
 ## Phase 2 — Merchant Membership, Scoped Storefront & Own Listings [first visible MVP]
 
+**Owner v2 front-load requirement:** deliver Phase **2A tenant isolation + checkout**, **2B navy/white high-end visual foundation (real Didar B2C homepage, merchant shell, shared header/product cards and responsive PDP)**, and **2C minimal merchant-selected 10–20-product shareable page with safe traceable links** within this early MVP. Full Campaign Engine stays Phase 5, full dynamic Visual CMS stays Phase 10; reuse shared IDs/components. Do not delay features for external customer field tests.
+
 **Outcome:** A retailer can send `/m/shop-a`; visiting customer sees ONLY shop A, signs in on Didar and buys only shop A's eligible offers.
 
 Work:
@@ -185,6 +193,8 @@ Work:
 
 ## Phase 4 — Dual CRM Foundations: Didar Central + Merchant Relationship CRM
 
+**Owner v2 prioritization:** deliver **CRM Lite first**: one central Didar account, one separate merchant-customer relationship per context, customer's authorized own-Merchant purchase history, simple status/notes and contact consent. Avoid complex automation/scoring/segmentation here; Phase 8 extends the same data model for advanced CRM. This is an implementation sequencing choice, not deletion of CRM capabilities.
+
 **Outcome:** One account can interact with multiple Merchants; each sees ONLY its own allowed relationships, Didar sees authorized central analytics.
 
 Work:
@@ -198,6 +208,8 @@ Work:
 **Gate 4:** One Didar Customer buys from A, later B; Didar CRM sees both authorized relations, A only A-related orders/allowed profile, B only B; withdrawal of marketing consent immediately excludes them from send/export; unauthorized API cannot enumerate users.
 
 ## Phase 5 — Curated Share Pages + Merchant Campaign MVP + Global Display
+
+**Owner v2 reuse rule:** **Phase 2C already delivers basic selected-products pages and share links**. Phase 5 must add Merchant and Didar-wide campaign governance, scheduling, analytics and other advanced features by extending **the same share/link schema and storefront context**; do not rebuild a second simple-share implementation.
 
 **Outcome:** Merchant picks 10–20 already-approved own products, publishes a special page, shares it in WhatsApp/Telegram/SMS and sees legitimate views and purchases. Didar can separately run one global visible campaign.
 
@@ -254,6 +266,8 @@ Work:
 
 ## Phase 9 — One integrated local Mac acceptance & handoff
 
+**Owner v2 validation rule:** Phase 9 means technical/operational sandbox acceptance on Mac and preserving data/finance/security, **NOT a public Merchant/customer usability interview or conversion validation gate**. After Phase 10, run final luxury-UI regression and Mac visual acceptance. Schedule external customer usability and business KPI experiments **only after all planned capabilities are implemented and technically verified**.
+
 1. Codex Linux full database/migrations, auth, finance, catalog, API and Playwright verification; source/build receipts and GitHub commit identifiers. Verify on a fresh DB AND an upgraded populated legacy fixture, with repeat migration and restart preservation.
 2. Update `docs/MAC_UAT_CHECKLIST.md` with a **new optional merchant-growth addendum**, preserving the previous 20-UID financial checklist. Seed fully synthetic, isolated 2 Merchants (MFR and RET), 2 Agents, 3 Customers, 2 profiles, 10–20 sample Merchant products only in QA, selected campaigns and contacts with explicit test consent. UAT preparation is idempotent and must not erase persistent owner data.
 3. Owner Mac commands remain supported: `git switch main`, `git pull --ff-only origin main`, `bun run local:setup`, `bun run local:browser`, `bun run local:test`, `bun run local:dev`. Adapt `uat:prepare` safely if needed; no `docker compose down -v`.
@@ -264,6 +278,8 @@ Work:
 
 
 ## Phase 10 — Luxury Experience & Visual CMS / Page Builder [FINAL PHASE]
+
+**Owner v2 staging:** this phase is the **full approved PostgreSQL-backed CMS Page Builder**, media authoring/video-slider/mosaic templates, approvals, scheduling, rollback and final polish. **Do not postpone the premium navy/white design identity, home shell, shared components or mobile storefront UI until Phase 10**: those are Phase 2B deliverables. Preserve all screens and use those early design tokens here.
 
 **Authoritative implementation specification:** [Phase 10: Luxury Visual CMS](PHASE10_LUXURY_VISUAL_CMS.md). **Status at addition: PLANNED, NOT IMPLEMENTED.** Run after Phase 9 functional UAT, then extend and rerun final integrated visual Mac UAT. This is a final distinct phase; previous business features remain the foundation.
 
@@ -389,5 +405,7 @@ Implementation gate requires **Database → Backend → API → Frontend → Tes
 - **Phases 2–8 Merchant-scoped storefront, assisted WebP onboarding, dual CRM, campaigns, staff affiliation, customer referrals, growth center:** `NOT YET CLAIMED IMPLEMENTED`; inspect freshest main before starting each phase.
 - **Phase 10 premium navy-white home and Visual CMS:** `PLANNED / NOT IMPLEMENTED`, after Phase 9 baseline with final visual/browser/Mac UAT; scope in `docs/PHASE10_LUXURY_VISUAL_CMS.md`.
 - **Phase 9 integrated Mac UAT:** `MAC_UAT_PENDING`, including printer/scanner/phone-camera verification. Live financial activity, real Tahesab, commercial profile activation and tax/legal/accountant sign-off remain separately pending.
+
+**Updated v2 execution sequence: Phase 2A → Phase 2B premium UI foundation → Phase 2C simple share links → Phases 3–9 → Phase 10 full Visual CMS → post-completion real-customer usability/business review.**
 
 **Next actionable task: Phase 2 — Merchant-scoped storefront plus tenant isolation.** Begin with a concrete *one-merchant link → only that merchant's eligible offers → registration/login preserving merchant context → cart/checkout sandbox → correctly attributed order* vertical slice. Preserve Issue #6's profile-version quote keys and the existing canonical Product/UID/QR model, existing shared Master and global marketplace. Public/unlisted/invite-only must be backed by server authorization/query constraints, not CSS hiding. Do not duplicate an existing public customer into merchant-local accounts, expose rival merchants, or mutate checkout/financial snapshots. Then continue sequentially to Phases 3–10.
