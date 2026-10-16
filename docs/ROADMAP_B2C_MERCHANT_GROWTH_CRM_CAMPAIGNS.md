@@ -9,7 +9,7 @@
 
 ## Latest implementation checkpoint — 2026-10-16
 
-Phase 1 remains delivered by Issue #6. **Phase 2A/2B/2C are now DONE & TESTED**: isolated merchant storefronts, premium navy/white foundation, ten-product curated and individual sharing, authoritative attribution and sandbox checkout. Verification: 143 backend / 1 native HTTP / 20 browser tests and all production builds. See [Phase 2 handoff](PHASE2_MERCHANT_STOREFRONT_SHARING.md) and [evidence](../verification/merchant-phase2/RESULTS.md). **Phase 3 and Phases 4–9 remain pending implementation** at this checkpoint; Mac acceptance remains outside development. Historical baseline/specification statements below describe their authoring time.
+Phases 1, 2A/2B/2C and **Phase 3 are DONE & TESTED**. Phase 2 main is `00447d39ffa64881c35813b5242b95fd356c84bb`; Phase 3 extends its same storefront/context/media architecture. Latest verification: **152 backend / 1 native HTTP / 21 browser tests and all production builds**, including a large decoded JPEG, actual DIDAR approvals, exact UID intake, approved RETAILER price and private/OG image controls. See [Phase 2 handoff](PHASE2_MERCHANT_STOREFRONT_SHARING.md), [Phase 3 handoff](PHASE3_ONBOARDING_MEDIA.md) and [Phase 3 evidence](../verification/merchant-phase3/RESULTS.md). **Phases 4–9 remain pending** at this checkpoint. Mac acceptance remains outside development. Historical baseline/specification statements below describe their authoring time.
 
 ## Owner execution strategy v3 — owner Mac UAT OUTSIDE development (2026-10-16)
 

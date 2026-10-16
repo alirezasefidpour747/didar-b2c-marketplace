@@ -38,7 +38,7 @@ CREATE OR REPLACE FUNCTION didar_visible_product(pid text,sid text DEFAULT NULL)
  SELECT EXISTS(SELECT 1 FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id
  WHERE o.product_id=pid AND o.active AND s.active AND s.status='approved' AND
  ((sid IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=sid))
- OR (sid IS NULL AND NOT EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=pid AND NOT didar_global_supplier(o.supplier_id)))
+ OR (sid IS NULL AND NOT EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=pid AND NOT didar_global_supplier(o.supplier_id)) AND NOT EXISTS(SELECT 1 FROM didar_product_request r WHERE r.product_id=pid AND r.status='approved' AND r.payload->>'join_product_id' IS NULL AND NOT didar_global_supplier(r.supplier_id)))
 $$;
 CREATE OR REPLACE FUNCTION didar_storefront_identity_guard() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN

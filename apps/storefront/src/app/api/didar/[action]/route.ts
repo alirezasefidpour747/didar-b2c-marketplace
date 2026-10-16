@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'storefront',
+  'media',
+  'onboarding',
   'sharing',
   'catalog',
   'quote',
@@ -47,15 +49,28 @@ async function proxy(
   const expected = req.headers.get('x-didar-store')
   if (expected) headers['x-didar-store'] = expected
   if (auth) headers.authorization = auth
-  if (req.method === 'POST' && ['storefront', 'sharing'].includes(action)) {
+  if (
+    req.method === 'POST' &&
+    ['storefront', 'sharing', 'media', 'onboarding'].includes(action)
+  ) {
     const origin = req.headers.get('origin')
-    if (origin && new URL(origin).host !== req.headers.get('host'))
-      return NextResponse.json({ message: 'FORBIDDEN' }, { status: 403 })
+    if (origin) {
+      try {
+        const site = new URL(origin)
+        if (
+          !['http:', 'https:'].includes(site.protocol) ||
+          site.host !== req.headers.get('host')
+        )
+          return NextResponse.json({ message: 'FORBIDDEN' }, { status: 403 })
+      } catch {
+        return NextResponse.json({ message: 'FORBIDDEN' }, { status: 403 })
+      }
+    }
   }
   try {
     let body: string | undefined
     if (req.method === 'POST') {
-      const limit = 1_200_000
+      const limit = action === 'media' ? 12_000_000 : 1_200_000
       const tooLarge = () =>
         NextResponse.json({ message: 'INVALID_UPLOAD_SIZE' }, { status: 413 })
       if (Number(req.headers.get('content-length') || 0) > limit)
@@ -92,7 +107,14 @@ async function proxy(
       process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000',
     )
     if (
-      ['catalog', 'classification', 'storefront', 'sharing'].includes(action)
+      [
+        'catalog',
+        'classification',
+        'storefront',
+        'sharing',
+        'media',
+        'onboarding',
+      ].includes(action)
     ) {
       if (req.nextUrl.search.length > 6000)
         return NextResponse.json({ message: 'INVALID_FILTER' }, { status: 400 })
@@ -110,6 +132,12 @@ async function proxy(
       if (!id || !/^[-\w]{1,120}$/.test(id))
         return NextResponse.json({ message: 'NOT_FOUND' }, { status: 404 })
       url.searchParams.set('id', id)
+      const preview = req.nextUrl.searchParams.get('preview_store')
+      if (preview && /^[a-z0-9][a-z0-9-]{2,59}$/.test(preview))
+        url.searchParams.set('preview_store', preview)
+      const variant = req.nextUrl.searchParams.get('variant')
+      if (variant && ['card', 'medium', 'zoom'].includes(variant))
+        url.searchParams.set('variant', variant)
     }
     if (action === 'product-link') {
       for (const key of ['id', 'uid', 'key']) {
@@ -127,12 +155,12 @@ async function proxy(
       headers,
       body,
       cache: 'no-store',
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(action === 'media' ? 60000 : 15000),
     })
     const bytes = await response.arrayBuffer()
     let payload: any
     if (
-      ['storefront', 'sharing'].includes(action) &&
+      ['storefront', 'sharing', 'media', 'onboarding'].includes(action) &&
       req.method === 'POST' &&
       response.ok
     ) {

@@ -151,6 +151,15 @@ test("merchant context filters global/scoped catalogs, facets, private offers, P
     (await call("product-link?id=" + b.pid, undefined, "", ctx)).http,
   ).toBe(404);
   expect((await call("product-link?uid=" + item.uid)).http).toBe(404);
+  expect(
+    (await call("labels", { mode: "customer", item_ids: [item.id] }, a.admin))
+      .http,
+  ).toBe(400);
+  expect(
+    (await call("labels", { mode: "warehouse", item_ids: [item.id] }, a.admin))
+      .items[0].uid,
+  ).toBe(item.uid);
+
   expect((await call("catalog", undefined, "", "0".repeat(64))).http).toBe(404);
 });
 test("a shared public Master never exposes its unlisted/invite-only rival Offers in global or merchant context", async () => {

@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "test": "node scripts/wait-api.mjs && bun test --env-file=packages/api/.env ./tests/pricing.test.ts ./tests/inventory.test.ts ./tests/security.test.ts ./tests/commerce.test.ts ./tests/upgraded-commerce.test.ts ./tests/phase1.test.ts ./tests/migrations.test.ts ./tests/finance.test.ts ./tests/finance-procurement.test.ts ./tests/finance-ledger.test.ts ./tests/finance-tahesab.test.ts ./tests/finance-integrated.test.ts ./tests/taxonomy-labels.test.ts ./tests/facets.test.ts ./tests/merchant-pricing.test.ts ./tests/storefront.test.ts ./tests/uat-prepare.test.ts",
+    "test": "node scripts/wait-api.mjs && bun test --env-file=packages/api/.env ./tests/pricing.test.ts ./tests/inventory.test.ts ./tests/security.test.ts ./tests/commerce.test.ts ./tests/upgraded-commerce.test.ts ./tests/phase1.test.ts ./tests/migrations.test.ts ./tests/finance.test.ts ./tests/finance-procurement.test.ts ./tests/finance-ledger.test.ts ./tests/finance-tahesab.test.ts ./tests/finance-integrated.test.ts ./tests/taxonomy-labels.test.ts ./tests/facets.test.ts ./tests/merchant-pricing.test.ts ./tests/storefront.test.ts ./tests/onboarding-media.test.ts ./tests/uat-prepare.test.ts",
     "test:e2e": "playwright test",
     "db:setup": "bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts",
     "dev:api": "bun run --cwd packages/api dev",

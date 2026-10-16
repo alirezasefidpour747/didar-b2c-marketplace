@@ -48,7 +48,7 @@ function Field({
   )
 }
 const num = (f: FormData, k: string) => Number(f.get(k) || 0)
-function productData(f: FormData) {
+export function productData(f: FormData) {
   return {
     title: f.get('title'),
     slug: f.get('slug') || 'product',
@@ -66,7 +66,7 @@ function productData(f: FormData) {
     attributes: JSON.parse(String(f.get('attributes') || '{}')),
   }
 }
-function ProductFields({
+export function ProductFields({
   p,
   categories,
   request = false,
@@ -202,6 +202,7 @@ function ProductFields({
         زیردسته
         <select
           name="category_id"
+          aria-label="زیردسته"
           value={selected}
           disabled={!parent && !p?.category_id}
           onChange={(e) => {

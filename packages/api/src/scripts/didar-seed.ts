@@ -86,6 +86,12 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/onboarding-schema.sql"),
+      "utf8",
+    ),
+  );
   await transaction(seedFacetVocabulary);
   await transaction(projectExisting);
   const seedDemo =

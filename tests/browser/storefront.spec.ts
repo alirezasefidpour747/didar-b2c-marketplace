@@ -251,7 +251,7 @@ test("Merchant A entry survives central registration, PDP, quote and sandbox pur
   ).rows[0];
   const shopper = await browser.newContext();
   page = await shopper.newPage();
-  const evidence = "verification/merchant-phase2/screenshots";
+  const evidence = ".local/evidence/merchant-phase2";
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
     for (const [name, url] of [

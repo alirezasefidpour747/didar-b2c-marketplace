@@ -1,5 +1,6 @@
 import 'server-only'
 export type PublicProductLink = {
+  image_url?: string | null
   id: string
   title: string
   canonical_path: string

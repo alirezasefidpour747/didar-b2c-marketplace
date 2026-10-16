@@ -59,7 +59,7 @@ export async function ownedProduct(c: any, u: any, id: string, write = false) {
   if (!p) throw new Error("NOT_FOUND");
   if (u.role !== "admin") {
     const { rowCount } = await c.query(
-      "SELECT 1 FROM didar_offer WHERE product_id=$1 AND supplier_id=$2 UNION SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=$1 AND b.supplier_id=$2",
+      "SELECT 1 FROM didar_offer WHERE product_id=$1 AND supplier_id=$2 UNION SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=$1 AND b.supplier_id=$2 UNION SELECT 1 FROM didar_product_request WHERE product_id=$1 AND supplier_id=$2 AND status='approved'",
       [id, u.supplier_id],
     );
     if (!rowCount) throw new Error("FORBIDDEN");
@@ -110,7 +110,7 @@ export async function classificationRead(u: any, q: any) {
           ).rows
         : [];
     const { rows: products } = await c.query(
-      `SELECT p.id,p.title FROM didar_product p WHERE $1='admin' OR EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2) ORDER BY p.title,p.id`,
+      `SELECT p.id,p.title FROM didar_product p WHERE $1='admin' OR EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_product_request r WHERE r.product_id=p.id AND r.supplier_id=$2 AND r.status='approved') ORDER BY p.title,p.id`,
       [u.role, u.supplier_id],
     );
     return {

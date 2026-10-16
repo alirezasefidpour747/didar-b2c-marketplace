@@ -12,7 +12,10 @@ async function resolve(params: Props['params']) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { p } = await resolve(params)
   return p
-    ? { title: p.title }
+    ? {
+        title: p.title,
+        openGraph: { title: p.title, images: p.image_url ? [p.image_url] : [] },
+      }
     : { title: 'محصول در دسترس نیست', robots: { index: false, follow: false } }
 }
 export default async function Product({ params }: Props) {

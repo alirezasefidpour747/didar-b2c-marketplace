@@ -1,3 +1,5 @@
+import { merchantAccess, clean } from "./storefront";
+import { onboardingEvent, attachRequestedMedia } from "./media";
 import { storeScope } from "./storefront";
 import {
   pricingLock,
@@ -78,8 +80,13 @@ export async function catalog(user?: any, query?: any, req?: any) {
       ],
     );
     const { rows: images } = await c.query(
-      "SELECT id,product_id,alt,position FROM didar_product_image WHERE product_id=ANY($1::text[]) ORDER BY position,id",
-      [products.map((p: any) => p.id)],
+      `SELECT i.id,i.product_id,i.alt,i.position,i.media_asset_id,(SELECT json_agg(json_build_object('kind',v.kind,'width',v.width,'height',v.height)) FROM didar_media_variant v WHERE v.asset_id=i.media_asset_id) variants FROM didar_product_image i LEFT JOIN didar_media_asset a ON a.id=i.media_asset_id WHERE i.product_id=ANY($1::text[]) AND ($2='admin' OR a.id IS NULL OR didar_media_visible(a.id,$3)) ORDER BY i.position,i.id`,
+      [
+        products.map((p: any) => p.id),
+        user?.role || "public",
+        scope?.supplier_id ||
+          (user?.role === "supplier" ? user.supplier_id : null),
+      ],
     );
     const { rows: links } = await c.query(
       "SELECT * FROM didar_collection_product WHERE product_id=ANY($1::text[])",
@@ -103,6 +110,19 @@ export async function catalog(user?: any, query?: any, req?: any) {
         .map((i: any) => ({
           ...i,
           url: `/api/didar/image?id=${encodeURIComponent(i.id)}`,
+          private: scope?.visibility === "INVITE_ONLY",
+          srcset: i.media_asset_id
+            ? i.variants
+                ?.filter(
+                  (v: any, index: number, xs: any[]) =>
+                    xs.findIndex((x) => x.width === v.width) === index,
+                )
+                .map(
+                  (v: any) =>
+                    `/api/didar/image?id=${encodeURIComponent(i.id)}&variant=${v.kind} ${v.width}w`,
+                )
+                .join(", ")
+            : undefined,
         }));
       p.collection_ids = links
         .filter((l: any) => l.product_id === p.id)
@@ -150,7 +170,7 @@ export async function catalog(user?: any, query?: any, req?: any) {
       [user?.role || "public"],
     );
     const { rows: collections } = await c.query(
-      `SELECT c.*,v.code type_code,(SELECT label FROM didar_catalog_translation WHERE entity_type='value' AND entity_id=c.type_id AND locale=$2 AND status='approved') type_label,(SELECT label FROM didar_catalog_translation WHERE entity_type='collection' AND entity_id=c.id AND locale=$2 AND status='approved') localized_name,CASE WHEN EXISTS(SELECT 1 FROM didar_product_image i JOIN didar_product ip ON ip.id=i.product_id WHERE i.id=c.image_id AND ip.active AND ip.published AND ip.approved AND didar_public_taxonomy(ip.id,ip.category_id) AND didar_visible_product(ip.id,$3)) THEN c.image_id ELSE NULL END public_image_id,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_facet_value v ON v.id=c.type_id LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id WHERE $1='admin' OR ((${publicCollectionCondition}) AND (c.owner_supplier_id IS NULL OR ($3::text IS NULL AND didar_global_supplier(c.owner_supplier_id)) OR c.owner_supplier_id=$3)) GROUP BY c.id,v.code ORDER BY c.sort_order,c.name`,
+      `SELECT c.*,v.code type_code,(SELECT label FROM didar_catalog_translation WHERE entity_type='value' AND entity_id=c.type_id AND locale=$2 AND status='approved') type_label,(SELECT label FROM didar_catalog_translation WHERE entity_type='collection' AND entity_id=c.id AND locale=$2 AND status='approved') localized_name,CASE WHEN EXISTS(SELECT 1 FROM didar_product_image i JOIN didar_product ip ON ip.id=i.product_id WHERE i.id=c.image_id AND ip.active AND ip.published AND ip.approved AND didar_public_taxonomy(ip.id,ip.category_id) AND didar_visible_product(ip.id,$3) AND (i.media_asset_id IS NULL OR didar_media_visible(i.media_asset_id,$3))) THEN c.image_id ELSE NULL END public_image_id,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_facet_value v ON v.id=c.type_id LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id WHERE $1='admin' OR ((${publicCollectionCondition}) AND (c.owner_supplier_id IS NULL OR ($3::text IS NULL AND didar_global_supplier(c.owner_supplier_id)) OR c.owner_supplier_id=$3)) GROUP BY c.id,v.code ORDER BY c.sort_order,c.name`,
       [
         user?.role || "public",
         selection?.parsed.locale || "fa",
@@ -219,7 +239,7 @@ export async function catalog(user?: any, query?: any, req?: any) {
       : { ...data, ...(user ? {} : await publicDiscoveryMetadata(c)) };
   });
 }
-function productInput(b: any, old: any = {}) {
+export function productInput(b: any, old: any = {}) {
   const p = { ...old, ...b };
   const min =
     p.min_weight_mg === null ||
@@ -666,24 +686,9 @@ export async function manage(req: any, u: any) {
       });
       return { ok: true, id };
     });
-  if (b.kind === "product_request") {
-    if (u.role !== "supplier") throw new Error("FORBIDDEN");
-    const payload = productInput(b);
-    payload.published = false;
-    const id = randomUUID();
-    await transaction(async (c) => {
-      await authorize(c, u, u.supplier_id, "REQUEST_PRODUCT_CREATION");
-      await c.query(
-        "INSERT INTO didar_product_request(id,supplier_id,payload) VALUES($1,$2,$3)",
-        [id, u.supplier_id, JSON.stringify(payload)],
-      );
-      await audit(c, u.id, "product_requested", {
-        id,
-        supplier_id: u.supplier_id,
-      });
-    });
-    return { id };
-  }
+  if (b.kind === "product_request")
+    return submitProductRequest(req, u, { ...b, supplier_id: u.supplier_id });
+
   if (u.role !== "admin") throw new Error("FORBIDDEN");
   if (b.kind === "product")
     return transaction((c) => saveProduct(req, u, b, c));
@@ -805,22 +810,33 @@ export async function manage(req: any, u: any) {
       if (!r) throw new Error("NOT_FOUND");
       if (r.status !== "pending")
         return { id, product_id: r.product_id, status: r.status };
-      const result =
-        b.decision === "approved"
-          ? await saveProduct(
-              req,
-              u,
-              {
-                ...r.payload,
-                ...(b.category_id !== undefined
-                  ? { category_id: b.category_id }
-                  : {}),
-                published: true,
-                approved: true,
-              },
-              c,
+      let result: any = null;
+      if (b.decision === "approved") {
+        if (r.payload.join_product_id) {
+          const target = (
+            await c.query(
+              `SELECT id FROM didar_product p WHERE id=$1 AND p.active AND p.approved AND p.published AND didar_public_taxonomy(p.id,p.category_id) AND (didar_visible_product(p.id,NULL) OR EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2))`,
+              [r.payload.join_product_id, r.supplier_id],
             )
-          : null;
+          ).rows[0];
+          if (!target) throw new Error("INVALID_JOIN_PRODUCT");
+          result = target;
+        } else
+          result = await saveProduct(
+            req,
+            u,
+            {
+              ...r.payload,
+              ...(b.category_id !== undefined
+                ? { category_id: b.category_id }
+                : {}),
+              published: true,
+              approved: true,
+            },
+            c,
+          );
+        await attachRequestedMedia(c, id, result.id);
+      }
       await c.query(
         "UPDATE didar_product_request SET status=$1,reason=$2,product_id=$3,reviewed_by=$4,reviewed_at=now() WHERE id=$5",
         [b.decision, optional(b.reason, 2000), result?.id ?? null, u.id, id],
@@ -830,6 +846,18 @@ export async function manage(req: any, u: any) {
         decision: b.decision,
         product_id: result?.id,
       });
+      await onboardingEvent(
+        c,
+        u,
+        r.supplier_id,
+        "PRODUCT_REQUEST_REVIEWED",
+        {
+          decision: b.decision,
+          product_id: result?.id,
+          reason: b.reason || "",
+        },
+        id,
+      );
       return { id, product_id: result?.id, status: b.decision };
     });
   if (b.kind === "image_upload")
@@ -884,7 +912,7 @@ export async function manage(req: any, u: any) {
       const result =
         b.kind === "image_delete"
           ? await c.query(
-              "DELETE FROM didar_product_image WHERE id=$1 RETURNING product_id",
+              "DELETE FROM didar_product_image WHERE id=$1 RETURNING product_id,media_asset_id",
               [id],
             )
           : await c.query(
@@ -896,6 +924,23 @@ export async function manage(req: any, u: any) {
               ],
             );
       if (!result.rowCount) throw new Error("NOT_FOUND");
+      if (b.kind === "image_delete" && result.rows[0].media_asset_id) {
+        const a = (
+          await c.query(
+            "UPDATE didar_media_asset SET status='rejected',review_reason='Removed in existing product editor',reviewed_at=now() WHERE id=$1 RETURNING supplier_id,request_id",
+            [result.rows[0].media_asset_id],
+          )
+        ).rows[0];
+        await onboardingEvent(
+          c,
+          u,
+          a.supplier_id,
+          "MEDIA_REJECTED",
+          { reason: "Removed in existing product editor" },
+          a.request_id,
+          result.rows[0].media_asset_id,
+        );
+      }
       await audit(c, u.id, b.kind, {
         id,
         product_id: result.rows[0].product_id,
@@ -904,4 +949,84 @@ export async function manage(req: any, u: any) {
     });
   // Pricing policy is handled by the commerce extension before this dispatcher.
   throw new Error("INVALID_KIND");
+}
+
+export async function submitProductRequest(_req: any, u: any, b: any) {
+  const sid = clean(b.supplier_id || u.supplier_id),
+    key = b.idempotency_key ? clean(b.idempotency_key) : null;
+  return transaction(async (c) => {
+    await merchantAccess(c, u, sid, "ONBOARDING");
+    if (u.role === "supplier")
+      await authorize(c, u, sid, "REQUEST_PRODUCT_CREATION");
+    let input = b,
+      join: any = null;
+    if (b.existing_product_id) {
+      join = (
+        await c.query(
+          `SELECT * FROM didar_product p WHERE id=$1 AND active AND approved AND published AND didar_public_taxonomy(id,category_id) AND (didar_visible_product(id,NULL) OR EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2))`,
+          [clean(b.existing_product_id), sid],
+        )
+      ).rows[0];
+      if (!join) throw new Error("NOT_FOUND");
+      input = join;
+    }
+    const payload: any = productInput(input);
+    payload.published = false;
+    if (join) payload.join_product_id = join.id;
+    payload.proposed_offer = {
+      sku: b.sku ? clean(b.sku, 80) : "",
+      making_mode: b.making_mode || "percent",
+      making_bps: integer(b.making_bps ?? 0, "MAKING", 0, 10000),
+      making_weight_mg: integer(
+        b.making_weight_mg ?? 0,
+        "MAKING_WEIGHT",
+        0,
+        1000000,
+      ),
+    };
+    if (!["percent", "fixed_gold"].includes(payload.proposed_offer.making_mode))
+      throw new Error("INVALID_MAKING");
+    if (key) {
+      await c.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+        "onboarding:" + sid + ":" + key,
+      ]);
+      const old = (
+        await c.query(
+          "SELECT id,payload FROM didar_product_request WHERE supplier_id=$1 AND client_request_key=$2",
+          [sid, key],
+        )
+      ).rows[0];
+      if (old) {
+        if (
+          JSON.stringify(old.payload) !==
+          JSON.stringify(JSON.parse(JSON.stringify(payload)))
+        ) {
+          const same = (
+            await c.query(
+              "SELECT payload=$2::jsonb ok FROM didar_product_request WHERE id=$1",
+              [old.id, JSON.stringify(payload)],
+            )
+          ).rows[0].ok;
+          if (!same) throw new Error("CONFLICT_REQUEST_INTENT");
+        }
+        return { id: old.id, replayed: true };
+      }
+    }
+    const id = randomUUID(),
+      assisted = u.role !== "admin" && u.supplier_id !== sid ? u.id : null;
+    await c.query(
+      "INSERT INTO didar_product_request(id,supplier_id,payload,created_by,assisted_by_agent,client_request_key) VALUES($1,$2,$3,$4,$5,$6)",
+      [id, sid, JSON.stringify(payload), u.id, assisted, key],
+    );
+    await audit(c, u.id, "product_requested", { id, supplier_id: sid });
+    await onboardingEvent(
+      c,
+      u,
+      sid,
+      join ? "MASTER_JOIN_REQUESTED" : "PRODUCT_DRAFT_REQUESTED",
+      { join_product_id: join?.id, sku: payload.proposed_offer.sku },
+      id,
+    );
+    return { id };
+  });
 }

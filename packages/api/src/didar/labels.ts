@@ -80,7 +80,7 @@ export async function labels(req: any) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
     const { rows } = await c.query(
-      `SELECT i.id,i.uid,i.status,p.title,p.active,p.approved,p.published,didar_taxonomy_valid(p.category_id) classified FROM didar_inventory_item i JOIN didar_intake_line l ON l.id=i.line_id LEFT JOIN didar_product p ON p.id=i.product_id WHERE ${b.batch_id ? "l.batch_id=$1 AND i.status<>'void'" : "i.id=ANY($1::text[])"} ORDER BY i.uid LIMIT 101`,
+      `SELECT i.id,i.uid,i.status,p.title,p.active,p.approved,p.published,didar_taxonomy_valid(p.category_id) classified,(didar_global_supplier(i.supplier_id) AND didar_visible_product(p.id,NULL)) global_visible FROM didar_inventory_item i JOIN didar_intake_line l ON l.id=i.line_id LEFT JOIN didar_product p ON p.id=i.product_id WHERE ${b.batch_id ? "l.batch_id=$1 AND i.status<>'void'" : "i.id=ANY($1::text[])"} ORDER BY i.uid LIMIT 101`,
       [b.batch_id || ids],
     );
     if (
@@ -99,6 +99,7 @@ export async function labels(req: any) {
           !i.approved ||
           !i.published ||
           !i.classified ||
+          !i.global_visible ||
           !["available", "reserved", "sold", "returned", "withdrawn"].includes(
             i.status,
           ),

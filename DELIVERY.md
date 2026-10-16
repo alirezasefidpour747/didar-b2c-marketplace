@@ -1,3 +1,15 @@
+## Merchant growth Phase 3 — DONE & TESTED (2026-10-16)
+
+Delivered assisted onboarding and safe decoded photo processing on Phase 2 main `00447d39ffa64881c35813b5242b95fd356c84bb`. Persian `/manage/onboarding` reuses the existing master/request/approval, taxonomy/facet, profile, storefront, intake/UID and sharing workflows. Joining an existing master never duplicates it. Actual creator/uploader/assistant/reviewer events are persisted; scoped staff capabilities do not broaden global roles or finance access.
+
+Photos validate signatures/decoding, size/pixels/frame count, EXIF orientation, sRGB, metadata stripping, transparency and proportional WebP variants. Private review, default merchant-only media, explicit consent for shared-master reuse, revisioned dimensions/quality/byte budgets, upload idempotency, quotas/replacement, guarded image/OG URLs and actual responsive browser rendering are connected to PostgreSQL. Existing image IDs and original Product/Offer/UID/accounting records remain intact. Private merchant new-master publication cannot create a global discovery window before a public eligible Offer. Customer UID QR mode remains global-only; warehouse barcodes and permanent UID resolver behavior remain unchanged.
+
+**Final reviewed results: 152 backend tests / 1,922 assertions, 1 native HTTP test, 21 production Playwright tests; zero failures.** All four production builds/code generation and source/output/platform receipt passed. Real large-JPEG → private receipt → DIDAR product/media approvals → exact measured UID intake → assigned RETAILER profile → scoped WebP PDP/OG journey passed. Twenty image operations, replacement quota, migration replay and actual disposable PostgreSQL restart passed. Two historical database clones preserve original image bytes and audited commerce fingerprints.
+
+Evidence: [handoff](docs/PHASE3_ONBOARDING_MEDIA.md), [results](verification/merchant-phase3/RESULTS.md), [actual files](verification/merchant-phase3/CHANGED_FILES.txt), [mobile PDP](verification/merchant-phase3/onboarding-pdp-390.png), [merchant wizard](verification/merchant-phase3/onboarding-merchant.png).
+
+**PENDING:** v3 Phase 4 complete Visual CMS, then CRM/campaign/affiliate/referral/Growth Center Phases 5–9. The full roadmap remains incomplete. **BLOCKED:** no Phase 3 software blocker. Actual commercial photography, external social-host reachability, physical hardware, native Mac and live providers are not claimed. Mac acceptance is separate after all features; no owner-run test or interview is required to continue development.
+
 ## Merchant growth Phase 2A + 2B + 2C — DONE & TESTED (2026-10-16)
 
 Implemented tenant-scoped merchant storefronts, the navy/white luxury foundation and persistent curated/single-product sharing over main `3bfb982fca143ea1695df059c952b45119fefbf7`. Real server authorization, expiring invite access, limited memberships, scoped price/quote/cart/checkout, immutable order origin and share attribution reuse the existing shared Product Master, Offer, UID and ledger. Persian `/manage/storefront`, `/manage/sharing` and `/m/{handle}` are connected to PostgreSQL and real APIs.

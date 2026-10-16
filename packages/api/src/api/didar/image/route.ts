@@ -1,4 +1,5 @@
-import { storeScope } from "../../../didar/storefront";
+import { processedImage } from "../../../didar/media";
+import { storeScope, publicPreviewStore } from "../../../didar/storefront";
 import { db } from "../../../didar/db";
 import { sessionUser } from "../../../didar/auth";
 export async function GET(req: any, res: any) {
@@ -8,13 +9,36 @@ export async function GET(req: any, res: any) {
   const {
     rows: [image],
   } = await db.query(
-    "SELECT i.data,i.mime_type,p.id product_id,p.active,p.published,p.approved FROM didar_product_image i JOIN didar_product p ON p.id=i.product_id WHERE i.id=$1",
+    "SELECT i.data,i.mime_type,i.media_asset_id,p.id product_id,p.active,p.published,p.approved FROM didar_product_image i JOIN didar_product p ON p.id=i.product_id WHERE i.id=$1",
     [id],
   );
-  if (!image) return res.status(404).json({ message: "NOT_FOUND" });
+  if (!image || image.media_asset_id) {
+    try {
+      const processed = await processedImage(req, image?.media_asset_id || id);
+      if (!processed) return res.status(404).json({ message: "NOT_FOUND" });
+      res.setHeader("Content-Type", processed.mime_type);
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; sandbox");
+      res.setHeader("Cache-Control", "no-store");
+      return res.send(processed.data);
+    } catch (e: any) {
+      if (
+        [
+          "NOT_FOUND",
+          "FORBIDDEN",
+          "UNAUTHORIZED",
+          "CONFLICT_STORE_SCOPE",
+        ].includes(e.message)
+      )
+        return res.status(404).json({ message: "NOT_FOUND" });
+      throw e;
+    }
+  }
   let scope;
   try {
-    scope = await storeScope(req);
+    scope = req.query.preview_store
+      ? await publicPreviewStore(req.query.preview_store)
+      : await storeScope(req);
   } catch {
     return res.status(404).json({ message: "NOT_FOUND" });
   }

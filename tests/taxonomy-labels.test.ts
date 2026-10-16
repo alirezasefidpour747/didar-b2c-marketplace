@@ -43,9 +43,14 @@ function decode(svg: string, format: BarcodeFormat) {
     );
   }
   const reader = new MultiFormatReader();
-  reader.setHints(new Map([[DecodeHintType.POSSIBLE_FORMATS, [format]]]));
+  reader.setHints(
+    new Map<any, any>([
+      [DecodeHintType.POSSIBLE_FORMATS, [format]],
+      [DecodeHintType.TRY_HARDER, true],
+    ]),
+  );
   return reader
-    .decode(
+    .decodeWithState(
       new BinaryBitmap(
         new HybridBinarizer(
           new RGBLuminanceSource(gray, png.width, png.height),

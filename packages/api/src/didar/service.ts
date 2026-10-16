@@ -1,3 +1,5 @@
+import { media } from "./media";
+import { onboarding } from "./onboarding";
 import { sharing, attribution } from "./sharing";
 import { storefront, storeScope, assertOfferScope } from "./storefront";
 import {
@@ -64,6 +66,8 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "media") return media(req);
+  if (action === "onboarding") return onboarding(req);
   if (action === "sharing") return sharing(req);
   if (action === "storefront") return storefront(req);
   if (action === "quote") {
@@ -111,7 +115,17 @@ export async function perform(action: string, req: any): Promise<any> {
       req,
     );
   }
-  if (action === "me") return { user: (await sessionUser(req)) || null };
+  if (action === "me") {
+    const u = await sessionUser(req);
+    if (!u) return { user: null };
+    const memberships = (
+      await db.query(
+        "SELECT m.supplier_id,m.permission FROM didar_merchant_member m JOIN didar_supplier s ON s.id=m.supplier_id WHERE m.user_id=$1 AND m.active AND s.active AND s.status='approved'",
+        [u.id],
+      )
+    ).rows;
+    return { user: { ...u, merchant_memberships: memberships } };
+  }
   if (action === "register" || action === "login") {
     if (req.method !== "POST") throw new Error("METHOD_NOT_ALLOWED");
     const email = text(b.email, 150).toLowerCase();

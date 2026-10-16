@@ -45,7 +45,14 @@ export type Offer = {
   version: number
   price: Price | null
 }
-export type Image = { id: string; url: string; alt: string; position: number }
+export type Image = {
+  id: string
+  url: string
+  alt: string
+  position: number
+  private?: boolean
+  srcset?: string
+}
 export type Product = {
   classification?: Record<string, { code: string; label: string }[]>
   id: string
@@ -72,6 +79,7 @@ export type Product = {
   offers: Offer[]
 }
 export type User = {
+  merchant_memberships?: { supplier_id: string; permission: string }[]
   id: string
   name: string
   email: string
@@ -309,6 +317,12 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     setToken(d.token)
     setUser(d.user)
     sessionStorage.setItem('didar-session', d.token)
+    api('me', undefined, d.token)
+      .then((me) => {
+        if (sessionStorage.getItem('didar-session') === d.token)
+          setUser(me.user)
+      })
+      .catch(() => {})
   }
   function add(o: Offer) {
     setCart((c) => ({ ...c, [o.id]: Math.min((c[o.id] || 0) + 1, o.quantity) }))
@@ -385,11 +399,24 @@ export function DidarProvider({ children }: { children: ReactNode }) {
               <Link href={scopedHref('/orders')}>{copy.orders}</Link>
               <Link href={scopedHref('/account/wallet')}>کیف پول</Link>
               <Link href={scopedHref('/account')}>{copy.account}</Link>
+              {user.role === 'customer' &&
+                user.merchant_memberships?.some(
+                  (m) => m.permission === 'ONBOARDING',
+                ) && <Link href="/manage/onboarding">همراهی فروشنده</Link>}
+              {user.role === 'customer' &&
+                user.merchant_memberships?.some(
+                  (m) => m.permission === 'STOREFRONT',
+                ) && <Link href="/manage/storefront">مدیریت ویترین مجاز</Link>}
+              {user.role === 'customer' &&
+                user.merchant_memberships?.some(
+                  (m) => m.permission === 'SHARE',
+                ) && <Link href="/manage/sharing">اشتراک فروشنده مجاز</Link>}
               {user.role !== 'customer' && (
                 <>
                   <Link href="/manage">{copy.manage}</Link>
                   <Link href="/manage/storefront">ویترین من</Link>
                   <Link href="/manage/sharing">اشتراک محصولات</Link>
+                  <Link href="/manage/onboarding">شروع فروش</Link>
                 </>
               )}
               <button

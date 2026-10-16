@@ -28,6 +28,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title: preview?.title || store.name,
         description: preview?.description || store.intro,
         url: canonical,
+        images: preview?.image_url
+          ? [{ url: preview.image_url, alt: preview.title }]
+          : store.logo_url
+            ? [
+                {
+                  url:
+                    store.logo_url +
+                    '&preview_store=' +
+                    encodeURIComponent(handle),
+                  alt: store.name,
+                },
+              ]
+            : [],
       },
       robots: {
         index: store.visibility === 'PUBLIC_MARKETPLACE',

@@ -601,3 +601,32 @@ input {
     align-items: center;
   }
 }
+
+.onboarding-stages {
+  padding: 24px 44px;
+  background: var(--didar-surface);
+  border: 1px solid var(--didar-line);
+  line-height: 2.4;
+}
+.onboarding-row {
+  padding: 24px 0;
+  border-top: 1px solid var(--didar-line);
+  overflow-wrap: anywhere;
+}
+.media-assets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.media-preview {
+  width: 100%;
+  max-width: 360px;
+  max-height: 360px;
+  object-fit: contain;
+  background: var(--didar-surface);
+}
+@media (max-width: 600px) {
+  .media-assets {
+    grid-template-columns: 1fr;
+  }
+}

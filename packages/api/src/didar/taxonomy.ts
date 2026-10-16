@@ -51,13 +51,20 @@ export async function publicProductLink(
     const {
       rows: [p],
     } = await c.query(
-      `SELECT p.id,p.title,p.category_id,p.slug,p.public_key FROM didar_product p WHERE p.active AND p.approved AND p.published AND didar_visible_product(p.id,$2) AND ${byUID ? "didar_taxonomy_valid(p.category_id)" : "didar_public_taxonomy(p.id,p.category_id)"} AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND didar_global_supplier(i.supplier_id) AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : byKey ? "p.public_key=$1" : "p.id=$1"}`,
+      `SELECT p.id,p.title,p.category_id,p.slug,p.public_key,(SELECT i.id FROM didar_product_image i WHERE i.product_id=p.id AND (i.media_asset_id IS NULL OR didar_media_visible(i.media_asset_id,$2)) ORDER BY i.position,i.id LIMIT 1) image_id FROM didar_product p WHERE p.active AND p.approved AND p.published AND didar_visible_product(p.id,$2) AND ${byUID ? "didar_taxonomy_valid(p.category_id)" : "didar_public_taxonomy(p.id,p.category_id)"} AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND didar_global_supplier(i.supplier_id) AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : byKey ? "p.public_key=$1" : "p.id=$1"}`,
       [value, scope?.supplier_id || null],
     );
     if (!p) throw new Error("NOT_FOUND");
     return {
       id: p.id,
       title: p.title,
+      ...(byUID
+        ? {}
+        : {
+            image_url: p.image_id
+              ? `/api/didar/image?id=${encodeURIComponent(p.image_id)}`
+              : null,
+          }),
       ...(await productPath(c, p)),
       ...(scope
         ? { canonical_path: `/m/${scope.handle}/products/${p.public_key}` }

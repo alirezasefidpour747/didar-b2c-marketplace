@@ -117,22 +117,38 @@ export async function storefront(req: any) {
     if (q.product_key) {
       const p = (
         await db.query(
-          `SELECT p.title,p.description FROM didar_product p WHERE p.public_key=$1 AND p.active AND p.approved AND p.published AND didar_public_taxonomy(p.id,p.category_id) AND didar_visible_product(p.id,$2)`,
+          `SELECT p.id,p.title,p.description FROM didar_product p WHERE p.public_key=$1 AND p.active AND p.approved AND p.published AND didar_public_taxonomy(p.id,p.category_id) AND didar_visible_product(p.id,$2)`,
           [clean(q.product_key, 32), f.supplier_id],
         )
       ).rows[0];
       if (!p) throw new Error("NOT_FOUND");
-      preview = { title: p.title, description: p.description };
+      preview = {
+        title: p.title,
+        description: p.description,
+        image_url: await previewImage(p.id, f.supplier_id, f.handle),
+      };
     }
     if (q.share_slug) {
       const p = (
         await db.query(
-          "SELECT title,intro FROM didar_share_page WHERE supplier_id=$1 AND slug=$2 AND published",
+          "SELECT id,title,intro FROM didar_share_page WHERE supplier_id=$1 AND slug=$2 AND published",
           [f.supplier_id, clean(q.share_slug, 80)],
         )
       ).rows[0];
       if (!p) throw new Error("NOT_FOUND");
-      preview = { title: p.title, description: p.intro };
+      const first = (
+        await db.query(
+          `SELECT cp.product_id FROM didar_share_product cp JOIN didar_product m ON m.id=cp.product_id WHERE cp.page_id=$1 AND m.active AND m.approved AND m.published AND didar_public_taxonomy(m.id,m.category_id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=m.id AND o.supplier_id=$2 AND o.active AND o.quantity>0) ORDER BY cp.position LIMIT 1`,
+          [p.id, f.supplier_id],
+        )
+      ).rows[0];
+      preview = {
+        title: p.title,
+        description: p.intro,
+        image_url: first
+          ? await previewImage(first.product_id, f.supplier_id, f.handle)
+          : null,
+      };
     }
     return { store: storeProjection(f), preview };
   }
@@ -269,4 +285,27 @@ export async function storefront(req: any) {
     await audit(c, u.id, `storefront_${b.kind}`, { supplier_id: sid });
     return { ok: true };
   });
+}
+
+/** Public image previews resolve an approved route; they never grant private or checkout access. */
+export async function publicPreviewStore(handle: any, c: any = db) {
+  const f = (
+    await c.query(
+      "SELECT f.*,s.active,s.status FROM didar_storefront f JOIN didar_supplier s ON s.id=f.supplier_id WHERE f.handle=$1",
+      [clean(handle, 60)],
+    )
+  ).rows[0];
+  await storeAllowed(c, f, null);
+  return storeProjection(f);
+}
+async function previewImage(pid: string, sid: string, handle: string) {
+  const i = (
+    await db.query(
+      `SELECT i.id FROM didar_product_image i WHERE i.product_id=$1 AND (i.media_asset_id IS NULL OR didar_media_visible(i.media_asset_id,$2)) ORDER BY i.position,i.id LIMIT 1`,
+      [pid, sid],
+    )
+  ).rows[0];
+  return i
+    ? `/api/didar/image?id=${encodeURIComponent(i.id)}&variant=medium&preview_store=${encodeURIComponent(handle)}`
+    : null;
 }

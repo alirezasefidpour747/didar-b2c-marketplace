@@ -14,11 +14,17 @@ export function ImageAsset({
   alt,
   privateImage = false,
   className,
+  srcSet,
+  sizes,
+  eager = false,
 }: {
   src: string
   alt: string
   privateImage?: boolean
   className?: string
+  srcSet?: string
+  sizes?: string
+  eager?: boolean
 }) {
   const [blob, setBlob] = useState('')
   useEffect(() => {
@@ -45,7 +51,15 @@ export function ImageAsset({
   }, [src, privateImage])
   const url = privateImage ? blob : src
   return url ? (
-    <img className={className} src={url} alt={alt} loading="lazy" />
+    <img
+      className={className}
+      src={url}
+      srcSet={privateImage ? undefined : srcSet}
+      sizes={sizes || '(max-width: 600px) 90vw, (max-width: 1000px) 44vw, 30vw'}
+      alt={alt}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : undefined}
+    />
   ) : (
     <div className="photo-placeholder" role="img" aria-label={alt}>
       در حال دریافت تصویر…
@@ -55,17 +69,23 @@ export function ImageAsset({
 export function ProductImage({
   product,
   index = 0,
+  detail = false,
 }: {
   product: Product
   index?: number
+  detail?: boolean
 }) {
   const image = product.images?.[index]
   return image ? (
     <ImageAsset
       className="product-photo"
       src={image.url}
+      srcSet={image.srcset}
+      sizes={detail ? '(max-width: 800px) 90vw, 48vw' : undefined}
+      eager={detail}
       alt={image.alt || product.title}
       privateImage={
+        image.private ||
         product.active === false ||
         product.published === false ||
         product.approved === false
@@ -487,7 +507,7 @@ export function ProductDetail({ id }: { id: string }) {
       <div className="detail-grid">
         <div>
           <div className="gallery-main">
-            <ProductImage product={p} index={selected} />
+            <ProductImage product={p} index={selected} detail />
           </div>
           {!!p.images?.length && (
             <div className="gallery-thumbs">
@@ -499,7 +519,11 @@ export function ProductDetail({ id }: { id: string }) {
                   aria-pressed={selected === i}
                   onClick={() => setSelected(i)}
                 >
-                  <ImageAsset src={im.url} alt={im.alt || p.title} />
+                  <ImageAsset
+                    src={im.url}
+                    alt={im.alt || p.title}
+                    privateImage={im.private}
+                  />
                 </button>
               ))}
             </div>

@@ -86,3 +86,5 @@ Issue #5 adds governed F01–F12 classification, collection approval and server-
 Issue #6 merchant types and versioned pricing profiles extend the existing Gold-First engine. Open `/manage/pricing` for the Persian lifecycle and offer simulator; PDP/cart/checkout use the applied merchant profile and selected CASH/CREDIT rules. Read [implementation, API, calculations, preservation and acceptance](docs/MERCHANT_PRICING_IMPLEMENTATION.md). No merchant profile, tax rate or assignment is auto-activated by the migration.
 
 Merchant growth Phase 2A/B/C implementation and verification: [merchant storefront, luxury foundation and sharing](docs/PHASE2_MERCHANT_STOREFRONT_SHARING.md). Owner Mac acceptance is deferred until all v3 feature phases are complete.
+
+Merchant growth Phase 3: [assisted onboarding and safe WebP processing](docs/PHASE3_ONBOARDING_MEDIA.md), preserving existing image IDs, shared Product Masters, exact UID intake and merchant pricing profiles.
