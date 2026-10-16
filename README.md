@@ -1,4 +1,4 @@
-> Phase 1 UID/RFID is implemented on `didar/phase1-intake-uid-rfid`. Start with [Phase 1 operations](docs/PHASE1_OPERATIONS.md), the [authoritative scope](docs/PHASE1_UID_RFID_INTAKE.md), and [verified delivery](DELIVERY.md). The existing Mercur marketplace is preserved. Supplier writes are read-only by default; `/manage/operations` provides intake, UID/EPC registry, counting, returns and delegated permissions. Phase 2 finance remains excluded.
+> **Current workflow:** Codex Cloud development → verified GitHub `main` → macOS laptop acceptance on `localhost`. **No Oracle is required for development or testing.** Read [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), and [verification evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID is merged to `main`; supplier writes default to read-only and Phase 2 finance is excluded. Playwright currently needs an explicit Mac-compatible executable or a portable configuration fix before native Mac browser testing is guaranteed.
 
 # Didar Gold — دیدار گلد
 
@@ -78,7 +78,7 @@ When registries are unavailable but this checkout has installed dependencies, `s
 
 `prepare-codegen-cache.mjs` seeds Mercur's officially supported fallback cache from the route manifest downloaded over verified HTTPS by CLI 2.3.7 on 2026-10-15. Its provenance is the CLI's default canary manifest endpoint, not a claim that a release-tagged manifest was downloaded. The tracked metadata snapshot keeps codegen working during GitHub HTTP 503 outages. Refresh it together with pinned Mercur package upgrades.
 
-## Preferred external staging: Oracle Always Free
+## Optional historical Oracle staging (not used for local tests)
 
 See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks and live linux/arm64 image manifests pass. Native ARM build/runtime still needs access to an eligible VM; it has not been executed here.
 
