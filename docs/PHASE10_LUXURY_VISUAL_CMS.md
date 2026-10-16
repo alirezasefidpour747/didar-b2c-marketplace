@@ -7,6 +7,14 @@
 **References:** Owner-provided Cartier screen recordings and Paon d'Or (paon-dor.com) reference, and the current prototype discussion. Draw inspiration from whitespace, premium editorial storytelling, large photos, moving media and asymmetrical image placement; **do not copy** Cartier/Paon d'Or trademarks, site code, visual assets, fonts, identifiable campaigns or unique protected layouts. The brand is DIDAR.
 **Related:** `docs/ROADMAP_B2C_MERCHANT_GROWTH_CRM_CAMPAIGNS.md` (Master Issue #7), `docs/B2C_PRODUCT_TAXONOMY_FACETS_SPEC.md`, `docs/TAXONOMY_UID_LABELS.md`, `docs/MERCHANT_PRICING_IMPLEMENTATION.md`, `docs/PHASE1_OPERATIONS.md` and completed campaign/merchant storefront phase docs when present.
 
+## Owner v2 sequencing note (2026-10-16)
+
+The owner expressly chose to **implement all agreed features before external customer/merchant usability and commercial evaluation**, while maintaining rigorous automated and technical Mac UAT during development. Refer to [`EXECUTION_STRATEGY_V2_BUILD_FIRST.md`](EXECUTION_STRATEGY_V2_BUILD_FIRST.md) for the controlling execution strategy.
+
+**Split visual delivery intentionally:** Phase **2B** must already deliver the **navy/white Didar brand design tokens, premium real B2C homepage/merchant shell/header/product cards, responsive PDP and clean navigational language**, with only safe early editorial content and the real current catalog. Phase **10** delivers the **full configurable PostgreSQL Visual CMS**: approved Page Builder, media/video slider, asymmetrical mosaics, editable split-story/product/collection blocks, responsive previews, publication scheduling, roles, version history and rollback. Reuse Phase 2B design/real components and Phase 3 optimized media pipeline, rather than replacing them.
+
+Phase 10 remains after Phase 9 baseline technical Mac UAT; upon Phase 10 completion run a final visual and full technical regression acceptance. **Only then** conduct external retailer/customer user testing and commercial KPI review. These do not block prior engineering.
+
 ## 1. Business outcome
 
 Replace the fixed, text-led Didar B2C home presentation with a **media-first, luxury visual experience**, controllable through an actual PostgreSQL-backed admin **Visual CMS / Page Builder**. DIDAR administrators must compose, order, preview, schedule, approve, publish, disable and revise content sections without requiring source-code changes. The same authorized and tenant-safe block renderer can later be reused for Didar-wide campaigns, collection/category editorial landing pages and merchant-only campaign/storefront pages created in previous phases.
