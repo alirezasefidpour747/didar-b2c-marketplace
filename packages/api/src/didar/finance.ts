@@ -1,3 +1,4 @@
+import {procurementRead, procurementWrite} from './finance-procurement';
 import { randomUUID, createHash } from 'node:crypto';
 import { transaction } from './db';
 import { requireUser } from './auth';
@@ -55,8 +56,9 @@ export async function recognizePayment(c: any, order: any, actor: string) {
     const {rows:items}=await c.query(`SELECT r.id reservation_id,i.uid,i.id item_id,i.line_id invoice_line_id,b.id invoice_id,b.invoice_number FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id JOIN didar_intake_line il ON il.id=i.line_id JOIN didar_intake_batch b ON b.id=il.batch_id WHERE r.order_line_id=$1 ORDER BY r.id`,[l.id]);
     for(const item of items.length?items:[{reservation_id:null}]) {
       const amounts=entitlement(l,l.contract,BigInt(order.rate_snapshot.rate_irr),items.length?1:l.quantity);
-      await appendEvent(c,{intent:'sale:'+l.id+':'+(item.reservation_id||'legacy'),kind:'SALE_EXPOSURE',supplier_id:l.supplier_id,customer_id:order.customer_id,order_line_id:l.id,reservation_id:item.reservation_id,...amounts,actor_id:actor,
+      const event=await appendEvent(c,{intent:'sale:'+l.id+':'+(item.reservation_id||'legacy'),kind:'SALE_EXPOSURE',supplier_id:l.supplier_id,customer_id:order.customer_id,order_line_id:l.id,reservation_id:item.reservation_id,...amounts,actor_id:actor,
         snapshot:{...item,...amounts,contract:l.contract,ownership:l.contract.ownership,custody:'DIDAR',title:l.contract.ownership==='CONSIGNMENT'?'SUPPLIER':'DIDAR',recognition:'verified_customer_payment',rate_irr:String(order.rate_snapshot.rate_irr),price:l.breakdown,quantity:items.length?1:l.quantity,due_at:new Date(Date.now()+l.contract.due_days*86400000).toISOString(),customer_payment_irr:String(BigInt(l.breakdown.total_irr)*BigInt(items.length?1:l.quantity))}});
+      if(BigInt(event.gold_ug)>0n)await c.query('INSERT INTO didar_fin_request(id,sale_event_id,supplier_id,gold_ug) VALUES($1,$1,$2,$3) ON CONFLICT DO NOTHING',[event.id,event.supplier_id,event.gold_ug]);
     }
   }
 }
@@ -65,15 +67,15 @@ export async function financeRead(c: any, u: any) {
   const contracts=(await c.query(`SELECT t.*,r.approved,r.created_at approved_at FROM didar_fin_contract t LEFT JOIN didar_fin_contract_review r ON r.contract_id=t.id WHERE ($1::text IS NULL OR t.supplier_id=$1) ORDER BY t.created_at DESC`,[supplier])).rows;
   const events=(await c.query(`SELECT id,intent,kind,supplier_id,order_line_id,reservation_id,source_event_id,gold_ug,irr,created_at,
     snapshot-'price'-'customer_payment_irr' AS snapshot FROM didar_fin_event WHERE ($1::text IS NULL OR supplier_id=$1) ORDER BY created_at DESC,id DESC LIMIT 500`,[supplier])).rows;
-  const accounts=(await c.query(`SELECT supplier_id,sum(gold_ug)::text gold_ug,sum(irr)::text irr FROM didar_fin_event WHERE ($1::text IS NULL OR supplier_id=$1) GROUP BY supplier_id ORDER BY supplier_id`,[supplier])).rows;
+  const accounts=(await c.query(`SELECT supplier_id,sum(gold_ug)::text gold_ug,sum(irr)::text irr FROM didar_fin_event WHERE supplier_id IS NOT NULL AND ($1::text IS NULL OR supplier_id=$1) GROUP BY supplier_id ORDER BY supplier_id`,[supplier])).rows;
   const suppliers=(await c.query('SELECT id,name FROM didar_supplier WHERE ($1::text IS NULL OR id=$1) ORDER BY name',[supplier])).rows;
   return {contracts,events,accounts,suppliers,mode:'SANDBOX_MANUAL',unit:'fine_gold_microgram',rounding:'ceil_per_unit',production_accounting:'PROFESSIONAL_APPROVAL_REQUIRED'};
 }
 export async function performFinance(action: string, req: any) {
-  if(action!=='finance') return {handled:false};
+  if(!['finance','treasury'].includes(action)) return {handled:false};
   const u=await requireUser(req,['admin','supplier']);
   if(u.role==='supplier'&&(!u.supplier_active||u.supplier_status!=='approved'))throw new Error('FORBIDDEN');
-  if(req.method==='GET')return {handled:true,result:await transaction(c=>financeRead(c,u))};
+  if(req.method==='GET')return {handled:true,result:await transaction<any>(c=>action==='treasury'?procurementRead(c,u):financeRead(c,u))};
   if(req.method!=='POST')throw new Error('METHOD_NOT_ALLOWED');
   localFinance();
   const b=req.body||{};
@@ -89,6 +91,8 @@ export async function performFinance(action: string, req: any) {
       await audit(c,u.id,'finance_contract_requested',{id,supplier_id:supplier,version});return {id};
     }
     if(u.role!=='admin')throw new Error('FORBIDDEN');
+    const treasury=await procurementWrite(c,u,b);
+    if(treasury)return treasury;
     if(b.operation==='contract_review'){
       if(typeof b.approved!=='boolean')throw new Error('INVALID_APPROVAL');
       await c.query('INSERT INTO didar_fin_contract_review(contract_id,approved,actor_id,reason) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[finText(b.contract_id),b.approved,u.id,finText(b.reason,1000)]);

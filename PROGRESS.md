@@ -1,3 +1,9 @@
+## Gate 2 — CODEX_LINUX_VERIFIED (2026-10-16)
+
+Delivered `finance-procurement-schema.sql`, `finance-procurement.ts`, real `/didar/treasury` + Persian `/manage/treasury`, one request per paid gold exposure, synthetic purchase records/approval, bounded multi-purchase/multi-request allocation, separate title/custody facts, partial mixed and rial-only settlement, reversals, due dates and owned/unallocated stock. Database idempotency keys compare JSONB payloads. Supplier purchase-desk data stays private. No trade/bank execution.
+
+Final production build and fresh disposable QA passed: **83 backend/workflow/security/migration tests / 755 assertions**, **1 native Medusa HTTP test**, **10 Playwright tests**. Acceptance includes concurrent allocation rejection, title/physical gates, rial-only queue and migration replay preserving facts. Source self-review and whitespace check passed. MAC_UAT_PENDING / REAL_RFID_PENDING. Gates 3–5 remain unfinished.
+
 ## Gate 1 — CODEX_LINUX_VERIFIED (2026-10-16)
 
 Implemented additive supplier contract/version/review and immutable checkout terms; fine-gold µg/IRR supplier events on verified payment; default gold, mixed/rial and ownership rules; one-time return-gated synthetic refunds; scoped Persian `/manage/finance`. No historical-order backfill or Phase 1 UID/price changes. Existing synthetic test teardown now retires fixtures instead of deleting financial history; browser assertions target seeded products/tenant scope while retaining history.

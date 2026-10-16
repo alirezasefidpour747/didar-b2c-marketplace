@@ -1,3 +1,7 @@
+## 2026-10-16 — Phase 2 Gate 2
+
+Procurement request is intent, purchase is separate synthetic executed evidence, allocation is a reservation, and title, custody and payable discharge require distinct facts. IRR-only contracts must remain actionable without gold requests. Partial settlement and reversal derive balances from immutable source events. Negative supplier balances after refund of an already-settled sale represent recoverable advances; never silently delete settlement. Cost/source documents remain admin-only. No external trade or bank provider is enabled.
+
 ## 2026-10-16 — Phase 2 Gate 1
 
 Continue baseline 0e569d4 with the existing PostgreSQL gold-domain extension. Fine gold uses integer µg; entitlement is independent of sales margins/VAT. Contracts freeze at checkout; verified payment recognizes the sandbox obligation. Default version 0 is GOLD_ONLY consignment. Didar-owned goods create no external payable. Keep legacy IRR making in IRR. Never backfill old orders or erase financial history; retain retired synthetic fixtures. Physical returns and synthetic financial refunds are separate. No real trade/bank execution. See docs/PHASE2_FINANCIAL_CORE.md for rounding and provisional legal assumptions.

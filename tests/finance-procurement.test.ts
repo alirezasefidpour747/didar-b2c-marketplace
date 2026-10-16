@@ -1,0 +1,61 @@
+import {test,expect,afterAll} from 'bun:test';
+import {financeFixture,finAPI,finOK,finDB} from './financial-helpers';
+afterAll(async()=>finDB.end());
+test('Gate 2: paid requests, two purchases/multiple allocations, separate title/custody and partial mixed settlement',async()=>{
+ const f=await financeFixture(),{sale:s1}=await f.buy(),{sale:s2}=await f.buy();
+ const read=()=>finOK('treasury',undefined,f.admin);
+ let data=await read();expect(data.requests.filter((r:any)=>r.supplier_id===f.sid)).toHaveLength(2);expect(data.facts.filter((e:any)=>e.kind==='PURCHASE'&&e.supplier_id===f.sid)).toHaveLength(0);
+ expect((await finAPI('treasury',{operation:'request_approve',sale_id:s1.id,reason:'forged',idempotency_key:crypto.randomUUID()},f.seller)).http).toBe(403);
+ for(const s of [s1,s2])await f.command({operation:'request_approve',sale_id:s.id});
+ const purchase=async(weight:string)=> (await f.command({operation:'purchase',synthetic:true,weight_mg:weight,purity:750,cost_irr:'13000000000',rate_irr:'65000000',currency:'IRR',counterparty:'Synthetic gold desk',document:crypto.randomUUID(),custody:'QA safe',title_confirmed:true})).event;
+ const p1=await purchase('200000'),p2=await purchase('30000');
+ for(const p of [p1,p2])await f.command({operation:'purchase_approve',purchase_id:p.id});
+ const key=crypto.randomUUID(),command={operation:'allocate',purchase_id:p1.id,sale_id:s1.id,amount_ug:'20000000',idempotency_key:key};
+ const [first,replay]=await Promise.all([f.command(command),f.command(command)]);expect(first.event.id).toBe(replay.event.id);
+ expect((await finAPI('treasury',{...command,amount_ug:'20000001',reason:'conflict'},f.admin)).http).toBe(409);
+ const a1=first.event,a2=(await f.command({operation:'allocate',purchase_id:p2.id,sale_id:s1.id,amount_ug:'22000000'})).event;
+ await f.command({operation:'allocate',purchase_id:p1.id,sale_id:s2.id,amount_ug:'42000000'});
+ expect((await finAPI('treasury',{operation:'allocate',purchase_id:p2.id,sale_id:s2.id,amount_ug:'1000000',reason:'over request',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
+ expect((await finAPI('treasury',{operation:'gold_settle',allocation_id:a1.id,amount_ug:'10000000',reason:'no facts',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
+ for(const a of [a1,a2]){
+   await f.command({operation:'title_transfer',allocation_id:a.id,document:'QA title'});
+   expect((await finAPI('treasury',{operation:'gold_settle',allocation_id:a.id,amount_ug:'1',reason:'still no physical fact',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
+   await f.command({operation:'physical_handover',allocation_id:a.id,document:'QA custody',disposition:'HELD_FOR_SUPPLIER'});
+ }
+ const settled=(await f.command({operation:'gold_settle',allocation_id:a1.id,amount_ug:'10000000'})).event;
+ await f.command({operation:'gold_settle',allocation_id:a1.id,amount_ug:'10000000'});
+ await f.command({operation:'gold_settle',allocation_id:a2.id,amount_ug:'22000000'});
+ await f.command({operation:'rial_settle',sale_id:s1.id,amount_irr:'3640000000',document:'QA bank evidence'});
+ data=await read();const request=data.requests.find((r:any)=>r.sale_event_id===s1.id);expect(request.balance).toEqual({gold_ug:'0',irr:'0'});expect(request.state).toBe('settled');
+ expect((await finAPI('treasury',{operation:'gold_settle',allocation_id:a1.id,amount_ug:'1',reason:'overdraft',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
+ await f.command({operation:'reverse_settlement',event_id:settled.id,return_evidence:'QA physical gold recovered'});
+ data=await read();expect(data.requests.find((r:any)=>r.sale_event_id===s1.id).balance.gold_ug).toBe('10000000');
+ const own=await finOK('treasury',undefined,f.seller);expect(own.requests.every((r:any)=>r.supplier_id===f.sid)).toBe(true);expect(own.facts.some((e:any)=>e.kind==='PURCHASE')).toBe(false);
+ const before=(await finDB.query('SELECT count(*)::int n FROM didar_fin_request WHERE sale_event_id=$1',[s1.id])).rows[0].n;
+ await finOK('payment',{order_id:(await finDB.query('SELECT order_id FROM didar_order_line WHERE id=$1',[s1.order_line_id])).rows[0].order_id,outcome:'success'},f.buyer);
+ expect((await finDB.query('SELECT count(*)::int n FROM didar_fin_request WHERE sale_event_id=$1',[s1.id])).rows[0].n).toBe(before);
+ await finDB.query('UPDATE didar_product SET active=false,published=false WHERE id=$1',[f.pid]);
+});
+test('Gate 2: concurrent over-allocation rejected, unexecuted facts reverse append-only and refunded request cannot be allocated',async()=>{
+ const f=await financeFixture('GOLD_ONLY'),{sale}=await f.buy();await f.command({operation:'request_approve',sale_id:sale.id});
+ const p=(await f.command({operation:'purchase',synthetic:true,weight_mg:'100000',purity:750,cost_irr:'6500000000',rate_irr:'65000000',currency:'IRR',counterparty:'QA',document:'QA',custody:'QA safe',title_confirmed:true})).event;
+ await f.command({operation:'purchase_approve',purchase_id:p.id});
+ const run=()=>finAPI('treasury',{operation:'allocate',purchase_id:p.id,sale_id:sale.id,amount_ug:'50000000',reason:'race',idempotency_key:crypto.randomUUID()},f.admin);
+ const race=await Promise.all([run(),run()]);expect(race.map(r=>r.http).sort()).toEqual([200,409]);
+ const a=race.find(r=>r.http===200)!.event;
+ await f.command({operation:'reverse_fact',event_id:a.id});await f.command({operation:'reverse_fact',event_id:p.id});
+ await finOK('returns',{operation:'request',reservation_id:sale.reservation_id,reason:'QA return'},f.buyer);await finOK('returns',{operation:'receive',reservation_id:sale.reservation_id,reason:'QA received'},f.admin);await finOK('finance',{operation:'refund',event_id:sale.id,reason:'QA refunded'},f.admin);
+ expect((await finAPI('treasury',{operation:'allocate',purchase_id:p.id,sale_id:sale.id,amount_ug:'1',reason:'refunded',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
+ await expect(finDB.query('DELETE FROM didar_fin_request WHERE sale_event_id=$1',[sale.id])).rejects.toThrow();
+ await finDB.query('UPDATE didar_product SET active=false,published=false WHERE id=$1',[f.pid]);
+});
+test('Gate 2: rial-only contracts remain actionable without a gold procurement request; migrations preserve facts',async()=>{
+ const f=await financeFixture('RIAL_ONLY'),{sale}=await f.buy();
+ let data=await finOK('treasury',undefined,f.admin);expect(data.rial_obligations.some((r:any)=>r.id===sale.id)).toBe(true);expect(data.requests.some((r:any)=>r.sale_event_id===sale.id)).toBe(false);
+ await f.command({operation:'rial_settle',sale_id:sale.id,amount_irr:sale.irr,document:'QA rial-only settlement'});
+ data=await finOK('treasury',undefined,f.admin);expect(data.rial_obligations.find((r:any)=>r.id===sale.id).balance.irr).toBe('0');
+ const {readFileSync}=await import('node:fs');const before=(await finDB.query('SELECT id,intent FROM didar_fin_event ORDER BY id')).rows;
+ for(let n=0;n<2;n++)await finDB.query(readFileSync('packages/api/src/didar/finance-procurement-schema.sql','utf8'));
+ expect((await finDB.query('SELECT id,intent FROM didar_fin_event ORDER BY id')).rows).toEqual(before);
+ await finDB.query('UPDATE didar_product SET active=false,published=false WHERE id=$1',[f.pid]);
+});

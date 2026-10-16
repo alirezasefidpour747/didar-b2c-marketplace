@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'catalog',
   'finance',
+  'treasury',
   'me',
   'login',
   'register',

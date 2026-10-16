@@ -27,7 +27,7 @@ function FinanceContent(){
   if(!data)return <p>در حال دریافت صورت‌حساب…</p>
   return <main dir="rtl" className="container"><h1>هسته مالی دیدار</h1>
     <p role="note">محیط آزمایشی؛ ثبت دستی شبیه‌سازی‌شده. هیچ معامله، برداشت یا پرداخت بانکی واقعی انجام نمی‌شود.</p>
-    <nav><Link href="/manage">مدیریت</Link> · <Link href="/manage/operations">پذیرش و RFID</Link></nav>
+    <nav><Link href="/manage/treasury">خزانه و تسویه</Link> · <Link href="/manage">مدیریت</Link> · <Link href="/manage/operations">پذیرش و RFID</Link></nav>
     <section><h2>حساب طلا و ریال تأمین‌کنندگان</h2><p>طلا به میکروگرم خالص نگهداری می‌شود؛ معادل ۷۵۰ صرفاً نمایش است. ورود امانی به‌تنهایی بدهی خرید ایجاد نمی‌کند.</p>
       <table><thead><tr><th>تأمین‌کننده</th><th>مانده تعهد طلا</th><th>مانده تعهد ریال</th></tr></thead><tbody>{data.accounts.map((a:any)=><tr key={a.supplier_id}><td>{data.suppliers.find((s:any)=>s.id===a.supplier_id)?.name||a.supplier_id}</td><td><Fine value={a.gold_ug}/></td><td>{number(a.irr)} ریال</td></tr>)}</tbody></table>
     </section>
