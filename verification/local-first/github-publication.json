@@ -1,0 +1,42 @@
+{
+  "commit": "ed39a01bc5c6a8479f619fe0f38dd0759f3ddf59",
+  "repository": "https://github.com/alirezasefidpour747/didar-b2c-marketplace",
+  "files": {
+    "scripts/local.mjs": {
+      "http_status": 200,
+      "sha256": "72736ea31a3eac48f519594ec1337e06a211bbf6bb68e78692d479a91509ca4d",
+      "matches_local": true
+    },
+    "scripts/local/test.mjs": {
+      "http_status": 200,
+      "sha256": "c89732e1b8b7ea0c3eed9d4aacdc1f653af85562c9e401eaf01eb63d0101e265",
+      "matches_local": true
+    },
+    "playwright.config.ts": {
+      "http_status": 200,
+      "sha256": "84cdad255a6a4c5ac348291ae24c15c30d26812b4eae1ff60c71c3deb1c598d4",
+      "matches_local": true
+    },
+    "DELIVERY.md": {
+      "http_status": 200,
+      "sha256": "122511337e71580806249a012a3e1a6e636f08a1f35cec4f26f24a7a31e4228d",
+      "matches_local": true
+    },
+    "PROGRESS.md": {
+      "http_status": 200,
+      "sha256": "1bfa19521ca3b05de60e520d90c2907aed380eac0b4ec000ea5fab23ec211613",
+      "matches_local": true
+    },
+    "packages/api/src/didar/phase1.ts": {
+      "http_status": 200,
+      "sha256": "26cea5ae38d7c95a79faed651c0064e15787e786c412cf2c6620971b20cb16e1",
+      "matches_local": true
+    },
+    "apps/storefront/src/components/didar/operations.tsx": {
+      "http_status": 200,
+      "sha256": "4e2f178e87a883fbb856d8ac5a5f0a4f090fa515355094613480ae3284e47bd7",
+      "matches_local": true
+    }
+  },
+  "github_main_tree_http_status": 200
+}

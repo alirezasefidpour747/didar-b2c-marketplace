@@ -52,7 +52,9 @@ Manual UAT on the exact main SHA (`git rev-parse HEAD`):
 
 ## Publication and remaining acceptance
 
-One reviewed task branch: `didar/local-first-mac`. Owner's merged Phase 1 and subsequent roadmap commits are preserved. Exact source publication/remote verification is recorded after normal Git push; no force push or history rewrite is permitted. Original delivery bundles remain outside Git, unchanged.
+Verified implementation published to **`origin/main` at `ed39a01bc5c6a8479f619fe0f38dd0759f3ddf59`**, via normal, non-force push. Both owner roadmap commits through `4896f4b` and Phase 1 history are preserved. GitHub's public main tree returned HTTP200; seven source/delivery files at that immutable commit returned HTTP200 and matching SHA256. [Publication evidence](verification/local-first/github-publication.json) identifies the tested implementation commit; this later documentation-only commit records its publication.
+
+The reviewed task branch `didar/local-first-mac` is also published. PR creation was attempted and returned exactly `Post "https://api.github.com/graphql": Forbidden`; no PR was created. The authorized verified merge/publication completed through normal Git transport. No source push was blocked, no force push/history rewrite occurred, and original recovery bundles remain unchanged.
 
 The reusable Cloud install/start configuration is saved as a draft; review/save and publish it in Environment settings to persist those startup instructions. Saving the draft does not publish the environment or establish fresh-task restoration.
 
