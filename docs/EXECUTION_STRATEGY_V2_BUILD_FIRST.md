@@ -1,3 +1,5 @@
+> **HISTORICAL / SUPERSEDED FOR FUTURE EXECUTION (2026-10-16).** Owner-approved current strategy is [Execution Strategy v3](EXECUTION_STRATEGY_V3_BUILD_FIRST.md). The owner explicitly removed the numbered Mac-test development phase and moved the **complete Visual CMS to Phase 4 BEFORE CRM**. Keep this file for context only. Codex must NOT implement the old v2 Phase 9 Mac UAT or old final Phase 10 order. All current development phases are 0–9; the owner will perform Mac/customer usability acceptance after software feature completion.
+
 # DIDAR B2C — Execution Strategy v2: Critical Thinking + Design Thinking, BUILD FIRST
 
 **Decision date:** 2026-10-16
