@@ -1,3 +1,4 @@
+import { recognizePayment } from "./finance";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import { requireUser } from "./auth";
@@ -128,6 +129,7 @@ async function payment(req: any) {
         "UPDATE didar_payment_attempt SET status=$1,reference=$2,confirmed_at=now() WHERE id=$3 RETURNING *",
         [outcome, reference || null, attempt.id],
       ));
+    if (status === "paid") await recognizePayment(c, order, u.id);
     await audit(c, u.id, "sandbox_payment", {
       order_id: id,
       payment_id: attempt?.id,

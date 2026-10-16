@@ -7,12 +7,12 @@ test("RTL catalog, supplier comparison, login, checkout and payment", async ({
   await expect(
     page.getByRole("heading", { name: "انگشتر طلای ماه" }),
   ).toBeVisible();
-  await expect(page.locator(".product").first().locator(".offer")).toHaveCount(
+  await expect(page.locator(".product").filter({has:page.getByRole("heading",{name:"انگشتر طلای ماه",exact:true})}).locator(".offer")).toHaveCount(
     2,
   );
   await page
     .locator(".product")
-    .first()
+    .filter({has:page.getByRole("heading",{name:"انگشتر طلای ماه",exact:true})})
     .getByRole("button", { name: "افزودن به سبد +" })
     .first()
     .click();
@@ -51,10 +51,10 @@ test("supplier interface displays only owned stock", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "پنل تأمین‌کننده" }),
   ).toBeVisible();
-  await expect(page.locator(".inventory-form")).toHaveCount(4);
-  await expect(page.locator(".inventory-form").first()).toContainText(
-    "زرین دیدار",
-  );
+  // Retired QA offers remain visible as history. Verify tenant scope instead of a global row count.
+  await expect.poll(async () => page.locator(".inventory-form").count()).toBeGreaterThanOrEqual(4);
+  for (const row of await page.locator(".inventory-form").all()) await expect(row).toContainText("زرین دیدار");
+  await expect(page.locator(".inventory-form").filter({hasText:"گالری آفتاب"})).toHaveCount(0);
 });
 test("admin interface manages gold rate and catalog", async ({ page }) => {
   await page.goto("/");

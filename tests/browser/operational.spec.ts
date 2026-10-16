@@ -57,80 +57,9 @@ async function post(action: string, body: unknown, token: string) {
 
 test.afterAll(async () => {
   try {
-    const userIds = (
-      await db.query("SELECT id FROM didar_user WHERE email=ANY($1::text[])", [
-        [supplierEmail, customerEmail],
-      ])
-    ).rows.map((r: any) => r.id);
-    const orderIds = (
-      await db.query(
-        "SELECT id FROM didar_order WHERE customer_id=ANY($1::text[])",
-        [userIds],
-      )
-    ).rows.map((r: any) => r.id);
-    await db.query(
-      "DELETE FROM didar_order_line WHERE order_id=ANY($1::text[])",
-      [orderIds],
-    );
-    await db.query("DELETE FROM didar_order WHERE id=ANY($1::text[])", [
-      orderIds,
-    ]);
-    if (productId) {
-      const admin = await post(
-        "login",
-        { email: "admin@didar.test", password: "DidarDemo2026!" },
-        "",
-      );
-      // Retain the linked native/Didar product as an explicitly unpublished fixture, avoiding unsafe native deletes.
-      await post(
-        "manage",
-        {
-          kind: "product",
-          id: productId,
-          active: false,
-          published: false,
-          category_id: null,
-        },
-        admin.token,
-      );
-      await db.query("DELETE FROM didar_offer WHERE product_id=$1", [
-        productId,
-      ]);
-      await db.query("DELETE FROM didar_product_image WHERE product_id=$1", [
-        productId,
-      ]);
-    }
-    if (collectionId) {
-      await db.query(
-        "DELETE FROM didar_collection_product WHERE collection_id=$1",
-        [collectionId],
-      );
-      await db.query("DELETE FROM didar_collection WHERE id=$1", [
-        collectionId,
-      ]);
-    }
-    if (subcategoryId)
-      await db.query("DELETE FROM didar_category WHERE id=$1", [subcategoryId]);
-    if (categoryId)
-      await db.query("DELETE FROM didar_category WHERE id=$1", [categoryId]);
-    await db.query("DELETE FROM didar_audit WHERE actor_id=ANY($1::text[])", [
-      userIds,
-    ]);
-    await db.query("DELETE FROM didar_session WHERE user_id=ANY($1::text[])", [
-      userIds,
-    ]);
-    await db.query("DELETE FROM didar_user WHERE id=ANY($1::text[])", [
-      userIds,
-    ]);
-    await db.query(
-      "DELETE FROM didar_supplier_permission WHERE supplier_id=$1",
-      [supplierId],
-    );
-    if (supplierId)
-      await db.query("DELETE FROM didar_supplier WHERE id=$1", [supplierId]);
-  } finally {
-    await db.end();
-  }
+    if (productId) await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [productId]);
+    if (supplierId) await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [supplierId]);
+  } finally { await db.end(); }
 });
 
 test("admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered", async ({

@@ -64,20 +64,12 @@ beforeAll(async () => {
   );
 });
 afterAll(async () => {
-  const { rows } = await db.query(
-    "SELECT DISTINCT order_id FROM didar_order_line WHERE offer_id=$1",
-    [oid],
-  );
-  for (const r of rows) {
-    await db.query("DELETE FROM didar_order_line WHERE order_id=$1", [
-      r.order_id,
-    ]);
-    await db.query("DELETE FROM didar_order WHERE id=$1", [r.order_id]);
-  }
-  await db.query("DELETE FROM didar_offer WHERE id=$1", [oid]);
-  await db.query("DELETE FROM didar_product WHERE id=$1", [tag]);
+  // Preserve financial/order history; retire only this invocation's synthetic stock.
+  await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [oid]);
+  await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [tag]);
   await db.end();
 });
+
 test("anonymous and customer users cannot change stock or rate", async () => {
   expect((await api("manage")).status).toBe(401);
   expect((await api("manage", undefined, customer)).status).toBe(403);
@@ -265,8 +257,7 @@ test("one checkout spans suppliers with isolated order views", async () => {
         .rows[0].quantity,
     ).toBe(3);
   } finally {
-    await db.query("DELETE FROM didar_order_line WHERE offer_id=$1", [second]);
-    await db.query("DELETE FROM didar_offer WHERE id=$1", [second]);
+    await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [second]);
   }
 });
 test("expired reservation is released, cannot become paid", async () => {

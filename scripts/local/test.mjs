@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')

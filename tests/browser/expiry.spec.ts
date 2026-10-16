@@ -35,26 +35,9 @@ test.beforeAll(async () => {
 });
 test.afterAll(async () => {
   try {
-    const orders = (
-      await db.query("SELECT id FROM didar_order WHERE customer_id=$1", [
-        customerId,
-      ])
-    ).rows.map((o: any) => o.id);
-    await db.query(
-      "DELETE FROM didar_order_line WHERE order_id=ANY($1::text[])",
-      [orders],
-    );
-    await db.query("DELETE FROM didar_order WHERE id=ANY($1::text[])", [
-      orders,
-    ]);
-    await db.query("DELETE FROM didar_offer WHERE id=$1", [offerId]);
-    await db.query("DELETE FROM didar_product WHERE id=$1", [productId]);
-    await db.query("DELETE FROM didar_audit WHERE actor_id=$1", [customerId]);
-    await db.query("DELETE FROM didar_session WHERE user_id=$1", [customerId]);
-    await db.query("DELETE FROM didar_user WHERE id=$1", [customerId]);
-  } finally {
-    await db.end();
-  }
+    await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [productId]);
+    await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [offerId]);
+  } finally { await db.end(); }
 });
 
 test("expired reservation is shown to the customer and restores available pieces", async ({

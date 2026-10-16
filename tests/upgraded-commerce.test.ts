@@ -157,73 +157,10 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await db.query("DELETE FROM didar_supplier_permission WHERE supplier_id=$1", [
-    supplierId,
-  ]);
-  // Every deletion is scoped to this run's IDs; no seeded/demo stock is modified.
-  // Native-linked product fixtures are retained unpublished to preserve catalog history.
-  const orders = (
-    await db.query(
-      "SELECT id FROM didar_order WHERE customer_id=ANY($1::text[])",
-      [users],
-    )
-  ).rows.map((r: any) => r.id);
-  await db.query(
-    "DELETE FROM didar_order_line WHERE order_id=ANY($1::text[])",
-    [orders],
-  );
-  await db.query("DELETE FROM didar_order WHERE id=ANY($1::text[])", [orders]);
-  for (const id of requestedProducts)
-    await api(
-      "manage",
-      { kind: "product", id, active: false, published: false },
-      admin,
-    );
-  await db.query("DELETE FROM didar_offer WHERE product_id=$1", [product]);
-  await db.query("DELETE FROM didar_product_image WHERE product_id=$1", [
-    product,
-  ]);
-  await db.query("DELETE FROM didar_product_request WHERE supplier_id=$1", [
-    supplierId,
-  ]);
-  const fixture = (
-    await db.query("SELECT native_id FROM didar_product WHERE id=$1", [product])
-  ).rows[0];
-  if (fixture?.native_id) {
-    await api(
-      "manage",
-      {
-        kind: "product",
-        id: product,
-        active: false,
-        published: false,
-        category_id: null,
-      },
-      admin,
-    );
-  } else await db.query("DELETE FROM didar_product WHERE id=$1", [product]);
-  await db.query(
-    "DELETE FROM didar_collection_product WHERE collection_id=ANY($1::text[])",
-    [collections],
-  );
-  await db.query("DELETE FROM didar_collection WHERE id=ANY($1::text[])", [
-    collections,
-  ]);
-  await db.query("DELETE FROM didar_category WHERE id=ANY($1::text[])", [
-    categoryChildren,
-  ]);
-  if (categoryId)
-    await db.query("DELETE FROM didar_category WHERE id=$1", [categoryId]);
-  await db.query("DELETE FROM didar_audit WHERE actor_id=ANY($1::text[])", [
-    users,
-  ]);
-  await db.query("DELETE FROM didar_session WHERE user_id=ANY($1::text[])", [
-    users,
-  ]);
-  await db.query("DELETE FROM didar_user WHERE id=ANY($1::text[])", [users]);
-
-  if (supplierId)
-    await db.query("DELETE FROM didar_supplier WHERE id=$1", [supplierId]);
+  // Financial snapshots and events reference these fixtures permanently. Retire, do not erase.
+  for (const id of [product, ...requestedProducts])
+    await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [id]);
+  if (supplierId) await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [supplierId]);
   await db.end();
 });
 

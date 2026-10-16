@@ -1,3 +1,9 @@
+## Gate 1 — CODEX_LINUX_VERIFIED (2026-10-16)
+
+Implemented additive supplier contract/version/review and immutable checkout terms; fine-gold µg/IRR supplier events on verified payment; default gold, mixed/rial and ownership rules; one-time return-gated synthetic refunds; scoped Persian `/manage/finance`. No historical-order backfill or Phase 1 UID/price changes. Existing synthetic test teardown now retires fixtures instead of deleting financial history; browser assertions target seeded products/tenant scope while retaining history.
+
+Verification: full production codegen/panels/API/Next build passed; **80 backend/workflow/security/migration tests, 640 assertions, zero failures; 1 native Medusa HTTP test; 9 Playwright tests passed** against the compiled API/Next servers and fresh PostgreSQL/Redis. Explicit Cloud browser overrides: CHROMIUM_PATH=/usr/bin/chromium and PLAYWRIGHT_NO_SANDBOX=1. Gate 0 was not reimplemented. Self-review: SQL append-only/uniqueness/foreign keys, source/tenant boundaries, immutable pricing and gate-controlled refunds checked; git diff whitespace check passed. `MAC_UAT_PENDING`, `REAL_RFID_PENDING`. Gates 2–5 remain in progress; no claim that the whole roadmap is complete.
+
 # Didar Gold progress
 
 - Starting commit: fbb4e099a3ed56505f8267d58cb2f20c9967644a (initial README, main).

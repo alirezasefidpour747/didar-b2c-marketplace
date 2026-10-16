@@ -257,7 +257,8 @@ function Management() {
             {l}
           </button>
         ))}
-        <Link href="/manage/operations">پذیرش، UID و RFID و مجوزها</Link>
+        <Link href="/manage/finance">حساب‌ها و قراردادهای مالی</Link>
+            <Link href="/manage/operations">پذیرش، UID و RFID و مجوزها</Link>
         <Link href="/orders">سفارش‌ها و ارسال</Link>
       </nav>
       {!admin &&

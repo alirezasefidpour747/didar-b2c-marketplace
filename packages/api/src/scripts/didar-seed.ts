@@ -23,6 +23,7 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-schema.sql"), "utf8"));
   for (const [id, name] of [
     ["s1", "زرین دیدار"],
     ["s2", "گالری آفتاب"],
