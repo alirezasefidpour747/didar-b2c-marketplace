@@ -8,9 +8,11 @@ import {
   sessionUser,
   demoAccountAllowed,
 } from "./auth";
-import { integer, price } from "./pricing";
+import { integer, price, withPolicy } from "./pricing";
 import { catalog, manage } from "./catalog";
 import { performCommerce } from "./commerce";
+import { performPhase1 } from "./phase1";
+import { reserveItems, finalizeItems } from "./item-stock";
 import { isAvailable } from "./inventory";
 
 const text = (v: unknown, max = 250) => {
@@ -31,15 +33,7 @@ export async function expireOrders() {
       "SELECT id FROM didar_order WHERE status='pending' AND expires_at<=now() ORDER BY id FOR UPDATE SKIP LOCKED",
     );
     for (const o of rows) {
-      const { rows: lines } = await c.query(
-        "SELECT * FROM didar_order_line WHERE order_id=$1 ORDER BY offer_id",
-        [o.id],
-      );
-      for (const l of lines)
-        await c.query(
-          "UPDATE didar_offer SET quantity=quantity+$1,version=version+1 WHERE id=$2",
-          [l.quantity, l.offer_id],
-        );
+      await finalizeItems(c, o.id, false);
       await c.query("UPDATE didar_order SET status='expired' WHERE id=$1", [
         o.id,
       ]);
@@ -69,6 +63,8 @@ export async function perform(action: string, req: any): Promise<any> {
     action !== "profile"
   )
     throw new Error("METHOD_NOT_ALLOWED");
+  const phase1 = await performPhase1(action, req);
+  if (phase1.handled) return phase1.result;
   const extended = await performCommerce(action, req);
   if (extended.handled) return extended.result;
   if (action === "catalog" && req.method === "GET") {
@@ -212,13 +208,14 @@ export async function perform(action: string, req: any): Promise<any> {
         24 * 60 * 60 * 1000
       )
         throw new Error("CONFLICT_RATE_STALE");
+      const pricingRate = await withPolicy(c, rate);
       const snapshots: any[] = [];
       let total = 0;
       for (const l of lines) {
         const {
           rows: [o],
         } = await c.query(
-          "SELECT o.*,p.title,p.purity,p.active product_active,p.published,s.active supplier_active,s.status supplier_status FROM didar_offer o JOIN didar_product p ON p.id=o.product_id JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.id=$1 FOR UPDATE OF o",
+          "SELECT o.*,p.title,p.purity,p.active product_active,p.published,p.approved,s.active supplier_active,s.status supplier_status FROM didar_offer o JOIN didar_product p ON p.id=o.product_id JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.id=$1 FOR UPDATE OF o",
           [l.offer_id],
         );
         if (
@@ -226,6 +223,7 @@ export async function perform(action: string, req: any): Promise<any> {
           !o.active ||
           !o.product_active ||
           !o.published ||
+          !o.approved ||
           !o.supplier_active ||
           o.supplier_status !== "approved" ||
           !isAvailable(o.quantity, l.quantity)
@@ -234,7 +232,7 @@ export async function perform(action: string, req: any): Promise<any> {
         if (o.version !== l.version) throw new Error("CONFLICT_OFFER_CHANGED");
         const breakdown = {
           ...price({
-            ...rate,
+            ...pricingRate,
             ...o,
             labor_irr: Number(o.labor_irr),
             rate_irr: Number(rate.rate_irr),
@@ -246,7 +244,14 @@ export async function perform(action: string, req: any): Promise<any> {
             labor_mode: o.labor_mode,
             labor_bps: o.labor_bps,
             fixed_labor_irr: Number(o.labor_irr),
-            margin_bps: o.margin_bps,
+            pricing_policy_id: pricingRate.pricing_policy_id,
+            distribution_bps: pricingRate.distribution_bps,
+            retail_bps: pricingRate.retail_bps,
+            vat_bps: pricingRate.vat_bps,
+            taxable_components: pricingRate.taxable_components,
+            making_mode: o.making_mode,
+            making_bps: o.making_bps,
+            making_weight_mg: o.making_weight_mg,
           },
         };
         total += breakdown.total_irr * l.quantity;
@@ -258,13 +263,21 @@ export async function perform(action: string, req: any): Promise<any> {
         rows: [order],
       } = await c.query(
         "INSERT INTO didar_order(id,customer_id,idempotency_key,total_irr,status,address,rate_snapshot) VALUES($1,$2,$3,$4,'pending',$5,$6) RETURNING *",
-        [id, u.id, key, total, JSON.stringify(address), JSON.stringify(rate)],
+        [
+          id,
+          u.id,
+          key,
+          total,
+          JSON.stringify(address),
+          JSON.stringify(pricingRate),
+        ],
       );
       for (const l of snapshots) {
+        const lineID = uid();
         await c.query(
-          "INSERT INTO didar_order_line(id,order_id,offer_id,supplier_id,title,weight_mg,quantity,breakdown) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+          "INSERT INTO didar_order_line(id,order_id,offer_id,supplier_id,title,weight_mg,quantity,breakdown,stock_mode) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
           [
-            uid(),
+            lineID,
             id,
             l.id,
             l.supplier_id,
@@ -272,12 +285,16 @@ export async function perform(action: string, req: any): Promise<any> {
             l.weight_mg,
             l.quantity,
             JSON.stringify(l.breakdown),
+            l.stock_mode,
           ],
         );
-        await c.query(
-          "UPDATE didar_offer SET quantity=quantity-$1,version=version+1 WHERE id=$2",
-          [l.quantity, l.id],
-        );
+        if (l.stock_mode === "itemized")
+          await reserveItems(c, l, lineID, order.expires_at);
+        else
+          await c.query(
+            "UPDATE didar_offer SET quantity=quantity-$1,version=version+1 WHERE id=$2",
+            [l.quantity, l.id],
+          );
       }
       await audit(c, u.id, "checkout", { order_id: id, total_irr: total });
       return { order };
@@ -297,7 +314,7 @@ export async function perform(action: string, req: any): Promise<any> {
     }
     await expireOrders();
     const { rows: orders } = await db.query(
-      `SELECT o.id,o.status,o.created_at,o.expires_at,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC LIMIT 100`,
+      `SELECT o.id,o.status,o.created_at,o.expires_at,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'stock_mode',l.stock_mode,'items',(SELECT json_agg(json_build_object('reservation_id',r.id,'uid',i.uid,'weight_mg',i.weight_mg,'status',r.status,'fulfillment_status',r.fulfillment_status,'return_status',ret.status)) FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id LEFT JOIN didar_item_return ret ON ret.reservation_id=r.id WHERE r.order_line_id=l.id),'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC`,
       [u.role, u.id, u.supplier_id],
     );
     return { orders };
@@ -341,6 +358,17 @@ export async function handler(req: any, res: any) {
                       ["23503", "23514"].includes(e.code)
                     ? 400
                     : 500;
+    if (msg === "FORBIDDEN") {
+      const actor = await sessionUser(req).catch(() => null);
+      if (actor)
+        await audit(db, actor.id, "access_denied", {
+          action: req.path.split("/").pop(),
+          role: actor.role,
+          supplier_id: actor.supplier_id,
+          resource_id:
+            req.body?.item_id || req.body?.id || req.body?.batch_id || null,
+        }).catch(() => {});
+    }
     if (status === 500)
       console.error("Didar request failed", e.code || e.message);
     res.status(status).json({

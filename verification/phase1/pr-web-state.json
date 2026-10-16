@@ -1,0 +1,12 @@
+[
+  {
+    "number": 1,
+    "state": "MERGED",
+    "mergedTime": "2026-10-15T21:41:48Z",
+    "mergedBy": "alirezasefidpour747",
+    "baseBranch": "main",
+    "headBranch": "didar/phase1-intake-uid-rfid",
+    "headSha": "3bddce5038220c66bafad341c0955970fbc8be3f",
+    "commitsCount": 1
+  }
+]

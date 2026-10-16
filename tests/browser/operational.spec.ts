@@ -122,6 +122,10 @@ test.afterAll(async () => {
     await db.query("DELETE FROM didar_user WHERE id=ANY($1::text[])", [
       userIds,
     ]);
+    await db.query(
+      "DELETE FROM didar_supplier_permission WHERE supplier_id=$1",
+      [supplierId],
+    );
     if (supplierId)
       await db.query("DELETE FROM didar_supplier WHERE id=$1", [supplierId]);
   } finally {
@@ -160,6 +164,20 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
       admin.locator(`[data-supplier-id="${supplierId}"]`),
     ).toContainText("تأیید شده");
 
+    // Supplier is read-only until an administrator delegates each required action in the UI.
+    await admin.goto("/manage/operations");
+    await admin
+      .getByRole("button", { name: "مجوز تأمین‌کننده", exact: true })
+      .click();
+    for (const permission of ["CREATE_OWN_OFFER", "UPDATE_OWN_FULFILLMENT"]) {
+      await admin
+        .getByLabel(`تأمین آزمون ${tag} ` + permission, { exact: true })
+        .check();
+      await expect(
+        admin.getByLabel(`تأمین آزمون ${tag} ` + permission, { exact: true }),
+      ).toBeEnabled();
+    }
+    await admin.goto("/manage");
     await admin
       .getByRole("button", { name: "کاتالوگ و تصاویر", exact: true })
       .click();
@@ -288,8 +306,7 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
       await form.locator('[name="product_id"]').selectOption(productId);
       await form.locator('[name="weight_mg"]').fill(String(weight));
       await form.locator('[name="quantity"]').fill(String(quantity));
-      await form.locator('[name="labor_irr"]').fill("1000000");
-      await form.locator('[name="margin_bps"]').fill("500");
+      await form.locator('[name="making_bps"]').fill("1200");
       await form.locator('[name="terms"]').fill("آماده‌سازی دو روزه");
       await form.getByRole("button", { name: "ثبت عرضه من" }).click();
       await expect

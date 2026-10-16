@@ -35,7 +35,7 @@ const database = new URL(environment.DATABASE_URL)
 database.hostname = ip
 const env = { ...process.env, DATABASE_URL: database.toString(), TEST_API_URL: `http://127.0.0.1:${apiPort}`, TEST_STOREFRONT_URL: `http://127.0.0.1:${webPort}` }
 const checks = []
-if (mode !== 'browser') checks.push(['test', './tests/pricing.test.ts', './tests/inventory.test.ts', './tests/security.test.ts', './tests/commerce.test.ts', './tests/upgraded-commerce.test.ts'])
+if (mode !== 'browser') checks.push(['test', './tests/pricing.test.ts', './tests/inventory.test.ts', './tests/security.test.ts', './tests/commerce.test.ts', './tests/upgraded-commerce.test.ts', './tests/phase1.test.ts', './tests/migrations.test.ts'])
 if (mode !== 'api') checks.push(['run', 'test:e2e'])
 console.log('Running isolated local Compose checks with fixtures bound to the API database; credentials withheld.')
 for (const args of checks) {

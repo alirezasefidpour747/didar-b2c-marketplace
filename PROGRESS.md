@@ -65,3 +65,43 @@
 - Stdin-only secure administrator provisioning/login/fixture removal passed. Both native Mercur panels and their correctly prefixed JavaScript assets returned200. Sixty-eight application/build source files in the API image exactly match committed inputs.
 - Restarted API/storefront; all four services healthy, matching persisted catalog. Native offers/stock levels/orders remain0 after gold workflows, confirming no competing generic commerce ledger. Runtime is explicitly local sandbox and loopback-bound, not external staging.
 - Final DELIVERY, full requirements matrix and durable logs/screenshots/JSON evidence prepared. Software MVP locally complete. Only native ARM execution/authorized Oracle access and production provider/legal/commercial/operational prerequisites remain external; no deployment/provisioning attempted.
+
+## Phase 1 UID/RFID implementation — in progress (2026-10-16)
+- Continued existing branch `didar/phase1-intake-uid-rfid` at `3bddce5`, preserving verified MVP and historical stock.
+- Restored persisted local services without reinstalling; baseline: **36 tests, 210 assertions passed** (fresh execution).
+- Implementing additive item registry/intake/RFID and versioned Gold-First policies. This entry is **not Phase 1 acceptance**; fresh integration/browser verification follows.
+- Git transport is available. GitHub GraphQL/REST access is currently proxy-forbidden; branch pushes can still update PR #1 and its head can be verified through Git refs. No merge or Oracle deployment attempted.
+
+### Phase 1 backend verification milestone
+- **50 backend/integration/migration tests passed, 480 assertions** on the restored local PostgreSQL/Mercur runtime. Includes all original 36 regressions with intentional additive Gold-First expectations and explicitly granted supplier write fixtures.
+- Verified 19 separately weighed units (5/135 g, 2/127 g, 12/117 g), global UID/EPC constraints across suppliers, audited retagging, scoped counting, immediate permission revocation, exact-item concurrent checkout with two customer identities, once-only payment/release/expiry, physical return/quarantine/restock, equal-weight item grouping and immutable intake/pricing history.
+- Verified versioned tolerance exceptions remain valid for posting after a newer policy version, without changing the recorded verification; ordinary weight/count mismatch still blocks verification. Default tolerance restored to zero after QA.
+- Stock invariant inspection: **zero derived-quantity mismatches** across all itemized offers at this milestone. Clean/repeat additive migrations preserve a legacy quantity and historical paid price JSON without creating units.
+- Existing 23 local deployment guards passed; no cloud operation occurred. Secret pattern/history review found zero token/private-key/credential-URL findings across 246 candidate source files and 605 reachable Git blobs before this commit.
+- Browser acceptance and fresh production builds remain in progress. Earlier UI scan-queue and permission-checkbox defects were identified through real Playwright runs and repaired; this milestone does not claim full browser acceptance.
+
+### Publication checkpoint
+- Normally pushed verified backend milestone `fb99850dee98d60560e18b38733c7ac2e00f4a11` to the requested feature branch; remote branch SHA confirmed. No force push, main update, PR merge or Oracle action.
+- GitHub API/CLI remains `Forbidden`; Git transport's `refs/pull/1/head` still advertises the prior specification commit despite the feature branch advancing. PR head/status/description cannot yet be independently reconciled through the permitted API. Final source publication will be verified through the remote branch/tree; this is a separate PR metadata verification limitation, not a reason to discard work.
+- Main also received an independently committed copy of the same authoritative specification (`7868b54`); its document content is byte-identical. No application changes from main were missed or overwritten.
+
+### Compiled application acceptance
+- Fresh official route codegen, native admin/vendor panel builds, API compilation and Next production build passed (18 storefront routes including `/manage/operations`). Rebuilt the API after the final void-tag correction and verified the compiled handler contains it.
+- Ran **51 backend/integration/migration tests, 492 assertions, all passed** against the actual compiled API. Added a permanent-void-UID case: pairing a void unit is denied, authorized unpair can release its tag, and its UID cannot be reused.
+- Ran the **entire Playwright suite in one successful production-runtime run: 8 passed** against compiled Mercur API and Next standalone server. Existing catalog, mobile RTL, image, approval, checkout, expiry, fulfillment and bounded-upload checks pass alongside the complete Phase 1 browser intake/sale/count journey.
+- Native Medusa HTTP health: **1 passed** against compiled runtime. Deployment guard suite: **23 passed**, local/mocked only. ARM64 lock/native-artifact static audit passes; no new dependencies were added and no physical ARM64 execution is claimed.
+- Four actual runtime secret values were compared against source and built application files with **zero matches**. Public local-only demo credentials and unauthenticated/documented local service URLs are deliberately distinguished from runtime deployment secrets.
+- Scanner reads are queued and repeat reads deduplicate; the permission screen updates its pending checkbox state and rolls back on save errors. Previewed the resulting Persian counting screenshot. No hardware RF integration or real scale measurement is claimed.
+
+### Final isolation/packaging review
+- Found and fixed an additional tenant boundary in count reports: a supplier-scoped count can contain an administrator's out-of-scope scan. Supplier responses now redact competitor UID, item ID, EPC/raw value; the administrator retains the original audited observation. The focused real-API regression passed (**1 test / 15 assertions**); it is included in the full suite for the final container run.
+- Next standalone tracing included a local `.env` configuration file. Prepared-image packaging now writes a sensitive-file `.dockerignore` before transferring the standalone context. Runtime credentials remain injected by Compose and are excluded from image build contexts.
+- Reused the fresh verified production artifacts for local image packaging; no dependency reinstall, application bootstrap, Oracle operation or database reset. The managed Docker client cache was redirected into a writable workspace directory after its default home-directory write failed.
+
+### Final Docker acceptance and handoff
+- Prepared images built from the fresh verified artifacts; the final API layer carries source revision `ba85987`. All four local services are healthy. Docker VFS copying/removal was slow; no storage-driver change, source reset or volume removal was used.
+- Complete backend suite against the **actual Compose database/API: 52 passed / 507 assertions**. Complete final browser run against the same stack: **8 passed**. A mobile test was strengthened to wait for the product URL and require its level-one detail heading after the prior ambiguous catalog-heading match; the focused cold-restart mobile check also passed.
+- Compared **119 source/build-input/compiled service files** against the API image with zero mismatches. No runtime `.env` files exist at the checked API/storefront paths, no secret-valued image ENV keys are present, and six actual runtime secret values have zero source/build matches.
+- Stock checks: zero derived-cache mismatches and zero physical items linked to legacy offers. Restart preserved all **29 units** and the exact UID/state checksum. Original delivery bundle SHA-256 remains `b4a438fc7735cb4e41592278d079c1d8903c439abbbea4dd7b77fd341bd47d28`; MVP completion bundle remains `6e10ba790a1f5aaab923ffe7b831b2f74bbadb752d7f8c909b10569cb0408432`.
+- GitHub public source at `ba85987` returns HTTP 200 and exactly matches the local source SHA-256. The earlier PR-ref mystery is resolved: GitHub confirms **PR #1 MERGED by the repository owner at 2026-10-15T21:41:48Z**, containing only the specification commit. This agent did not merge implementation code. Creating a successor draft was attempted and failed with `Post "https://api.github.com/graphql": Forbidden`; its review body and compare URL are prepared.
+- Final `DELIVERY.md`, requirements matrix, operator guide, authoritative completion addendum and `verification/phase1` evidence describe actual results and hardware/ARM/Oracle blockers. No Oracle deployment, real funds movement or Phase 2 finance was attempted.

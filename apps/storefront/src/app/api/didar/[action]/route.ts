@@ -12,6 +12,11 @@ const allowed = new Set([
   'profile',
   'fulfillment',
   'image',
+  'intake',
+  'inventory',
+  'rfid',
+  'returns',
+  'permissions',
 ])
 async function proxy(
   req: NextRequest,
@@ -68,6 +73,11 @@ async function proxy(
         return NextResponse.json({ message: 'NOT_FOUND' }, { status: 404 })
       url.searchParams.set('id', id)
     }
+    if (['intake', 'inventory', 'rfid'].includes(action))
+      for (const key of ['id', 'search']) {
+        const value = req.nextUrl.searchParams.get(key)
+        if (value && value.length <= 250) url.searchParams.set(key, value)
+      }
     const response = await fetch(url, {
       method: req.method,
       headers,

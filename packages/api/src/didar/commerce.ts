@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import { requireUser } from "./auth";
+import { authorize } from "./permissions";
+import { finalizeItems } from "./item-stock";
 import { integer } from "./pricing";
 import { reservationStatus } from "./inventory";
 import { paymentProvider, type PaymentOutcome } from "./payment-provider";
@@ -112,17 +114,7 @@ async function payment(req: any) {
       reference = result.reference;
       status = outcome === "success" ? "paid" : "failed";
     }
-    if (status !== "paid") {
-      const { rows: lines } = await c.query(
-        "SELECT offer_id,quantity FROM didar_order_line WHERE order_id=$1 ORDER BY offer_id",
-        [id],
-      );
-      for (const line of lines)
-        await c.query(
-          "UPDATE didar_offer SET quantity=quantity+$1,version=version+1 WHERE id=$2",
-          [line.quantity, line.offer_id],
-        );
-    }
+    await finalizeItems(c, id, status === "paid");
     const {
       rows: [order],
     } = await c.query(
@@ -166,6 +158,14 @@ async function fulfillment(req: any) {
     if (!line) throw new Error("NOT_FOUND");
     if (u.role === "supplier" && line.supplier_id !== u.supplier_id)
       throw new Error("FORBIDDEN");
+    await authorize(c, u, line.supplier_id, "UPDATE_OWN_FULFILLMENT");
+    if (line.stock_mode === "itemized") {
+      const { rowCount } = await c.query(
+        "SELECT id FROM didar_item_reservation WHERE order_line_id=$1 AND status='sold'",
+        [id],
+      );
+      if (!rowCount) throw new Error("CONFLICT_RETURNED_ITEM");
+    }
     if (line.payment_status !== "paid")
       throw new Error("CONFLICT_UNPAID_ORDER");
     if (b.status === line.fulfillment_status) return { line };
@@ -188,7 +188,13 @@ async function fulfillment(req: any) {
       "UPDATE didar_order_line SET fulfillment_status=$1,tracking_number=$2,carrier=$3,fulfillment_updated_at=now() WHERE id=$4 RETURNING *",
       [b.status, tracking, carrier, id],
     );
+    await c.query(
+      "UPDATE didar_item_reservation SET fulfillment_status=$1,updated_at=now() WHERE order_line_id=$2 AND status='sold'",
+      [b.status, id],
+    );
     await audit(c, u.id, "fulfillment_updated", {
+      supplier_id: line.supplier_id,
+      admin_override: u.role === "admin",
       order_id: line.order_id,
       line_id: id,
       from: line.fulfillment_status,
@@ -267,6 +273,40 @@ export async function performCommerce(
         0,
         10000,
       );
+      const {
+        rows: [previous],
+      } = await c.query("SELECT * FROM didar_pricing_policy WHERE id=$1", [
+        old.pricing_policy_id,
+      ]);
+      const distribution = integer(
+        b.distribution_bps ?? previous.distribution_bps,
+        "DISTRIBUTION",
+        0,
+        10000,
+      );
+      const retail = integer(
+        b.retail_bps ?? previous.retail_bps,
+        "RETAIL",
+        0,
+        10000,
+      );
+      const taxable = b.taxable_components ?? previous.taxable_components;
+      if (
+        !Array.isArray(taxable) ||
+        taxable.some(
+          (v: any) => !["gold", "making", "distribution", "retail"].includes(v),
+        )
+      )
+        throw new Error("INVALID_TAX_COMPONENTS");
+      const {
+        rows: [policy],
+      } = await c.query(
+        "INSERT INTO didar_pricing_policy(distribution_bps,retail_bps,vat_bps,taxable_components,actor_id) VALUES($1,$2,$3,$4,$5) RETURNING id",
+        [distribution, retail, tax, [...new Set(taxable)], u.id],
+      );
+      await c.query("UPDATE didar_rate SET pricing_policy_id=$1 WHERE id=1", [
+        policy.id,
+      ]);
       await c.query(
         "UPDATE didar_rate SET rate_irr=$1,tax_bps=$2,fee_irr=$3,rounding_step=$4,default_margin_bps=$5,version=version+1,updated_at=now() WHERE id=1",
         [rate, tax, fee, rounding, margin],

@@ -1,0 +1,73 @@
+$ node scripts/wait-api.mjs && bun test --env-file=packages/api/.env ./tests/pricing.test.ts ./tests/inventory.test.ts ./tests/security.test.ts ./tests/commerce.test.ts ./tests/upgraded-commerce.test.ts ./tests/phase1.test.ts ./tests/migrations.test.ts
+bun test v1.4.3 (c6da4a4d3)
+
+tests/pricing.test.ts:
+(pass) gold-first legacy making compatibility uses additive base margin and IRR tax [36.91ms]
+(pass) fractional gram uses integer upward rial rounding [2.56ms]
+(pass) tax excludes gold principal [1.33ms]
+(pass) invalid quantities and rates cannot enter arithmetic [1.76ms]
+(pass) percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts [4.94ms]
+(pass) default margin is configurable while an explicit zero margin stays zero [0.24ms]
+(pass) invalid commercial policy cannot silently influence customer totals [0.28ms]
+
+tests/inventory.test.ts:
+(pass) exact grouped stock permits the last piece but never an oversell [0.08ms]
+(pass) fractional, unsafe and invalid stock requests cannot be reserved [0.69ms]
+(pass) only pending reservations expire, including the exact expiry boundary [0.54ms]
+
+tests/security.test.ts:
+(pass) public demo identities require explicit local runtime, independent of build mode [0.13ms]
+(pass) payment selection fails closed for production, missing environment and live modes [1.14ms]
+(pass) live Iranian gateway boundary never initiates an unconfigured charge [0.86ms]
+(pass) sandbox authority has no money movement and rejects invalid money [0.89ms]
+(pass) password verification handles corrupt records without crashing and uses unique salted hashes [364.81ms]
+
+tests/commerce.test.ts:
+(pass) anonymous and customer users cannot change stock or rate [55.97ms]
+(pass) supplier cannot update or read another supplier inventory [89.05ms]
+(pass) supplier creates exact-weight offer only under own identity [105.15ms]
+(pass) stock reserve is idempotent and failed payment restores exactly once [117.37ms]
+(pass) stale prices, fractional quantities and duplicate lines rejected [86.11ms]
+(pass) two concurrent purchases cannot oversell and paid stock remains deducted [88.58ms]
+(pass) one checkout spans suppliers with isolated order views [94.02ms]
+(pass) expired reservation is released, cannot become paid [38.54ms]
+
+tests/upgraded-commerce.test.ts:
+(pass) supplier registration requires admin approval and cannot self-approve [195.70ms]
+(pass) admin category and product edits persist publication controls [716.59ms]
+(pass) subcategory hierarchy rejects cycles and collection membership is editable [96.23ms]
+(pass) product images require admin authorization and matching image bytes [81.71ms]
+(pass) supplier manages multiple weights, deactivates an offer, and cannot alter another supplier [224.05ms]
+(pass) supplier product requests remain pending until admin review [57.49ms]
+(pass) approved supplier product request becomes one shared native-linked product [305.82ms]
+(pass) stock edits during a reservation count available pieces and release exactly once [120.01ms]
+(pass) payment initialization and concurrent callbacks are idempotent and owner scoped [155.23ms]
+(pass) expired initialized payment releases stock and cannot confirm successfully [120.44ms]
+(pass) paid allocation progresses through valid fulfillment and protects customer privacy [233.35ms]
+(pass) product purity edits invalidate old offers without changing paid pricing snapshots [263.01ms]
+(pass) profile updates are private, validated and logout revokes the session [41.05ms]
+
+tests/phase1.test.ts:
+(pass) mandatory 100g Gold-First 12+3+7, IRR VAT and fixed equivalent making are additive [6.21ms]
+(pass) all eight supplier mutations default denied; grants revoke immediately; reads isolated [765.94ms]
+(pass) 19 separately measured items reconcile 5/135g, 2/127g, 12/117g; mismatch and unverified stock blocked [831.74ms]
+(pass) EPC normalization, global uniqueness, audited replacement and independent pairing grant [184.32ms]
+(pass) count snapshot deduplicates five EPCs and UID aliases, flags missing/unknown, never changes stock [214.72ms]
+(pass) failed, cancelled and expired payments release the identical UID exactly once [236.44ms]
+(pass) concurrent checkout reserves/sells one exact UID; immutable pricing and supplier fulfillment permission [291.78ms]
+(pass) physical return quarantines then restocks once; old callback never re-sells returned UID [167.94ms]
+(pass) physical identity and posted source are database protected, legacy stock remains unserialized [97.79ms]
+(pass) UID and active EPC uniqueness spans suppliers, with no competitor disclosure [170.60ms]
+(pass) expiry sweep releases item UID exactly once and stock correction is independently authorized/audited [187.18ms]
+(pass) explicit tolerance is versioned, admin-only, reason required, quantity exceptions still forbidden [239.27ms]
+(pass) equal-weight physical units share a derived offer and reserve/release an exact set for quantity two [272.05ms]
+(pass) voided physical UID remains permanent; authorized unpair releases its tag without recreating stock [88.31ms]
+(pass) supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it [194.66ms]
+
+tests/migrations.test.ts:
+(pass) clean and repeat additive migrations preserve legacy stock and paid snapshots without invented units [646.53ms]
+
+ 52 pass
+ 0 fail
+ 507 expect() calls
+Ran 52 tests across 7 files. [12.57s]

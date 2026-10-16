@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
-import { integer, price } from "./pricing";
+import { integer, price, withPolicy } from "./pricing";
+import { hashPassword, demoAccountAllowed } from "./auth";
+import { authorize, permissions } from "./permissions";
 const text = (value: unknown, max = 250) => {
   if (typeof value !== "string" || !value.trim() || value.length > max)
     throw new Error("INVALID_TEXT");
@@ -30,14 +32,15 @@ export async function catalog(user?: any) {
     const {
       rows: [rate],
     } = await c.query("SELECT * FROM didar_rate WHERE id=1");
+    const pricingRate = await withPolicy(c, rate);
     const stale =
       Date.now() - new Date(rate.updated_at).getTime() > 24 * 60 * 60 * 1000;
     const quote_expires_at = new Date(
       new Date(rate.updated_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString();
     const { rows: products } = await c.query(
-      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published) ORDER BY p.id`,
-      [user?.role || "public"],
+      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
+      [user?.role || "public", user?.supplier_id || null],
     );
     const { rows: offers } = await c.query(
       `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved')) ORDER BY o.id`,
@@ -67,7 +70,7 @@ export async function catalog(user?: any) {
           price: stale
             ? null
             : price({
-                ...rate,
+                ...pricingRate,
                 ...o,
                 labor_irr: Number(o.labor_irr),
                 purity: p.purity,
@@ -92,7 +95,7 @@ export async function catalog(user?: any) {
       price_available: !stale,
       rate_stale: stale,
       rate: {
-        ...rate,
+        ...pricingRate,
         rate_irr: Number(rate.rate_irr),
         fee_irr: Number(rate.fee_irr ?? 0),
       },
@@ -128,6 +131,8 @@ function productInput(b: any, old: any = {}) {
     max_weight_mg: max,
     active: bool(p.active, true),
     published: bool(p.published, true),
+    approved: bool(p.approved, true),
+    attributes: p.attributes ?? {},
   };
 }
 async function saveProduct(req: any, u: any, b: any, c: any) {
@@ -137,6 +142,19 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
   } = await c.query("SELECT * FROM didar_product WHERE id=$1 FOR UPDATE", [id]);
   if (b.id && !old) throw new Error("NOT_FOUND");
   const p = productInput(b, old);
+  if (
+    typeof p.attributes !== "object" ||
+    Array.isArray(p.attributes) ||
+    JSON.stringify(p.attributes).length > 10000
+  )
+    throw new Error("INVALID_ATTRIBUTES");
+  if (old && old.purity !== p.purity) {
+    const { rowCount } = await c.query(
+      "SELECT id FROM didar_inventory_item WHERE product_id=$1 LIMIT 1",
+      [id],
+    );
+    if (rowCount) throw new Error("CONFLICT_PHYSICAL_PURITY");
+  }
   let native = old?.native_id;
   if (p.category_id) {
     const {
@@ -185,7 +203,8 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
               id: native,
               title: p.title,
               description: p.description,
-              status: p.active && p.published ? "published" : "draft",
+              status:
+                p.active && p.published && p.approved ? "published" : "draft",
               metadata,
             },
           ],
@@ -202,7 +221,8 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
               title: p.title,
               description: p.description,
               handle: `didar-${id}`,
-              status: p.active && p.published ? "published" : "draft",
+              status:
+                p.active && p.published && p.approved ? "published" : "draft",
               variants: [{ title: "Standard" }],
               metadata,
             },
@@ -212,7 +232,7 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
       native = result[0].id;
     }
     await c.query(
-      `INSERT INTO didar_product(id,title,category,description,purity,native_id,active,category_id,reference,jewelry_type,min_weight_mg,max_weight_mg,published) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,category=EXCLUDED.category,description=EXCLUDED.description,purity=EXCLUDED.purity,native_id=EXCLUDED.native_id,active=EXCLUDED.active,category_id=EXCLUDED.category_id,reference=EXCLUDED.reference,jewelry_type=EXCLUDED.jewelry_type,min_weight_mg=EXCLUDED.min_weight_mg,max_weight_mg=EXCLUDED.max_weight_mg,published=EXCLUDED.published`,
+      `INSERT INTO didar_product(id,title,category,description,purity,native_id,active,category_id,reference,jewelry_type,min_weight_mg,max_weight_mg,published,approved,attributes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,category=EXCLUDED.category,description=EXCLUDED.description,purity=EXCLUDED.purity,native_id=EXCLUDED.native_id,active=EXCLUDED.active,category_id=EXCLUDED.category_id,reference=EXCLUDED.reference,jewelry_type=EXCLUDED.jewelry_type,min_weight_mg=EXCLUDED.min_weight_mg,max_weight_mg=EXCLUDED.max_weight_mg,published=EXCLUDED.published,approved=EXCLUDED.approved,attributes=EXCLUDED.attributes`,
       [
         id,
         p.title,
@@ -227,6 +247,8 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
         p.min_weight_mg,
         p.max_weight_mg,
         p.published,
+        p.approved,
+        JSON.stringify(p.attributes),
       ],
     );
     if (b.collection_ids !== undefined) {
@@ -329,6 +351,7 @@ export async function manage(req: any, u: any) {
     return {
       ...data,
       suppliers,
+      permissions: await permissions(db, u),
       product_requests,
       ...(u.role === "admin" ? { audit: auditRows } : {}),
     };
@@ -355,6 +378,36 @@ export async function manage(req: any, u: any) {
           ? u.supplier_id
           : text(b.supplier_id)
         : old.supplier_id;
+      if (creating) await authorize(c, u, supplier, "CREATE_OWN_OFFER");
+      else {
+        const changed = (keys: string[]) =>
+          keys.some(
+            (k) => b[k] !== undefined && String(b[k]) !== String(old[k]),
+          );
+        const rights: string[] = [];
+        if (changed(["quantity"])) rights.push("EDIT_OWN_INVENTORY");
+        if (
+          changed([
+            "labor_irr",
+            "labor_bps",
+            "labor_mode",
+            "making_mode",
+            "making_bps",
+            "making_weight_mg",
+          ])
+        )
+          rights.push("EDIT_OWN_MAKING_CHARGE");
+        if (changed(["active", "terms", "margin_bps"]))
+          rights.push("EDIT_OWN_OFFER");
+        if (!rights.length) rights.push("EDIT_OWN_OFFER");
+        for (const right of rights) await authorize(c, u, supplier, right);
+        if (
+          old.stock_mode === "itemized" &&
+          b.quantity !== undefined &&
+          b.quantity !== old.quantity
+        )
+          throw new Error("CONFLICT_DERIVED_STOCK");
+      }
       if (u.role !== "admin" || creating) await approved(c, supplier);
       const product = creating ? text(b.product_id) : old.product_id;
       const {
@@ -378,8 +431,13 @@ export async function manage(req: any, u: any) {
       const {
         rows: [policy],
       } = await c.query("SELECT default_margin_bps FROM didar_rate WHERE id=1");
-      const quantity = integer(b.quantity, "QUANTITY", 0, 100000),
-        labor = integer(b.labor_irr, "LABOR"),
+      const quantity = integer(
+          b.quantity ?? old?.quantity ?? 0,
+          "QUANTITY",
+          0,
+          100000,
+        ),
+        labor = integer(b.labor_irr ?? Number(old?.labor_irr ?? 0), "LABOR"),
         margin = integer(
           b.margin_bps ?? old?.margin_bps ?? policy.default_margin_bps,
           "MARGIN",
@@ -416,7 +474,33 @@ export async function manage(req: any, u: any) {
           "UPDATE didar_offer SET quantity=$1,labor_irr=$2,margin_bps=$3,labor_bps=$4,active=$5,terms=$6,labor_mode=$7,version=version+1 WHERE id=$8",
           [quantity, labor, margin, laborBps, active, terms, laborMode, id],
         );
+      if (b.making_mode !== undefined || old?.making_mode) {
+        const mode = b.making_mode ?? old.making_mode;
+        if (!["percent", "fixed_gold"].includes(mode))
+          throw new Error("INVALID_MAKING_MODE");
+        const bps = integer(
+            b.making_bps ?? old?.making_bps ?? 0,
+            "MAKING",
+            0,
+            10000,
+          ),
+          mg = integer(
+            b.making_weight_mg ?? old?.making_weight_mg ?? 0,
+            "MAKING_WEIGHT",
+            0,
+            1000000,
+          );
+        await c.query(
+          "UPDATE didar_offer SET making_mode=$1,making_bps=$2,making_weight_mg=$3 WHERE id=$4",
+          [mode, bps, mg, id],
+        );
+      }
       await audit(c, u.id, creating ? "offer_created" : "offer_updated", {
+        supplier_id: supplier,
+        admin_override: u.role === "admin",
+        making_mode: b.making_mode,
+        making_bps: b.making_bps,
+        making_weight_mg: b.making_weight_mg,
         id,
         quantity,
         labor_irr: labor,
@@ -434,6 +518,7 @@ export async function manage(req: any, u: any) {
     payload.published = false;
     const id = randomUUID();
     await transaction(async (c) => {
+      await authorize(c, u, u.supplier_id, "REQUEST_PRODUCT_CREATION");
       await c.query(
         "INSERT INTO didar_product_request(id,supplier_id,payload) VALUES($1,$2,$3)",
         [id, u.supplier_id, JSON.stringify(payload)],
@@ -527,6 +612,20 @@ export async function manage(req: any, u: any) {
         id,
         text(b.name, 100),
       ]);
+      if (b.email || b.password) {
+        const email = text(b.email, 150).toLowerCase(),
+          password = text(b.password, 128);
+        if (
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+          !demoAccountAllowed(email)
+        )
+          throw new Error("INVALID_EMAIL");
+        if (password.length < 12) throw new Error("INVALID_PASSWORD_MIN_12");
+        await c.query(
+          "INSERT INTO didar_user(id,email,name,password,role,supplier_id) VALUES($1,$2,$3,$4,'supplier',$5)",
+          [randomUUID(), email, text(b.name, 100), hashPassword(password), id],
+        );
+      }
       await audit(c, u.id, "supplier_created", { id });
     });
     return { id };
@@ -547,7 +646,12 @@ export async function manage(req: any, u: any) {
         return { id, product_id: r.product_id, status: r.status };
       const result =
         b.decision === "approved"
-          ? await saveProduct(req, u, { ...r.payload, published: true }, c)
+          ? await saveProduct(
+              req,
+              u,
+              { ...r.payload, published: true, approved: true },
+              c,
+            )
           : null;
       await c.query(
         "UPDATE didar_product_request SET status=$1,reason=$2,product_id=$3,reviewed_by=$4,reviewed_at=now() WHERE id=$5",

@@ -57,3 +57,9 @@ node scripts/test-compose.mjs
 ```
 
 The helper refuses staging/production runtime and publicly bound application ports. It derives the private Linux Docker bridge database address and holds credentials only in child-process environment, without printing them or putting them in argv. PostgreSQL remains unpublished. This path requires a local Linux Docker bridge; on a remote Docker daemon, run the checks from the same authorized private test host. Ordinary host development uses `bun run test` and `bun run test:e2e` instead.
+
+## Phase 1 verification on the restored workspace
+
+The original repository, ignored environments, dependencies and databases were reused. Phase 1 adds `src/didar/phase1-schema.sql` to the existing `db:setup` sequence; it preserves legacy quantities and historical order JSON. Backend tests now include itemized intake/UID/RFID, Gold-First pricing, permission isolation and clean/repeat migrations. `scripts/test-compose.mjs` includes the new suites and still binds all fixtures to the container database.
+
+For a managed read-only home, use a writable Docker client cache, e.g. `export DOCKER_CONFIG=/workspace/.docker-didar-phase1`, before local image builds. Do not print or copy runtime environments into image contexts. Prepared standalone packaging now supplies a sensitive-file `.dockerignore`, because Next tracing may copy a local `.env` into standalone output. Public local-only demo identities remain intentionally gated to `DIDAR_ENVIRONMENT=local`; no Oracle deployment is authorized by running local verification.

@@ -1,3 +1,72 @@
+# Didar Gold Phase 1 — verified implementation delivery
+
+Repository: https://github.com/alirezasefidpour747/didar-b2c-marketplace
+Branch: `didar/phase1-intake-uid-rfid`. Application source milestones: `fb99850dee98d60560e18b38733c7ac2e00f4a11`, `9a840a50c34ac929c3640450c007a851c438ed5d`, and final isolation/packaging fix `ba85987bbdcf63a96a868a1c5572b15c3cfec0f6`. The final evidence/documentation commit is identified by `git rev-parse HEAD` and the handoff's exact remote SHA. Main was not changed by this work; no force push or PR merge occurred.
+
+The authoritative Phase 1 specification and mandatory Gold-First/governance addendum are implemented in the existing Mercur application. Read [operator/API/pricing guide](docs/PHASE1_OPERATIONS.md), [coverage matrix](REQUIREMENTS_MATRIX.md) and [execution evidence](verification/phase1/README.md).
+
+## Implemented journey
+
+- Admin-created shared product/category/description/images/attributes, approval/publication, supplier account and offers; existing multi-supplier catalog and sandbox commerce remain operational.
+- Supplier invoice with optional Tahesab reference → grouped lines → separately entered exact item weights → permanent generated/manual UIDs → optional unique normalized EPCs with raw history → quantity/weight reconciliation → admin verification/posting → derived available stock.
+- Read-only supplier defaults with eight independent, immediately revocable backend permissions. Supplier reads include its assigned/unpublished products, invoices, units, EPCs, reservations, sales, returns and fulfillment. Admin overrides and authenticated denials are audited. Out-of-scope scan observations are redacted for suppliers, while admin retains the original observation.
+- Gold-First percent/fixed-equivalent making plus independent additive distribution/retail markups, configurable taxable components and actual IRR VAT. The mandatory 100 g / 750 / 12% + 3% + 7% / 10% VAT example yields 124.2 g-equivalent monetary value. Policies are append-only; quote/order snapshots preserve the agreed terms. PDP, cart, checkout and order detail share the calculation.
+- Checkout atomically reserves deterministic physical units and maps UID to order line. Payment sells the same units once; cancellation/failure/expiry releases the same units once. Fulfillment follows the actual unit associations. Physical returns are requested, received into quarantine, then explicitly restocked once; later resale preserves the earlier sale history.
+- Focused keyboard/Enter/paste scanning, a documented reader adapter and visibly labeled mock input. Count sessions snapshot expected stock and show distinct units, duplicate reads/UID aliases, unknown, missing, sold/absent or unexpected stock. Browser reads queue rather than dropping a rapid second Enter. Scans never mutate stock; corrections are separate authorized/audited operations.
+
+There is one logical location. No multi-warehouse/shelf/bin system, ERP, financial obligations, procurement, wallets, treasury, general ledger, settlement or live Tahesab posting was introduced. Returns do not issue a financial refund. Existing native Mercur panels/authentication remain separate and available; Didar's operational gold registry owns physical stock and checkout.
+
+## Verified results
+
+| Check | Verified result |
+|---|---|
+| Backend/integration/migrations against compiled API | **52 passed / 507 assertions** |
+| Same complete backend suite against actual Compose PostgreSQL/API | **52 passed / 507 assertions** |
+| Full Playwright suite against Compose API/storefront | **8 passed** in one final run |
+| Existing compiled-standalone browser suite | **8 passed**; final Docker run also covers the isolation-fixed API |
+| Cold restart and mobile navigation | **1 passed**, with explicit product URL and level-one heading assertions |
+| Native Medusa HTTP health | **1 passed** |
+| Oracle/deployment safety guards | **23 passed**, local/mocked only |
+| Official codegen, native admin/vendor, API, Next production builds | Passed; **18 storefront routes** |
+| Prepared local Docker API/storefront images and four-service health | Built; PostgreSQL, Redis, API and storefront **healthy**; loopback app ports |
+| Packaged runtime/source comparison | **119 files match**, code revision `ba85987`; no embedded runtime `.env` files at checked paths |
+| Physical stock integrity | **0 cache mismatches**, **0 legacy-linked physical units** |
+| Restart persistence | **29 units** and identical UID/state checksum before/after restart |
+| Secrets review | No token/private-key/credential findings in source/history review; **6 actual runtime values** have **0 matches** in source/build files |
+| ARM64 | Locked dependency/native-artifact static audit passes; actual native ARM runtime remains external |
+
+All successful results above are fresh executions. Earlier failed/restarted runs are retained under `/tmp/didar-phase1-evidence` for diagnosis and are not substituted for the successful evidence. Browser testing found and fixed rapid-scan and pending-permission checkbox behavior. Final isolation review added a regression for competitor identifiers in scoped count reports.
+
+The 19-piece acceptance data comprises individually entered synthetic measurements: 5 units / 135,000 mg, 2 / 127,000 mg and 12 / 117,000 mg. Tests verify software reconciliation, not actual jewelry weights or brand authenticity. QA physical identifiers/history are permanent; their products/suppliers are retired after tests rather than deleting history.
+
+Legacy aggregate offers/order lines stay explicitly `legacy`. Migrations never create physical UIDs or infer unit weights for old stock. Existing aggregate compatibility paths remain separate from verified itemized stock. Legacy fixed-IRR making terms stay explicitly labeled pending commercial review; current global markups are additive, while historic price JSON remains unchanged.
+
+## Source publication and PR limitation
+
+Verified normal pushes advanced the requested feature branch. The final remote fetch/tree check and source manifest establish the delivered application files. A recovery bundle is available at `/workspace/didar-gold-phase1.bundle`; the original `/workspace/didar-gold-delivery.bundle` and prior MVP bundle remain intact. Bundles contain committed source/history and evidence, not ignored runtime environments, credentials or dependencies.
+
+**PR #1 was already merged externally:** GitHub's public PR payload confirms state `MERGED`, merged by repository owner `alirezasefidpour747` at `2026-10-15T21:41:48Z`, containing only specification commit `3bddce5038220c66bafad341c0955970fbc8be3f`. It cannot acquire the later implementation commits. None of this implementation was merged by the agent.
+
+Creating a successor **draft** implementation PR was attempted, but GitHub CLI/API returned exactly `Post "https://api.github.com/graphql": Forbidden`. No successor PR was created. The requested branch is published and independently verified through both Git transport and GitHub's public source endpoint (matching SHA-256). A new draft review must be created through the repository UI or after API access is restored: [compare implementation with main](https://github.com/alirezasefidpour747/didar-b2c-marketplace/compare/main...didar/phase1-intake-uid-rfid?expand=1). Its concrete review description is prepared in [PHASE1_PR_REVIEW.md](docs/PHASE1_PR_REVIEW.md).
+
+## Hardware and external staging blockers
+
+- Physical RFID reader, antenna/read range, chip encoding and a real scale have not been verified. Mock/HID text input is the verified boundary; optional EPC binding does not imply writing a chip.
+- No Oracle deployment was attempted. An existing eligible Ubuntu ARM64 Ampere A1 Always Free VM/capacity and SSH/access settings are still needed. Do not provision paid resources or exceed 2 OCPUs / 12 GB RAM. Native ARM install/build/runtime and acceptance on that host remain pending; local prepared images are amd64 and must not be promoted to ARM.
+- External staging still needs secure destination configuration/accounts, staging marker, domain/TLS and operational backup/restore verification. Existing guarded scripts remain in `deploy/oracle`; their local/mocked safety tests do not prove cloud access. Real payments and Phase 2 accounting remain excluded.
+
+## Reproduction
+
+The currently running application is the local Compose stack; use `node scripts/test-compose.mjs` to bind all fixtures to its actual database. For host development, select the matching host API/database configuration (the final compiled host backend run used `TEST_API_URL=http://localhost:19000`). Use the existing checked-out source and ignored local environments. `bun run db:setup` applies additive migrations without resetting stock; `bun run test` waits for the running API, then runs all backend suites; `bun run test:e2e` exercises the browser. `bun run build:all` builds official route types, both native panels, API and storefront; stop Next dev before writing the same `.next` directory. See README for normal source Docker builds and the prepared-artifact fallback. In this managed workspace, Docker client build state required a writable `DOCKER_CONFIG` (`/workspace/.docker-didar-phase1`).
+
+The four-service local Compose test helper checks local sandbox mode and loopback ports, binds fixtures to the **actual container PostgreSQL database**, and withholds credentials. Never run these demo fixtures against external staging/production. No dependency reinstall or application reinitialization was performed.
+
+---
+
+# Historical MVP delivery (through `6a206bf`, superseded where Phase 1 differs)
+
+The following earlier results and scope statements are preserved as history. Its no-UID, old pricing/default supplier writes and bounded order-list statements describe the earlier MVP, not the current Phase 1 implementation above.
+
 # Didar Gold delivery
 
 Repository: https://github.com/alirezasefidpour747/didar-b2c-marketplace

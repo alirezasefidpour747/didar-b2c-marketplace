@@ -1,4 +1,5 @@
 'use client'
+import { PricingBreakdown } from './catalog'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -346,6 +347,7 @@ export function Cart({ checkoutOnly = false }: { checkoutOnly?: boolean }) {
                     ? money(o.price.total_irr * cart[o.id])
                     : 'قیمت معتبر در دسترس نیست'}
                 </strong>
+                <PricingBreakdown value={o.price} />
                 <button onClick={() => remove(o.id)}>حذف</button>
               </article>
             ))}
@@ -558,6 +560,7 @@ function OrderList({ id }: { id?: string }) {
                   {weight(l.weight_mg)} × {number(l.quantity)} ·{' '}
                   {money(l.breakdown.total_irr * l.quantity)}
                 </p>
+                <PricingBreakdown value={l.breakdown} />
                 <div className="tracking">
                   <span className="badge">
                     {states[l.fulfillment_status || 'allocated']}
@@ -569,6 +572,42 @@ function OrderList({ id }: { id?: string }) {
                     </span>
                   )}
                 </div>
+                {l.items?.map((item: any) => (
+                  <div key={item.reservation_id} className="card">
+                    <p>
+                      قطعه <code>{item.uid}</code> · {weight(item.weight_mg)} ·{' '}
+                      {states[item.status] || item.status}{' '}
+                      {item.return_status &&
+                        ' · ' +
+                          (states[item.return_status] || item.return_status)}
+                    </p>
+                    {o.status === 'paid' &&
+                      item.status === 'sold' &&
+                      !item.return_status &&
+                      user?.role === 'customer' && (
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault()
+                            const f = new FormData(e.currentTarget)
+                            run(async () => {
+                              await api('returns', {
+                                operation: 'request',
+                                reservation_id: item.reservation_id,
+                                reason: f.get('reason'),
+                              })
+                              await load()
+                            })
+                          }}
+                        >
+                          <label>
+                            دلیل درخواست مرجوعی فیزیکی
+                            <input name="reason" required maxLength={1000} />
+                          </label>
+                          <button disabled={busy}>درخواست مرجوعی قطعه</button>
+                        </form>
+                      )}
+                  </div>
+                ))}
                 {o.status === 'paid' && user?.role !== 'customer' && (
                   <Fulfillment line={l} reload={load} />
                 )}
@@ -638,13 +677,33 @@ function Fulfillment({
   reload: () => Promise<void>
 }) {
   const { api, run, busy, user } = useDidar()
+  const [allowed, setAllowed] = useState(user?.role === 'admin')
+  useEffect(() => {
+    if (user?.role === 'supplier')
+      api('permissions')
+        .then((d) =>
+          setAllowed(
+            d.permissions.some(
+              (p: any) =>
+                p.permission === 'UPDATE_OWN_FULFILLMENT' && p.granted,
+            ),
+          ),
+        )
+        .catch(() => setAllowed(false))
+  }, [user?.id])
   const status = l.fulfillment_status || 'allocated'
   const next: Record<string, string> = {
     allocated: 'preparing',
     preparing: 'dispatched',
     dispatched: 'delivered',
   }
-  if (!next[status] || (status === 'dispatched' && user?.role === 'supplier'))
+  if (
+    !allowed ||
+    (l.stock_mode === 'itemized' &&
+      !l.items?.some((i: any) => i.status === 'sold')) ||
+    !next[status] ||
+    (status === 'dispatched' && user?.role === 'supplier')
+  )
     return null
   return (
     <form

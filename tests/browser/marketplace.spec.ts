@@ -66,7 +66,11 @@ test("admin interface manages gold rate and catalog", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "مدیریت بازار دیدار" }),
   ).toBeVisible();
-  await expect(page.locator(".inventory-form")).toHaveCount(8);
+  for (const product of ["ring", "necklace", "bracelet", "earring"])
+    for (const supplier of ["s1", "s2"])
+      await expect(
+        page.locator(`[data-offer-id="${product}-${supplier}"]`),
+      ).toBeVisible();
   await page
     .getByRole("button", { name: "نرخ و تنظیمات", exact: true })
     .click();
@@ -91,12 +95,17 @@ test("mobile RTL catalog and product detail fit the viewport", async ({
     path: "/tmp/didar-evidence/mobile-catalog.png",
     fullPage: true,
   });
-  await page
+  const detailLink = page
     .getByRole("heading", { name: "انگشتر طلای ماه" })
-    .getByRole("link")
-    .click();
+    .getByRole("link");
+  await expect(detailLink).toHaveAttribute("href", "/products/ring");
+  await Promise.all([page.waitForURL("**/products/ring"), detailLink.click()]);
   await expect(
-    page.getByRole("heading", { name: "انگشتر طلای ماه", exact: true }),
+    page.getByRole("heading", {
+      name: "انگشتر طلای ماه",
+      exact: true,
+      level: 1,
+    }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "انتخاب وزن دقیق و تأمین‌کننده" }),

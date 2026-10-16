@@ -15,4 +15,14 @@ tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=.dockerignore \
 docker build -f Dockerfile.prebuilt --target api -t didar-gold-api:staging - < "$context"
 cp -r apps/storefront/.next/static apps/storefront/.next/standalone/apps/storefront/.next/static
 cp -r apps/storefront/public apps/storefront/.next/standalone/apps/storefront/public
+# Next standalone tracing can copy the local .env; exclude it before context transfer.
+cat > apps/storefront/.next/standalone/.dockerignore <<'IGNORE'
+.env
+.env.*
+**/.env
+**/.env.*
+.git
+**/*.pem
+**/*.key
+IGNORE
 docker build -f "$(pwd)/Dockerfile.storefront" -t didar-gold-storefront:staging apps/storefront/.next/standalone

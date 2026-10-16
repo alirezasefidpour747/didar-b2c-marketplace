@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/alirezasefidpour747/didar-b2c-marketplace",
+  "branch": "didar/phase1-intake-uid-rfid",
+  "commit": "ba85987bbdcf63a96a868a1c5572b15c3cfec0f6",
+  "public_tree_http": 200,
+  "public_source_http": 200,
+  "source_path": "packages/api/src/didar/phase1.ts",
+  "local_sha256": "26cea5ae38d7c95a79faed651c0064e15787e786c412cf2c6620971b20cb16e1",
+  "github_raw_sha256": "26cea5ae38d7c95a79faed651c0064e15787e786c412cf2c6620971b20cb16e1",
+  "matches": true
+}

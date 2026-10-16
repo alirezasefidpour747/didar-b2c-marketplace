@@ -1,0 +1,9 @@
+$ playwright test tests/browser/marketplace.spec.ts --grep mobile
+
+Running 1 test using 1 worker
+
+(node:38759) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/browser/marketplace.spec.ts:81:5 › mobile RTL catalog and product detail fit the viewport (2.1s)
+
+  1 passed (4.5s)
