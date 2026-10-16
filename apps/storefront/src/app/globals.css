@@ -965,3 +965,12 @@ details[open] > summary {
 .inventory-form fieldset{border:0;padding:0;min-width:0}
 fieldset:disabled{opacity:.7}
 .price-breakdown{font-size:.85rem;line-height:1.9}
+
+.facet-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:.65rem;margin:1rem 0;align-items:start}
+.facet-filters .card{padding:.8rem;margin:0;min-width:0}
+.facet-filters details[open]{max-height:260px;overflow:auto}
+.facet-option{display:flex;align-items:center;gap:.4rem;margin:.45rem 0;font-size:.85rem}
+.facet-option input{width:auto}
+.facet-filters summary{cursor:pointer;font-weight:600}
+[data-testid=classification-editor]{min-width:0;overflow-wrap:anywhere}
+[data-testid=classification-editor] code{direction:ltr;unicode-bidi:isolate}

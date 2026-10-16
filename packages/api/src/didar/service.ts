@@ -1,3 +1,4 @@
+import { classificationRead } from "./facets";
 import { publicProductLink } from "./taxonomy";
 import { labels } from "./labels";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -80,7 +81,10 @@ export async function perform(action: string, req: any): Promise<any> {
   if (extended.handled) return extended.result;
   if (action === "catalog" && req.method === "GET") {
     await expireOrders();
-    return catalog();
+    return catalog(
+      undefined,
+      Object.keys(req.query || {}).length ? req.query : undefined,
+    );
   }
   if (action === "me") return { user: (await sessionUser(req)) || null };
   if (action === "register" || action === "login") {
@@ -330,6 +334,13 @@ export async function perform(action: string, req: any): Promise<any> {
       [u.role, u.id, u.supplier_id],
     );
     return { orders };
+  }
+  if (action === "classification") {
+    if (req.method !== "GET") throw new Error("METHOD_NOT_ALLOWED");
+    return classificationRead(
+      await requireUser(req, ["admin", "supplier"]),
+      req.query || {},
+    );
   }
   if (action === "manage") {
     const u = await requireUser(req, ["supplier", "admin"]);

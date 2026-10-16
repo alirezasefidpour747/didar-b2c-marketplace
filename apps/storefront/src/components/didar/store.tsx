@@ -43,6 +43,7 @@ export type Offer = {
 }
 export type Image = { id: string; url: string; alt: string; position: number }
 export type Product = {
+  classification?: Record<string, { code: string; label: string }[]>
   id: string
   title: string
   category: string

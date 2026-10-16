@@ -14,6 +14,7 @@ const permissionLabels: Record<string, string> = {
   CREATE_OWN_INTAKE: 'پذیرش و توزین پیش‌نویس',
   PAIR_OWN_RFID: 'اتصال RFID',
   UPDATE_OWN_FULFILLMENT: 'به‌روزرسانی ارسال',
+  SUGGEST_OWN_CLASSIFICATION: 'پیشنهاد طبقه‌بندی محصول',
 }
 const status: Record<string, string> = {
   draft: 'پیش‌نویس',

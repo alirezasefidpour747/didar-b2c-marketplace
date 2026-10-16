@@ -1,5 +1,11 @@
 'use client'
 import Link from 'next/link'
+import {
+  ClassificationHub,
+  ProductClassification,
+  CollectionGovernance,
+  collectionFields,
+} from './classification'
 import { useEffect, useState, type FormEvent } from 'react'
 import { RequireUser, useDidar, type Product, type Offer } from './store'
 import { date, states, weight } from './locale'
@@ -407,7 +413,11 @@ function Management() {
     can('EDIT_OWN_INVENTORY') ||
     can('EDIT_OWN_MAKING_CHARGE')
   async function load() {
-    setManaged(await api('manage'))
+    const [data, metadata] = await Promise.all([
+      api('manage'),
+      admin ? api('classification') : Promise.resolve(null),
+    ])
+    setManaged({ ...data, classification_metadata: metadata })
   }
   useEffect(() => {
     run(load)
@@ -455,6 +465,7 @@ function Management() {
         {[
           ['inventory', 'موجودی و عرضه'],
           ['catalog', admin ? 'کاتالوگ و تصاویر' : 'درخواست محصول'],
+          ['classification', 'طبقه‌بندی و پیشنهادها'],
           ...(admin
             ? [
                 ['suppliers', 'تأمین‌کنندگان'],
@@ -493,6 +504,9 @@ function Management() {
             )}
           </div>
         ))}
+      {tab === 'classification' && (
+        <ClassificationHub collections={collections} />
+      )}
       {tab === 'inventory' && (
         <>
           {can('CREATE_OWN_OFFER') && (
@@ -728,6 +742,7 @@ function Management() {
                     mutate(
                       {
                         kind: 'collection',
+                        ...collectionFields(f),
                         name: f.get('name'),
                         slug: f.get('slug'),
                         product_ids: f.getAll('product_ids'),
@@ -739,6 +754,7 @@ function Management() {
                   <h2>مجموعه جدید</h2>
                   <Field name="name" label="نام مجموعه" />
                   <Field name="slug" label="نشانی مجموعه (slug)" />
+                  <CollectionGovernance managed={managed} />
                   <label>
                     محصولات مجموعه
                     <select name="product_ids" multiple size={5}>
@@ -796,6 +812,7 @@ function Management() {
                     onSubmit={submit(async (f) =>
                       mutate({
                         kind: 'collection',
+                        ...collectionFields(f),
                         id: c.id,
                         name: f.get('name'),
                         slug: f.get('slug'),
@@ -805,6 +822,7 @@ function Management() {
                   >
                     <Field name="name" label="نام مجموعه" value={c.name} />
                     <Field name="slug" label="نشانی مجموعه" value={c.slug} />
+                    <CollectionGovernance managed={managed} collection={c} />
                     <label>
                       محصولات
                       <select
@@ -856,6 +874,7 @@ function Management() {
                       ذخیره محصول
                     </button>
                   </form>
+                  <ProductClassification productId={p.id} />
                   <ImageManager product={p} mutate={mutate} />
                 </details>
               ))}

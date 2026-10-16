@@ -1,3 +1,4 @@
+import { seedFacetVocabulary } from "../didar/facet-seed";
 import { projectExisting } from "../didar/finance-ledger";
 import { transaction } from "../didar/db";
 import type { ExecArgs } from "@medusajs/framework/types";
@@ -61,6 +62,13 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/facets-schema.sql"),
+      "utf8",
+    ),
+  );
+  await transaction(seedFacetVocabulary);
   await transaction(projectExisting);
   const seedDemo =
     process.env.DIDAR_SEED_DEMO === "true" &&
@@ -91,7 +99,10 @@ export default async function seed({ container }: ExecArgs) {
     "INSERT INTO didar_category(id,name,slug,code,kind) VALUES('jewelry','زیورآلات','jewelry','demo.jewelry','family') ON CONFLICT DO NOTHING",
   );
   await db.query(
-    "INSERT INTO didar_collection(id,name,slug) VALUES('everyday','انتخاب روزمره','everyday') ON CONFLICT DO NOTHING",
+    "INSERT INTO didar_collection(id,name,slug,code,type_id,active,published,approved) VALUES('everyday','انتخاب روزمره','everyday','demo.everyday','collection_type.editorial',true,true,true) ON CONFLICT DO NOTHING",
+  );
+  await db.query(
+    "INSERT INTO didar_catalog_translation(id,entity_type,entity_id,locale,label,status,source_ref) VALUES('demo:collection:everyday:fa','collection','everyday','fa','انتخاب روزمره','approved','spec:local-demo') ON CONFLICT DO NOTHING",
   );
   for (const [id, title, category, weight] of items) {
     // Explicit local demo vocabulary only. Never reparent or re-key existing categories.

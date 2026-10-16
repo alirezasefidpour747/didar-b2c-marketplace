@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'catalog',
+  'classification',
   'labels',
   'product-link',
   'finance',
@@ -75,6 +76,18 @@ async function proxy(
       `/didar/${action}`,
       process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000',
     )
+    if (['catalog', 'classification'].includes(action)) {
+      if (req.nextUrl.search.length > 6000)
+        return NextResponse.json({ message: 'INVALID_FILTER' }, { status: 400 })
+      for (const [key, value] of req.nextUrl.searchParams) {
+        if (url.searchParams.has(key))
+          return NextResponse.json(
+            { message: 'INVALID_FILTER' },
+            { status: 400 },
+          )
+        url.searchParams.set(key, value)
+      }
+    }
     if (action === 'image') {
       const id = req.nextUrl.searchParams.get('id')
       if (!id || !/^[-\w]{1,120}$/.test(id))

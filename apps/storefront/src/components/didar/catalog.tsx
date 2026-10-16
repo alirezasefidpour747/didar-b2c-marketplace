@@ -167,93 +167,142 @@ export function RateBar() {
 export function Catalog({
   categorySlug,
   collectionSlug,
+  discoverySlug,
   home = false,
 }: {
   categorySlug?: string
   collectionSlug?: string
+  discoverySlug?: string
   home?: boolean
 }) {
-  const { products, categories, collections, loading, refresh, run } =
-    useDidar()
-  const [search, setSearch] = useState(''),
-    [category, setCategory] = useState(''),
-    [min, setMin] = useState(''),
-    [max, setMax] = useState(''),
-    [exact, setExact] = useState('')
+  const { categories, collections } = useDidar()
+  const [query, setQuery] = useState<Record<string, string>>({}),
+    [page, setPage] = useState(1),
+    [data, setData] = useState<any>(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(''),
+    [retry, setRetry] = useState(0)
+  useEffect(() => {
+    const picked: Record<string, string> = {}
+    for (const [key, value] of new URLSearchParams(window.location.search))
+      if (
+        ![
+          'page',
+          'limit',
+          'category_slug',
+          'collection_slug',
+          'discovery_slug',
+          'locale',
+        ].includes(key)
+      )
+        picked[key] = value
+    setQuery(picked)
+  }, [])
+  const params = new URLSearchParams({
+    ...query,
+    page: String(page),
+    limit: '12',
+    ...(categorySlug ? { category_slug: categorySlug } : {}),
+    ...(collectionSlug ? { collection_slug: collectionSlug } : {}),
+    ...(discoverySlug ? { discovery_slug: discoverySlug } : {}),
+  }).toString()
+  useEffect(() => {
+    const controller = new AbortController()
+    setLoading(true)
+    setError('')
+    const timer = setTimeout(() => {
+      fetch('/api/didar/catalog?' + params, {
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+        .then(async (r) => {
+          const d = await r.json()
+          if (!r.ok) throw new Error(d.message)
+          return d
+        })
+        .then((d) => {
+          if (!controller.signal.aborted) setData(d)
+        })
+        .catch((e) => {
+          if (!controller.signal.aborted)
+            setError(
+              e.message === 'NOT_FOUND'
+                ? 'این صفحه در دسترس نیست.'
+                : 'فیلترها معتبر نیستند یا دریافت محصولات ممکن نشد.',
+            )
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false)
+        })
+    }, 200)
+    return () => {
+      clearTimeout(timer)
+      controller.abort()
+    }
+  }, [params, retry])
+  const change = (key: string, value: string) => {
+    setPage(1)
+    setQuery((q) => {
+      const n = { ...q }
+      if (value) n[key] = value
+      else delete n[key]
+      return n
+    })
+  }
+  const toggle = (key: string, value: string) => {
+    const selected = (query[key] || '').split(',').filter(Boolean)
+    change(
+      key,
+      selected.includes(value)
+        ? selected.filter((v) => v !== value).join(',')
+        : [...selected, value].join(','),
+    )
+  }
   const selectedCategory = categories.find((c) => c.slug === categorySlug),
     selectedCollection = collections.find((c) => c.slug === collectionSlug)
-  const categoryIds = new Set<string>()
-  function descendants(id: string) {
-    if (categoryIds.has(id)) return
-    categoryIds.add(id)
-    categories
-      .filter((c) => c.parent_id === id)
-      .forEach((c) => descendants(c.id))
-  }
-  if (selectedCategory) descendants(selectedCategory.id)
-  const normalized = (s: string) =>
-    s.replace(/ي/g, 'ی').replace(/ك/g, 'ک').toLocaleLowerCase('fa-IR')
-  const found = products
-    .filter((p) => {
-      if (
-        categorySlug &&
-        (!selectedCategory || !categoryIds.has(p.category_id || ''))
-      )
-        return false
-      if (
-        collectionSlug &&
-        (!selectedCollection ||
-          (!(p.collection_ids || []).includes(selectedCollection.id) &&
-            !(selectedCollection.product_ids || []).includes(p.id)))
-      )
-        return false
-      return (
-        (!category ||
-          p.breadcrumbs?.some((c) => c.id === category) ||
-          p.category_id === category ||
-          p.category === category) &&
-        normalized(
-          [
-            p.title,
-            p.reference,
-            p.description,
-            p.jewelry_type,
-            p.category,
-          ].join(' '),
-        ).includes(normalized(search))
-      )
-    })
-    .map((p) => ({
-      ...p,
-      offers: p.offers.filter(
-        (o) =>
-          (!min || o.weight_mg >= Math.round(Number(min) * 1000)) &&
-          (!max || o.weight_mg <= Math.round(Number(max) * 1000)) &&
-          (!exact || o.weight_mg === Math.round(Number(exact) * 1000)),
-      ),
-    }))
-    .filter((p) => (!min && !max && !exact) || p.offers.length > 0)
+  const input = (key: string, label: string, type = 'number', scale = 1) => (
+    <label>
+      {label}
+      <input
+        aria-label={label}
+        type={type}
+        min={type === 'number' ? 0 : undefined}
+        step={scale === 1000 ? '0.001' : undefined}
+        value={query[key] ? String(Number(query[key]) / scale) : ''}
+        onChange={(e) =>
+          change(
+            key,
+            e.target.value
+              ? String(Math.round(Number(e.target.value) * scale))
+              : '',
+          )
+        }
+      />
+    </label>
+  )
   return (
-    <section id="catalog">
+    <section id="catalog" aria-busy={loading}>
       <div className="section-title">
         <div>
           <p className="eyebrow">کاتالوگ مشترک دیدار</p>
           <h1>
-            {selectedCategory?.name ||
+            {data?.landing?.name ||
+              selectedCategory?.name ||
               selectedCollection?.name ||
               (home ? 'برای هر روزِ درخشان شما' : 'ویترین طلا')}
           </h1>
         </div>
-        <p className="muted">
-          {number(found.length)} محصول · فروشنده شما دیدار است
+        <p className="muted" role="status">
+          {loading
+            ? 'در حال دریافت محصولات…'
+            : `${number(data?.total || 0)} محصول · فروشنده شما دیدار است`}
         </p>
       </div>
       <div className="browse-links">
         {categories
-          .filter((c) => !c.parent_id || categoryIds.has(c.parent_id))
+          .filter((c) => !c.parent_id || c.parent_id === selectedCategory?.id)
           .map((c) => (
             <Link key={c.id} href={'/categories/' + c.slug}>
-              {c.parent_id ? '↳ ' : ''}
               {c.name}
             </Link>
           ))}
@@ -263,25 +312,32 @@ export function Catalog({
           </Link>
         ))}
       </div>
+      <nav className="browse-links" aria-label="کشف طلا">
+        {data?.pages?.map((p: any) => (
+          <Link key={p.slug} href={'/discover/' + p.slug}>
+            {p.name}
+          </Link>
+        ))}
+      </nav>
       <form
         className="filters"
-        onSubmit={(e) => e.preventDefault()}
         role="search"
+        onSubmit={(e) => e.preventDefault()}
       >
         <label>
           جستجوی محصول
           <input
             aria-label="جستجوی محصول"
             placeholder="نام، مدل یا نوع زیور…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={query.q || ''}
+            onChange={(e) => change('q', e.target.value)}
           />
         </label>
         <label>
           دسته‌بندی
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={query.category || ''}
+            onChange={(e) => change('category', e.target.value)}
           >
             <option value="">همه</option>
             {categories.map((c) => (
@@ -289,62 +345,85 @@ export function Catalog({
                 {c.name}
               </option>
             ))}
-            {!categories.length &&
-              [...new Set(products.map((p) => p.category))].map((c) => (
-                <option key={c}>{c}</option>
-              ))}
+          </select>
+        </label>
+        {input('weight_exact', 'وزن دقیق (گرم)', 'number', 1000)}
+        {input('weight_min', 'حداقل وزن (گرم)', 'number', 1000)}
+        {input('weight_max', 'حداکثر وزن (گرم)', 'number', 1000)}
+        {input('price_min', 'حداقل قیمت (ریال)')}
+        {input('price_max', 'حداکثر قیمت (ریال)')}
+        {input('purity', 'عیار از هزار')}
+        <label>
+          ترتیب نمایش
+          <select
+            value={query.sort || 'title'}
+            onChange={(e) => change('sort', e.target.value)}
+          >
+            <option value="title">نام محصول</option>
+            <option value="price_asc">ارزان‌تر</option>
+            <option value="price_desc">گران‌تر</option>
+            <option value="weight_asc">سبک‌تر</option>
+            <option value="weight_desc">سنگین‌تر</option>
           </select>
         </label>
         <label>
-          وزن دقیق (گرم)
           <input
-            type="number"
-            min="0.001"
-            step="0.001"
-            value={exact}
-            onChange={(e) => setExact(e.target.value)}
+            type="checkbox"
+            checked={query.in_stock === 'true'}
+            onChange={(e) => change('in_stock', e.target.checked ? 'true' : '')}
           />
-        </label>
-        <label>
-          حداقل وزن (گرم)
-          <input
-            type="number"
-            min="0"
-            step="0.001"
-            value={min}
-            onChange={(e) => setMin(e.target.value)}
-          />
-        </label>
-        <label>
-          حداکثر وزن (گرم)
-          <input
-            type="number"
-            min="0"
-            step="0.001"
-            value={max}
-            onChange={(e) => setMax(e.target.value)}
-          />
+          فقط موجود
         </label>
         <button
           type="button"
           onClick={() => {
-            setSearch('')
-            setCategory('')
-            setExact('')
-            setMin('')
-            setMax('')
+            setQuery({})
+            setPage(1)
           }}
         >
           پاک کردن فیلترها
         </button>
       </form>
-      {loading ? (
+      <div className="facet-filters">
+        {data?.facets?.map((f: any) => (
+          <details
+            className="card"
+            key={f.code}
+            open={[
+              'usage',
+              'design_style',
+              'occasion',
+              'audience',
+              'market_tier',
+            ].includes(f.code)}
+          >
+            <summary>{f.label}</summary>
+            {f.values.map((v: any) => (
+              <label className="facet-option" key={v.code}>
+                <input
+                  type="checkbox"
+                  checked={(query[f.code] || '').split(',').includes(v.code)}
+                  onChange={() => toggle(f.code, v.code)}
+                />
+                {v.label}{' '}
+                <span className="muted">({number(v.count || 0)})</span>
+              </label>
+            ))}
+          </details>
+        ))}
+      </div>
+      {error ? (
+        <div role="alert" className="empty">
+          {error}
+          <button onClick={() => setRetry((n) => n + 1)}>تلاش دوباره</button>
+        </div>
+      ) : loading ? (
         <div role="status" className="empty">
           در حال دریافت محصولات…
         </div>
-      ) : found.length ? (
+      ) : data?.products?.length ? (
         <div className="grid">
-          {found.map((p) => (
+          {data.products.map((p: Product) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>
@@ -352,9 +431,28 @@ export function Catalog({
         <div className="empty">
           <h2>محصولی پیدا نشد</h2>
           <p>فیلترها را تغییر دهید یا دوباره تلاش کنید.</p>
-          <button onClick={() => run(refresh)}>تازه‌سازی کاتالوگ</button>
+          <button onClick={() => setRetry((n) => n + 1)}>
+            تازه‌سازی کاتالوگ
+          </button>
         </div>
       )}
+      <nav className="browse-links" aria-label="صفحه‌بندی محصولات">
+        <button
+          disabled={loading || page <= 1}
+          onClick={() => setPage((p) => p - 1)}
+        >
+          صفحه قبل
+        </button>
+        <span>
+          صفحه {number(page)} از {number(Math.max(1, data?.total_pages || 0))}
+        </span>
+        <button
+          disabled={loading || page >= (data?.total_pages || 0)}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          صفحه بعد
+        </button>
+      </nav>
     </section>
   )
 }
@@ -407,6 +505,18 @@ export function ProductDetail({ id }: { id: string }) {
             {p.category} · {p.jewelry_type}
           </p>
           <h1>{p.title}</h1>
+          <div className="browse-links">
+            {Object.entries(p.classification || {}).flatMap(([facet, values]) =>
+              values.map((v) => (
+                <Link
+                  key={facet + v.code}
+                  href={'/products?' + new URLSearchParams({ [facet]: v.code })}
+                >
+                  {v.label}
+                </Link>
+              )),
+            )}
+          </div>
           <p className="description">
             {p.description || 'توضیحات تکمیلی این محصول هنوز ثبت نشده است.'}
           </p>

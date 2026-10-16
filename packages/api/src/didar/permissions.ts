@@ -7,6 +7,7 @@ export const PERMISSIONS = [
   "CREATE_OWN_INTAKE",
   "PAIR_OWN_RFID",
   "UPDATE_OWN_FULFILLMENT",
+  "SUGGEST_OWN_CLASSIFICATION",
 ] as const;
 export const audit = (
   c: any,

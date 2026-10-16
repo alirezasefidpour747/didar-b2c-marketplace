@@ -408,6 +408,9 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
     "manage",
     {
       kind: "collection",
+      type_code: "editorial",
+      published: true,
+      approved: true,
       name: `${tag} collection`,
       slug: `${tag}-collection`,
       product_ids: [product],
@@ -433,6 +436,7 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
         {
           kind: "collection",
           id: collection.id,
+          version: collection.version,
           name: `${tag} changed collection`,
           slug: `${tag}-collection`,
           product_ids: [],

@@ -1,0 +1,800 @@
+[
+  {
+    "code": "usage",
+    "number": 1,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "کاربرد و موقعیت استفاده",
+    "en": "Usage",
+    "values": [
+      {
+        "code": "everyday",
+        "fa": "روزمره",
+        "en": "Everyday",
+        "evidence_required": false
+      },
+      {
+        "code": "workwear",
+        "fa": "محیط کار",
+        "en": "Workwear",
+        "evidence_required": false
+      },
+      {
+        "code": "casual",
+        "fa": "غیررسمی",
+        "en": "Casual",
+        "evidence_required": false
+      },
+      {
+        "code": "evening",
+        "fa": "مهمانی و شب",
+        "en": "Evening",
+        "evidence_required": false
+      },
+      {
+        "code": "formal",
+        "fa": "رسمی",
+        "en": "Formal",
+        "evidence_required": false
+      },
+      {
+        "code": "bridal",
+        "fa": "عروس",
+        "en": "Bridal",
+        "evidence_required": false
+      },
+      {
+        "code": "ceremonial",
+        "fa": "تشریفاتی / آیینی",
+        "en": "Ceremonial",
+        "evidence_required": false
+      },
+      {
+        "code": "statement",
+        "fa": "شاخص / جلوه‌دار",
+        "en": "Statement",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "market_tier",
+    "number": 2,
+    "mode": "single_select",
+    "target": "product",
+    "fa": "جایگاه تجاری",
+    "en": "Market Tier",
+    "values": [
+      {
+        "code": "value",
+        "fa": "اقتصادی",
+        "en": "Value",
+        "evidence_required": false
+      },
+      {
+        "code": "mid_market",
+        "fa": "میان‌رده",
+        "en": "Mid-market",
+        "evidence_required": false
+      },
+      {
+        "code": "premium",
+        "fa": "پریمیوم",
+        "en": "Premium",
+        "evidence_required": false
+      },
+      {
+        "code": "luxury",
+        "fa": "لوکس",
+        "en": "Luxury",
+        "evidence_required": true
+      },
+      {
+        "code": "high_jewelry",
+        "fa": "جواهرات ممتاز و استثنایی",
+        "en": "High Jewelry",
+        "evidence_required": true
+      }
+    ]
+  },
+  {
+    "code": "design_style",
+    "number": 3,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "سبک طراحی",
+    "en": "Design Style",
+    "values": [
+      {
+        "code": "minimalist",
+        "fa": "مینیمال",
+        "en": "Minimalist",
+        "evidence_required": false
+      },
+      {
+        "code": "classic",
+        "fa": "کلاسیک",
+        "en": "Classic",
+        "evidence_required": false
+      },
+      {
+        "code": "modern",
+        "fa": "مدرن",
+        "en": "Modern",
+        "evidence_required": false
+      },
+      {
+        "code": "contemporary",
+        "fa": "معاصر",
+        "en": "Contemporary",
+        "evidence_required": false
+      },
+      {
+        "code": "geometric",
+        "fa": "هندسی",
+        "en": "Geometric",
+        "evidence_required": false
+      },
+      {
+        "code": "art_deco",
+        "fa": "آرت‌دکو",
+        "en": "Art Deco",
+        "evidence_required": false
+      },
+      {
+        "code": "vintage_inspired",
+        "fa": "الهام‌گرفته از قدیم",
+        "en": "Vintage-inspired",
+        "evidence_required": false
+      },
+      {
+        "code": "traditional",
+        "fa": "سنتی",
+        "en": "Traditional",
+        "evidence_required": false
+      },
+      {
+        "code": "bohemian",
+        "fa": "بوهمین",
+        "en": "Bohemian",
+        "evidence_required": false
+      },
+      {
+        "code": "organic",
+        "fa": "ارگانیک",
+        "en": "Organic",
+        "evidence_required": false
+      },
+      {
+        "code": "bold",
+        "fa": "جسورانه",
+        "en": "Bold",
+        "evidence_required": false
+      },
+      {
+        "code": "romantic",
+        "fa": "رمانتیک",
+        "en": "Romantic",
+        "evidence_required": false
+      },
+      {
+        "code": "timeless",
+        "fa": "فراتر از مد",
+        "en": "Timeless",
+        "evidence_required": false
+      },
+      {
+        "code": "sporty",
+        "fa": "اسپرت",
+        "en": "Sporty",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "heritage",
+    "number": 4,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "میراث و ریشه طراحی",
+    "en": "Heritage",
+    "values": [
+      {
+        "code": "persian_heritage",
+        "fa": "میراث ایرانی",
+        "en": "Persian Heritage",
+        "evidence_required": true
+      },
+      {
+        "code": "regional_craft",
+        "fa": "هنر بومی/محلی",
+        "en": "Regional Craft",
+        "evidence_required": true
+      },
+      {
+        "code": "historical_revival",
+        "fa": "بازآفرینی تاریخی",
+        "en": "Historical Revival",
+        "evidence_required": true
+      },
+      {
+        "code": "traditional_motifs",
+        "fa": "نقوش سنتی",
+        "en": "Traditional Motifs",
+        "evidence_required": true
+      },
+      {
+        "code": "cultural_fusion",
+        "fa": "تلفیق فرهنگی",
+        "en": "Cultural Fusion",
+        "evidence_required": true
+      },
+      {
+        "code": "craft_heritage",
+        "fa": "میراث فن و صنعتگری",
+        "en": "Craft Heritage",
+        "evidence_required": true
+      },
+      {
+        "code": "authentic_vintage_antique",
+        "fa": "اثر اصیل قدیمی/عتیقه",
+        "en": "Authentic Vintage / Antique",
+        "evidence_required": true
+      }
+    ]
+  },
+  {
+    "code": "occasion",
+    "number": 5,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "مناسبت خرید",
+    "en": "Occasion",
+    "values": [
+      {
+        "code": "birthday",
+        "fa": "تولد",
+        "en": "Birthday",
+        "evidence_required": false
+      },
+      {
+        "code": "anniversary",
+        "fa": "سالگرد",
+        "en": "Anniversary",
+        "evidence_required": false
+      },
+      {
+        "code": "engagement",
+        "fa": "نامزدی",
+        "en": "Engagement",
+        "evidence_required": false
+      },
+      {
+        "code": "wedding",
+        "fa": "ازدواج",
+        "en": "Wedding",
+        "evidence_required": false
+      },
+      {
+        "code": "bridal",
+        "fa": "عروس",
+        "en": "Bridal",
+        "evidence_required": false
+      },
+      {
+        "code": "newborn",
+        "fa": "تولد نوزاد",
+        "en": "Newborn / Baby Shower",
+        "evidence_required": false
+      },
+      {
+        "code": "graduation",
+        "fa": "فارغ‌التحصیلی",
+        "en": "Graduation",
+        "evidence_required": false
+      },
+      {
+        "code": "mothers_day",
+        "fa": "روز مادر",
+        "en": "Mother's Day",
+        "evidence_required": false
+      },
+      {
+        "code": "fathers_day",
+        "fa": "روز پدر",
+        "en": "Father's Day",
+        "evidence_required": false
+      },
+      {
+        "code": "valentines",
+        "fa": "ولنتاین",
+        "en": "Valentine's Day",
+        "evidence_required": false
+      },
+      {
+        "code": "nowruz",
+        "fa": "نوروز",
+        "en": "Nowruz",
+        "evidence_required": false
+      },
+      {
+        "code": "yalda",
+        "fa": "یلدا",
+        "en": "Yalda",
+        "evidence_required": false
+      },
+      {
+        "code": "eid",
+        "fa": "عید",
+        "en": "Eid",
+        "evidence_required": false
+      },
+      {
+        "code": "milestone",
+        "fa": "موفقیت شخصی",
+        "en": "Personal Milestone",
+        "evidence_required": false
+      },
+      {
+        "code": "just_because",
+        "fa": "هدیه بی‌مناسبت",
+        "en": "Just Because",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "audience",
+    "number": 6,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "مخاطب",
+    "en": "Audience",
+    "values": [
+      {
+        "code": "women",
+        "fa": "زنانه",
+        "en": "Women",
+        "evidence_required": false
+      },
+      {
+        "code": "men",
+        "fa": "مردانه",
+        "en": "Men",
+        "evidence_required": false
+      },
+      {
+        "code": "unisex",
+        "fa": "بدون تفکیک جنسیت",
+        "en": "Unisex",
+        "evidence_required": false
+      },
+      {
+        "code": "kids",
+        "fa": "کودک",
+        "en": "Kids",
+        "evidence_required": false
+      },
+      {
+        "code": "teen",
+        "fa": "نوجوان",
+        "en": "Teen",
+        "evidence_required": false
+      },
+      {
+        "code": "baby",
+        "fa": "نوزاد",
+        "en": "Baby",
+        "evidence_required": false
+      },
+      {
+        "code": "couples",
+        "fa": "زوج‌ها",
+        "en": "Couples",
+        "evidence_required": false
+      },
+      {
+        "code": "mother_child",
+        "fa": "مادر و کودک",
+        "en": "Mother & Child",
+        "evidence_required": false
+      },
+      {
+        "code": "partner_gift",
+        "fa": "هدیه شریک زندگی",
+        "en": "Gift for Partner",
+        "evidence_required": false
+      },
+      {
+        "code": "family_gift",
+        "fa": "هدیه خانواده",
+        "en": "Gift for Family",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "motif",
+    "number": 7,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "مضمون و نماد",
+    "en": "Motif",
+    "values": [
+      {
+        "code": "heart_love",
+        "fa": "قلب و عشق",
+        "en": "Heart & Love",
+        "evidence_required": false
+      },
+      {
+        "code": "floral",
+        "fa": "گل و گیاه",
+        "en": "Floral",
+        "evidence_required": false
+      },
+      {
+        "code": "nature",
+        "fa": "طبیعت",
+        "en": "Nature",
+        "evidence_required": false
+      },
+      {
+        "code": "animals",
+        "fa": "حیوانات",
+        "en": "Animals",
+        "evidence_required": false
+      },
+      {
+        "code": "celestial",
+        "fa": "ماه و ستاره",
+        "en": "Celestial",
+        "evidence_required": false
+      },
+      {
+        "code": "zodiac",
+        "fa": "ماه تولد و برج‌ها",
+        "en": "Zodiac",
+        "evidence_required": false
+      },
+      {
+        "code": "letters_numbers",
+        "fa": "حروف و اعداد",
+        "en": "Letters & Numbers",
+        "evidence_required": false
+      },
+      {
+        "code": "geometric_symbols",
+        "fa": "نمادهای هندسی",
+        "en": "Geometric Symbols",
+        "evidence_required": false
+      },
+      {
+        "code": "lucky_symbols",
+        "fa": "نمادهای خوش‌شانسی",
+        "en": "Lucky Symbols",
+        "evidence_required": false
+      },
+      {
+        "code": "cultural_symbols",
+        "fa": "نشانه‌های فرهنگی",
+        "en": "Cultural Symbols",
+        "evidence_required": false
+      },
+      {
+        "code": "spiritual_symbols",
+        "fa": "نمادهای معنوی",
+        "en": "Spiritual Symbols",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "styling_form",
+    "number": 8,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "فرم و نحوه ست‌کردن",
+    "en": "Styling Form",
+    "values": [
+      {
+        "code": "stackable",
+        "fa": "قابل ترکیب روی هم",
+        "en": "Stackable",
+        "evidence_required": false
+      },
+      {
+        "code": "layering",
+        "fa": "چندلایه",
+        "en": "Layering",
+        "evidence_required": false
+      },
+      {
+        "code": "mix_match",
+        "fa": "قابل ست‌کردن",
+        "en": "Mix & Match",
+        "evidence_required": false
+      },
+      {
+        "code": "convertible",
+        "fa": "تغییرشکل‌پذیر",
+        "en": "Convertible",
+        "evidence_required": false
+      },
+      {
+        "code": "adjustable",
+        "fa": "قابل تنظیم",
+        "en": "Adjustable",
+        "evidence_required": false
+      },
+      {
+        "code": "modular",
+        "fa": "ماژولار",
+        "en": "Modular",
+        "evidence_required": false
+      },
+      {
+        "code": "oversized",
+        "fa": "درشت",
+        "en": "Oversized",
+        "evidence_required": false
+      },
+      {
+        "code": "delicate",
+        "fa": "ظریف",
+        "en": "Delicate",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "personalization",
+    "number": 9,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "شخصی‌سازی",
+    "en": "Personalization",
+    "values": [
+      {
+        "code": "engravable",
+        "fa": "قابل حکاکی",
+        "en": "Engravable",
+        "evidence_required": false
+      },
+      {
+        "code": "name_initial",
+        "fa": "اسم و حروف",
+        "en": "Name / Initial",
+        "evidence_required": false
+      },
+      {
+        "code": "birthstone",
+        "fa": "سنگ ماه تولد",
+        "en": "Birthstone",
+        "evidence_required": false
+      },
+      {
+        "code": "custom_size",
+        "fa": "اندازه سفارشی",
+        "en": "Custom Size",
+        "evidence_required": false
+      },
+      {
+        "code": "custom_design",
+        "fa": "طرح اختصاصی",
+        "en": "Custom Design",
+        "evidence_required": false
+      },
+      {
+        "code": "custom_motif",
+        "fa": "نشان اختصاصی",
+        "en": "Custom Motif",
+        "evidence_required": false
+      },
+      {
+        "code": "made_to_order",
+        "fa": "ساخت سفارشی",
+        "en": "Made to Order",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "craftsmanship",
+    "number": 10,
+    "mode": "multi_select",
+    "target": "product",
+    "fa": "شیوه ساخت و پرداخت",
+    "en": "Craftsmanship",
+    "values": [
+      {
+        "code": "handmade",
+        "fa": "دست‌ساز",
+        "en": "Handmade",
+        "evidence_required": false
+      },
+      {
+        "code": "casting",
+        "fa": "ریخته‌گری",
+        "en": "Casting",
+        "evidence_required": false
+      },
+      {
+        "code": "machine_made",
+        "fa": "ماشینی",
+        "en": "Machine-made",
+        "evidence_required": false
+      },
+      {
+        "code": "electroforming",
+        "fa": "الکتروفرم",
+        "en": "Electroforming",
+        "evidence_required": false
+      },
+      {
+        "code": "filigree",
+        "fa": "ملیله‌کاری",
+        "en": "Filigree",
+        "evidence_required": false
+      },
+      {
+        "code": "enamel",
+        "fa": "میناکاری",
+        "en": "Enamel",
+        "evidence_required": false
+      },
+      {
+        "code": "engraving",
+        "fa": "قلم‌زنی / حکاکی",
+        "en": "Engraving",
+        "evidence_required": false
+      },
+      {
+        "code": "gem_setting",
+        "fa": "مخراج‌کاری",
+        "en": "Gem Setting",
+        "evidence_required": false
+      },
+      {
+        "code": "solid",
+        "fa": "توپر",
+        "en": "Solid",
+        "evidence_required": false
+      },
+      {
+        "code": "hollow",
+        "fa": "توخالی",
+        "en": "Hollow",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "collection_type",
+    "number": 11,
+    "mode": "single_select",
+    "target": "collection",
+    "fa": "نوع کالکشن",
+    "en": "Collection Type",
+    "values": [
+      {
+        "code": "signature",
+        "fa": "امضا",
+        "en": "Signature",
+        "evidence_required": false
+      },
+      {
+        "code": "heritage",
+        "fa": "میراث",
+        "en": "Heritage",
+        "evidence_required": false
+      },
+      {
+        "code": "contemporary",
+        "fa": "معاصر",
+        "en": "Contemporary",
+        "evidence_required": false
+      },
+      {
+        "code": "bridal",
+        "fa": "عروس",
+        "en": "Bridal",
+        "evidence_required": false
+      },
+      {
+        "code": "seasonal",
+        "fa": "فصلی",
+        "en": "Seasonal",
+        "evidence_required": false
+      },
+      {
+        "code": "capsule",
+        "fa": "کپسولی / موضوعی محدود",
+        "en": "Capsule",
+        "evidence_required": false
+      },
+      {
+        "code": "limited_edition",
+        "fa": "نسخه محدود",
+        "en": "Limited Edition",
+        "evidence_required": true
+      },
+      {
+        "code": "designer",
+        "fa": "طراح‌محور",
+        "en": "Designer",
+        "evidence_required": false
+      },
+      {
+        "code": "manufacturer",
+        "fa": "کالکشن تولیدکننده",
+        "en": "Manufacturer Collection",
+        "evidence_required": false
+      },
+      {
+        "code": "editorial",
+        "fa": "انتخاب ویترینی",
+        "en": "Editorial Selection",
+        "evidence_required": false
+      }
+    ]
+  },
+  {
+    "code": "merchandising",
+    "number": 12,
+    "mode": "multi_select",
+    "target": "merchandising",
+    "fa": "وضعیت نمایشی",
+    "en": "Merchandising",
+    "values": [
+      {
+        "code": "new_arrival",
+        "fa": "تازه‌وارد",
+        "en": "New Arrival",
+        "evidence_required": false
+      },
+      {
+        "code": "best_seller",
+        "fa": "پرفروش",
+        "en": "Best Seller",
+        "evidence_required": true
+      },
+      {
+        "code": "trending",
+        "fa": "محبوب روز",
+        "en": "Trending",
+        "evidence_required": false
+      },
+      {
+        "code": "limited_edition",
+        "fa": "عرضه محدود",
+        "en": "Limited Edition",
+        "evidence_required": true
+      },
+      {
+        "code": "editors_pick",
+        "fa": "منتخب",
+        "en": "Editor's Pick",
+        "evidence_required": false
+      },
+      {
+        "code": "gift_pick",
+        "fa": "پیشنهاد هدیه",
+        "en": "Gift Pick",
+        "evidence_required": false
+      },
+      {
+        "code": "seasonal_highlight",
+        "fa": "ویژه فصل",
+        "en": "Seasonal Highlight",
+        "evidence_required": false
+      },
+      {
+        "code": "signature_piece",
+        "fa": "محصول شاخص",
+        "en": "Signature Piece",
+        "evidence_required": false
+      }
+    ]
+  }
+]

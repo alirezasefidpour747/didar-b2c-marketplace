@@ -44,6 +44,32 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  CONFLICT_FACET_CARDINALITY:
+    'این محصول یک جایگاه تجاری تأییدشده دارد؛ ابتدا مقدار قبلی را بازنشسته کنید.',
+  CONFLICT_CLASSIFICATION_APPROVED:
+    'پیشنهاد نمی‌تواند طبقه‌بندی تأییدشده دیدار را جایگزین کند.',
+  CONFLICT_CLASSIFICATION_OWNERSHIP:
+    'این پیشنهاد متعلق به تأمین‌کننده دیگری است و قابل ویرایش نیست.',
+  CONFLICT_TRANSLATION_REVIEWED:
+    'این ترجمه قبلاً بررسی شده است؛ برای تغییر، پیش‌نویس تازه ثبت کنید.',
+  INVALID_CLASSIFICATION_EVIDENCE:
+    'برای تأیید این برچسب، شاهد و منبع بررسی‌شده با حداقل ۱۰ نویسه لازم است.',
+  INVALID_CLASSIFICATION_REASON:
+    'دلیل پیشنهاد یا بررسی را با حداقل ۵ نویسه وارد کنید.',
+  INVALID_BEST_SELLER_EVIDENCE:
+    'برچسب پرفروش نیازمند شاهد و حداقل ۵ واحد فروش پرداخت‌شده است؛ برای انتخاب تحریریه از منتخب دیدار استفاده کنید.',
+  INVALID_COLLECTION_EVIDENCE:
+    'انتشار مجموعه نسخه محدود نیازمند شاهد و منبع بررسی‌شده است.',
+  INVALID_COLLECTION_TYPE:
+    'نوع فعال و تأییدشده F11 را برای انتشار مجموعه انتخاب کنید.',
+  INVALID_TRANSLATION_SCRIPT:
+    'خط و زبان برچسب با زبان انتخاب‌شده سازگار نیست؛ ترجمه را بازبینی کنید.',
+  INVALID_FACET_VALUE:
+    'مقدار باید فعال، دارای برچسب فارسی تأییدشده و متعلق به گروه مجاز باشد.',
+  INVALID_FACET_IDENTITY:
+    'کد، گروه و قواعد هویتی واژه دائمی هستند؛ از بازنشستگی استفاده کنید.',
+  INVALID_COLLECTION_IDENTITY: 'شناسه و کد دائمی مجموعه قابل تغییر نیست.',
+
   INVALID_CATEGORY_RANK:
     'رتبه باید خانواده ← دسته ← زیردسته نهایی باشد؛ گره قدیمی نیازمند بازبینی مدیر است.',
   INVALID_CATEGORY_CODE: 'شناسه و کد ساختاری دائمی قابل تغییر نیست.',

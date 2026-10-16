@@ -45,4 +45,17 @@ The copies received the additive Phase 1 prerequisite and the shared taxonomy mi
 
 Admins can inspect `manage.taxonomy_review` and the Persian legacy warning, explicitly rank/reconcile existing nodes, add the confirmed active leaf, and reclassify the existing master. Saving an approved full path records reviewer/time and resolves that master's review. The old `/products/{id}` bookmark then redirects to the canonical `/fa/products/{family}/{category}/{subcategory}/{slug}-{stable-key}`. Existing UIDs/offers/master IDs remain the same. A legacy exception never authorizes new publication or re-publication after delisting, and customer QR remains blocked until the full path and verified HTTPS public origin exist.
 
-Issue #4 implements this shared structural core and UID journey. Issue #5 retains separate pending acceptance for F01–F12 vocabulary, governed facet assignments, server facet search/counts/pagination, collection governance and additional locale vocabulary approval. This audit is not a claim that those wider features are implemented or that production/Mac/printer/camera hardware was tested.
+Issue #4 implements this shared structural core and UID journey. At that Issue #4 baseline, Issue #5 retained separate pending acceptance for F01–F12 vocabulary, governed facet assignments, server facet search/counts/pagination, collection governance and additional locale vocabulary approval. The Issue #4 section alone does not claim those wider features; the Issue #5 replay evidence follows below. Production/Mac/printer/camera hardware was not tested.
+
+## Issue #5 additive facet/collection replay — 2026-10-16
+
+Starting from verified Issue #4 baseline `a75adcaf4058233cae0678bf77df78803cb67bad`, the same two stopped snapshots were copied again using read-only source mounts into uniquely labelled, network-isolated disposable PostgreSQL volumes. The Phase 1/shared-taxonomy prerequisites and new `facets-schema.sql` were applied on the copies; the new migration and canonical code seed were repeated. Original services remained stopped and original volumes were not written. This extends the existing reconciliation; it does not reapprove any archival taxonomy or change its crosswalk.
+
+Both copies retained the product/offer/order/paid-line fingerprints above, preserved four public legacy masters and one public legacy collection, and acquired exactly 12 facet definitions / 113 values / **zero product assignments**. Existing collection identity/name/slug and membership fingerprints remained identical:
+
+| Original fields | Compose copy before = after | Native copy before = after |
+| --- | --- | --- |
+| Collection identity/name/slug | `e104fac39f51ae40837764131c7d6127` | `e104fac39f51ae40837764131c7d6127` |
+| Existing master memberships | `791d1eeb89348cec38658e3172148fd2` | `791d1eeb89348cec38658e3172148fd2` |
+
+Disposition: F01–F12 are `new_candidate` controlled vocabulary with supplied fa/en labels; ar/fr are `deferred` pending owner review. Existing collections are `existing / legacy_alias`, retain their IDs/slugs/memberships and receive deterministic immutable codes, with untyped legacy-public status preserved. No existing master receives inferred lifestyle, tier, heritage or marketing claims. The acceptance fixtures are disposable QA data only. Neither historical snapshot contains exact UID or Phase 2 financial tables; current exact UID, financial and paid-order preservation is separately exercised by the full current PostgreSQL regression suite. These copies are not asserted to be the current production database.

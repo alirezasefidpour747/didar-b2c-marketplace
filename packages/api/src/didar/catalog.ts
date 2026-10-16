@@ -1,3 +1,11 @@
+import { classificationWrite, saveCollection } from "./facets";
+import {
+  discoverySelection,
+  finishDiscovery,
+  classificationProjection,
+  publicCollectionCondition,
+  publicDiscoveryMetadata,
+} from "./discovery";
 import { productPath } from "./taxonomy";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
@@ -27,7 +35,7 @@ const slug = (value: unknown) => {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)) throw new Error("INVALID_SLUG");
   return s;
 };
-export async function catalog(user?: any) {
+export async function catalog(user?: any, query?: any) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
     const {
@@ -39,19 +47,30 @@ export async function catalog(user?: any) {
     const quote_expires_at = new Date(
       new Date(rate.updated_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString();
+    const selection = query ? await discoverySelection(c, query) : null;
     const { rows: products } = await c.query(
-      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
-      [user?.role || "public", user?.supplier_id || null],
+      `SELECT p.* FROM didar_product p WHERE ($1='admin' OR (p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2)))) AND ($3::text[] IS NULL OR p.id=ANY($3::text[])) ORDER BY p.id`,
+      [
+        user?.role || "public",
+        user?.supplier_id || null,
+        selection?.ids ?? null,
+      ],
     );
     const { rows: offers } = await c.query(
-      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved')) ORDER BY o.id`,
-      [user?.role || "public", user?.supplier_id || null],
+      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved')) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
+      [
+        user?.role || "public",
+        user?.supplier_id || null,
+        products.map((p: any) => p.id),
+      ],
     );
     const { rows: images } = await c.query(
-      "SELECT id,product_id,alt,position FROM didar_product_image ORDER BY position,id",
+      "SELECT id,product_id,alt,position FROM didar_product_image WHERE product_id=ANY($1::text[]) ORDER BY position,id",
+      [products.map((p: any) => p.id)],
     );
     const { rows: links } = await c.query(
-      "SELECT * FROM didar_collection_product",
+      "SELECT * FROM didar_collection_product WHERE product_id=ANY($1::text[])",
+      [products.map((p: any) => p.id)],
     );
     for (const p of products) {
       Object.assign(p, await productPath(c, p));
@@ -86,13 +105,49 @@ export async function catalog(user?: any) {
       [user?.role || "public"],
     );
     const { rows: collections } = await c.query(
-      "SELECT c.*,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id GROUP BY c.id ORDER BY c.name",
+      `SELECT c.*,v.code type_code,(SELECT label FROM didar_catalog_translation WHERE entity_type='value' AND entity_id=c.type_id AND locale=$2 AND status='approved') type_label,(SELECT label FROM didar_catalog_translation WHERE entity_type='collection' AND entity_id=c.id AND locale=$2 AND status='approved') localized_name,CASE WHEN EXISTS(SELECT 1 FROM didar_product_image i JOIN didar_product ip ON ip.id=i.product_id WHERE i.id=c.image_id AND ip.active AND ip.published AND ip.approved AND didar_public_taxonomy(ip.id,ip.category_id)) THEN c.image_id ELSE NULL END public_image_id,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_facet_value v ON v.id=c.type_id LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id WHERE $1='admin' OR (${publicCollectionCondition}) GROUP BY c.id,v.code ORDER BY c.sort_order,c.name`,
+      [user?.role || "public", selection?.parsed.locale || "fa"],
     );
     for (const collection of collections)
       collection.product_ids = collection.product_ids.filter((id: string) =>
         products.some((p: any) => p.id === id),
       );
-    return {
+    await classificationProjection(
+      c,
+      products,
+      selection?.parsed.locale || "fa",
+    );
+    const safeCollections =
+      user?.role === "admin"
+        ? collections
+        : collections
+            .filter(
+              (v: any) =>
+                v.localized_name ||
+                ((selection?.parsed.locale || "fa") === "fa" &&
+                  v.legacy_public),
+            )
+            .map((v: any) => ({
+              id: v.id,
+              name: v.localized_name || v.name,
+              image_url: v.public_image_id
+                ? `/api/didar/image?id=${encodeURIComponent(v.public_image_id)}`
+                : null,
+              slug: v.slug,
+              type_code: v.type_code,
+              type_label: v.type_label,
+              description: v.description,
+              sort_order: v.sort_order,
+              product_ids: v.product_ids,
+            }));
+    if (user?.role !== "admin") {
+      const allowed = new Set(safeCollections.map((v: any) => v.id));
+      for (const p of products)
+        p.collection_ids = p.collection_ids.filter((id: string) =>
+          allowed.has(id),
+        );
+    }
+    const data = {
       products,
       quote_expires_at,
       price_available: !stale,
@@ -103,8 +158,11 @@ export async function catalog(user?: any) {
         fee_irr: Number(rate.fee_irr ?? 0),
       },
       categories,
-      collections,
+      collections: safeCollections,
     };
+    return selection
+      ? finishDiscovery(c, data, selection)
+      : { ...data, ...(user ? {} : await publicDiscoveryMetadata(c)) };
   });
 }
 function productInput(b: any, old: any = {}) {
@@ -397,6 +455,8 @@ export async function manage(req: any, u: any) {
     };
   }
   if (req.method !== "POST") throw new Error("METHOD_NOT_ALLOWED");
+  if (["classification", "vocabulary", "curated_page"].includes(b.kind))
+    return classificationWrite(u, b);
   if (u.role === "supplier") await approved(db, u.supplier_id);
   if (b.kind === "offer" || b.kind === "new_offer")
     return transaction(async (c) => {
@@ -636,35 +696,7 @@ export async function manage(req: any, u: any) {
       return { id };
     });
   if (b.kind === "collection")
-    return transaction(async (c) => {
-      const id = b.id ? text(b.id) : randomUUID();
-      await c.query(
-        "INSERT INTO didar_collection(id,name,slug) VALUES($1,$2,$3) ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name,slug=EXCLUDED.slug",
-        [id, text(b.name, 100), slug(b.slug)],
-      );
-      if (b.product_ids !== undefined) {
-        if (!Array.isArray(b.product_ids) || b.product_ids.length > 500)
-          throw new Error("INVALID_PRODUCTS");
-        for (const pid of new Set(b.product_ids)) {
-          const { rowCount } = await c.query(
-            "SELECT id FROM didar_product WHERE id=$1",
-            [text(pid)],
-          );
-          if (!rowCount) throw new Error("INVALID_PRODUCT");
-        }
-        await c.query(
-          "DELETE FROM didar_collection_product WHERE collection_id=$1",
-          [id],
-        );
-        for (const pid of new Set(b.product_ids))
-          await c.query("INSERT INTO didar_collection_product VALUES($1,$2)", [
-            id,
-            text(pid),
-          ]);
-      }
-      await audit(c, u.id, "collection_saved", { id });
-      return { id };
-    });
+    return transaction((c) => saveCollection(c, u, b));
   if (b.kind === "supplier_state") {
     if (!["pending", "approved", "rejected"].includes(b.status))
       throw new Error("INVALID_SUPPLIER_STATUS");
