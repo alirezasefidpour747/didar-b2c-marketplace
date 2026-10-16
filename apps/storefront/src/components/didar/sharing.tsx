@@ -1,4 +1,5 @@
 'use client'
+import { ContentPage } from './content-page'
 import { useCallback, useEffect, useState } from 'react'
 import { useDidar, RequireUser } from './store'
 import { ProductCard } from './catalog'
@@ -107,14 +108,20 @@ export function CuratedPage({ slug }: { slug: string }) {
         برای سنجش این پیوند، یک شناسه ناشناس هفت‌روزه ثبت می‌شود؛ اطلاعات تماس
         به فروشنده داده نمی‌شود. قیمت و موجودی در ثبت سفارش دوباره بررسی می‌شود.
       </p>
-      <div className="products">
-        {page.product_ids
-          .map((id: string) => products.find((p) => p.id === id))
-          .filter(Boolean)
-          .map((p: any) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-      </div>
+      <ContentPage
+        kind="MERCHANT_CURATED"
+        routeKey={slug}
+        fallback={
+          <div className="products">
+            {page.product_ids
+              .map((id: string) => products.find((p) => p.id === id))
+              .filter(Boolean)
+              .map((p: any) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+          </div>
+        }
+      />
       {!page.product_ids.length && (
         <p>عرضه موجود این صفحه موقتاً در دسترس نیست.</p>
       )}

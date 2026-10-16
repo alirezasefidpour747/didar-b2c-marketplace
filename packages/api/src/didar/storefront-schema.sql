@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS didar_storefront (
 );
 CREATE TABLE IF NOT EXISTS didar_merchant_member (
  supplier_id text NOT NULL REFERENCES didar_supplier(id), user_id text NOT NULL REFERENCES didar_user(id),
- permission text NOT NULL CHECK(permission IN ('STOREFRONT','SHARE','ONBOARDING')),
+ permission text NOT NULL CHECK(permission IN ('STOREFRONT','SHARE','ONBOARDING','CONTENT_EDIT','CONTENT_PUBLISH')),
  active boolean NOT NULL DEFAULT true, granted_by text NOT NULL REFERENCES didar_user(id),
  PRIMARY KEY(supplier_id,user_id,permission)
 );

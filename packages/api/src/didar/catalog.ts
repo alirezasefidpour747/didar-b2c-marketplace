@@ -45,11 +45,18 @@ const slug = (value: unknown) => {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)) throw new Error("INVALID_SLUG");
   return s;
 };
-export async function catalog(user?: any, query?: any, req?: any) {
+export async function catalog(
+  user?: any,
+  query?: any,
+  req?: any,
+  authorizedScope?: any,
+) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
     await pricingLock(c);
-    const scope = !user && req ? await storeScope(req, c) : null;
+    const scope = user
+      ? null
+      : authorizedScope || (req ? await storeScope(req, c) : null);
     const method = paymentMethod(query?.payment_method);
     const {
       rows: [rate],

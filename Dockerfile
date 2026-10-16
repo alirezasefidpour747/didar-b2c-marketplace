@@ -20,6 +20,8 @@ RUN bun run --cwd apps/storefront build
 # Full workspace retained so native modules resolve and migration commands remain available.
 # Run one API replica until deploying shared Redis workflow/event/locking providers.
 FROM base AS api
+# Bounded local video decoding/transcoding; no remote media protocols are accepted.
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production
 EXPOSE 9000
 CMD ["sh","-c","cd packages/api/.medusa/server && node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]

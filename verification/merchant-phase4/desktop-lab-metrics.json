@@ -1,0 +1,250 @@
+{
+  "lcp": 240,
+  "cls": 0.0011474460253303434,
+  "interactions": [
+    {
+      "name": "pointerout",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerover",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "mouseout",
+      "duration": 16
+    },
+    {
+      "name": "mouseover",
+      "duration": 16
+    },
+    {
+      "name": "pointerout",
+      "duration": 24
+    },
+    {
+      "name": "pointerleave",
+      "duration": 24
+    },
+    {
+      "name": "pointerleave",
+      "duration": 24
+    },
+    {
+      "name": "pointerleave",
+      "duration": 24
+    },
+    {
+      "name": "pointerleave",
+      "duration": 24
+    },
+    {
+      "name": "pointerleave",
+      "duration": 24
+    },
+    {
+      "name": "pointerover",
+      "duration": 24
+    },
+    {
+      "name": "pointerenter",
+      "duration": 24
+    },
+    {
+      "name": "pointerenter",
+      "duration": 24
+    },
+    {
+      "name": "mouseout",
+      "duration": 24
+    },
+    {
+      "name": "mouseover",
+      "duration": 24
+    },
+    {
+      "name": "pointerdown",
+      "duration": 24
+    },
+    {
+      "name": "mousedown",
+      "duration": 24
+    },
+    {
+      "name": "pointerup",
+      "duration": 24
+    },
+    {
+      "name": "mouseup",
+      "duration": 24
+    },
+    {
+      "name": "click",
+      "duration": 24
+    },
+    {
+      "name": "keydown",
+      "duration": 24
+    },
+    {
+      "name": "keyup",
+      "duration": 24
+    },
+    {
+      "name": "pointerout",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerover",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "mouseout",
+      "duration": 16
+    },
+    {
+      "name": "mouseover",
+      "duration": 16
+    },
+    {
+      "name": "pointerout",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerleave",
+      "duration": 16
+    },
+    {
+      "name": "pointerover",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "pointerenter",
+      "duration": 16
+    },
+    {
+      "name": "mouseout",
+      "duration": 16
+    },
+    {
+      "name": "mouseover",
+      "duration": 16
+    }
+  ]
+}

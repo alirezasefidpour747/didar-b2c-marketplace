@@ -213,6 +213,8 @@ function Editor() {
               <option value="STOREFRONT">ویترین</option>
               <option value="SHARE">اشتراک‌گذاری</option>
               <option value="ONBOARDING">همراهی ثبت محصول</option>
+              <option value="CONTENT_EDIT">ویرایش صفحه</option>
+              <option value="CONTENT_PUBLISH">تأیید و انتشار صفحه</option>
             </select>
           </label>
           <label className="check">

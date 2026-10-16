@@ -17,6 +17,8 @@ export function ImageAsset({
   srcSet,
   sizes,
   eager = false,
+  width,
+  height,
 }: {
   src: string
   alt: string
@@ -25,6 +27,8 @@ export function ImageAsset({
   srcSet?: string
   sizes?: string
   eager?: boolean
+  width?: number
+  height?: number
 }) {
   const [blob, setBlob] = useState('')
   useEffect(() => {
@@ -57,6 +61,8 @@ export function ImageAsset({
       srcSet={privateImage ? undefined : srcSet}
       sizes={sizes || '(max-width: 600px) 90vw, (max-width: 1000px) 44vw, 30vw'}
       alt={alt}
+      width={width}
+      height={height}
       loading={eager ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : undefined}
     />

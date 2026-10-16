@@ -1,7 +1,7 @@
 # DIDAR B2C — Phase 4: Luxury Visual Experience & CMS Page Builder
 
 **Owner-approved roadmap sequence v3 — 2026-10-16**
-**Status:** PLANNED; this is a specification, not implementation.
+**Status:** CODEX_LINUX_VERIFIED — implementation and all 11 block types delivered; [handoff](PHASE4_VISUAL_CMS_IMPLEMENTATION.md), [actual results/screens/recording](../verification/merchant-phase4/RESULTS.md). The requirements below remain the phase contract; owner Mac/commercial-media/live-provider acceptance is not claimed.
 **Placement:** After Phase 2 (Merchant storefront, early navy/white UI, simple share pages) and Phase 3 (merchant onboarding + media upload/WebP), and **BEFORE** lightweight dual CRM, full Campaign Management and affiliate programs.
 **Repository:** `alirezasefidpour747/didar-b2c-marketplace`
 **Related:** `docs/ROADMAP_B2C_MERCHANT_GROWTH_CRM_CAMPAIGNS.md`; `docs/EXECUTION_STRATEGY_V3_FEATURES_FIRST.md`; previous design specification `docs/PHASE10_LUXURY_VISUAL_CMS.md` for archival design intent.

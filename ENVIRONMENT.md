@@ -4,7 +4,7 @@ Codex Cloud develops/verifies; GitHub `main` is the verified release; the owner 
 
 ## Tools and commands
 
-Use Node **24**, Bun **1.4.3**, Git, Docker Desktop (Mac) or local Docker Engine (Cloud). PostgreSQL **17-alpine** and Redis **7-alpine** images select their native architecture. Dependencies install with the existing `bun.lock` using `--frozen-lockfile`; never transfer `node_modules` or prepared artifacts between OS/CPU architectures. No new packages or framework version changes are introduced.
+Use Node **24**, Bun **1.4.3**, Git, **FFmpeg/ffprobe with libx264** (macOS: `brew install ffmpeg`), Docker Desktop (Mac) or local Docker Engine (Cloud). PostgreSQL **17-alpine** and Redis **7-alpine** images select their native architecture. Dependencies install with the existing `bun.lock` using `--frozen-lockfile`; never transfer `node_modules` or prepared artifacts between OS/CPU architectures. No new packages or framework version changes are introduced.
 
 - `bun run local:setup`: preflight; preserve/create private local config; frozen install; persistent data service startup; additive database migrations; official Mercur codegen; both native panel builds.
 - `bun run local:browser`: install Playwright-managed Chromium for the host OS/CPU. No browser path is assumed. Optional `CHROMIUM_PATH` is honored; `PLAYWRIGHT_NO_SANDBOX=1` is an explicit constrained Linux runner override.
@@ -67,3 +67,5 @@ Cloud uses the existing checkout, Node/Bun and local services. A read-only home 
 The optional full-Compose regression helper now relays PostgreSQL TCP streams through local Docker exec, using Compose DNS from inside the API network. It checks explicit local/demo/sandbox runtime, loopback app bindings, the shared private PostgreSQL service and absence of a published database port. Credentials stay in memory/child environment, not argv or logs. This exercises that explicitly selected Compose database; it is not the default disposable Mac test path.
 
 Legacy Oracle material in `deploy/oracle` is archived/optional and is not an acceptance dependency. Physical RFID/scale/chip encoding, live gateway and Phase 2 finance are outside the verified local software boundary.
+
+Phase 4 media note: local prerequisites verify FFmpeg/ffprobe. Both API Dockerfiles install Debian FFmpeg; prepared images reuse JS dependencies but need OS repository access for this runtime package. The tested Cloud host already provides the tools. No new Docker image build, Oracle deployment or native Mac run is claimed by CMS Linux QA. See `docs/PHASE4_VISUAL_CMS_IMPLEMENTATION.md`.

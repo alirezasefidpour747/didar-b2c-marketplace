@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-# Reuse verified installed dependencies. No dependency installation or network bypass.
+# Reuse verified installed JS dependencies; API runtime installs Debian FFmpeg.
+# OS repository access is required; no JS package installation or network bypass.
 bun run build:all
 context=$(mktemp /tmp/didar-prepared-context.XXXXXX.tar.gz)
 trap 'rm -f "$context"' EXIT

@@ -3,6 +3,11 @@ import { defineMiddlewares } from "@medusajs/medusa";
 export default defineMiddlewares({
   routes: [
     {
+      matcher: "/didar/content-media",
+      bodyParser: { sizeLimit: "29mb" },
+      middlewares: [],
+    },
+    {
       matcher: "/didar/media",
       bodyParser: { sizeLimit: "12mb" },
       middlewares: [],

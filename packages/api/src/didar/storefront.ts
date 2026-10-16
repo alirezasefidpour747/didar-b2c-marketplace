@@ -193,7 +193,13 @@ export async function storefront(req: any) {
     if (b.kind === "member") {
       if (u.role !== "admin") throw new Error("FORBIDDEN");
       if (
-        !["STOREFRONT", "SHARE", "ONBOARDING"].includes(b.permission) ||
+        ![
+          "STOREFRONT",
+          "SHARE",
+          "ONBOARDING",
+          "CONTENT_EDIT",
+          "CONTENT_PUBLISH",
+        ].includes(b.permission) ||
         typeof b.active !== "boolean"
       )
         throw new Error("INVALID_PERMISSION");

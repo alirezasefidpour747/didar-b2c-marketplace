@@ -61,6 +61,11 @@ export function prerequisites() {
   if (Number(process.versions.node.split('.')[0]) !== 24) throw new Error('Use Node 24 for the verified local workflow')
   if (capture('bun', ['--version']) !== '1.4.3') throw new Error('Use the pinned Bun 1.4.3')
   capture('git', ['--version'])
+  try {
+    capture(process.env.FFPROBE_PATH || 'ffprobe', ['-version'])
+    const encoders=capture(process.env.FFMPEG_PATH || 'ffmpeg', ['-hide_banner','-encoders'])
+    if(!encoders.includes('libx264')) throw new Error('encoder')
+  } catch { throw new Error('Phase 4 media needs FFmpeg/ffprobe with libx264. On macOS install brew install ffmpeg; see docs/PHASE4_VISUAL_CMS_IMPLEMENTATION.md') }
   assertLocalDocker()
   capture('docker', ['info', '--format', '{{.ServerVersion}}'])
   console.log(`Platform: ${process.platform}/${process.arch}${process.platform === 'darwin' && process.arch === 'arm64' ? ' (Apple Silicon)' : ''}; Node ${process.versions.node}; Bun 1.4.3; local Docker ready`)

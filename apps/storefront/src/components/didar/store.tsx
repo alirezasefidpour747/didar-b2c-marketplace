@@ -79,6 +79,7 @@ export type Product = {
   offers: Offer[]
 }
 export type User = {
+  content_operator?: boolean
   merchant_memberships?: { supplier_id: string; permission: string }[]
   id: string
   name: string
@@ -411,6 +412,11 @@ export function DidarProvider({ children }: { children: ReactNode }) {
                 user.merchant_memberships?.some(
                   (m) => m.permission === 'SHARE',
                 ) && <Link href="/manage/sharing">اشتراک فروشنده مجاز</Link>}
+              {(user.role !== 'customer' ||
+                user.content_operator ||
+                user.merchant_memberships?.some((m) =>
+                  ['CONTENT_EDIT', 'CONTENT_PUBLISH'].includes(m.permission),
+                )) && <Link href="/manage/pages">صفحه‌ساز</Link>}
               {user.role !== 'customer' && (
                 <>
                   <Link href="/manage">{copy.manage}</Link>

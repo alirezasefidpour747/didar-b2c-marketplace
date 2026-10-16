@@ -9,7 +9,7 @@
 
 ## Latest implementation checkpoint — 2026-10-16
 
-Phases 1, 2A/2B/2C and **Phase 3 are DONE & TESTED**. Phase 2 main is `00447d39ffa64881c35813b5242b95fd356c84bb`; Phase 3 extends its same storefront/context/media architecture. Latest verification: **152 backend / 1 native HTTP / 21 browser tests and all production builds**, including a large decoded JPEG, actual DIDAR approvals, exact UID intake, approved RETAILER price and private/OG image controls. See [Phase 2 handoff](PHASE2_MERCHANT_STOREFRONT_SHARING.md), [Phase 3 handoff](PHASE3_ONBOARDING_MEDIA.md) and [Phase 3 evidence](../verification/merchant-phase3/RESULTS.md). **Phases 4–9 remain pending** at this checkpoint. Mac acceptance remains outside development. Historical baseline/specification statements below describe their authoring time.
+Phases 1, 2A/2B/2C, 3 and **Phase 4 are DONE & TESTED**. Phase 3 main is `95836630ce29cef3a23a251a6f0991116cae8f76`; Phase 4 extends the same context/media/commerce architecture with the full typed luxury CMS. Latest gate: **161 backend / 1 native HTTP / 22 production browser tests and all current production builds**, including all eleven DB-backed blocks, Persian private preview/review/publication, real image/video, 390px layout, current Product/Offer prices, tenant privacy, schedule/rollback and database/fresh API restart. See [Phase 4 handoff](PHASE4_VISUAL_CMS_IMPLEMENTATION.md) and [actual results/screens/recording](../verification/merchant-phase4/RESULTS.md). **Phases 5–9 remain pending**. Mac acceptance stays outside development after all features. Historical baseline/specification statements below describe their authoring time.
 
 ## Owner execution strategy v3 — owner Mac UAT OUTSIDE development (2026-10-16)
 

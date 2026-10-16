@@ -1,3 +1,5 @@
+import { content } from "./content";
+import { contentMedia } from "./content-media";
 import { media } from "./media";
 import { onboarding } from "./onboarding";
 import { sharing, attribution } from "./sharing";
@@ -66,6 +68,8 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "pages") return content(req);
+  if (action === "content-media") return contentMedia(req);
   if (action === "media") return media(req);
   if (action === "onboarding") return onboarding(req);
   if (action === "sharing") return sharing(req);
@@ -124,7 +128,17 @@ export async function perform(action: string, req: any): Promise<any> {
         [u.id],
       )
     ).rows;
-    return { user: { ...u, merchant_memberships: memberships } };
+    const content_operator =
+      u.role === "admin" ||
+      !!(
+        await db.query(
+          "SELECT 1 FROM didar_content_operator WHERE user_id=$1 AND active",
+          [u.id],
+        )
+      ).rowCount;
+    return {
+      user: { ...u, merchant_memberships: memberships, content_operator },
+    };
   }
   if (action === "register" || action === "login") {
     if (req.method !== "POST") throw new Error("METHOD_NOT_ALLOWED");

@@ -1,3 +1,7 @@
+import {
+  readPublishedContent,
+  publishedContentMetadata,
+} from '@/lib/didar-content'
 import { MerchantStore } from '@/components/didar/merchant-store'
 import type { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
@@ -20,6 +24,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       '/m/' +
       handle +
       (path.length ? '/' + path.map(encodeURIComponent).join('/') : '')
+    const kind =
+      path.length === 0
+        ? 'MERCHANT_HOME'
+        : path[0] === 'c'
+          ? 'MERCHANT_CURATED'
+          : path[0] === 'categories'
+            ? 'CATEGORY_LANDING'
+            : path[0] === 'collections'
+              ? 'COLLECTION_LANDING'
+              : ''
+    const cms = kind
+      ? await readPublishedContent(kind, path[1] || '', handle)
+      : null
+    const cmsMeta = publishedContentMetadata(cms, canonical, handle)
     return {
       title: preview?.title || store.name,
       description: preview?.description || store.intro,
@@ -42,6 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               ]
             : [],
       },
+      ...cmsMeta,
       robots: {
         index: store.visibility === 'PUBLIC_MARKETPLACE',
         follow: store.visibility === 'PUBLIC_MARKETPLACE',

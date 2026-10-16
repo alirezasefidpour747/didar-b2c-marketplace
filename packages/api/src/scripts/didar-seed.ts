@@ -1,3 +1,4 @@
+import { starterPreset } from "../didar/content-blocks";
 import { seedFacetVocabulary } from "../didar/facet-seed";
 import { projectExisting } from "../didar/finance-ledger";
 import { transaction } from "../didar/db";
@@ -92,6 +93,20 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/content-schema.sql"),
+      "utf8",
+    ),
+  );
+  for (const [code, name, kind] of [
+    ["didar_luxury", "دیدار — چیدمان ممتاز شش‌بخشی", "DIDAR_HOME"],
+    ["merchant_luxury", "فروشگاه — چیدمان شش‌بخشی", "MERCHANT_HOME"],
+  ])
+    await db.query(
+      "INSERT INTO didar_content_preset(code,name,blocks,status) VALUES($1,$2,$3,'approved') ON CONFLICT(code) DO NOTHING",
+      [code, name, JSON.stringify(starterPreset(kind))],
+    );
   await transaction(seedFacetVocabulary);
   await transaction(projectExisting);
   const seedDemo =

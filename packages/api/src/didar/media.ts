@@ -1,3 +1,5 @@
+import { contentAccess } from "./content-permissions";
+import { editorialReadable } from "./content-media";
 import { randomUUID, createHash } from "node:crypto";
 import { db, transaction } from "./db";
 import { sessionUser } from "./auth";
@@ -70,7 +72,7 @@ export async function media(req: any) {
       const sid = clean(q.supplier_id || u.supplier_id);
       await merchantAccess(c, u, sid, "ONBOARDING");
       const { rows: assets } = await c.query(
-        `SELECT id,supplier_id,request_id,product_id,alt,status,visibility,allow_shared,created_by,uploaded_by,assisted_by_agent,approved_by,review_reason,receipt,created_at FROM didar_media_asset WHERE supplier_id=$1 ORDER BY created_at DESC LIMIT 100`,
+        `SELECT id,supplier_id,request_id,product_id,alt,status,visibility,allow_shared,created_by,uploaded_by,assisted_by_agent,approved_by,review_reason,receipt,created_at FROM didar_media_asset WHERE supplier_id=$1 AND purpose='PRODUCT' ORDER BY created_at DESC LIMIT 100`,
         [sid],
       );
       return {
@@ -297,7 +299,7 @@ export async function media(req: any) {
 export async function processedImage(req: any, id: string) {
   const row = (
     await db.query(
-      `SELECT a.id,a.supplier_id,a.product_id,a.status,a.visibility,v.data,v.mime_type FROM didar_media_asset a JOIN didar_media_variant v ON v.asset_id=a.id WHERE a.id=$1 AND v.kind=$2`,
+      `SELECT a.id,a.supplier_id,a.product_id,a.purpose,a.status,a.visibility,v.data,v.mime_type FROM didar_media_asset a JOIN didar_media_variant v ON v.asset_id=a.id WHERE a.id=$1 AND v.kind=$2`,
       [
         id,
         ["card", "medium", "zoom"].includes(req.query.variant)
@@ -307,6 +309,10 @@ export async function processedImage(req: any, id: string) {
     )
   ).rows[0];
   if (!row) return null;
+  if (row.purpose === "EDITORIAL") {
+    await editorialReadable(req, row);
+    return { data: row.data, mime_type: row.mime_type };
+  }
   const preview = req.query.preview_store
     ? await publicPreviewStore(req.query.preview_store)
     : null;
@@ -314,9 +320,13 @@ export async function processedImage(req: any, id: string) {
   let own = false;
   try {
     if (!preview) {
-      await transaction((c) =>
-        merchantAccess(c, u, row.supplier_id, "ONBOARDING"),
-      );
+      try {
+        await transaction((c) =>
+          merchantAccess(c, u, row.supplier_id, "ONBOARDING"),
+        );
+      } catch {
+        await transaction((c) => contentAccess(c, u, row.supplier_id));
+      }
       own = true;
     }
   } catch {}

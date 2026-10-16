@@ -1,9 +1,11 @@
-# Offline packaging of an already built, tested checkout. See scripts/build-prepared-images.sh.
+# Packaging of an already built, tested JS checkout. See scripts/build-prepared-images.sh.
+# The API adds the bounded FFmpeg processor from Debian; this OS package step needs repository access.
 FROM node:24-bookworm-slim AS prepared
 COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 COPY . .
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 MERCUR_DISABLE_TELEMETRY=true
 FROM prepared AS api
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 EXPOSE 9000
 CMD ["sh","-c","cd packages/api/.medusa/server && node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]

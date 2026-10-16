@@ -1,6 +1,6 @@
 > Phase 2 financial sandbox implementation: [architecture and limits](docs/PHASE2_FINANCIAL_CORE.md), [one integrated Persian Mac UAT](docs/MAC_UAT_CHECKLIST.md), [actual gate evidence](verification/phase2/). Concrete Tahesab mapping remains BLOCKED_BY_SPEC; Mac/RFID acceptance is pending. No real financial operations.
 
-> **Current workflow:** Codex Cloud development → verified GitHub `main` → macOS laptop acceptance on `localhost`. **No Oracle is required for development or testing.** Read [the unified Mac acceptance roadmap](docs/ROADMAP_TO_INTEGRATED_MAC_UAT.md), [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), [local workflow verification](verification/local-first/README.md) and [Phase 1 evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID is merged to `main`; supplier writes default to read-only and Phase 2 finance is excluded. Portable Playwright configuration and local commands are implemented; native Mac UAT remains **MAC_UAT_PENDING**.
+> **Current workflow:** Codex Cloud development → verified GitHub `main` → one consolidated Mac acceptance on `localhost` after all feature phases. **No Oracle is required for development or testing.** Read [the unified Mac acceptance roadmap](docs/ROADMAP_TO_INTEGRATED_MAC_UAT.md), [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), [local workflow verification](verification/local-first/README.md) and [Phase 1 evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID, the financial sandbox and Merchant growth Phases 1–4 are implemented; scoped permissions remain enforced and all live providers remain disabled. CRM/growth Phases 5–9 are pending. Portable Playwright configuration and local commands are implemented; native Mac UAT remains **MAC_UAT_PENDING**.
 
 # Didar Gold — دیدار گلد
 
@@ -8,7 +8,7 @@ Persian RTL gold marketplace generated with **`bun create mercur-app@2.3.7 creat
 
 ## Local Mac development and acceptance
 
-Use macOS (Intel or Apple Silicon), **Node 24**, **Bun 1.4.3**, Git and running **Docker Desktop**. Docker runs PostgreSQL 17/Redis 7; the API and Next.js run natively on your Mac. No Oracle account, remote server or payment credentials are required. Install dependencies natively; do not copy Linux/x64 `node_modules` to Apple Silicon.
+Use macOS (Intel or Apple Silicon), **Node 24**, **Bun 1.4.3**, Git, **FFmpeg/ffprobe with libx264** (`brew install ffmpeg`) and running **Docker Desktop**. Docker runs PostgreSQL 17/Redis 7; the API and Next.js run natively on your Mac. No Oracle account, remote server or payment credentials are required. Install dependencies natively; do not copy Linux/x64 `node_modules` to Apple Silicon.
 
 ```sh
 git clone https://github.com/alirezasefidpour747/didar-b2c-marketplace.git
@@ -61,7 +61,7 @@ Advanced direct commands (`bun run test`, `bun run test:e2e`, `bun run db:setup`
 
 The existing `compose.yaml` and source `Dockerfile` remain available. They default to `staging` with demo identities disabled; they are **not** the default Mac UAT workflow. Do not run their API/storefront on ports 3000/9000 while native local servers use those ports. PostgreSQL/Redis remain unpublished in full Compose, and its named `postgres`/`uploads` volumes are separate from native local UAT data.
 
-`node scripts/configure.mjs` preserves root Compose configuration. Source builds use `docker compose up -d --build`; prepared-image packaging is a same-architecture offline fallback for an already verified cloud workspace. Never copy Linux prepared dependencies to macOS or another CPU architecture. HTTPS verification remains enabled for builds behind managed proxies; see `ENVIRONMENT.md`.
+`node scripts/configure.mjs` preserves root Compose configuration. Source builds use `docker compose up -d --build`; prepared-image packaging reuses the verified same-architecture JS checkout; Phase 4 API images require Debian repository access to install FFmpeg. Never copy Linux prepared dependencies to macOS or another CPU architecture. HTTPS verification remains enabled for builds behind managed proxies; see `ENVIRONMENT.md`.
 
 For an **already isolated** local/demo-enabled Compose stack only, `node scripts/test-compose.mjs [all|api|browser]` validates its local sandbox/loopback configuration and carries SQL fixture connections through local Docker exec streams. It requires no host-accessible bridge IP and publishes no database port. It intentionally tests that stack's own database and retains permanent test UID history; use `local:test` for disposable fixtures. The relay is verified in Linux Cloud; Docker Desktop/native Mac UAT is pending.
 
@@ -88,3 +88,5 @@ Issue #6 merchant types and versioned pricing profiles extend the existing Gold-
 Merchant growth Phase 2A/B/C implementation and verification: [merchant storefront, luxury foundation and sharing](docs/PHASE2_MERCHANT_STOREFRONT_SHARING.md). Owner Mac acceptance is deferred until all v3 feature phases are complete.
 
 Merchant growth Phase 3: [assisted onboarding and safe WebP processing](docs/PHASE3_ONBOARDING_MEDIA.md), preserving existing image IDs, shared Product Masters, exact UID intake and merchant pricing profiles.
+
+Merchant growth Phase 4: [PostgreSQL Visual CMS and bounded video](docs/PHASE4_VISUAL_CMS_IMPLEMENTATION.md). The same page renderer and live catalog power the Persian page builder, private previews and merchant/public pages; commercial media and owner Mac acceptance remain separate.

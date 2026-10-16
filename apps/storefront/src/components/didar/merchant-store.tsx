@@ -1,4 +1,5 @@
 'use client'
+import { ContentPage } from './content-page'
 import { CuratedPage } from './sharing'
 import { Wallet } from './wallet'
 import { Catalog, ProductDetail, RateBar, ImageAsset } from './catalog'
@@ -28,36 +29,51 @@ export function MerchantStore({ segments }: { segments: string[] }) {
   if (section === 'account') return <Account />
   if (section === 'orders') return <Orders id={id} />
   if (section === 'products') return <Catalog />
-  if (section === 'categories') return <Catalog categorySlug={id} />
-  if (section === 'collections') return <Catalog collectionSlug={id} />
+  if (section === 'categories')
+    return (
+      <ContentPage kind="CATEGORY_LANDING" routeKey={id}>
+        <Catalog categorySlug={id} />
+      </ContentPage>
+    )
+  if (section === 'collections')
+    return (
+      <ContentPage kind="COLLECTION_LANDING" routeKey={id}>
+        <Catalog collectionSlug={id} />
+      </ContentPage>
+    )
   if (section === 'discover') return <Catalog discoverySlug={id} />
   return (
-    <>
-      <section className="hero merchant-hero">
-        <div>
-          <p className="eyebrow">ویترین اختصاصی · با زیرساخت دیدار</p>
-          {store?.logo_url && (
-            <ImageAsset
-              className="merchant-logo"
-              src={store.logo_url}
-              alt={store.name}
-              privateImage={store.visibility === 'INVITE_ONLY'}
-            />
-          )}
-          <h1>{store?.name}</h1>
-          <p>{store?.intro}</p>
-          <Link className="primary" href="/products">
-            کشف محصولات این فروشگاه ←
-          </Link>
-          <p className="muted">{store?.contact}</p>
-        </div>
-        <div className="merchant-monogram" aria-hidden="true">
-          {store?.name?.slice(0, 1)}
-          <small>DIDAR SELECT</small>
-        </div>
-      </section>
-      <RateBar />
-      <Catalog home />
-    </>
+    <ContentPage
+      kind="MERCHANT_HOME"
+      fallback={
+        <>
+          <section className="hero merchant-hero">
+            <div>
+              <p className="eyebrow">ویترین اختصاصی · با زیرساخت دیدار</p>
+              {store?.logo_url && (
+                <ImageAsset
+                  className="merchant-logo"
+                  src={store.logo_url}
+                  alt={store.name}
+                  privateImage={store.visibility === 'INVITE_ONLY'}
+                />
+              )}
+              <h1>{store?.name}</h1>
+              <p>{store?.intro}</p>
+              <Link className="primary" href="/products">
+                کشف محصولات این فروشگاه ←
+              </Link>
+              <p className="muted">{store?.contact}</p>
+            </div>
+            <div className="merchant-monogram" aria-hidden="true">
+              {store?.name?.slice(0, 1)}
+              <small>DIDAR SELECT</small>
+            </div>
+          </section>
+          <RateBar />
+          <Catalog home />
+        </>
+      }
+    />
   )
 }

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'storefront',
   'media',
+  'pages',
+  'content-media',
+  'media-file',
   'onboarding',
   'sharing',
   'catalog',
@@ -49,9 +52,18 @@ async function proxy(
   const expected = req.headers.get('x-didar-store')
   if (expected) headers['x-didar-store'] = expected
   if (auth) headers.authorization = auth
+  if (action === 'media-file' && req.headers.get('range'))
+    headers.range = req.headers.get('range')!
   if (
     req.method === 'POST' &&
-    ['storefront', 'sharing', 'media', 'onboarding'].includes(action)
+    [
+      'storefront',
+      'sharing',
+      'media',
+      'onboarding',
+      'pages',
+      'content-media',
+    ].includes(action)
   ) {
     const origin = req.headers.get('origin')
     if (origin) {
@@ -70,7 +82,12 @@ async function proxy(
   try {
     let body: string | undefined
     if (req.method === 'POST') {
-      const limit = action === 'media' ? 12_000_000 : 1_200_000
+      const limit =
+        action === 'content-media'
+          ? 29_000_000
+          : action === 'media'
+            ? 12_000_000
+            : 1_200_000
       const tooLarge = () =>
         NextResponse.json({ message: 'INVALID_UPLOAD_SIZE' }, { status: 413 })
       if (Number(req.headers.get('content-length') || 0) > limit)
@@ -113,6 +130,9 @@ async function proxy(
         'storefront',
         'sharing',
         'media',
+        'pages',
+        'content-media',
+        'media-file',
         'onboarding',
       ].includes(action)
     ) {
@@ -127,7 +147,7 @@ async function proxy(
         url.searchParams.set(key, value)
       }
     }
-    if (action === 'image') {
+    if (action === 'image' || action === 'media-file') {
       const id = req.nextUrl.searchParams.get('id')
       if (!id || !/^[-\w]{1,120}$/.test(id))
         return NextResponse.json({ message: 'NOT_FOUND' }, { status: 404 })
@@ -155,12 +175,25 @@ async function proxy(
       headers,
       body,
       cache: 'no-store',
-      signal: AbortSignal.timeout(action === 'media' ? 60000 : 15000),
+      signal: AbortSignal.timeout(
+        action === 'content-media'
+          ? 120000
+          : action === 'media'
+            ? 60000
+            : 15000,
+      ),
     })
     const bytes = await response.arrayBuffer()
     let payload: any
     if (
-      ['storefront', 'sharing', 'media', 'onboarding'].includes(action) &&
+      [
+        'storefront',
+        'sharing',
+        'media',
+        'onboarding',
+        'pages',
+        'content-media',
+      ].includes(action) &&
       req.method === 'POST' &&
       response.ok
     ) {
@@ -179,6 +212,12 @@ async function proxy(
           response.headers.get('content-type') || 'application/json',
         'cache-control': 'no-store',
         'x-content-type-options': 'nosniff',
+        ...(response.headers.get('accept-ranges')
+          ? { 'accept-ranges': response.headers.get('accept-ranges')! }
+          : {}),
+        ...(response.headers.get('content-range')
+          ? { 'content-range': response.headers.get('content-range')! }
+          : {}),
       },
     })
     if (contextToken)
@@ -221,3 +260,5 @@ async function proxy(
 }
 export const GET = proxy
 export const POST = proxy
+
+export const HEAD = proxy
