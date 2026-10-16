@@ -1,12 +1,13 @@
 'use client'
 import { PricingBreakdown } from './catalog'
-import Link from 'next/link'
+import { ScopedLink as Link } from './store'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { RequireUser, useDidar, PaymentMethodPicker } from './store'
 import { date, money, number, states, weight } from './locale'
 export function Login() {
-  const { api, run, busy, authenticate, user, setMessage } = useDidar()
+  const { api, run, busy, authenticate, user, setMessage, scopedHref } =
+    useDidar()
   const router = useRouter()
   const [register, setRegister] = useState(false),
     [supplier, setSupplier] = useState(false)
@@ -44,7 +45,9 @@ export function Login() {
             })
             authenticate(d)
             router.push(
-              supplier || d.user.role !== 'customer' ? '/manage' : '/account',
+              supplier || d.user.role !== 'customer'
+                ? '/manage'
+                : scopedHref('/account'),
             )
             if (register && supplier)
               setMessage(
@@ -130,6 +133,7 @@ export function CheckoutForm({
       busy,
       refresh,
       paymentMethod,
+      scopedHref,
     } = useDidar(),
     router = useRouter()
   const [draftReady, setDraftReady] = useState(false)
@@ -261,7 +265,7 @@ export function CheckoutForm({
               sessionStorage.removeItem('didar-checkout-intent')
               sessionStorage.removeItem('didar-checkout-address')
               await refresh()
-              router.push(id ? '/orders/' + id : '/orders')
+              router.push(scopedHref(id ? '/orders/' + id : '/orders'))
             })
           }}
         >

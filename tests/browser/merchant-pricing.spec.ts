@@ -25,6 +25,11 @@ async function login(
   await page.getByLabel("ایمیل", { exact: true }).fill(email);
   await page.getByLabel("رمز عبور", { exact: true }).fill(password);
   await page.getByRole("button", { name: "ورود", exact: true }).click();
+  await page.waitForURL((url: URL) => url.pathname !== "/login");
+  if (
+    await page.getByRole("button", { name: "فهرست +", exact: true }).isVisible()
+  )
+    await page.getByRole("button", { name: "فهرست +", exact: true }).click();
   await expect(
     page.getByRole("link", { name: "سفارش‌ها", exact: true }),
   ).toBeVisible();

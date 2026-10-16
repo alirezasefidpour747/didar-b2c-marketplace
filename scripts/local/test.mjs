@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -51,7 +51,7 @@ export async function testLocal(processes, { reuseBuild = false } = {}) {
     do { webPort = await freePort() } while (webPort === apiPort)
     const apiOrigin = `http://127.0.0.1:${apiPort}`, webOrigin = `http://127.0.0.1:${webPort}`
     const env = {
-      ...process.env, NODE_ENV: 'development', DIDAR_ENVIRONMENT: 'local', DIDAR_PAYMENT_MODE: 'sandbox', DIDAR_SEED_DEMO: 'true',
+      ...process.env, DIDAR_DISPOSABLE_QA: 'true', NODE_ENV: 'development', DIDAR_ENVIRONMENT: 'local', DIDAR_PAYMENT_MODE: 'sandbox', DIDAR_SEED_DEMO: 'true',
       DATABASE_URL: `postgres://postgres@127.0.0.1:${pgPort}/didar_qa`, REDIS_URL: `redis://127.0.0.1:${redisPort}`,
       JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECRET: randomBytes(32).toString('hex'),
       STORE_CORS: webOrigin, ADMIN_CORS: apiOrigin, VENDOR_CORS: apiOrigin, AUTH_CORS: `${webOrigin},${apiOrigin}`,
@@ -78,8 +78,9 @@ export async function testLocal(processes, { reuseBuild = false } = {}) {
     await waitHTTP(`${webOrigin}/api/didar/catalog`, async r => { const d = await r.json(); return Array.isArray(d.products) && !!d.rate })
     await run('bun', ['test', './tests/local-workflow.test.ts', ...backendFiles], { env })
     await run('bun', ['run', '--cwd', 'packages/api', 'test:integration:http'], { env })
+    await run('node', ['scripts/local/browser-login-window.mjs'], { env })
     await run('bun', ['run', 'test:e2e'], { env })
-    console.log('Cloud/local automated verification passed. MAC_UAT_PENDING until the owner completes native Mac acceptance. RFID hardware remains unverified.')
+    console.log('CODEX_LINUX_VERIFIED. Owner Mac acceptance is deferred until all feature phases are complete; physical RFID hardware remains unverified.')
   } finally {
     await cleanup()
     closeSync(apiFD); closeSync(webFD)

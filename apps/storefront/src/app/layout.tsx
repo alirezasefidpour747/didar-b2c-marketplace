@@ -1,4 +1,6 @@
+import './design-tokens.css'
 import './globals.css'
+import './luxury-foundation.css'
 import { DidarProvider } from '@/components/didar/store'
 export const metadata = {
   title: 'دیدار گلد | بازار طلای تأمین‌کنندگان',

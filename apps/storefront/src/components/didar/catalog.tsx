@@ -1,5 +1,6 @@
 'use client'
-import Link from 'next/link'
+import { ShareActions } from './sharing'
+import { ScopedLink as Link } from './store'
 import { useEffect, useState } from 'react'
 import {
   useDidar,
@@ -168,7 +169,7 @@ export function Catalog({
   discoverySlug?: string
   home?: boolean
 }) {
-  const { categories, collections, paymentMethod } = useDidar()
+  const { categories, collections, paymentMethod, store } = useDidar()
   const [query, setQuery] = useState<Record<string, string>>({}),
     [page, setPage] = useState(1),
     [data, setData] = useState<any>(null),
@@ -207,6 +208,15 @@ export function Catalog({
     const timer = setTimeout(() => {
       fetch('/api/didar/catalog?' + params, {
         cache: 'no-store',
+        headers: {
+          'x-didar-store': store?.handle || 'global',
+          ...(sessionStorage.getItem('didar-session')
+            ? {
+                authorization:
+                  'Bearer ' + sessionStorage.getItem('didar-session'),
+              }
+            : {}),
+        },
         signal: controller.signal,
       })
         .then(async (r) => {
@@ -233,7 +243,7 @@ export function Catalog({
       clearTimeout(timer)
       controller.abort()
     }
-  }, [params, retry])
+  }, [params, retry, store?.handle])
   const change = (key: string, value: string) => {
     setPage(1)
     setQuery((q) => {
@@ -452,7 +462,7 @@ export function Catalog({
   )
 }
 export function ProductDetail({ id }: { id: string }) {
-  const { products, loading } = useDidar()
+  const { products, loading, store } = useDidar()
   const [selected, setSelected] = useState(0)
   const p = products.find((p) => p.id === id)
   if (loading) return <p role="status">در حال دریافت محصول…</p>
@@ -500,6 +510,15 @@ export function ProductDetail({ id }: { id: string }) {
             {p.category} · {p.jewelry_type}
           </p>
           <h1>{p.title}</h1>
+          {store && (
+            <ShareActions
+              path={
+                p.canonical_path ||
+                `/m/${store.handle}/products/${p.public_key}`
+              }
+              title={p.title}
+            />
+          )}
           <PaymentMethodPicker />
           <div className="browse-links">
             {Object.entries(p.classification || {}).flatMap(([facet, values]) =>

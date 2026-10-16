@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
+  'storefront',
+  'sharing',
   'catalog',
   'quote',
   'merchant-pricing',
@@ -38,7 +40,18 @@ async function proxy(
     return NextResponse.json({ message: 'NOT_FOUND' }, { status: 404 })
   const headers: Record<string, string> = { 'content-type': 'application/json' }
   const auth = req.headers.get('authorization')
+  const context = req.cookies.get('didar-store-context')?.value
+  if (context) headers['x-didar-context'] = context
+  const visit = req.cookies.get('didar-share-visit')?.value
+  if (visit) headers['x-didar-visit'] = visit
+  const expected = req.headers.get('x-didar-store')
+  if (expected) headers['x-didar-store'] = expected
   if (auth) headers.authorization = auth
+  if (req.method === 'POST' && ['storefront', 'sharing'].includes(action)) {
+    const origin = req.headers.get('origin')
+    if (origin && new URL(origin).host !== req.headers.get('host'))
+      return NextResponse.json({ message: 'FORBIDDEN' }, { status: 403 })
+  }
   try {
     let body: string | undefined
     if (req.method === 'POST') {
@@ -78,7 +91,9 @@ async function proxy(
       `/didar/${action}`,
       process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000',
     )
-    if (['catalog', 'classification'].includes(action)) {
+    if (
+      ['catalog', 'classification', 'storefront', 'sharing'].includes(action)
+    ) {
       if (req.nextUrl.search.length > 6000)
         return NextResponse.json({ message: 'INVALID_FILTER' }, { status: 400 })
       for (const [key, value] of req.nextUrl.searchParams) {
@@ -114,7 +129,22 @@ async function proxy(
       cache: 'no-store',
       signal: AbortSignal.timeout(15000),
     })
-    return new NextResponse(await response.arrayBuffer(), {
+    const bytes = await response.arrayBuffer()
+    let payload: any
+    if (
+      ['storefront', 'sharing'].includes(action) &&
+      req.method === 'POST' &&
+      response.ok
+    ) {
+      payload = JSON.parse(new TextDecoder().decode(bytes))
+    }
+    const contextToken = payload?.context_token
+    const visitToken = payload?.visit_token
+    if (payload) {
+      delete payload.context_token
+      delete payload.visit_token
+    }
+    const result = new NextResponse(payload ? JSON.stringify(payload) : bytes, {
       status: response.status,
       headers: {
         'content-type':
@@ -123,6 +153,37 @@ async function proxy(
         'x-content-type-options': 'nosniff',
       },
     })
+    if (contextToken)
+      result.cookies.set('didar-store-context', contextToken, {
+        httpOnly: true,
+        secure: req.nextUrl.protocol === 'https:',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 86400,
+      })
+    if (visitToken)
+      result.cookies.set('didar-share-visit', visitToken, {
+        httpOnly: true,
+        secure: req.nextUrl.protocol === 'https:',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 604800,
+      })
+    if (payload?.left) {
+      result.cookies.set('didar-share-visit', '', {
+        httpOnly: true,
+        path: '/',
+        maxAge: 0,
+      })
+    }
+    if (payload?.left)
+      result.cookies.set('didar-store-context', '', {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 0,
+      })
+    return result
   } catch {
     return NextResponse.json(
       { message: 'BACKEND_UNAVAILABLE' },

@@ -1,3 +1,4 @@
+import { storeScope } from "./storefront";
 import {
   pricingLock,
   effectiveProfile,
@@ -42,10 +43,11 @@ const slug = (value: unknown) => {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s)) throw new Error("INVALID_SLUG");
   return s;
 };
-export async function catalog(user?: any, query?: any) {
+export async function catalog(user?: any, query?: any, req?: any) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
     await pricingLock(c);
+    const scope = !user && req ? await storeScope(req, c) : null;
     const method = paymentMethod(query?.payment_method);
     const {
       rows: [rate],
@@ -56,21 +58,23 @@ export async function catalog(user?: any, query?: any) {
     const quote_expires_at = new Date(
       new Date(rate.updated_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString();
-    const selection = query ? await discoverySelection(c, query) : null;
+    const selection = query ? await discoverySelection(c, query, scope) : null;
     const { rows: products } = await c.query(
-      `SELECT p.* FROM didar_product p WHERE ($1='admin' OR (p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2)))) AND ($3::text[] IS NULL OR p.id=ANY($3::text[])) ORDER BY p.id`,
+      `SELECT p.* FROM didar_product p WHERE ($1='admin' OR (p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id) AND didar_visible_product(p.id,$4)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2)))) AND ($3::text[] IS NULL OR p.id=ANY($3::text[])) ORDER BY p.id`,
       [
         user?.role || "public",
         user?.supplier_id || null,
         selection?.ids ?? null,
+        scope?.supplier_id || null,
       ],
     );
     const { rows: offers } = await c.query(
-      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved')) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
+      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved' AND (($4::text IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=$4))) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
       [
         user?.role || "public",
         user?.supplier_id || null,
         products.map((p: any) => p.id),
+        scope?.supplier_id || null,
       ],
     );
     const { rows: images } = await c.query(
@@ -92,6 +96,8 @@ export async function catalog(user?: any, query?: any) {
     }
     for (const p of products) {
       Object.assign(p, await productPath(c, p));
+      if (scope)
+        p.canonical_path = `/m/${scope.handle}/products/${p.public_key}`;
       p.images = images
         .filter((i: any) => i.product_id === p.id)
         .map((i: any) => ({
@@ -144,8 +150,12 @@ export async function catalog(user?: any, query?: any) {
       [user?.role || "public"],
     );
     const { rows: collections } = await c.query(
-      `SELECT c.*,v.code type_code,(SELECT label FROM didar_catalog_translation WHERE entity_type='value' AND entity_id=c.type_id AND locale=$2 AND status='approved') type_label,(SELECT label FROM didar_catalog_translation WHERE entity_type='collection' AND entity_id=c.id AND locale=$2 AND status='approved') localized_name,CASE WHEN EXISTS(SELECT 1 FROM didar_product_image i JOIN didar_product ip ON ip.id=i.product_id WHERE i.id=c.image_id AND ip.active AND ip.published AND ip.approved AND didar_public_taxonomy(ip.id,ip.category_id)) THEN c.image_id ELSE NULL END public_image_id,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_facet_value v ON v.id=c.type_id LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id WHERE $1='admin' OR (${publicCollectionCondition}) GROUP BY c.id,v.code ORDER BY c.sort_order,c.name`,
-      [user?.role || "public", selection?.parsed.locale || "fa"],
+      `SELECT c.*,v.code type_code,(SELECT label FROM didar_catalog_translation WHERE entity_type='value' AND entity_id=c.type_id AND locale=$2 AND status='approved') type_label,(SELECT label FROM didar_catalog_translation WHERE entity_type='collection' AND entity_id=c.id AND locale=$2 AND status='approved') localized_name,CASE WHEN EXISTS(SELECT 1 FROM didar_product_image i JOIN didar_product ip ON ip.id=i.product_id WHERE i.id=c.image_id AND ip.active AND ip.published AND ip.approved AND didar_public_taxonomy(ip.id,ip.category_id) AND didar_visible_product(ip.id,$3)) THEN c.image_id ELSE NULL END public_image_id,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_facet_value v ON v.id=c.type_id LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id WHERE $1='admin' OR ((${publicCollectionCondition}) AND (c.owner_supplier_id IS NULL OR ($3::text IS NULL AND didar_global_supplier(c.owner_supplier_id)) OR c.owner_supplier_id=$3)) GROUP BY c.id,v.code ORDER BY c.sort_order,c.name`,
+      [
+        user?.role || "public",
+        selection?.parsed.locale || "fa",
+        scope?.supplier_id || null,
+      ],
     );
     for (const collection of collections)
       collection.product_ids = collection.product_ids.filter((id: string) =>
@@ -179,6 +189,10 @@ export async function catalog(user?: any, query?: any) {
               sort_order: v.sort_order,
               product_ids: v.product_ids,
             }));
+    if (scope)
+      for (let i = safeCollections.length - 1; i >= 0; i--)
+        if (!safeCollections[i].product_ids.length)
+          safeCollections.splice(i, 1);
     if (user?.role !== "admin") {
       const allowed = new Set(safeCollections.map((v: any) => v.id));
       for (const p of products)
@@ -188,6 +202,7 @@ export async function catalog(user?: any, query?: any) {
     }
     const data = {
       products,
+      store: scope,
       quote_expires_at,
       price_available: !stale,
       rate_stale: stale,
@@ -200,7 +215,7 @@ export async function catalog(user?: any, query?: any) {
       collections: safeCollections,
     };
     return selection
-      ? finishDiscovery(c, data, selection)
+      ? finishDiscovery(c, data, selection, scope)
       : { ...data, ...(user ? {} : await publicDiscoveryMetadata(c)) };
   });
 }

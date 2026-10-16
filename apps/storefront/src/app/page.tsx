@@ -1,20 +1,23 @@
 'use client'
 import Link from 'next/link'
-import { Catalog, RateBar } from '@/components/didar/catalog'
+import { Catalog, RateBar, ProductImage } from '@/components/didar/catalog'
+import { useDidar } from '@/components/didar/store'
 export default function Home() {
+  const { products } = useDidar(),
+    featured = products.find((p) => p.images?.length)
   return (
     <>
       <section className="hero">
         <div>
-          <p className="eyebrow">طلای اصیل، انتخاب آگاهانه</p>
+          <p className="eyebrow">DIDAR · طلای اصیل، انتخاب آگاهانه</p>
           <h1>
-            درخششِ طلا،
+            برای لحظه‌هایی
             <br />
-            <em>شفافیتِ دیدار.</em>
+            که <em>ماندگار می‌شوند.</em>
           </h1>
           <p>
-            یک کاتالوگ، چند تأمین‌کننده. طلای ۱۸ عیار را با وزن دقیق و جزئیات
-            روشن قیمت مقایسه کنید.
+            انتخابی از طلای اصیل؛ با وزن دقیق، هویت روشن هر قطعه و جزئیات شفاف
+            قیمت. زیبایی را با اطمینان انتخاب کنید.
           </p>
           <Link href="/products" className="primary">
             کشف مجموعه دیدار ←
@@ -24,11 +27,30 @@ export default function Home() {
             از دیدار
           </div>
         </div>
-        <div className="hero-art" aria-hidden="true">
-          <div className="orbit" />
-          <div className="jewel">✧</div>
-          <span>دیدار / انتخابی ماندگار</span>
+        <div className="editorial-media">
+          {featured ? (
+            <ProductImage product={featured} />
+          ) : (
+            <div className="editorial-seal" aria-label="هویت نوشتاری دیدار">
+              دیدار<span>DIDAR · GOLD</span>
+              <small>زیباییِ انتخاب آگاهانه</small>
+            </div>
+          )}
+          <span className="editorial-caption">
+            {featured ? featured.title : 'طلای اصیل · جزئیات ماندگار'}
+          </span>
         </div>
+      </section>
+      <section className="editorial-intro">
+        <div>
+          <p className="eyebrow">انتخاب دیدار</p>
+          <h2>زیبایی در جزئیات است.</h2>
+        </div>
+        <p>
+          از زیورهای روزمره تا هدیه‌ای برای یک مناسبت خاص، انتخاب خود را با
+          دسته‌بندی و ویژگی‌های تأییدشده پیدا کنید. قیمت هر عرضه از وزن واقعی و
+          شرایط همان فروشنده محاسبه می‌شود.
+        </p>
       </section>
       <RateBar />
       <Catalog home />

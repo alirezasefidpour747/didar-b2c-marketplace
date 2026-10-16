@@ -7,6 +7,10 @@
 **Runtime strategy:** Codex Cloud implements and tests on its available Linux runtime, submits verified changes to GitHub `main`; the owner optionally performs one consolidated MacBook acceptance on localhost AFTER all software features are implemented. No Oracle or live financial providers required.
 **Core goal:** One real retailer journey, from acquisition and own product intake to scoped storefront, product sharing, actual sandbox checkout, CRM visibility, campaign attribution and opt-in rewards — without exposing competing retailers or their customers.
 
+## Latest implementation checkpoint — 2026-10-16
+
+Phase 1 remains delivered by Issue #6. **Phase 2A/2B/2C are now DONE & TESTED**: isolated merchant storefronts, premium navy/white foundation, ten-product curated and individual sharing, authoritative attribution and sandbox checkout. Verification: 143 backend / 1 native HTTP / 20 browser tests and all production builds. See [Phase 2 handoff](PHASE2_MERCHANT_STOREFRONT_SHARING.md) and [evidence](../verification/merchant-phase2/RESULTS.md). **Phase 3 and Phases 4–9 remain pending implementation** at this checkpoint; Mac acceptance remains outside development. Historical baseline/specification statements below describe their authoring time.
+
 ## Owner execution strategy v3 — owner Mac UAT OUTSIDE development (2026-10-16)
 
 **The owner explicitly removed a dedicated Mac-test development phase.** Build all agreed features first, completing mandatory **Codex-run automated technical/migration/API/browser/security/build tests for each phase**; only **after all software phases** will the owner conduct one consolidated hands-on Mac test and later external customer/retailer usability and commercial review. The owner has further requirements to provide; preserve flexibility and do not make client interviews a development gate.

@@ -1,0 +1,17 @@
+:root {
+  --didar-navy: #142d50;
+  --didar-white: #ffffff;
+  --didar-gold: #c5a46a;
+  --didar-champagne: #eee6d9;
+  --didar-ink: #142d50;
+  --didar-muted: #58677a;
+  --didar-line: #dce1e8;
+  --didar-surface: #f7f8fa;
+  --didar-space-1: 0.5rem;
+  --didar-space-2: 1rem;
+  --didar-space-3: 1.5rem;
+  --didar-space-4: 2.5rem;
+  --didar-space-5: 4.5rem;
+  --didar-content: 1400px;
+  --didar-radius: 3px;
+}

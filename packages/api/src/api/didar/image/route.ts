@@ -1,3 +1,4 @@
+import { storeScope } from "../../../didar/storefront";
 import { db } from "../../../didar/db";
 import { sessionUser } from "../../../didar/auth";
 export async function GET(req: any, res: any) {
@@ -11,7 +12,19 @@ export async function GET(req: any, res: any) {
     [id],
   );
   if (!image) return res.status(404).json({ message: "NOT_FOUND" });
-  if (!image.active || !image.published || !image.approved) {
+  let scope;
+  try {
+    scope = await storeScope(req);
+  } catch {
+    return res.status(404).json({ message: "NOT_FOUND" });
+  }
+  const visible = (
+    await db.query("SELECT didar_visible_product($1,$2) ok", [
+      image.product_id,
+      scope?.supplier_id || null,
+    ])
+  ).rows[0].ok;
+  if (!visible || !image.active || !image.published || !image.approved) {
     const u = await sessionUser(req);
     let own = false;
     if (

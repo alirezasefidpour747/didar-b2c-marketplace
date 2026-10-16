@@ -1,3 +1,4 @@
+import { storeScope } from "./storefront";
 import { transaction } from "./db";
 export type Breadcrumb = { id: string; name: string; slug: string };
 export async function productPath(c: any, p: any) {
@@ -30,7 +31,10 @@ export async function productPath(c: any, p: any) {
     taxonomy_ready: true,
   };
 }
-export async function publicProductLink(query: any) {
+export async function publicProductLink(
+  query: any,
+  req: any = { headers: {} },
+) {
   const byUID = query.uid !== undefined;
   const byKey = query.key !== undefined;
   const value = byUID ? query.uid : byKey ? query.key : query.id;
@@ -43,13 +47,21 @@ export async function publicProductLink(query: any) {
   // Return only public master identity. No item, supplier, invoice, EPC or ownership fields.
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
+    const scope = byUID ? null : await storeScope(req, c);
     const {
       rows: [p],
     } = await c.query(
-      `SELECT p.id,p.title,p.category_id,p.slug,p.public_key FROM didar_product p WHERE p.active AND p.approved AND p.published AND ${byUID ? "didar_taxonomy_valid(p.category_id)" : "didar_public_taxonomy(p.id,p.category_id)"} AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : byKey ? "p.public_key=$1" : "p.id=$1"}`,
-      [value],
+      `SELECT p.id,p.title,p.category_id,p.slug,p.public_key FROM didar_product p WHERE p.active AND p.approved AND p.published AND didar_visible_product(p.id,$2) AND ${byUID ? "didar_taxonomy_valid(p.category_id)" : "didar_public_taxonomy(p.id,p.category_id)"} AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND didar_global_supplier(i.supplier_id) AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : byKey ? "p.public_key=$1" : "p.id=$1"}`,
+      [value, scope?.supplier_id || null],
     );
     if (!p) throw new Error("NOT_FOUND");
-    return { id: p.id, title: p.title, ...(await productPath(c, p)) };
+    return {
+      id: p.id,
+      title: p.title,
+      ...(await productPath(c, p)),
+      ...(scope
+        ? { canonical_path: `/m/${scope.handle}/products/${p.public_key}` }
+        : {}),
+    };
   });
 }

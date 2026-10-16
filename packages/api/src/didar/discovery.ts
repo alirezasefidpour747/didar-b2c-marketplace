@@ -119,7 +119,7 @@ export function parseDiscovery(q: any = {}, curation = false) {
 }
 export const publicCollectionCondition = `c.active AND c.published AND c.approved AND (c.owner_supplier_id IS NULL OR EXISTS(SELECT 1 FROM didar_supplier s WHERE s.id=c.owner_supplier_id AND s.active AND s.status='approved')) AND ((c.legacy_public AND c.type_id IS NULL) OR EXISTS(SELECT 1 FROM didar_facet_value cv JOIN didar_facet cf ON cf.code=cv.facet_code WHERE cv.id=c.type_id AND cv.active AND cv.visible AND cf.active AND cf.visible AND EXISTS(SELECT 1 FROM didar_catalog_translation ct WHERE ct.entity_type='value' AND ct.entity_id=cv.id AND ct.locale='fa' AND ct.status='approved')))`;
 const publicProduct = `p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id)`;
-export async function discoverySelection(c: any, q: any) {
+export async function discoverySelection(c: any, q: any, scope: any = null) {
   const parsed = parseDiscovery(q),
     constraints = [parsed];
   let landing: any = null;
@@ -139,7 +139,12 @@ export async function discoverySelection(c: any, q: any) {
     values.push(v);
     return "$" + values.length;
   };
-  const clauses = [publicProduct];
+  const clauses = [
+    publicProduct,
+    `didar_visible_product(p.id,${bind(scope?.supplier_id || null)})`,
+  ];
+  const collectionScope = () =>
+    `(c.owner_supplier_id IS NULL OR (${bind(scope?.supplier_id || null)}::text IS NULL AND didar_global_supplier(c.owner_supplier_id)) OR c.owner_supplier_id=${bind(scope?.supplier_id || null)})`;
   for (const f of constraints) {
     for (const [facet, codes] of Object.entries(f.filters)) {
       const { rowCount } = await c.query(
@@ -152,7 +157,7 @@ export async function discoverySelection(c: any, q: any) {
         v = bind(codes);
       if (facet === "collection_type")
         clauses.push(
-          `EXISTS(SELECT 1 FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id JOIN didar_facet_value cv ON cv.id=c.type_id WHERE cp.product_id=p.id AND ${publicCollectionCondition} AND cv.facet_code=${k} AND cv.code=ANY(${v}::text[]))`,
+          `EXISTS(SELECT 1 FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id JOIN didar_facet_value cv ON cv.id=c.type_id WHERE cp.product_id=p.id AND ${publicCollectionCondition} AND ${collectionScope()} AND cv.facet_code=${k} AND cv.code=ANY(${v}::text[]))`,
         );
       else
         clauses.push(
@@ -186,7 +191,7 @@ export async function discoverySelection(c: any, q: any) {
       }
     if (f.collection_slug)
       clauses.push(
-        `EXISTS(SELECT 1 FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id WHERE cp.product_id=p.id AND c.slug=${bind(f.collection_slug)} AND ${publicCollectionCondition})`,
+        `EXISTS(SELECT 1 FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id WHERE cp.product_id=p.id AND c.slug=${bind(f.collection_slug)} AND ${publicCollectionCondition} AND ${collectionScope()})`,
       );
   }
   // All predicates are parameterized; EXISTS preserves one master product with any number of offers/tags.
@@ -231,6 +236,7 @@ export async function publicDiscoveryMetadata(
   c: any,
   locale = "fa",
   productIds?: string[],
+  scope?: any,
 ) {
   const { rows: facets } = await c.query(
     `SELECT f.code,f.number,f.mode,f.target,t.label FROM didar_facet f JOIN didar_catalog_translation t ON t.entity_type='facet' AND t.entity_id=f.code AND t.locale=$1 AND t.status='approved' WHERE f.active AND f.visible ORDER BY f.sort_order,f.number`,
@@ -244,8 +250,8 @@ export async function publicDiscoveryMetadata(
   if (productIds)
     counts = (
       await c.query(
-        `SELECT facet_code,code,count(DISTINCT product_id)::int count FROM (SELECT a.product_id,a.facet_code,a.code FROM didar_effective_classification a WHERE a.product_id=ANY($1::text[]) UNION SELECT cp.product_id,'collection_type',v.code FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id JOIN didar_facet_value v ON v.id=c.type_id WHERE cp.product_id=ANY($1::text[]) AND ${publicCollectionCondition}) x GROUP BY facet_code,code`,
-        [productIds],
+        `SELECT facet_code,code,count(DISTINCT product_id)::int count FROM (SELECT a.product_id,a.facet_code,a.code FROM didar_effective_classification a WHERE a.product_id=ANY($1::text[]) UNION SELECT cp.product_id,'collection_type',v.code FROM didar_collection_product cp JOIN didar_collection c ON c.id=cp.collection_id JOIN didar_facet_value v ON v.id=c.type_id WHERE cp.product_id=ANY($1::text[]) AND ${publicCollectionCondition} AND (c.owner_supplier_id IS NULL OR ($2::text IS NULL AND didar_global_supplier(c.owner_supplier_id)) OR c.owner_supplier_id=$2)) x GROUP BY facet_code,code`,
+        [productIds, scope?.supplier_id || null],
       )
     ).rows;
   for (const f of facets)
@@ -273,7 +279,12 @@ export async function publicDiscoveryMetadata(
     vocabulary_locale: locale,
   };
 }
-export async function finishDiscovery(c: any, data: any, selection: any) {
+export async function finishDiscovery(
+  c: any,
+  data: any,
+  selection: any,
+  scope?: any,
+) {
   const { parsed: f, constraints, landing } = selection;
   const offerFiltered = constraints.some(
     (v: any) =>
@@ -317,7 +328,7 @@ export async function finishDiscovery(c: any, data: any, selection: any) {
   });
   const total = products.length,
     ids = products.map((p: any) => p.id);
-  const metadata = await publicDiscoveryMetadata(c, f.locale, ids);
+  const metadata = await publicDiscoveryMetadata(c, f.locale, ids, scope);
   return {
     ...data,
     ...metadata,

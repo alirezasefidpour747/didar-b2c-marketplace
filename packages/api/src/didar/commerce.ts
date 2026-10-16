@@ -1,3 +1,4 @@
+import { storeScope } from "./storefront";
 import { publicOrder } from "./merchant-profiles";
 import { recognizePayment } from "./finance";
 import { randomUUID } from "node:crypto";
@@ -47,6 +48,9 @@ async function payment(req: any) {
       [id, u.id],
     );
     if (!o) throw new Error("NOT_FOUND");
+    const scope = await storeScope(req, c);
+    if (scope && o.origin_supplier_id !== scope.supplier_id)
+      throw new Error("NOT_FOUND");
     let {
       rows: [attempt],
     } = await c.query("SELECT * FROM didar_payment_attempt WHERE order_id=$1", [

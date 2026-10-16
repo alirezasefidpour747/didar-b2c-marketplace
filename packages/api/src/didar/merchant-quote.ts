@@ -1,3 +1,4 @@
+import { storeScope, assertOfferScope } from "./storefront";
 import { transaction } from "./db";
 import { integer, withPolicy } from "./pricing";
 import {
@@ -12,7 +13,7 @@ export function paymentMethod(v: any) {
     throw new Error("INVALID_PAYMENT_METHOD");
   return m;
 }
-export async function cartQuote(b: any) {
+export async function cartQuote(b: any, req: any = { headers: {} }) {
   if (!Array.isArray(b.lines) || !b.lines.length || b.lines.length > 30)
     throw new Error("INVALID_LINES");
   const method = paymentMethod(b.payment_method);
@@ -35,6 +36,7 @@ export async function cartQuote(b: any) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
     await pricingLock(c);
+    const scope = await storeScope(req, c);
     const raw = (await c.query("SELECT * FROM didar_rate WHERE id=1")).rows[0];
     if (Date.now() - new Date(raw.updated_at).getTime() > 86400000)
       throw new Error("CONFLICT_RATE_STALE");
@@ -48,6 +50,7 @@ export async function cartQuote(b: any) {
         [l.id, l.quantity],
       );
       if (!o) throw new Error("CONFLICT_STOCK");
+      await assertOfferScope(c, o, scope);
       lines.push({
         ...l,
         offer_id: o.id,

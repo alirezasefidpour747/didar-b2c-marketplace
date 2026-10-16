@@ -84,3 +84,5 @@ Panel builds use `bun run build:panels`, which generates temporary child-process
 Issue #5 adds governed F01–F12 classification, collection approval and server-driven discovery over the existing product/UID model. See [classification and discovery implementation/API](docs/ISSUE5_CLASSIFICATION_AND_DISCOVERY.md) and the additional [Mac acceptance checks](docs/MAC_UAT_CHECKLIST.md). The storefront remains Persian; Arabic/French vocabulary awaits owner review.
 
 Issue #6 merchant types and versioned pricing profiles extend the existing Gold-First engine. Open `/manage/pricing` for the Persian lifecycle and offer simulator; PDP/cart/checkout use the applied merchant profile and selected CASH/CREDIT rules. Read [implementation, API, calculations, preservation and acceptance](docs/MERCHANT_PRICING_IMPLEMENTATION.md). No merchant profile, tax rate or assignment is auto-activated by the migration.
+
+Merchant growth Phase 2A/B/C implementation and verification: [merchant storefront, luxury foundation and sharing](docs/PHASE2_MERCHANT_STOREFRONT_SHARING.md). Owner Mac acceptance is deferred until all v3 feature phases are complete.

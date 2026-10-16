@@ -1,3 +1,5 @@
+import { sharing, attribution } from "./sharing";
+import { storefront, storeScope, assertOfferScope } from "./storefront";
 import {
   publicOrder,
   pricingLock,
@@ -62,9 +64,11 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "sharing") return sharing(req);
+  if (action === "storefront") return storefront(req);
   if (action === "quote") {
     if (req.method !== "POST") throw new Error("METHOD_NOT_ALLOWED");
-    return cartQuote(b);
+    return cartQuote(b, req);
   }
   if (action === "merchant-pricing") {
     const u = await requireUser(req, ["admin", "supplier"]);
@@ -89,7 +93,7 @@ export async function perform(action: string, req: any): Promise<any> {
   )
     throw new Error("METHOD_NOT_ALLOWED");
   if (action === "product-link" && req.method === "GET")
-    return publicProductLink(req.query);
+    return publicProductLink(req.query, req);
   if (action === "labels") return labels(req);
   const wallet = await performWallet(action, req);
   if (wallet.handled) return wallet.result;
@@ -104,6 +108,7 @@ export async function perform(action: string, req: any): Promise<any> {
     return catalog(
       undefined,
       Object.keys(req.query || {}).length ? req.query : undefined,
+      req,
     );
   }
   if (action === "me") return { user: (await sessionUser(req)) || null };
@@ -234,8 +239,15 @@ export async function perform(action: string, req: any): Promise<any> {
         "SELECT * FROM didar_order WHERE customer_id=$1 AND idempotency_key=$2",
         [u.id, key],
       );
-      if (existing) return { order: publicOrder(existing) };
       await pricingLock(c);
+      const scope = await storeScope(req, c, true);
+      if (existing) {
+        if (
+          (existing.origin_supplier_id || null) !== (scope?.supplier_id || null)
+        )
+          throw new Error("CONFLICT_STORE_SCOPE");
+        return { order: publicOrder(existing) };
+      }
       const {
         rows: [rate],
       } = await c.query("SELECT * FROM didar_rate WHERE id=1 FOR SHARE");
@@ -267,6 +279,7 @@ export async function perform(action: string, req: any): Promise<any> {
           !isAvailable(o.quantity, l.quantity)
         )
           throw new Error("CONFLICT_STOCK");
+        await assertOfferScope(c, o, scope);
         if (o.version !== l.version) throw new Error("CONFLICT_OFFER_CHANGED");
         const quoted = await quoteOffer(c, pricingRate, o, method);
         if (
@@ -312,11 +325,12 @@ export async function perform(action: string, req: any): Promise<any> {
         throw new Error("CONFLICT_PROFILE_QUOTE_CHANGED");
       total = pricingSummary.total_irr;
       integer(total, "TOTAL", 1, Number.MAX_SAFE_INTEGER);
+      const source = await attribution(req, c, scope);
       const id = uid();
       const {
         rows: [order],
       } = await c.query(
-        "INSERT INTO didar_order(id,customer_id,idempotency_key,total_irr,status,address,rate_snapshot,payment_method,pricing_snapshot) VALUES($1,$2,$3,$4,'pending',$5,$6,$7,$8) RETURNING *",
+        "INSERT INTO didar_order(id,customer_id,idempotency_key,total_irr,status,address,rate_snapshot,payment_method,pricing_snapshot,origin_supplier_id,storefront_snapshot,share_page_id,share_visit_id) VALUES($1,$2,$3,$4,'pending',$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *",
         [
           id,
           u.id,
@@ -326,6 +340,10 @@ export async function perform(action: string, req: any): Promise<any> {
           JSON.stringify(pricingRate),
           method,
           JSON.stringify(pricingSummary),
+          scope?.supplier_id || null,
+          scope ? JSON.stringify(scope) : null,
+          source?.page_id || null,
+          source?.visit_id || null,
         ],
       );
       for (const l of snapshots) {
@@ -370,9 +388,10 @@ export async function perform(action: string, req: any): Promise<any> {
         throw new Error("FORBIDDEN");
     }
     await expireOrders();
+    const scope = await storeScope(req);
     const { rows: orders } = await db.query(
-      `SELECT o.id,o.status,o.created_at,o.expires_at,o.payment_method,o.pricing_snapshot,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'stock_mode',l.stock_mode,'items',(SELECT json_agg(json_build_object('reservation_id',r.id,'uid',i.uid,'weight_mg',i.weight_mg,'status',r.status,'fulfillment_status',r.fulfillment_status,'return_status',ret.status)) FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id LEFT JOIN didar_item_return ret ON ret.reservation_id=r.id WHERE r.order_line_id=l.id),'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC`,
-      [u.role, u.id, u.supplier_id],
+      `SELECT o.id,o.status,o.created_at,o.expires_at,o.payment_method,o.pricing_snapshot,o.origin_supplier_id,o.storefront_snapshot,o.share_page_id,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'stock_mode',l.stock_mode,'items',(SELECT json_agg(json_build_object('reservation_id',r.id,'uid',i.uid,'weight_mg',i.weight_mg,'status',r.status,'fulfillment_status',r.fulfillment_status,'return_status',ret.status)) FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id LEFT JOIN didar_item_return ret ON ret.reservation_id=r.id WHERE r.order_line_id=l.id),'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) AND ($4::text IS NULL OR o.origin_supplier_id=$4) GROUP BY o.id ORDER BY o.created_at DESC`,
+      [u.role, u.id, u.supplier_id, scope?.supplier_id || null],
     );
     if (u.role !== "admin")
       for (const o of orders) {

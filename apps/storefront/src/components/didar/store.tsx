@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from 'react'
 import { copy, errors, number } from './locale'
@@ -95,6 +96,10 @@ export type Collection = {
   product_ids?: string[]
 }
 type Store = {
+  store: any
+  scopedHref: (href: string) => string
+  scopeReady: boolean
+
   paymentMethod: string
   setPaymentMethod: (m: string) => void
   products: Product[]
@@ -123,6 +128,11 @@ export const useDidar = () => {
   return s
 }
 export function DidarProvider({ children }: { children: ReactNode }) {
+  const scopeQueue = useRef<Promise<any>>(Promise.resolve())
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [cartHandle, setCartHandle] = useState<string | null>(null)
+  const [store, setStore] = useState<any>(null)
+  const [scopeReady, setScopeReady] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('CASH')
   const [products, setProducts] = useState<Product[]>([]),
     [categories, setCategories] = useState<Category[]>([]),
@@ -137,12 +147,24 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     [message, setMessage] = useState('')
   const path = usePathname(),
     router = useRouter()
+  const handle = path.match(/^\/m\/([a-z0-9-]+)(?:\/|$)/)?.[1] || ''
+  const currentScopeReady = scopeReady && (store?.handle || '') === handle
+  const visibleStore = currentScopeReady ? store : null
+  const scopedHref = (href: string) =>
+    !handle ||
+    !href.startsWith('/') ||
+    href.startsWith('/m/') ||
+    href.startsWith('/api/') ||
+    href.startsWith('/manage')
+      ? href
+      : `/m/${handle}${href === '/' ? '' : href}`
   const api = useCallback(
     async (action: string, body?: any, session = token) => {
       const r = await fetch('/api/didar/' + action, {
         method: body === undefined ? 'GET' : 'POST',
         headers: {
           'content-type': 'application/json',
+          'x-didar-store': handle || 'global',
           ...(session ? { authorization: 'Bearer ' + session } : {}),
         },
         body: body === undefined ? undefined : JSON.stringify(body),
@@ -159,10 +181,13 @@ export function DidarProvider({ children }: { children: ReactNode }) {
         )
       return d
     },
-    [token],
+    [token, handle],
   )
   const refresh = useCallback(async () => {
     const d = await api('catalog')
+    if ((d.store?.handle || '') !== handle)
+      throw new Error('زمینه فروشگاه تغییر کرد؛ صفحه را تازه کنید.')
+    setStore(d.store || null)
     setProducts(d.products)
     setRate({
       ...d.rate,
@@ -172,7 +197,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     })
     setCategories(d.categories || [])
     setCollections(d.collections || [])
-  }, [api])
+  }, [api, handle])
   async function run(fn: () => Promise<void>) {
     setBusy(true)
     setMessage('')
@@ -185,6 +210,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     }
   }
   useEffect(() => {
+    let active = true
     const t = sessionStorage.getItem('didar-session') || ''
     setPaymentMethod(
       sessionStorage.getItem('didar-price-method') === 'CREDIT'
@@ -193,7 +219,11 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     )
     setToken(t)
     try {
-      const c = JSON.parse(localStorage.getItem('didar-cart') || '{}')
+      const c = JSON.parse(
+        localStorage.getItem('didar-cart' + (handle ? ':' + handle : '')) ||
+          '{}',
+      )
+      setCartHandle(handle)
       setCart(
         Object.fromEntries(
           Object.entries(c).filter(
@@ -201,34 +231,79 @@ export function DidarProvider({ children }: { children: ReactNode }) {
           ),
         ) as Record<string, number>,
       )
-    } catch {}
+    } catch {
+      setCart({})
+      setCartHandle(handle)
+    }
     ;(async () => {
       try {
-        await refresh()
+        setScopeReady(false)
+        setStore(null)
+        setProducts([])
+        const transition = scopeQueue.current
+          .catch(() => {})
+          .then(() => {
+            if (!active) return
+            return api(
+              'storefront',
+              handle ? { kind: 'enter', handle } : { kind: 'leave' },
+              t,
+            )
+          })
+        scopeQueue.current = transition
+        await transition
+        if (!active) return
+        const d = await api('catalog', undefined, t)
+        if (!active) return
+        if ((d.store?.handle || '') !== handle)
+          throw new Error('زمینه فروشگاه نامعتبر است.')
+        setStore(d.store || null)
+        setProducts(d.products)
+        setCategories(d.categories || [])
+        setCollections(d.collections || [])
+        setRate({
+          ...d.rate,
+          quote_expires_at: d.quote_expires_at,
+          price_available: d.price_available,
+          rate_stale: d.rate_stale,
+        })
+        setScopeReady(true)
         if (t) {
           try {
-            setUser((await api('me', undefined, t)).user)
+            const me = await api('me', undefined, t)
+            if (active) setUser(me.user)
           } catch {
+            if (!active) return
             sessionStorage.removeItem('didar-session')
             setToken('')
           }
         }
       } catch (e) {
-        setMessage(e instanceof Error ? e.message : 'خطای ارتباط')
+        if (active) setMessage(e instanceof Error ? e.message : 'خطای ارتباط')
       } finally {
-        setReady(true)
-        setLoading(false)
+        if (active) {
+          setReady(true)
+          setLoading(false)
+        }
       }
     })()
-  }, []) // Bootstrap once; later calls use the current session.
+    return () => {
+      active = false
+    }
+  }, [handle, handle ? token : '']) // Global sign-in keeps the established bootstrap; invite scopes revalidate on account changes.
   useEffect(() => {
     if (ready) sessionStorage.setItem('didar-price-method', paymentMethod)
   }, [ready, paymentMethod])
   useEffect(() => {
-    if (ready) localStorage.setItem('didar-cart', JSON.stringify(cart))
-  }, [cart, ready])
+    if (ready && cartHandle === handle)
+      localStorage.setItem(
+        'didar-cart' + (handle ? ':' + handle : ''),
+        JSON.stringify(cart),
+      )
+  }, [cart, ready, handle, cartHandle])
   useEffect(() => {
     setMessage('')
+    setMenuOpen(false)
   }, [path])
   function authenticate(d: { user: User; token: string }) {
     setToken(d.token)
@@ -242,6 +317,9 @@ export function DidarProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        store: visibleStore,
+        scopedHref,
+        scopeReady: currentScopeReady,
         paymentMethod,
         setPaymentMethod,
         products,
@@ -270,28 +348,49 @@ export function DidarProvider({ children }: { children: ReactNode }) {
       <div className="announcement">
         محیط آزمایشی دیدار · پرداخت واقعی انجام نمی‌شود
       </div>
-      <header>
-        <Link className="brand" href="/">
-          دیدار<span>GOLD · DIDAR</span>
+      <header
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') setMenuOpen(false)
+        }}
+      >
+        <Link className="brand" href={scopedHref('/')}>
+          {visibleStore?.name || 'دیدار'}
+          <span>GOLD · DIDAR</span>
         </Link>
-        <nav aria-label="ناوبری اصلی">
+        <button
+          className="menu-toggle"
+          aria-controls="main-navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((x) => !x)}
+        >
+          فهرست {menuOpen ? '−' : '+'}
+        </button>
+        <nav
+          id="main-navigation"
+          className={menuOpen ? 'nav-open' : ''}
+          aria-label="ناوبری اصلی"
+        >
           <Link
             aria-current={path === '/products' ? 'page' : undefined}
-            href="/products"
+            href={scopedHref('/products')}
           >
             {copy.catalog}
           </Link>
-          <Link href="/cart">
+          <Link href={scopedHref('/cart')}>
             {copy.cart}{' '}
             <b>{number(Object.values(cart).reduce((s, n) => s + n, 0))}</b>
           </Link>
           {user ? (
             <>
-              <Link href="/orders">{copy.orders}</Link>
-              <Link href="/account/wallet">کیف پول</Link>
-              <Link href="/account">{copy.account}</Link>
+              <Link href={scopedHref('/orders')}>{copy.orders}</Link>
+              <Link href={scopedHref('/account/wallet')}>کیف پول</Link>
+              <Link href={scopedHref('/account')}>{copy.account}</Link>
               {user.role !== 'customer' && (
-                <Link href="/manage">{copy.manage}</Link>
+                <>
+                  <Link href="/manage">{copy.manage}</Link>
+                  <Link href="/manage/storefront">ویترین من</Link>
+                  <Link href="/manage/sharing">اشتراک محصولات</Link>
+                </>
               )}
               <button
                 onClick={() =>
@@ -302,7 +401,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
                     sessionStorage.removeItem('didar-session')
                     sessionStorage.removeItem('didar-checkout-intent')
                     sessionStorage.removeItem('didar-checkout-address')
-                    router.push('/')
+                    router.push(scopedHref('/'))
                   })
                 }
               >
@@ -310,7 +409,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
               </button>
             </>
           ) : (
-            <Link href="/login">{copy.login}</Link>
+            <Link href={scopedHref('/login')}>{copy.login}</Link>
           )}
         </nav>
       </header>
@@ -328,10 +427,19 @@ export function DidarProvider({ children }: { children: ReactNode }) {
             در حال پردازش…
           </p>
         )}
-        {children}
+        {handle && !currentScopeReady ? (
+          <section className="empty">
+            <h1>ورود به فروشگاه</h1>
+            <p>این فروشگاه باید در دسترس و دعوت شما معتبر باشد.</p>
+            <Link href={scopedHref('/login')}>ورود با حساب دیدار</Link>
+            {path.endsWith('/login') && children}
+          </section>
+        ) : (
+          children
+        )}
       </main>
       <footer>
-        <Link className="brand" href="/">
+        <Link className="brand" href={scopedHref('/')}>
           دیدار گلد
         </Link>
         <p>
@@ -339,10 +447,14 @@ export function DidarProvider({ children }: { children: ReactNode }) {
           تأییدشده.
         </p>
         <div className="footer-links">
-          <Link href="/products">کاتالوگ مشترک</Link>
-          <Link href="/account/wallet">کیف پول</Link>
-          <Link href="/account">حساب مشتری</Link>
-          <Link href="/login?register=supplier">پیوستن به تأمین‌کنندگان</Link>
+          <Link href={scopedHref('/products')}>
+            {handle ? 'محصولات فروشگاه' : 'کاتالوگ مشترک'}
+          </Link>
+          <Link href={scopedHref('/account/wallet')}>کیف پول</Link>
+          <Link href={scopedHref('/account')}>حساب مشتری</Link>
+          {!handle && (
+            <Link href="/login?register=supplier">پیوستن به تأمین‌کنندگان</Link>
+          )}
         </div>
         <small>محیط آزمایشی · مبالغ به ریال · بدون پرداخت واقعی</small>
       </footer>
@@ -356,14 +468,14 @@ export function RequireUser({
   children: ReactNode
   roles?: string[]
 }) {
-  const { user, ready } = useDidar()
+  const { user, ready, scopedHref } = useDidar()
   if (!ready) return <p role="status">در حال دریافت حساب…</p>
   if (!user)
     return (
       <div className="empty">
         <h1>ورود به حساب</h1>
         <p>برای مشاهده این صفحه وارد حساب خود شوید.</p>
-        <Link className="primary" href="/login">
+        <Link className="primary" href={scopedHref('/login')}>
           ورود / عضویت
         </Link>
       </div>
@@ -392,5 +504,17 @@ export function PaymentMethodPicker() {
         <option value="CREDIT">اعتباری؛ محاسبه و پرداخت آزمایشی</option>
       </select>
     </label>
+  )
+}
+
+export function ScopedLink(props: React.ComponentProps<typeof Link>) {
+  const { scopedHref } = useDidar()
+  return (
+    <Link
+      {...props}
+      href={
+        typeof props.href === 'string' ? scopedHref(props.href) : props.href
+      }
+    />
   )
 }

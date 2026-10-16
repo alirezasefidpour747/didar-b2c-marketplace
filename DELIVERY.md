@@ -1,3 +1,15 @@
+## Merchant growth Phase 2A + 2B + 2C — DONE & TESTED (2026-10-16)
+
+Implemented tenant-scoped merchant storefronts, the navy/white luxury foundation and persistent curated/single-product sharing over main `3bfb982fca143ea1695df059c952b45119fefbf7`. Real server authorization, expiring invite access, limited memberships, scoped price/quote/cart/checkout, immutable order origin and share attribution reuse the existing shared Product Master, Offer, UID and ledger. Persian `/manage/storefront`, `/manage/sharing` and `/m/{handle}` are connected to PostgreSQL and real APIs.
+
+Final reviewed verification: **143 backend tests / 1,771 assertions, 1 native HTTP test, 20 Playwright tests; zero failures**. All four production builds and official route generation passed. A further source/output/platform build receipt check passed. Migration replay on fresh/populated QA plus read-only clones of both historical databases preserved all audited business fingerprints. Original PostgreSQL volumes and configuration were not changed. Eight genuine screenshots cover home, merchant, catalog and PDP at 1440px and 390px.
+
+The acceptance journey publishes ten approved own products, applies an approved RETAILER profile (including C on CASH), preserves merchant context through central registration, and completes an attributed sandbox purchase while denying Merchant B. Cross-tenant direct IDs, shared public masters with private offers, invite revocation, stale revisions, concurrent first-save, UID history and finance regressions are tested.
+
+Evidence and actual file list: [Phase 2 handoff](docs/PHASE2_MERCHANT_STOREFRONT_SHARING.md), [results](verification/merchant-phase2/RESULTS.md), [screenshots](verification/merchant-phase2/screenshots), [changed files](verification/merchant-phase2/CHANGED_FILES.txt).
+
+**PENDING:** Phase 3 assisted onboarding/media and subsequent v3 Phases 4–9. This delivery does not claim the full roadmap complete. Owner Mac acceptance occurs separately after all features, never as a per-phase gate. Actual commercial photography, physical devices and live-provider/legal configuration are not claimed by Linux QA. **BLOCKED:** no Phase 2 software blocker. Payments and Tahesab remain sandbox/mock only; no Oracle, duplicate Product/UID or new ledger.
+
 ## Gate 5 Linux release verification and Mac preparation — 2026-10-16
 
 **Published financial sandbox scope:** Gates 1–3 implemented; Gate 4 provider-independent mock/dry-run implemented, **concrete Tahesab mapping BLOCKED_BY_SPEC**; Gate 5 integrated Linux verification and Persian Mac preparation implemented. **MAC_UAT_PENDING / REAL_RFID_PENDING / accounting sign-off pending. The entire roadmap is not declared complete while these acceptance dependencies remain.** Gate 0 was already complete and was not reimplemented.
