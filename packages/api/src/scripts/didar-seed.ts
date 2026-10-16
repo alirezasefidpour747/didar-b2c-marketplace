@@ -28,6 +28,7 @@ export default async function seed({ container }: ExecArgs) {
   await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-schema.sql"), "utf8"));
   await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-procurement-schema.sql"), "utf8"));
   await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/finance-ledger-schema.sql"), "utf8"));
+  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/tahesab-schema.sql"), "utf8"));
   await transaction(projectExisting);
   for (const [id, name] of [
     ["s1", "زرین دیدار"],

@@ -1,3 +1,4 @@
+import {tahesabRead,tahesabWrite} from './tahesab';
 import {projectEvent,ledgerRead} from './finance-ledger';
 import {saleAssetSnapshot,valueJewelry} from './finance-assets';
 import {procurementRead, procurementWrite} from './finance-procurement';
@@ -74,10 +75,10 @@ export async function financeRead(c: any, u: any) {
   return {contracts,events,accounts,suppliers,mode:'SANDBOX_MANUAL',unit:'fine_gold_microgram',rounding:'ceil_per_unit',production_accounting:'PROFESSIONAL_APPROVAL_REQUIRED'};
 }
 export async function performFinance(action: string, req: any) {
-  if(!['finance','treasury','ledger'].includes(action)) return {handled:false};
+  if(!['finance','treasury','ledger','tahesab'].includes(action)) return {handled:false};
   const u=await requireUser(req,['admin','supplier']);
   if(u.role==='supplier'&&(!u.supplier_active||u.supplier_status!=='approved'))throw new Error('FORBIDDEN');
-  if(req.method==='GET')return {handled:true,result:await transaction<any>(c=>action==='treasury'?procurementRead(c,u):action==='ledger'?ledgerRead(c,u):financeRead(c,u))};
+  if(req.method==='GET')return {handled:true,result:await transaction<any>(c=>action==='tahesab'?tahesabRead(c,u):action==='treasury'?procurementRead(c,u):action==='ledger'?ledgerRead(c,u):financeRead(c,u))};
   if(req.method!=='POST')throw new Error('METHOD_NOT_ALLOWED');
   localFinance();
   const b=req.body||{};
@@ -93,6 +94,7 @@ export async function performFinance(action: string, req: any) {
       await audit(c,u.id,'finance_contract_requested',{id,supplier_id:supplier,version});return {id};
     }
     if(u.role!=='admin')throw new Error('FORBIDDEN');
+    if(action==='tahesab')return tahesabWrite(c,u,b);
     if(b.operation==='jewelry_value')return valueJewelry(c,u,b);
     const treasury=await procurementWrite(c,u,b);
     if(treasury)return treasury;

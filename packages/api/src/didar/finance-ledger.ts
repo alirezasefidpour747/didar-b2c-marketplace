@@ -3,7 +3,7 @@
 import {randomUUID} from 'node:crypto';
 const round=(n:bigint,d:bigint)=>(n+d-1n)/d;
 type Posting={account:string,party:string,instrument:string,delta:bigint};
-const financialKinds=['SALE_EXPOSURE','REFUND','PURCHASE','ALLOCATION','TITLE_TRANSFER','GOLD_SETTLEMENT','RIAL_SETTLEMENT','FACT_REVERSED','SETTLEMENT_REVERSED','WALLET_FUND','WALLET_RELEASE','WALLET_RESERVE','WALLET_UNRESERVE','WALLET_PLEDGE','WALLET_UNPLEDGE','WALLET_TRANSFER','PAYABLE_TO_WALLET','INTAKE_MEMO','JEWELRY_VALUATION','PHYSICAL_RETURN_MEMO'];
+const financialKinds=['SALE_EXPOSURE','REFUND','PURCHASE','ALLOCATION','TITLE_TRANSFER','GOLD_SETTLEMENT','RIAL_SETTLEMENT','FACT_REVERSED','SETTLEMENT_REVERSED','WALLET_FUND','WALLET_RELEASE','WALLET_RESERVE','WALLET_UNRESERVE','WALLET_PLEDGE','WALLET_UNPLEDGE','WALLET_TRANSFER','PAYABLE_TO_WALLET','INTAKE_MEMO','JEWELRY_VALUATION','PHYSICAL_RETURN_MEMO','INTAKE_RECEIPT','PHYSICAL_HANDOVER','PROCUREMENT_ASSIGNED','PROCUREMENT_ASSIGNMENT_REVERSED'];
 async function goldLiability(c:any,sale:string,party:string,amount:bigint,rate:bigint){
  const {rows}=await c.query(`SELECT p.account,(-sum(p.delta))::text remaining FROM didar_fin_posting p JOIN didar_fin_journal j ON j.id=p.journal_id JOIN didar_fin_event e ON e.id=j.event_id WHERE (e.id=$1 OR e.source_event_id=$1) AND p.party=$2 AND p.account IN ('SUPPLIER_GOLD_PAYABLE','SUPPLIER_GOLD_VALUATION') GROUP BY p.account`,[sale,party]);
  const qty=BigInt(rows.find((r:any)=>r.account==='SUPPLIER_GOLD_PAYABLE')?.remaining||0),value=BigInt(rows.find((r:any)=>r.account==='SUPPLIER_GOLD_VALUATION')?.remaining||0);
@@ -27,7 +27,7 @@ export async function projectEvent(c:any,e:any){
    if(!s.owned_cost_irr&&s.ownership!=='CONSIGNMENT'&&s.ownership!=='DIDAR_OWNED')pair('COGS','PRINCIPAL_REVENUE','IRR',payable);
    if(s.owned_cost_irr){pair('COGS','OWNED_JEWELRY','IRR',BigInt(s.owned_cost_irr));pair('GOLD_COGS','OWNED_JEWELRY','GOLD_UG',BigInt(s.physical_fine_ug));}
    if(s.memo_intake)pair('SUPPLIER_CONSIGNMENT_MEMO','CONSIGNMENT_CUSTODY','MEMO_GOLD_UG',BigInt(s.physical_fine_ug),supplier,'DIDAR');
- }else if(['REFUND','FACT_REVERSED','SETTLEMENT_REVERSED'].includes(e.kind)){
+ }else if(['REFUND','FACT_REVERSED','SETTLEMENT_REVERSED','PROCUREMENT_ASSIGNMENT_REVERSED'].includes(e.kind)){
    const original=e.kind==='SETTLEMENT_REVERSED'?s.reversed_event_id:e.source_event_id;
    const {rows}=await c.query('SELECT p.* FROM didar_fin_posting p JOIN didar_fin_journal j ON j.id=p.journal_id WHERE j.event_id=$1 ORDER BY p.id',[original]);
    if(!rows.length) return;
@@ -52,6 +52,12 @@ export async function projectEvent(c:any,e:any){
    pair('CONSIGNMENT_CUSTODY','SUPPLIER_CONSIGNMENT_MEMO','MEMO_GOLD_UG',BigInt(s.fine_ug),'DIDAR',supplier);
  }else if(e.kind==='PHYSICAL_RETURN_MEMO'){
    pair('CONSIGNMENT_CUSTODY','SUPPLIER_CONSIGNMENT_MEMO','MEMO_GOLD_UG',BigInt(s.fine_ug),'DIDAR',supplier);
+ }else if(e.kind==='INTAKE_RECEIPT'){
+   pair('OWNED_RECEIPT_MEMO','OWNED_RECEIPT_CONTROL_MEMO','MEMO_GOLD_UG',BigInt(s.fine_ug));
+ }else if(e.kind==='PHYSICAL_HANDOVER'){
+   pair('GOLD_DELIVERED_MEMO','GOLD_CUSTODY_CONTROL_MEMO','MEMO_GOLD_UG',BigInt(s.amount_ug));
+ }else if(e.kind==='PROCUREMENT_ASSIGNED'){
+   pair('MERCHANT_PROCUREMENT_RECEIPT_MEMO','MERCHANT_PROCUREMENT_SOURCE_MEMO','MEMO_GOLD_UG',BigInt(s.amount_ug));
  }else if(e.kind==='JEWELRY_VALUATION'){
    pair('OWNED_JEWELRY','QA_OPENING_EQUITY','IRR',BigInt(s.cost_irr));
    pair('OWNED_JEWELRY','QA_OPENING_GOLD','GOLD_UG',BigInt(s.fine_ug));

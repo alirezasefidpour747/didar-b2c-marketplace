@@ -1,3 +1,7 @@
+## 2026-10-16 — Phase 2 Gate 4 offline adapter
+
+The owner's OpenAPI spec is unavailable. Implement Didar's explicitly provider-independent aggregate contract/mocks only; concreteTahesabRequest fails BLOCKED_BY_SPEC. Never infer vendor endpoints/import semantics or publish a private spec. Close source claims are unique per merchant/event even across overlapping periods; payloads retain event types/debit-credit/currency/purity/date and exclude all per-buyer/UID data. Counterparty wallet identities are aggregated. Local synthetic Bearer/DBname/mixed positional mock protocol is not presented as Tahesab compatibility. Nightly close prepares exports without dispatch. Preserve missing/changed external mock documents for reconciliation rather than blindly recreating them.
+
 ## 2026-10-16 — Phase 2 Gate 3
 
 Use one event-linked append-only double-entry projection; IRR, fine-gold quantity and custody memo instruments balance separately. Wallets are liability accounts with database-enforced nonnegative balances, never editable caches. Payable-to-wallet reclassifies the same liability. Last gold discharge consumes the exact remaining IRR liability, avoiding partial-rounding residues. New stock acceptance records memo/source facts only; documented owned QA cost is required for COGS and missing history stays explicitly unvalued. No fictional legacy purchases, real withdrawals or statutory approval claims.

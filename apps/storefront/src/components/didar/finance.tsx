@@ -8,7 +8,7 @@ const labels: Record<string,string> = {
   SALE_EXPOSURE:'تعهد ناشی از پرداخت تأییدشده',REFUND:'برگشت تعهد؛ استرداد آزمایشی',
 }
 export function FinanceField({name,label,type='text',value,required=true}:{name:string,label:string,type?:string,value?:string|number,required?:boolean}){
-  return <label>{label}<input name={name} type={type} defaultValue={value} required={required} min={type==='number'?0:undefined} step={type==='number'?1:undefined} maxLength={1000}/></label>
+  return <label>{label}<input name={name} type={type} defaultValue={value} required={required} min={type==='number'?0:undefined} step={type==='number'||type==='datetime-local'?1:undefined} maxLength={1000}/></label>
 }
 export const formValues=(e:FormEvent<HTMLFormElement>)=>{e.preventDefault();return Object.fromEntries(new FormData(e.currentTarget))}
 export function Fine({value}:{value:string}){

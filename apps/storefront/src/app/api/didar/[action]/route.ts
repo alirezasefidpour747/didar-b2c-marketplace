@@ -5,6 +5,7 @@ const allowed = new Set([
   'treasury',
   'wallet',
   'ledger',
+  'tahesab',
   'me',
   'login',
   'register',

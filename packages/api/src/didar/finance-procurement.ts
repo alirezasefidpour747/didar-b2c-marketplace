@@ -99,6 +99,14 @@ export async function procurementWrite(c:any,u:any,b:any):Promise<any|undefined>
  const existing=await c.query('SELECT id FROM didar_fin_event WHERE intent=$1',[businessIntent]);
  if(existing.rowCount)throw new Error('CONFLICT_ALREADY_RECORDED');
  const event=await appendEvent(c,{intent:businessIntent,kind,source_event_id:source?.id,supplier_id:sid,order_line_id:source?.order_line_id,reservation_id:source?.reservation_id,gold_ug:gold,irr:rial,snapshot,actor_id:u.id});
+ if(kind==='ALLOCATION'){
+   const p=await get(c,snapshot.purchase_id,'PURCHASE');
+   await appendEvent(c,{intent:event.intent+':procurement-share',kind:'PROCUREMENT_ASSIGNED',supplier_id:sid,source_event_id:event.id,order_line_id:source.order_line_id,reservation_id:source.reservation_id,actor_id:u.id,snapshot:{purchase_id:p.id,allocation_id:event.id,amount_ug:snapshot.amount_ug,purity:p.snapshot.purity,synthetic:true,meaning:'share_of_documented_synthetic_purchase_not_new_execution'}});
+ }
+ if(kind==='FACT_REVERSED'&&source.kind==='ALLOCATION'){
+   const share=(await c.query("SELECT * FROM didar_fin_event WHERE kind='PROCUREMENT_ASSIGNED' AND source_event_id=$1",[source.id])).rows[0];
+   if(share)await appendEvent(c,{intent:event.intent+':procurement-share-reversal',kind:'PROCUREMENT_ASSIGNMENT_REVERSED',supplier_id:sid,source_event_id:share.id,actor_id:u.id,snapshot:{allocation_id:source.id,amount_ug:share.snapshot.amount_ug,purity:share.snapshot.purity,synthetic:true}});
+ }
  await c.query('INSERT INTO didar_fin_command(key,event_id,payload) VALUES($1,$2,$3)',[intent,event.id,JSON.stringify(payload)]);
  return {event};
 }
