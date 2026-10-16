@@ -1,3 +1,5 @@
+> **HISTORICAL FILE / NOT CURRENT PHASE NUMBER.** The owner moved this complete luxury Visual CMS feature to **development Phase 4**, after Merchant storefront and image processing and **before CRM**. Use the **current executable specification** [PHASE4_LUXURY_VISUAL_CMS.md](PHASE4_LUXURY_VISUAL_CMS.md) and [v3 roadmap](ROADMAP_B2C_MERCHANT_GROWTH_CRM_CAMPAIGNS.md). The old “Phase 10 after Phase 9 Mac UAT” statements below are superseded and must NOT schedule any Mac testing as a development phase. Retained only for historical design details.
+
 # DIDAR B2C — Phase 10: Luxury Experience & Visual CMS / Page Builder
 
 **Document:** Implementation specification / Codex execution contract
