@@ -1,17 +1,19 @@
 # DIDAR B2C — Merchant Commerce, CRM, Growth, Campaigns & Affiliates
-## Master implementation roadmap for Codex Cloud + integrated Mac UAT
+## Master implementation roadmap for Codex Cloud; owner Mac acceptance AFTER feature completion
 
-**Version:** 1.0 | **Date:** 2026-10-16
+**Version:** 3.0 | **Date:** 2026-10-16
 **Scope:** Extend the EXISTING `alirezasefidpour747/didar-b2c-marketplace`, official Mercur/Medusa + Next.js + PostgreSQL/Redis application, without rebuilding it.
 **Status:** Approved concept / EXECUTION ROADMAP, not a claim that any pending feature is coded. A published document is not delivered software.
-**Runtime strategy:** Codex Cloud implements and tests on its available Linux runtime, submits verified changes to GitHub `main`; the owner performs final integrated MacBook UAT on localhost. No Oracle or live financial providers required.
+**Runtime strategy:** Codex Cloud implements and tests on its available Linux runtime, submits verified changes to GitHub `main`; the owner optionally performs one consolidated MacBook acceptance on localhost AFTER all software features are implemented. No Oracle or live financial providers required.
 **Core goal:** One real retailer journey, from acquisition and own product intake to scoped storefront, product sharing, actual sandbox checkout, CRM visibility, campaign attribution and opt-in rewards — without exposing competing retailers or their customers.
 
-## Owner execution strategy v2 — build first (2026-10-16)
+## Owner execution strategy v3 — owner Mac UAT OUTSIDE development (2026-10-16)
 
-**This decision updates implementation PRIORITIES and VALIDATION TIMING, not the feature list.** The authoritative execution addendum is [`EXECUTION_STRATEGY_V2_BUILD_FIRST.md`](EXECUTION_STRATEGY_V2_BUILD_FIRST.md). When the old chronological headings below conflict with the new schedule, the v2 strategy controls: **complete all agreed features before external merchant/customer usability and commercial tests**, while every phase MUST still pass full technical and security tests. Existing owner field/onboarding validation is accepted; no repeated user interviews required to unblock code. Critical Thinking is used to rank by business value, risks and technical dependencies without deleting promised features.
+**The owner explicitly removed a dedicated Mac-test development phase.** Build all agreed features first, completing mandatory **Codex-run automated technical/migration/API/browser/security/build tests for each phase**; only **after all software phases** will the owner conduct one consolidated hands-on Mac test and later external customer/retailer usability and commercial review. The owner has further requirements to provide; preserve flexibility and do not make client interviews a development gate.
 
-**Stage Phase 2 immediately:** (2A) secure Merchant-scoped product/checkout, (2B) **navy/white luxury design system and first real responsive home/merchant/PDP UI**, and (2C) **minimal retailer-curated 10–20-product share page and safe traceable link**. Later Phase 5 extends this same share foundation into advanced campaigns, without duplicating URLs/data. Phase 4 initially delivers lightweight customer relationships, own purchase history, scoped notes/consents; advanced CRM/growth features stay in Phase 8. Phase 10 remains the **complete dynamic Visual CMS** with video/slider/asymmetric Mosaic, publishing/versioning/rollback, reusing Phase 2B design foundations. Phase 9 is technical Mac UAT, not a customer field pilot; after Phase 10 rerun final integrated technical/visual acceptance, THEN perform external usability/business evaluation separately.
+**The development roadmap now contains exactly 10 phases (0–9).** Reorder work by commercial value, risk and dependencies: early Merchant storefront plus navy/white design and simple share (Phase 2A/B/C); product onboarding/WebP (Phase 3); **complete luxury video/slider/Mosaic Page Builder (Phase 4) BEFORE CRM**; CRM Lite (Phase 5); advanced Didar/Merchant Campaign Management (Phase 6); agent acquisition Affiliate (Phase 7); customer referrals/rewards (Phase 8); advanced CRM/Growth Center (Phase 9). No feature removed; all J01–J19 journeys retained and remapped.
+
+**Controlling documents:** [Execution Strategy v3](EXECUTION_STRATEGY_V3_BUILD_FIRST.md) and [full Phase 4 Luxury Visual CMS](PHASE4_LUXURY_VISUAL_CMS.md). Older v2 strategy and historical Phase 10 docs are archive/history, not active sequence. The existing `docs/MAC_UAT_CHECKLIST.md` remains a deferred optional runbook to prepare once all features have been implemented, **not an execution gate in the numbered roadmap**.
 
 > **MANDATORY:** Inspect fresh main before every phase. Reuse existing classes, auth, modules, migrations and routes. Do not build parallel product/catalog/ledger systems. Complete each phase's **Database → Backend → API → Frontend → Automated Tests → Documentation** gate before marking it delivered. Ship useful vertical slices, not a large disconnected UI mock.
 
@@ -134,7 +136,7 @@ Extend the existing PostgreSQL schema. Conceptual entities (choose actual table 
 
 ---
 
-# 3. Phased build plan (STRICT sequence; useful software at every gate)
+# 3. Phased development plan (10 phases, 0–9; no owner Mac testing phase)
 
 ## Phase 0 — Preflight, threat model, preserved schema baseline [small]
 
@@ -161,9 +163,9 @@ Work:
 
 **Gate 1:** Complete PostgreSQL→API→admin/consumer→sandbox sale/ledger plus tests, reviewed to main. Issue #6 may close only if all claimed behavior genuinely delivered. No LIVE tax/legal sign-off inferred.
 
-## Phase 2 — Merchant Membership, Scoped Storefront & Own Listings [first visible MVP]
+## Phase 2 — Merchant Storefront (2A), Early Luxury UI (2B), Simple Share (2C)
 
-**Owner v2 front-load requirement:** deliver Phase **2A tenant isolation + checkout**, **2B navy/white high-end visual foundation (real Didar B2C homepage, merchant shell, shared header/product cards and responsive PDP)**, and **2C minimal merchant-selected 10–20-product shareable page with safe traceable links** within this early MVP. Full Campaign Engine stays Phase 5, full dynamic Visual CMS stays Phase 10; reuse shared IDs/components. Do not delay features for external customer field tests.
+**Owner v3 front-load requirement:** deliver Phase **2A tenant isolation + checkout**, **2B navy/white high-end visual foundation (real Didar B2C homepage, merchant shell, shared header/product cards and responsive PDP)**, and **2C minimal merchant-selected 10–20-product shareable page with safe traceable links** within this early MVP. Full Campaign Engine stays Phase 6, full dynamic Visual CMS stays Phase 4; reuse shared IDs/components. Do not delay features for external customer field tests.
 
 **Outcome:** A retailer can send `/m/shop-a`; visiting customer sees ONLY shop A, signs in on Didar and buys only shop A's eligible offers.
 
@@ -187,13 +189,23 @@ Work:
 - Accept bounded JPEG/PNG/WebP originals safely; verify decoded media, pixel limits, magic bytes, orientation, image decompression, protected image authorization. Normalize without changing jewelry color/shape/content. Strip EXIF/GPS/private metadata; preserve color profile correctly.
 - Generate proportional derivative WebP sizes (e.g. small card, medium PDP and large zoom, dimensions configurable) with no forced distortion; configurable quality/byte-budget, lazy load/responsive srcset, alt text, privacy and content review. Maintain secure storage/lifecycle, compatibility with existing small PostgreSQL image blobs; if storage migration required, make it additive and retain original historic image IDs/routes.
 - On success show the Persian receipt: source accepted, orientation/size optimized, WebP variants ready, preview URL and measured sizes. On failure give actionable reason, no broken public image. Do not fabricate pictures or use external random jewelry images.
-- Authorized Agent onboarding activity and assistance records feed Phase 6 acquisition attribution; record events now even if reward engine follows later.
+- Authorized Agent onboarding activity and assistance records feed Phase 7 acquisition attribution; record events now even if reward engine follows later.
 
 **Gate 3:** Large camera photo safely processed to variants, reloaded after restart, PDP/merchant store/OG select correct formats, hidden content inaccessible, no distorted jewel imagery, 10–20 image operations tested, no duplicate Product/UID.
 
-## Phase 4 — Dual CRM Foundations: Didar Central + Merchant Relationship CRM
+## Phase 4 — Luxury DIDAR Experience & PostgreSQL Visual CMS [BEFORE CRM]
 
-**Owner v2 prioritization:** deliver **CRM Lite first**: one central Didar account, one separate merchant-customer relationship per context, customer's authorized own-Merchant purchase history, simple status/notes and contact consent. Avoid complex automation/scoring/segmentation here; Phase 8 extends the same data model for advanced CRM. This is an implementation sequencing choice, not deletion of CRM capabilities.
+**Detailed, authoritative implementation contract:** [Phase 4 Luxury Visual CMS](PHASE4_LUXURY_VISUAL_CMS.md). This phase deliberately moves the COMPLETE advanced CMS from the old Phase 10 to **before CRM and Campaign Management**. Phase 2B has already created early navy/white tokens and premium storefront components, while Phase 3 has supplied safe WebP image processing. The new CMS must build on those foundations rather than duplicating UI.
+
+Implement the six core real media blocks **HERO_VIDEO**, **HERO_MEDIA_SLIDER**, **EDITORIAL_MOSAIC** (asymmetric photos beside each other, not only carousels), **SPLIT_STORY**, **COLLECTION_SPOTLIGHT** and **FEATURED_PRODUCT_GRID**, then the remaining accepted blocks. Dominant navy `#142D50` and white `#FFFFFF` with restrained champagne/gold. Connect to real approved Products, Offers, Merchant Pricing Profiles and catalog media; use responsive Persian RTL, strong accessibility, reduced-motion and video/poster fallbacks.
+
+Admin `/manage/pages`: add/reorder/configure blocks and desktop/mobile variants; private preview, governance, versioned PostgreSQL publish/schedule/rollback and edit audit. Reuse renderer in `DIDAR_HOME`, approved Merchant home/curated pages, public category/collection pages while enforcing strict tenant offer/media privacy. Provide a clean extension adapter so **Phase 6 Campaign Engine** uses this existing Page Builder and Phase 2C share URLs instead of starting a competing CMS.
+
+**Gate 4:** Additive DB migration → Backend/domain → authenticated API → Persian admin → real published B2C/Merchant pages → Chromium desktop/mobile, privacy, media/SEO/accessibility, finance/UID/quote regression and production builds. No user-operated Mac test or external Merchant interview is a prerequisite for proceeding to Phase 5.
+
+## Phase 5 — Lightweight Didar Central CRM + Merchant-specific CRM Foundations
+
+**Owner v3 prioritization:** deliver **CRM Lite first**: one central Didar account, one separate merchant-customer relationship per context, customer's authorized own-Merchant purchase history, simple status/notes and contact consent. Avoid complex automation/scoring/segmentation here; Phase 9 extends the same data model for advanced CRM. This is an implementation sequencing choice, not deletion of CRM capabilities.
 
 **Outcome:** One account can interact with multiple Merchants; each sees ONLY its own allowed relationships, Didar sees authorized central analytics.
 
@@ -207,9 +219,9 @@ Work:
 
 **Gate 4:** One Didar Customer buys from A, later B; Didar CRM sees both authorized relations, A only A-related orders/allowed profile, B only B; withdrawal of marketing consent immediately excludes them from send/export; unauthorized API cannot enumerate users.
 
-## Phase 5 — Curated Share Pages + Merchant Campaign MVP + Global Display
+## Phase 6 — Curated Share Pages + Merchant Campaign MVP + Global Display
 
-**Owner v2 reuse rule:** **Phase 2C already delivers basic selected-products pages and share links**. Phase 5 must add Merchant and Didar-wide campaign governance, scheduling, analytics and other advanced features by extending **the same share/link schema and storefront context**; do not rebuild a second simple-share implementation.
+**Owner v3 reuse rule:** **Phase 2C already delivers basic selected-products pages and share links**. Phase 6 must add Merchant and Didar-wide campaign governance, scheduling, analytics and other advanced features by extending **the same share/link schema and storefront context**; do not rebuild a second simple-share implementation.
 
 **Outcome:** Merchant picks 10–20 already-approved own products, publishes a special page, shares it in WhatsApp/Telegram/SMS and sees legitimate views and purchases. Didar can separately run one global visible campaign.
 
@@ -223,7 +235,7 @@ Work:
 
 **Gate 5:** Customer opens A campaign from shared link without entering general Didar, sees only A's products, registers, purchases in sandbox; order records selected Merchant/campaign. Global Didar campaign is publicly visible and draws only permitted eligible offers. Share previews contain no private data.
 
-## Phase 6 — Didar Agent Acquisition Affiliate & Merchant Activation Analytics
+## Phase 7 — Didar Agent Acquisition Affiliate & Merchant Activation Analytics
 
 **Outcome:** Didar can audit where, when and by whom a retailer was acquired and helped to publish products, then determine provisional/reconciled sales-based marketing agent rewards.
 
@@ -236,7 +248,7 @@ Work:
 
 **Gate 6:** Two Agents visit different/overlapping leads, one registers A while another uploads products; reports attribute both distinct roles correctly. Paid/refunded sales calculate and reverse pending reward once; no award from mere click or unverified sale; cross-agent visibility denied.
 
-## Phase 7 — Customer Referral / Merchant Affiliate Rewards
+## Phase 8 — Customer Referral / Merchant Affiliate Rewards
 
 **Outcome:** Retailer can optionally reward an existing customer for referring a genuinely new customer that makes a qualified purchase from that retailer.
 
@@ -250,7 +262,7 @@ Work:
 
 **Gate 7:** A invites B to Merchant A; B purchases A's eligible Offer once; reward is pending then eligible after hold; no duplication on callback replay; B's purchase at Merchant C does not earn A's reward; refund reverses; privacy/cap conditions pass.
 
-## Phase 8 — Merchant Growth Center, Central Marketing & Operations Hardening
+## Phase 9 — Merchant Growth Center, CRM Enhancements & Operations Hardening
 
 **Outcome:** Small retailer can manage customer communication and campaigns through friendly guided workflows; Didar can run global campaigns and monitor healthy operations at scale.
 
@@ -264,44 +276,11 @@ Work:
 
 **Gate 8:** A non-technical Merchant completes a campaign in a few UI steps, shares to permitted contacts, sees only own metrics; Didar global campaign is visible to permitted public visitors and properly tracks sales; red-team cross-tenant tests and existing Phase 1/2 suites green.
 
-## Phase 9 — One integrated local Mac acceptance & handoff
-
-**Owner v2 validation rule:** Phase 9 means technical/operational sandbox acceptance on Mac and preserving data/finance/security, **NOT a public Merchant/customer usability interview or conversion validation gate**. After Phase 10, run final luxury-UI regression and Mac visual acceptance. Schedule external customer usability and business KPI experiments **only after all planned capabilities are implemented and technically verified**.
-
-1. Codex Linux full database/migrations, auth, finance, catalog, API and Playwright verification; source/build receipts and GitHub commit identifiers. Verify on a fresh DB AND an upgraded populated legacy fixture, with repeat migration and restart preservation.
-2. Update `docs/MAC_UAT_CHECKLIST.md` with a **new optional merchant-growth addendum**, preserving the previous 20-UID financial checklist. Seed fully synthetic, isolated 2 Merchants (MFR and RET), 2 Agents, 3 Customers, 2 profiles, 10–20 sample Merchant products only in QA, selected campaigns and contacts with explicit test consent. UAT preparation is idempotent and must not erase persistent owner data.
-3. Owner Mac commands remain supported: `git switch main`, `git pull --ff-only origin main`, `bun run local:setup`, `bun run local:browser`, `bun run local:test`, `bun run local:dev`. Adapt `uat:prepare` safely if needed; no `docker compose down -v`.
-4. Demonstrate in real browser: Retailer A registration by Agent 1; Didar approval and Type RETAILER profile; assistant Agent 2 helps upload and WebP-process 10 product images; supplier exact weights and UID; retailer A store link (B hidden); customer signup in A context; selected campaign share → checkout with cash and C charged according to active profile; merchant A CRM and Didar central CRM; reward attribution; change profile later with historical snapshot unchanged. Show separate Manufacturer quote and Didar global campaign. Scan existing barcode/QR in actual device workflow when public origin verified.
-5. Record proof and clearly segregate: `CODEX_LINUX_VERIFIED`, `MAC_UAT_PENDING/PASSED`, `REAL_PRINT_SCAN_PENDING`, `LIVE_PROVIDER_BLOCKED`, `TAX/LEGAL_SIGNOFF_PENDING`. Real customer data must NOT be copied into cloud/test fixtures.
-
-**Gate 9:** Human-readable Persian journey, no data reset, no prior regression, explicit known operational blockers and exact final branch/commit receipts. This remains the functional acceptance baseline before Phase 10.
-
-
-## Phase 10 — Luxury Experience & Visual CMS / Page Builder [FINAL PHASE]
-
-**Owner v2 staging:** this phase is the **full approved PostgreSQL-backed CMS Page Builder**, media authoring/video-slider/mosaic templates, approvals, scheduling, rollback and final polish. **Do not postpone the premium navy/white design identity, home shell, shared components or mobile storefront UI until Phase 10**: those are Phase 2B deliverables. Preserve all screens and use those early design tokens here.
-
-**Authoritative implementation specification:** [Phase 10: Luxury Visual CMS](PHASE10_LUXURY_VISUAL_CMS.md). **Status at addition: PLANNED, NOT IMPLEMENTED.** Run after Phase 9 functional UAT, then extend and rerun final integrated visual Mac UAT. This is a final distinct phase; previous business features remain the foundation.
-
-**Design direction approved by the owner:** DIDAR navy **#142D50** and white **#FFFFFF** as dominant, gold **#C5A46A** and champagne **#EEE6D9** used sparingly. Premium editorial whitespace and restrained motion, inspired by the owner's Cartier recordings and Paon d'Or reference; never copy proprietary logos, photos, fonts, videos, site code or protected layouts.
-
-**Customer experience:** Rebuild the public Didar B2C homepage from approved content blocks rather than static JSX and fixed banners. Required reusable blocks: (1) full-bleed **Hero Video** with desktop/mobile poster/fallback, (2) configurable mixed-media image/video **Hero Slider**, (3) nonuniform **Editorial Mosaic** with one-large/two-small and alternate image-grid layouts instead of only sliders, (4) **Split Image/Video + Story**, (5) live **Collection Spotlight**, (6) real **Featured Products** grid/rail. Additional safe page types include editorial brand story, full-bleed media, category/facet discovery and approved campaign promos.
-
-**Actual CMS:** Didar admins create, reorder, edit, preview, schedule, approve, publish, pause and roll back sections and entire page versions through a real **Persian RTL Visual Page Builder** at an existing authorized management surface (suggested `/manage/pages`). Use immutable page revisions in PostgreSQL, a typed/allowlisted block schema, controlled assets/links, change audit, desktop/mobile previews, keyboard editing as alternative to drag/drop, and a safe fallback to the old homepage. Editor may not insert raw arbitrary HTML/JS/CSS or unverified remote content. Do not build UI-only mocked page configuration.
-
-**Shared design, strict contexts:** Reuse governed renderer for Didar-wide campaigns/approved category and collection landings and, when compatible with prior phases, Merchant-specific storefront/campaign pages. Tenant-scoped pages and all linked Products/Offers/media must preserve Merchant Context through PDP, quote/cart/checkout; merchants cannot edit Didar/global content or other merchants' private pages. Live Product/Offer Gold-First quotes and inventory remain backend-authoritative; no CMS-stored static prices or duplicate Products.
-
-**Media and accessibility:** Reuse the Phase 3 WebP pipeline; secure bounded video upload/transcoding (only where supported), poster and mobile variants, no autoplay audio, pause and reduced-motion support, correct focal crop without changing jewelry appearance, lazy loading, responsive sources and stable dimensions, safe OG previews/SEO only for permitted published pages. Measure performance and mobile/desktop layout; report exact scores and genuine media/license/public-origin gaps without invented verifications.
-
-**Gate 10 — database → backend → API → Persian Page Builder → responsive B2C/merchant pages → tests:** Admin makes draft home (video hero + slider + asymmetrical mosaic + actual Product and Collection), previews on desktop/mobile, publishes and rolls back; customer loads current live page, browses to a real PDP and completes sandbox checkout; Merchant-specific page shows no rival Merchant/CRM/Offers; all Phase 1–9 security, financial, UID, pricing, campaign and reward regressions pass. Actual builds, Playwright desktop/mobile, page version/restart persistence, privacy, reduced motion and video performance verified. Owner receives actual screenshots and an updated **final** Mac UAT checklist. No production media/provider deployment implied.
-
----
-
 # 4. Mandatory end-to-end user journeys (acceptance catalog)
 
 | Journey | Primary actors | Minimal accepted output | Delivery phase |
 | --- | --- | --- | --- |
-| J01 — Merchant acquisition | Didar Agent → admin | Dated/scoped lead, registration, approval and responsible Agent attribution | 3/6 |
+| J01 — Merchant acquisition | Didar Agent → admin | Dated/scoped lead, registration, approval and responsible Agent attribution | 3/7 |
 | J02 — Multi-profile Merchant assignment | Admin | Effective approved profile attached to specific Manufacturer/RETAILER, changeable | 1 |
 | J03 — Own product onboarding | Merchant/assistant → Product Ops | Uploaded draft, approved category/facets, governed approval and one shared Master | 2/3 |
 | J04 — Responsive WebP transformation | Merchant | Fast correct variants, clear Persian result/error, authorized visibility | 3 |
@@ -309,17 +288,17 @@ Work:
 | J06 — Isolated Merchant storefront | Customer from Merchant link | No rival navigation, offer leakage or unexpected merchant switch through checkout | 2 |
 | J07 — Global storefront | Didar visitor | Only globally eligible offers with current approved faceted taxonomy | Existing #5 + 2 |
 | J08 — Cash checkout with C | Customer/retailer | Merchant profile may apply C on cash; exact VAT, frozen snapshot, independent supplier entitlement | 1/2 |
-| J09 — Central/merchant CRM | Didar & Merchants | One customer ID, tenant-specific views, consent/notes and accurate purchase scope | 4 |
-| J10 — Single-product sharing | Merchant → Customer | Link to merchant-scoped product, valid preview and attribution | 2/5 |
-| J11 — 10–20-item curated page | Merchant → Customer | Publish/edit/share/expire selected products, merchant-only checkout | 5 |
-| J12 — Global campaign | Didar → all eligible visitors | Public campaign with correct visibility and real conversions | 5/8 |
-| J13 — Marketing Agent affiliate | Didar Agent/Admin | Visits, activated merchants, products and reward based on qualified Didar revenue | 6 |
-| J14 — Customer referral | Customer A → B at Merchant A | One qualifying purchase, controlled reward, refund reversal, no C leakage | 7 |
-| J15 — Growth guidance and outreach | Merchant | Guided share templates and consent-controlled communications | 8 |
-| J16 — Security/legacy acceptance | Admin/Owner | No cross-tenant data leak, duplicate product/UID, old order mutation or accounting imbalance | Every phase/9 |
-| J17 — Navy/white luxury home & media | Didar Content Ops → Shopper | Published large video/slider, asymmetric Mosaic, real Product/Collection links, mobile optimized | 10 |
-| J18 — Visual CMS publication & rollback | Didar Content Ops | DB-backed reorder/preview/approve/schedule/publish/rollback with correct accessible media | 10 |
-| J19 — Tenant-safe visual campaigns | Merchant/Didar editors | Campaign/storefront blocks restricted to correct public/merchant products and offer checkout context | 10 |
+| J09 — Central/merchant CRM | Didar & Merchants | One customer ID, tenant-specific views, consent/notes and accurate purchase scope | 5 |
+| J10 — Single-product sharing | Merchant → Customer | Link to merchant-scoped product, valid preview and attribution | 2C/6 |
+| J11 — 10–20-item curated page | Merchant → Customer | Publish/edit/share/expire selected products, merchant-only checkout | 2C/6 |
+| J12 — Global campaign | Didar → all eligible visitors | Public campaign with correct visibility and real conversions | 6/9 |
+| J13 — Marketing Agent affiliate | Didar Agent/Admin | Visits, activated merchants, products and reward based on qualified Didar revenue | 7 |
+| J14 — Customer referral | Customer A → B at Merchant A | One qualifying purchase, controlled reward, refund reversal, no C leakage | 8 |
+| J15 — Growth guidance and outreach | Merchant | Guided share templates and consent-controlled communications | 9 |
+| J16 — Security/legacy acceptance | Admin/Owner | No cross-tenant data leak, duplicate product/UID, old order mutation or accounting imbalance | Every engineering phase |
+| J17 — Navy/white luxury home & media | Didar Content Ops → Shopper | Published large video/slider, asymmetric Mosaic, real Product/Collection links, mobile optimized | 4 |
+| J18 — Visual CMS publication & rollback | Didar Content Ops | DB-backed reorder/preview/approve/schedule/publish/rollback with correct accessible media | 4 |
+| J19 — Tenant-safe visual campaigns | Merchant/Didar editors | Campaign/storefront blocks restricted to correct public/merchant products and offer checkout context | 4/6 |
 
 J13 and J14 share attribution primitives but **have separate beneficiaries, liabilities, campaign scopes and reward rules**.
 
@@ -333,7 +312,7 @@ J13 and J14 share attribution primitives but **have separate beneficiaries, liab
 
 **Referral fraud and costs:** never pay on unverified clicks, registration-only claims unless explicitly approved acquisition milestone, duplicate events, cancelled/refunded orders or gross gold GMV as if it were Didar revenue. Record campaign eligibility, attribution window, payout basis and reversible reward journal. Two independent programs must not cause duplicate credit on one event unless explicitly budgeted and approved.
 
-**Luxury B2C Visual CMS:** Phase 10 delivers navy/white premium media-led design with PostgreSQL-backed approved Video Hero, Slider, Mosaic, Split Story, real Collection/Product blocks and versioned visual publishing. Preserve Merchant visibility, product prices/UID, accessibility and SEO; see [Phase 10 spec](PHASE10_LUXURY_VISUAL_CMS.md).
+**Luxury B2C Visual CMS:** Phase 4 delivers navy/white premium media-led design with PostgreSQL-backed approved Video Hero, Slider, Mosaic, Split Story, real Collection/Product blocks and versioned visual publishing. Preserve Merchant visibility, product prices/UID, accessibility and SEO; see [Phase 4 spec](PHASE4_LUXURY_VISUAL_CMS.md).
 
 **Media honesty and performance:** no AI generative beautification that changes real jewelry. WebP conversion standardizes size, type and load, not authenticity/color/specification. Use stable accessible asset URLs, secure MIME decoding, remove GPS metadata and protect drafts. Customer media optimizes for phone first. Do not require external CDN provider for MVP.
 
@@ -347,11 +326,13 @@ J13 and J14 share attribution primitives but **have separate beneficiaries, liab
 
 # 6. Dependency graph and release strategy
 
-`Issue #4 & #5 done → Phase 0 audit → Phase 1 pricing (Issue #6) → Phase 2 Merchant isolation → Phase 3 assisted onboarding/media → Phase 4 dual CRM → Phase 5 Merchant/global campaign share MVP → Phase 6 Didar Agent affiliation → Phase 7 Customer referrals/rewards → Phase 8 growth tools/hardening → Phase 9 functional Mac UAT → Phase 10 luxury Visual CMS + final visual Mac acceptance`.
+`Issue #4/#5 complete → Phase 0 baseline → Phase 1 Merchant Pricing Profiles complete (#6) → Phase 2A secure Merchant storefront / 2B early luxury navy-white UI / 2C simple selected-product sharing → Phase 3 assisted onboarding and WebP media → Phase 4 FULL luxury Visual CMS/Page Builder → Phase 5 dual CRM Lite → Phase 6 Didar and Merchant Campaigns → Phase 7 Didar Marketing Agent Affiliate → Phase 8 Merchant Customer Referral → Phase 9 Merchant Growth Center + advanced CRM`.
 
-**Fastest genuinely demoable point:** after Phases **1–3**, a retailer has an assigned pricing profile, own secure scoped storefront, accepted product/UID and optimized images. Phase **5** adds curated page sharing; Phase **4** establishes truthful CRM and consent before outbound targeting; affiliate rewards are later, but event provenance must start in the first phases to avoid data backfill guessing.
+**NO MacBook UAT development phase.** After all Phases 0–9 are technically complete, owner may run a separate, consolidated local Mac UAT and real retailer/customer evaluation. This is not numbered development work and is not an approval dependency for Codex between phases. Automated source/migration/browser/security/build testing **does remain mandatory** in every phase.
 
-Do not delay delivering Phases 1–3 until all 11 phases are designed. Each phase requires its own small migration/backend/UI/tests; ship, verify and continue. If a later phase is blocked by a legally undefined reward or tax rule, implement it as disabled configuration and proceed with already-safe work. Never silently choose commercial rates, credit interest, messaging consent or payout rules.
+**Fastest commercial demo:** Phase 2A/B/C provides tenant-safe retailer link, luxury base UI and simple curated product share; Phase 3 delivers high-quality actual images and verified onboarding; Phase 4 delivers the real admin CMS to create cinematic Video/Slider/Mosaic pages; subsequent CRM, campaign and referral phases reuse these early foundations instead of reimplementing them.
+
+**Engineering prioritization:** value to retailers/buyers, privacy and price/inventory risk, and technical dependencies. Preserve all owner-approved features and previous legacy data; avoid broad unplanned redesign.
 
 # 7. Issue/phase execution protocol for Codex
 
@@ -363,7 +344,7 @@ For each phase, repeat this disciplined loop:
 4. **Complete API, Persian RTL UI and real sandbox journey** before declaring feature complete. Avoid read-only fake screens, hardcoded mock array products or localStorage-only persistence.
 5. **Evidence:** run all relevant unit/integration/API, current browser suite (auth→customer→checkout) and official production builds. Record actual commands, counts, failures, exact SHA, schema hash where used; zero regressions and no privacy leaks.
 6. **Review/commit/merge:** reviewed cohesive branch/PR when needed; no force push or arbitrary replacement. Merge verified additions into `main` (or report precisely why it cannot be merged). Do not claim success before GitHub confirms.
-7. **Update source-controlled truth:** `PROGRESS.md`, `DELIVERY.md`, a concise new `docs/merchant-growth/PHASE_N.md`/test receipt and Mac UAT addendum. Tag each part `DONE & TESTED` / `IMPLEMENTED NOT VERIFIED` / `BLOCKED` / `NOT STARTED`.
+7. **Update source-controlled truth:** `PROGRESS.md`, `DELIVERY.md`, a concise new `docs/merchant-growth/PHASE_N.md`/test receipt and deferred, post-completion owner Mac test runbook. Tag each part `DONE & TESTED` / `IMPLEMENTED NOT VERIFIED` / `BLOCKED` / `NOT STARTED`.
 8. **Continue automatically to next safe phase**; pause only for genuine access, security, legal, external provider or destructive action requiring owner approval. A blocked provider integration must not stop independent demo-safe development.
 9. **End-of-phase handoff:** one-paragraph Persian status with screen URLs, QA login/test data references, actual tests, code SHA, no secret disclosure and next phase.
 
@@ -390,22 +371,20 @@ Implementation gate requires **Database → Backend → API → Frontend → Tes
 
 # 9. Final Codex master instruction (one copy/paste)
 
-**Mission:** Implement all **pending** roadmap phases in `docs/ROADMAP_B2C_MERCHANT_GROWTH_CRM_CAMPAIGNS.md` in the existing GitHub Didar B2C repository. First audit current `main` and all previous Issue #4/#5/#6 changes to avoid duplication. Use one shared Product/UID/pricing/financial core and one Didar Customer identity. Build real Merchant-type pricing with cash-applicable C, tenant-isolated merchant storefront, own product/media onboarding, central + merchant-scoped CRM, curated Merchant pages and approved public Didar campaigns, Didar Agent attribution, optional Merchant customer referral rewards and guided marketing tools, and finally Phase 10 luxury navy-white Visual CMS and media-led homepage. Complete each incremental database-backend-API-Persian UI-test gate and merge verified changes to main, preserving original business data and prior Phase 1/2 behaviors. Deliver the earliest usable merchant buyer journey first. No invented rates, marketing consent, reward payments, Tax/Oracle/live APIs or destructive database resets. Update Mac UAT docs, source-controlled evidence and accurately mark human/external pending checks. Proceed without asking routine business questions; only escalate true blockers requiring owner/legal authorization.
+**Mission:** Read the v3 [execution strategy](EXECUTION_STRATEGY_V3_BUILD_FIRST.md) and this entire roadmap. Implement only pending software phases: Phase 2A Merchant isolation, Phase 2B premium navy/white UI foundation, Phase 2C basic curated share, Phase 3 Merchant onboarding/WebP, Phase 4 **FULL admin Visual CMS (video, slider, asymmetric Mosaic) before CRM**, Phase 5 CRM Lite, Phase 6 public/Merchant campaigns, Phase 7 Agent affiliate, Phase 8 customer referrals, Phase 9 advanced Growth Center and CRM. Preserve existing implemented #4/#5/#6, all gold profiles, Product/Offer/UID, ledger, security and historical data. No external customer testing or MacBook owner-operated acceptance is required before completing software. Do require genuine PostgreSQL → Backend → API → Persian UI → automated browser/security/regression/build QA for every phase. Commit verifiable changes to main with exact evidence and continue. **After all features** the owner will separately undertake their integrated Mac testing and external business validation. Do not resurrect a numbered Mac UAT or postpone Visual CMS until after CRM.
 
-**Do not treat this roadmap publication as implementing any feature.**
+**Documentation-only edits do not mean any feature was implemented.**
 
 ---
 
-# Progress checkpoint — 2026-10-16, merchant pricing delivered
+# Progress checkpoint — 2026-10-16: pricing delivered, v3 sequencing approved
 
-**Software implementation baseline:** `main` at `84e1c1b0e186a23cb004adb5d696ba2505fa241e`, [Issue #6 implementation handoff](../docs/MERCHANT_PRICING_IMPLEMENTATION.md). This checkpoint updates the status stated at **roadmap authoring** in section 0; historical baseline references there are intentionally retained.
+- **Engineering baseline:** GitHub `main` includes completed Issue #4 taxonomy + UID labels, completed Issue #5 facets/collections, and Issue #6 Merchant Pricing Profiles (code commit `84e1c1b0e186a23cb004adb5d696ba2505fa241e`). Codex's Issue #6 handoff reports 135 backend tests / 1,680 assertions, one native HTTP, 19 Playwright and all builds; not independently rerun on the owner's Mac.
+- **Phase 0:** initial core architecture audit done; each new phase must inspect current access/data boundaries.
+- **Phase 1:** `CODEX_LINUX_VERIFIED`, owner commercial, legal/tax and production finance approvals remain separate.
+- **Phase 2–9:** pending as a complete sequence, beginning 2A/2B/2C; **Phase 4 now full luxury Visual CMS ahead of Phase 5 CRM**. Check current main for any code implemented since this checkpoint.
+- **MacBook test:** **outside development roadmap and explicitly deferred until after all features are implemented**. Old `docs/MAC_UAT_CHECKLIST.md` is a reference/runbook, not a phase or per-phase owner approval requirement.
+- **External retailer/customer testing and business KPIs:** similarly after engineering completion. Tests run by Codex per software phase remain non-negotiable.
+- **Status:** This document is a plan; the v3 reordering has not itself implemented any pending feature. More owner requirements may be appended later.
 
-- **Phase 0 baseline inspection for pricing:** completed within Issue #6's dedicated audit/migration tests. The wider Merchant Growth threat model and CRM/storefront tenant isolation audit remain part of the next-phase preflight.
-- **Phase 1 Merchant types/pricing profiles:** `CODEX_LINUX_VERIFIED / MAC_UAT_PENDING`. Confirmed source includes type registry, approved reusable immutable profile versions, central tax-policy versions, effective-dated Merchant assignment, cash-applicable component C, single authoritative checkout quote, order-level shared-charge allocation, frozen order snapshots, isolated supplier read scope and balanced journal/returns. On the example 100g/750 at 65,000,000 IRR/g with 12% making, Manufacturer = 8,073,000,000 IRR; Retailer with C=2.5% ALWAYS = 7,751,250,000 IRR. Codex's documented verification: **135 backend tests, 1,680 assertions; one native HTTP test, 19 Playwright journeys, all production builds**. These were not independently re-run on the owner's Mac in this checkpoint.
-- **Phases 2–8 Merchant-scoped storefront, assisted WebP onboarding, dual CRM, campaigns, staff affiliation, customer referrals, growth center:** `NOT YET CLAIMED IMPLEMENTED`; inspect freshest main before starting each phase.
-- **Phase 10 premium navy-white home and Visual CMS:** `PLANNED / NOT IMPLEMENTED`, after Phase 9 baseline with final visual/browser/Mac UAT; scope in `docs/PHASE10_LUXURY_VISUAL_CMS.md`.
-- **Phase 9 integrated Mac UAT:** `MAC_UAT_PENDING`, including printer/scanner/phone-camera verification. Live financial activity, real Tahesab, commercial profile activation and tax/legal/accountant sign-off remain separately pending.
-
-**Updated v2 execution sequence: Phase 2A → Phase 2B premium UI foundation → Phase 2C simple share links → Phases 3–9 → Phase 10 full Visual CMS → post-completion real-customer usability/business review.**
-
-**Next actionable task: Phase 2 — Merchant-scoped storefront plus tenant isolation.** Begin with a concrete *one-merchant link → only that merchant's eligible offers → registration/login preserving merchant context → cart/checkout sandbox → correctly attributed order* vertical slice. Preserve Issue #6's profile-version quote keys and the existing canonical Product/UID/QR model, existing shared Master and global marketplace. Public/unlisted/invite-only must be backed by server authorization/query constraints, not CSS hiding. Do not duplicate an existing public customer into merchant-local accounts, expose rival merchants, or mutate checkout/financial snapshots. Then continue sequentially to Phases 3–10.
+**Next engineering action:** Phase 2A tenant-scoped Merchant storefront → Phase 2B navy-white UI → Phase 2C selected product sharing → Phase 3 assisted onboarding/media → Phase 4 full Visual CMS.
