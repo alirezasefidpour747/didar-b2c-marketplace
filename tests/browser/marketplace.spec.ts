@@ -115,10 +115,12 @@ test("mobile RTL catalog and product detail fit the viewport", async ({
     .getByRole("link");
   await expect(detailLink).toHaveAttribute(
     "href",
-    "/products/jewelry/ring/ring/ring",
+    "/fa/products/jewelry/rings/ring/ring-1a5df958e0f29d35594c7cf057fe4bd1",
   );
   await Promise.all([
-    page.waitForURL("**/products/jewelry/ring/ring/ring"),
+    page.waitForURL(
+      "**/fa/products/jewelry/rings/ring/ring-1a5df958e0f29d35594c7cf057fe4bd1",
+    ),
     detailLink.click(),
   ]);
   await expect(

@@ -6,7 +6,7 @@ export type PublicProductLink = {
   breadcrumbs: { id: string; name: string; slug: string }[]
 }
 export async function publicProductLink(
-  key: 'id' | 'uid',
+  key: 'id' | 'uid' | 'key',
   value: string,
 ): Promise<PublicProductLink | null> {
   const url = new URL(

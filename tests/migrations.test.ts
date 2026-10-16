@@ -53,11 +53,21 @@ test("clean and repeat additive migrations preserve legacy stock and paid snapsh
     expect(
       (await c.query("SELECT published FROM didar_product WHERE id='p'"))
         .rows[0].published,
-    ).toBe(false);
+    ).toBe(true);
     expect(
-      (await c.query("SELECT product_id FROM didar_taxonomy_migration_draft"))
-        .rows,
+      (await c.query("SELECT product_id FROM didar_taxonomy_review")).rows,
     ).toEqual([{ product_id: "p" }]);
+    expect(
+      (
+        await c.query(
+          "SELECT didar_public_taxonomy('p',null) visible,didar_taxonomy_valid(null) ready",
+        )
+      ).rows[0],
+    ).toEqual({ visible: true, ready: false });
+    await c.query("UPDATE didar_product SET published=false WHERE id='p'");
+    await expect(
+      c.query("UPDATE didar_product SET published=true WHERE id='p'"),
+    ).rejects.toThrow("INVALID_PUBLICATION_TAXONOMY");
     expect(
       (await c.query("SELECT count(*)::int n FROM didar_inventory_item"))
         .rows[0].n,

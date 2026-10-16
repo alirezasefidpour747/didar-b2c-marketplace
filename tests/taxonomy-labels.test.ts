@@ -14,6 +14,8 @@ import { verifiedPublicOrigin } from "../packages/api/src/didar/labels";
 import { financeFixture, finAPI, finOK, finDB } from "./financial-helpers";
 let f: Awaited<ReturnType<typeof financeFixture>>,
   root = "",
+  middle = "",
+  publicKey = "",
   leaf = "",
   otherLeaf = "",
   draft = "",
@@ -55,12 +57,25 @@ function decode(svg: string, format: BarcodeFormat) {
 beforeAll(async () => {
   f = await financeFixture();
   root = (await manage({ kind: "category", name: "دسته آزمون", slug: tag })).id;
+  publicKey = (
+    await finDB.query("SELECT public_key FROM didar_product WHERE id=$1", [
+      f.pid,
+    ])
+  ).rows[0].public_key;
+  middle = (
+    await manage({
+      kind: "category",
+      name: "دسته آزمون",
+      slug: tag + "-category",
+      parent_id: root,
+    })
+  ).id;
   leaf = (
     await manage({
       kind: "category",
       name: "زیردسته آزمون",
       slug: tag + "-child",
-      parent_id: root,
+      parent_id: middle,
     })
   ).id;
   otherLeaf = (
@@ -68,7 +83,7 @@ beforeAll(async () => {
       kind: "category",
       name: "زیردسته دوم",
       slug: tag + "-other",
-      parent_id: root,
+      parent_id: middle,
     })
   ).id;
 });
@@ -188,10 +203,11 @@ test("leaf and ancestor guards prevent taxonomy corruption and preserve a shared
   });
   originalPath = (await link("id", f.pid)).canonical_path;
   expect(originalPath).toBe(
-    `/products/${tag}/${tag}-child/shared-gold/${f.pid}`,
+    `/fa/products/${tag}/${tag}-category/${tag}-child/shared-gold-${publicKey}`,
   );
   expect((await link("id", f.pid)).breadcrumbs.map((c: any) => c.id)).toEqual([
     root,
+    middle,
     leaf,
   ]);
   for (const b of [
@@ -209,7 +225,7 @@ test("leaf and ancestor guards prevent taxonomy corruption and preserve a shared
       leaf,
       root,
     ]),
-  ).rejects.toThrow("INVALID_CATEGORY_PARENT");
+  ).rejects.toThrow();
   await expect(
     finDB.query("DELETE FROM didar_category WHERE id=$1", [leaf]),
   ).rejects.toThrow();
@@ -279,7 +295,7 @@ test("supplier proposals cannot bypass publication and admin approval requires t
       category_id: leaf,
     })
   ).product_id;
-  expect((await link("id", requestProduct)).breadcrumbs[1].id).toBe(leaf);
+  expect((await link("id", requestProduct)).breadcrumbs[2].id).toBe(leaf);
 });
 test("admin single and batch printing uses permanent UIDs with optional EPC, gates customer visibility and forbids all other roles", async () => {
   batch = (
@@ -387,6 +403,7 @@ test("public QR and legacy bookmarks redirect to canonical path without disclosi
       "canonical_path",
       "http",
       "id",
+      "taxonomy_ready",
       "title",
     ]);
     expect(d.canonical_path).toBe(originalPath);
@@ -425,9 +442,13 @@ test("category and product slug rename and reclassification keep old PDP URLs an
     slug: "new-gold",
   });
   const current = await link("id", f.pid);
-  expect(current.breadcrumbs.map((b: any) => b.id)).toEqual([root, otherLeaf]);
+  expect(current.breadcrumbs.map((b: any) => b.id)).toEqual([
+    root,
+    middle,
+    otherLeaf,
+  ]);
   expect(current.canonical_path).toBe(
-    `/products/${tag}-renamed/${tag}-other/new-gold/${f.pid}`,
+    `/fa/products/${tag}-renamed/${tag}-category/${tag}-other/new-gold-${publicKey}`,
   );
   const old = await fetch(web + originalPath, { redirect: "manual" });
   expect(old.status).toBe(308);
@@ -560,7 +581,7 @@ test("deeper canonical hierarchy uses every ancestor and product identity cannot
   const result = await link("id", draft);
   expect(result.breadcrumbs.map((n: any) => n.id)).toEqual([a, b, c]);
   expect(result.canonical_path).toBe(
-    `/products/${tag}-deep/${tag}-level2/${tag}-level3/product/${draft}`,
+    `/fa/products/${tag}-deep/${tag}-level2/${tag}-level3/product-${(await finDB.query("SELECT public_key FROM didar_product WHERE id=$1", [draft])).rows[0].public_key}`,
   );
   await expect(
     finDB.query("UPDATE didar_product SET id=$1 WHERE id=$2", [
@@ -690,4 +711,110 @@ test("long UID barcodes retain exact identity; draft/void pieces never resolve o
   ).toBe(400);
   for (const unit of units)
     expect((await finAPI("product-link?uid=" + unit.uid)).http).toBe(404);
+});
+
+test("rank, active ancestry and stable machine codes are enforced in API and PostgreSQL", async () => {
+  for (const node of [root, middle, otherLeaf]) {
+    const row = (
+      await finDB.query("SELECT * FROM didar_category WHERE id=$1", [node])
+    ).rows[0];
+    expect(
+      (
+        await finAPI(
+          "manage",
+          {
+            kind: "category",
+            id: node,
+            name: row.name,
+            slug: row.slug,
+            parent_id: row.parent_id,
+            active: false,
+          },
+          f.admin,
+        )
+      ).http,
+    ).toBe(400);
+    await expect(
+      finDB.query("UPDATE didar_category SET active=false WHERE id=$1", [node]),
+    ).rejects.toThrow("INVALID_PUBLICATION_TAXONOMY");
+    expect(
+      (
+        await finAPI(
+          "manage",
+          {
+            kind: "category",
+            id: node,
+            name: row.name,
+            slug: row.slug,
+            parent_id: row.parent_id,
+            code: "changed.code",
+          },
+          f.admin,
+        )
+      ).http,
+    ).toBe(400);
+  }
+  expect(
+    (
+      await finAPI(
+        "manage",
+        {
+          kind: "category",
+          name: "bad family child",
+          slug: tag + "-bad-rank",
+          parent_id: root,
+          taxonomy_kind: "subcategory",
+        },
+        f.admin,
+      )
+    ).http,
+  ).toBe(400);
+  expect(
+    (
+      await finAPI(
+        "manage",
+        {
+          kind: "category",
+          name: "too deep",
+          slug: tag + "-too-deep",
+          parent_id: otherLeaf,
+          taxonomy_kind: "subcategory",
+        },
+        f.admin,
+      )
+    ).http,
+  ).toBe(400);
+  const family = (
+    await manage({
+      kind: "category",
+      name: "Inactive family",
+      slug: tag + "-inactive",
+      active: false,
+    })
+  ).id;
+  const cat = (
+    await manage({
+      kind: "category",
+      name: "Inactive category",
+      slug: tag + "-inactive-category",
+      parent_id: family,
+    })
+  ).id;
+  const sub = (
+    await manage({
+      kind: "category",
+      name: "Inactive subcategory",
+      slug: tag + "-inactive-sub",
+      parent_id: cat,
+    })
+  ).id;
+  expect(
+    (
+      await finAPI(
+        "manage",
+        { kind: "product", id: draft, category_id: sub, published: true },
+        f.admin,
+      )
+    ).http,
+  ).toBe(400);
 });

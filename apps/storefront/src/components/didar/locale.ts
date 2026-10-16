@@ -44,8 +44,11 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  INVALID_CATEGORY_RANK:
+    'رتبه باید خانواده ← دسته ← زیردسته نهایی باشد؛ گره قدیمی نیازمند بازبینی مدیر است.',
+  INVALID_CATEGORY_CODE: 'شناسه و کد ساختاری دائمی قابل تغییر نیست.',
   INVALID_PUBLICATION_TAXONOMY:
-    'انتشار نیازمند انتخاب زیردسته معتبر با دسته اصلی است.',
+    'انتشار نیازمند خانواده، دسته و زیردسته نهایی فعال است.',
   INVALID_LABEL_VISIBILITY:
     'QR مشتری فقط برای قطعه پذیرفته‌شده با محصول فعال و منتشرشده مجاز است.',
   INVALID_PUBLIC_ORIGIN: 'نشانی عمومی HTTPS برای چاپ QR مشتری تأیید نشده است.',

@@ -5,7 +5,11 @@ export async function productPath(c: any, p: any) {
     rows: [valid],
   } = await c.query("SELECT didar_taxonomy_valid($1) valid", [p.category_id]);
   if (!valid.valid)
-    return { canonical_path: null, breadcrumbs: [] as Breadcrumb[] };
+    return {
+      canonical_path: "/products/" + encodeURIComponent(p.id),
+      breadcrumbs: [] as Breadcrumb[],
+      taxonomy_ready: false,
+    };
   const { rows: breadcrumbs } = await c.query(
     `WITH RECURSIVE ancestors AS (
     SELECT id,name,slug,parent_id,0 depth FROM didar_category WHERE id=$1
@@ -15,16 +19,21 @@ export async function productPath(c: any, p: any) {
   );
   return {
     canonical_path:
-      "/products/" +
-      [...breadcrumbs.map((b: Breadcrumb) => b.slug), p.slug, p.id]
+      "/fa/products/" +
+      [
+        ...breadcrumbs.map((b: Breadcrumb) => b.slug),
+        p.slug + "-" + p.public_key,
+      ]
         .map(encodeURIComponent)
         .join("/"),
     breadcrumbs,
+    taxonomy_ready: true,
   };
 }
 export async function publicProductLink(query: any) {
   const byUID = query.uid !== undefined;
-  const value = byUID ? query.uid : query.id;
+  const byKey = query.key !== undefined;
+  const value = byUID ? query.uid : byKey ? query.key : query.id;
   if (
     typeof value !== "string" ||
     value.length > 100 ||
@@ -37,7 +46,7 @@ export async function publicProductLink(query: any) {
     const {
       rows: [p],
     } = await c.query(
-      `SELECT p.id,p.title,p.category_id,p.slug FROM didar_product p WHERE p.active AND p.approved AND p.published AND didar_taxonomy_valid(p.category_id) AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : "p.id=$1"}`,
+      `SELECT p.id,p.title,p.category_id,p.slug,p.public_key FROM didar_product p WHERE p.active AND p.approved AND p.published AND ${byUID ? "didar_taxonomy_valid(p.category_id)" : "didar_public_taxonomy(p.id,p.category_id)"} AND ${byUID ? "EXISTS(SELECT 1 FROM didar_inventory_item i WHERE i.uid=$1 AND i.product_id=p.id AND i.status IN ('available','reserved','sold','returned','withdrawn'))" : byKey ? "p.public_key=$1" : "p.id=$1"}`,
       [value],
     );
     if (!p) throw new Error("NOT_FOUND");

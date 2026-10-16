@@ -290,7 +290,18 @@ test("admin category and product edits persist publication controls", async () =
     admin,
   );
   expect(category.status).toBe(200);
-  categoryId = category.id;
+  categoryId = (
+    await api(
+      "manage",
+      {
+        kind: "category",
+        name: `${tag} leaf`,
+        slug: tag + "-leaf",
+        parent_id: category.id,
+      },
+      admin,
+    )
+  ).id;
   const edit = {
     kind: "product",
     id: product,
@@ -332,13 +343,36 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
       )
     ).status,
   ).toBe(200);
+  const independent = (
+    await api(
+      "manage",
+      {
+        kind: "category",
+        name: `${tag} independent`,
+        slug: tag + "-independent",
+      },
+      admin,
+    )
+  ).id;
+  const categoryParent = (
+    await api(
+      "manage",
+      {
+        kind: "category",
+        name: `${tag} parent`,
+        slug: tag + "-parent",
+        parent_id: independent,
+      },
+      admin,
+    )
+  ).id;
   const child = await api(
     "manage",
     {
       kind: "category",
       name: `${tag} subcategory`,
       slug: `${tag}-child`,
-      parent_id: categoryId,
+      parent_id: categoryParent,
     },
     admin,
   );
@@ -362,7 +396,7 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
     "manage",
     {
       kind: "category",
-      id: categoryId,
+      id: categoryParent,
       name: `${tag} rings`,
       slug: tag,
       parent_id: child.id,
@@ -384,7 +418,7 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
   collections.push(collection.id);
   const catalog = await api("catalog");
   expect(catalog.categories.find((c: any) => c.id === child.id).parent_id).toBe(
-    categoryId,
+    categoryParent,
   );
   expect(
     catalog.collections.find((c: any) => c.id === collection.id).product_ids,

@@ -122,6 +122,7 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
     const category = admin.getByTestId("category-form");
     await category.locator('[name="name"]').fill(`حلقه آزمون ${tag}`);
     await category.locator('[name="slug"]').fill(tag);
+    await category.locator('[name="parent_id"]').selectOption("jewelry");
     await category.getByRole("button", { name: /ثبت/ }).click();
     await expect
       .poll(
@@ -162,6 +163,7 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
     await form.locator('[name="purity"]').fill("750");
     await form.locator('[name="min_weight_mg"]').fill("6000");
     await form.locator('[name="max_weight_mg"]').fill("8000");
+    await form.getByLabel("خانواده", { exact: true }).selectOption("jewelry");
     await form
       .getByLabel("دسته اصلی", { exact: true })
       .selectOption(categoryId);
@@ -282,7 +284,9 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
     await expect(card.locator(".offer")).toHaveCount(1);
     await card.getByRole("heading", { name: title }).getByRole("link").click();
     await expect(customer).toHaveURL(
-      new RegExp(`/products/${tag}/${tag}-child/product/${productId}$`),
+      new RegExp(
+        `/fa/products/jewelry/${tag}/${tag}-child/product-[a-f0-9]{32}$`,
+      ),
     );
     await expect(customer.locator(".gallery-thumbs button")).toHaveCount(2);
     await expect(customer.locator(".gallery-main img")).toBeVisible();

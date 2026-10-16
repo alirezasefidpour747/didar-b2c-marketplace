@@ -82,7 +82,7 @@ async function proxy(
       url.searchParams.set('id', id)
     }
     if (action === 'product-link') {
-      for (const key of ['id', 'uid']) {
+      for (const key of ['id', 'uid', 'key']) {
         const value = req.nextUrl.searchParams.get(key)
         if (value && value.length <= 100) url.searchParams.set(key, value)
       }

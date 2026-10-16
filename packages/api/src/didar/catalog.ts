@@ -40,7 +40,7 @@ export async function catalog(user?: any) {
       new Date(rate.updated_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString();
     const { rows: products } = await c.query(
-      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved AND didar_taxonomy_valid(p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
+      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
       [user?.role || "public", user?.supplier_id || null],
     );
     const { rows: offers } = await c.query(
@@ -82,7 +82,8 @@ export async function catalog(user?: any) {
         }));
     }
     const { rows: categories } = await c.query(
-      "SELECT * FROM didar_category ORDER BY name",
+      "SELECT * FROM didar_category WHERE $1='admin' OR active ORDER BY name",
+      [user?.role || "public"],
     );
     const { rows: collections } = await c.query(
       "SELECT c.*,coalesce(array_agg(cp.product_id) FILTER(WHERE cp.product_id IS NOT NULL),'{}') product_ids FROM didar_collection c LEFT JOIN didar_collection_product cp ON cp.collection_id=c.id GROUP BY c.id ORDER BY c.name",
@@ -175,7 +176,22 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
     const {
       rows: [classification],
     } = await c.query("SELECT didar_taxonomy_valid($1) valid", [p.category_id]);
-    if (!classification.valid) throw new Error("INVALID_PUBLICATION_TAXONOMY");
+    if (!classification.valid) {
+      const {
+        rows: [legacy],
+      } = await c.query("SELECT didar_public_taxonomy($1,$2) valid", [
+        id,
+        p.category_id,
+      ]);
+      if (
+        !old?.published ||
+        !old.active ||
+        !old.approved ||
+        old.category_id !== p.category_id ||
+        !legacy.valid
+      )
+        throw new Error("INVALID_PUBLICATION_TAXONOMY");
+    }
   }
   if (b.collection_ids !== undefined) {
     if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
@@ -264,6 +280,10 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
       ],
     );
     await c.query("UPDATE didar_product SET slug=$1 WHERE id=$2", [p.slug, id]);
+    await c.query(
+      "UPDATE didar_taxonomy_review SET status='resolved',resolved_by=$2,resolved_at=now() WHERE product_id=$1 AND status='pending' AND didar_taxonomy_valid($3)",
+      [id, u.id, p.category_id],
+    );
     if (b.collection_ids !== undefined) {
       if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
         throw new Error("INVALID_COLLECTIONS");
@@ -351,6 +371,12 @@ export async function manage(req: any, u: any) {
       "SELECT * FROM didar_supplier WHERE $1='admin' OR id=$2 ORDER BY name",
       [u.role, u.supplier_id],
     );
+    const { rows: taxonomy_review } =
+      u.role === "admin"
+        ? await db.query(
+            "SELECT r.*,p.title,p.published FROM didar_taxonomy_review r JOIN didar_product p ON p.id=r.product_id ORDER BY r.recorded_at",
+          )
+        : { rows: [] };
     const { rows: product_requests } = await db.query(
       "SELECT r.*,s.name supplier FROM didar_product_request r JOIN didar_supplier s ON s.id=r.supplier_id WHERE $1='admin' OR r.supplier_id=$2 ORDER BY r.created_at DESC LIMIT 100",
       [u.role, u.supplier_id],
@@ -366,6 +392,7 @@ export async function manage(req: any, u: any) {
       suppliers,
       permissions: await permissions(db, u),
       product_requests,
+      ...(u.role === "admin" ? { taxonomy_review } : {}),
       ...(u.role === "admin" ? { audit: auditRows } : {}),
     };
   }
@@ -562,9 +589,44 @@ export async function manage(req: any, u: any) {
         if (!rows.length || rows.some((r: any) => r.id === id))
           throw new Error("INVALID_CATEGORY_PARENT");
       }
+      const {
+        rows: [previous],
+      } = await c.query("SELECT * FROM didar_category WHERE id=$1", [id]);
+      const {
+        rows: [ancestor],
+      } = parent
+        ? await c.query("SELECT kind FROM didar_category WHERE id=$1", [parent])
+        : { rows: [] };
+      const inferred = !parent
+        ? "family"
+        : ancestor?.kind === "family"
+          ? "category"
+          : ancestor?.kind === "category"
+            ? "subcategory"
+            : null;
+      const rank = b.taxonomy_kind || previous?.kind || inferred;
+      if (
+        !["legacy", "family", "category", "subcategory"].includes(rank) ||
+        (!previous && rank === "legacy")
+      )
+        throw new Error("INVALID_CATEGORY_RANK");
+      const code =
+        previous?.code ||
+        (b.code ? text(b.code, 120) : "node." + id.toLowerCase());
+      if (previous && b.code && b.code !== previous.code)
+        throw new Error("INVALID_CATEGORY_CODE");
       await c.query(
-        "INSERT INTO didar_category(id,name,slug,parent_id) VALUES($1,$2,$3,$4) ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name,slug=EXCLUDED.slug,parent_id=EXCLUDED.parent_id",
-        [id, name, slug(b.slug), parent],
+        "INSERT INTO didar_category(id,name,slug,parent_id,code,kind,active,labels) VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name,slug=EXCLUDED.slug,parent_id=EXCLUDED.parent_id,kind=EXCLUDED.kind,active=EXCLUDED.active,labels=EXCLUDED.labels",
+        [
+          id,
+          name,
+          slug(b.slug),
+          parent,
+          code,
+          rank,
+          bool(b.active, previous?.active ?? true),
+          JSON.stringify({ ...previous?.labels, fa: name }),
+        ],
       );
       await c.query(
         "UPDATE didar_product SET category=$1 WHERE category_id=$2",

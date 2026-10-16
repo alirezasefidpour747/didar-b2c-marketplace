@@ -59,7 +59,8 @@ test("admin UI creates supplier/product, weighs and tags units, posts stock; sup
     const p = admin.getByTestId("product-form");
     await p.locator('[name="title"]').fill(tag);
     await p.locator('[name="purity"]').fill("750");
-    await p.getByLabel("دسته اصلی", { exact: true }).selectOption("jewelry");
+    await p.getByLabel("خانواده", { exact: true }).selectOption("jewelry");
+    await p.getByLabel("دسته اصلی", { exact: true }).selectOption("rings");
     await p.locator('[name="category_id"]').selectOption("ring");
     await p.locator('[name="published"]').check();
     await p.locator('[name="attributes"]').fill('{"qa":"physical"}');

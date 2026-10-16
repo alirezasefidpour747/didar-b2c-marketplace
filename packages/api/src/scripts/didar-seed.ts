@@ -1,4 +1,3 @@
-import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { projectExisting } from "../didar/finance-ledger";
 import { transaction } from "../didar/db";
 import type { ExecArgs } from "@medusajs/framework/types";
@@ -62,20 +61,18 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
-  // Keep the native Medusa publication mirror private for legacy masters staged by this migration.
-  const { rows: stagedDrafts } = await db.query(
-    "SELECT p.native_id FROM didar_taxonomy_migration_draft d JOIN didar_product p ON p.id=d.product_id WHERE NOT p.published AND p.native_id IS NOT NULL",
-  );
-  if (stagedDrafts.length)
-    await updateProductsWorkflow(container).run({
-      input: {
-        products: stagedDrafts.map((p) => ({
-          id: p.native_id,
-          status: "draft" as const,
-        })),
-      },
-    });
   await transaction(projectExisting);
+  const seedDemo =
+    process.env.DIDAR_SEED_DEMO === "true" &&
+    process.env.DIDAR_ENVIRONMENT === "local" &&
+    process.env.NODE_ENV !== "production";
+  if (!seedDemo) {
+    console.log(
+      "Didar additive migrations applied; existing catalog preserved, demo seed disabled.",
+    );
+    await db.end();
+    return;
+  }
   for (const [id, name] of [
     ["s1", "زرین دیدار"],
     ["s2", "گالری آفتاب"],
@@ -91,20 +88,28 @@ export default async function seed({ container }: ExecArgs) {
     ["earring", "گوشواره شکوفه", "گوشواره", 1875],
   ] as const;
   await db.query(
-    "INSERT INTO didar_category(id,name,slug) VALUES('jewelry','زیورآلات','jewelry') ON CONFLICT DO NOTHING",
+    "INSERT INTO didar_category(id,name,slug,code,kind) VALUES('jewelry','زیورآلات','jewelry','demo.jewelry','family') ON CONFLICT DO NOTHING",
   );
   await db.query(
     "INSERT INTO didar_collection(id,name,slug) VALUES('everyday','انتخاب روزمره','everyday') ON CONFLICT DO NOTHING",
   );
   for (const [id, title, category, weight] of items) {
+    // Explicit local demo vocabulary only. Never reparent or re-key existing categories.
     await db.query(
-      "INSERT INTO didar_category(id,name,slug,parent_id) VALUES($1,$2,$1,'jewelry') ON CONFLICT DO NOTHING",
-      [id, category],
+      "INSERT INTO didar_category(id,name,slug,parent_id,code,kind) VALUES($1,$2,$1,'jewelry',$3,'category') ON CONFLICT DO NOTHING",
+      [id + "s", category, "demo." + id + "s"],
+    );
+    await db.query(
+      "INSERT INTO didar_category(id,name,slug,parent_id,code,kind) VALUES($1,$2,$1,$3,$4,'subcategory') ON CONFLICT DO NOTHING",
+      [id, category + " نمونه", id + "s", "demo." + id],
     );
     let {
       rows: [p],
     } = await db.query("SELECT * FROM didar_product WHERE id=$1", [id]);
     if (!p) {
+      const {
+        rows: [classification],
+      } = await db.query("SELECT didar_taxonomy_valid($1) valid", [id]);
       const { result } = await createProductsWorkflow(container).run({
         input: {
           created_by: "didar-seed",
@@ -112,7 +117,7 @@ export default async function seed({ container }: ExecArgs) {
             {
               title,
               handle: `didar-${id}`,
-              status: "published",
+              status: classification.valid ? "published" : "draft",
               variants: [{ title: "Standard" }],
               metadata: { didar: true, purity: 750 },
             },
@@ -120,20 +125,17 @@ export default async function seed({ container }: ExecArgs) {
         },
       });
       await db.query(
-        "INSERT INTO didar_product(id,title,category,description,purity,native_id,category_id,published,slug) VALUES($1,$2,$3,$4,750,$5,$1,true,$1)",
+        "INSERT INTO didar_product(id,title,category,description,purity,native_id,category_id,published,slug) VALUES($1,$2,$3,$4,750,$5,$1,$6,$1)",
         [
           id,
           title,
           category,
           "طلای ۱۸ عیار با وزن دقیق، فاکتور شفاف و انتخاب تأمین‌کننده.",
           result[0].id,
+          classification.valid,
         ],
       );
     }
-    await db.query(
-      "UPDATE didar_product SET category_id=$1 WHERE id=$1 AND category_id IS NULL",
-      [id],
-    );
     await db.query(
       "INSERT INTO didar_collection_product VALUES('everyday',$1) ON CONFLICT DO NOTHING",
       [id],

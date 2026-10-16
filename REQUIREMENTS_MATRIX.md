@@ -141,8 +141,8 @@ Statuses: VERIFIED; IMPLEMENTED BUT UNTESTED; PARTIALLY IMPLEMENTED; MISSING; BL
 
 | Requirement | Implementation / evidence | Operational qualification |
 | --- | --- | --- |
-| Category → Subcategory mandatory for publication; drafts/photos legal | Additive SQL guards, API validation, dependent Persian selectors and admin approval classification; taxonomy regression suite | Legacy incomplete classifications become retained drafts with recorded prior state |
-| Hierarchical canonical master PDP and breadcrumbs | Ancestor/leaf/product slug + immutable ID; legacy and previous paths redirect by ID; category filter follows ancestors | One master across multiple supplier offers |
+| Family → Category → Subcategory mandatory for new publication; drafts/photos legal | Additive SQL guards, API validation, dependent Persian selectors and admin approval classification; taxonomy regression suite | Pre-existing publication/bookmarks preserved as readiness reviews; new/re-publication and customer QR require approved full path |
+| Hierarchical canonical master PDP and breadcrumbs | Current `/fa` family/category/subcategory/product slug + immutable public key; legacy ID and previous slug paths redirect safely; category filter follows ancestors | One master across multiple supplier offers |
 | Permanent UID Code 128 and stable QR | Local SVG encoder, admin single/selected/batch generation, decode tests, permanent `/i/{uid}` | Customer QR disabled until real public HTTPS origin is configured/attested |
 | Safe public UID resolution and stock | Minimal public response; visibility guards; 307/no-store; sold UID remains a product reference, exact eligible offers determine stock | No supplier/invoice/cost/history in resolver |
 | Authorization / printing / RFID optionality | Admin-only audited API; supplier/customer/public denied; configurable physical dimensions, quiet zones, print CSS and size guards; existing HID UID lookup/count | Printer, physical scanner and phone camera UAT remain pending |

@@ -47,6 +47,8 @@ export type Product = {
   title: string
   category: string
   slug?: string
+  public_key?: string
+  taxonomy_ready?: boolean
   canonical_path?: string
   breadcrumbs?: { id: string; name: string; slug: string }[]
   category_id?: string
@@ -78,6 +80,9 @@ export type Category = {
   name: string
   slug: string
   parent_id?: string
+  kind?: 'legacy' | 'family' | 'category' | 'subcategory'
+  active?: boolean
+  code?: string
 }
 export type Collection = {
   id: string

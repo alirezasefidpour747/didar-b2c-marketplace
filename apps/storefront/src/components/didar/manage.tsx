@@ -81,17 +81,23 @@ function ProductFields({
     }
     return found
   }
+  const families = categories.filter((c) => c.kind === 'family' && c.active)
   const leaves = categories.filter(
     (c) =>
-      c.parent_id &&
+      c.kind === 'subcategory' &&
+      c.active &&
       !categories.some((n) => n.parent_id === c.id) &&
-      chain(c.id).length >= 2,
+      chain(c.id).length === 3 &&
+      chain(c.id).every((c) => c.active),
   )
-  const parentOptions = categories.filter((c) =>
-    leaves.some((l) => l.parent_id === c.id),
+  const parentOptions = categories.filter(
+    (c) => c.kind === 'category' && c.active,
   )
   const [parent, setParent] = useState(
     categories.find((c) => c.id === selected)?.parent_id || '',
+  )
+  const [family, setFamily] = useState(
+    categories.find((c) => c.id === parent)?.parent_id || '',
   )
   const valid = leaves.some((c) => c.id === selected)
   return (
@@ -142,10 +148,31 @@ function ProductFields({
         value={p?.slug || 'product'}
       />
       <label>
+        خانواده
+        <select
+          aria-label="خانواده"
+          value={family}
+          onChange={(e) => {
+            setFamily(e.target.value)
+            setParent('')
+            setSelected('')
+            setPublished(false)
+          }}
+        >
+          <option value="">انتخاب خانواده</option>
+          {families.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
         دسته
         <select
           aria-label="دسته اصلی"
           value={parent}
+          disabled={!family}
           onChange={(e) => {
             setParent(e.target.value)
             setSelected('')
@@ -153,13 +180,15 @@ function ProductFields({
           }}
         >
           <option value="">انتخاب دسته</option>
-          {parentOptions.map((c) => (
-            <option key={c.id} value={c.id}>
-              {chain(c.id)
-                .map((n) => n.name)
-                .join(' / ')}
-            </option>
-          ))}
+          {parentOptions
+            .filter((c) => c.parent_id === family)
+            .map((c) => (
+              <option key={c.id} value={c.id}>
+                {chain(c.id)
+                  .map((n) => n.name)
+                  .join(' / ')}
+              </option>
+            ))}
         </select>
       </label>
       <label>
@@ -167,13 +196,20 @@ function ProductFields({
         <select
           name="category_id"
           value={selected}
-          disabled={!parent}
+          disabled={!parent && !p?.category_id}
           onChange={(e) => {
             setSelected(e.target.value)
             if (!e.target.value) setPublished(false)
           }}
         >
           <option value="">انتخاب زیردسته</option>
+          {p?.category_id &&
+            !leaves.some((c) => c.id === p.category_id) &&
+            selected === p.category_id && (
+              <option value={p.category_id}>
+                طبقه‌بندی قدیمی؛ نیازمند بازبینی
+              </option>
+            )}
           {leaves
             .filter((c) => c.parent_id === parent)
             .map((c) => (
@@ -185,8 +221,18 @@ function ProductFields({
       </label>
       {!valid && (
         <p role="status">
-          پیش‌نویس و بارگذاری تصویر مجاز است؛ انتشار و QR مشتری نیازمند دسته و
-          زیردسته کامل است.
+          پیش‌نویس و بارگذاری تصویر مجاز است؛ انتشار جدید و QR مشتری نیازمند
+          خانواده، دسته و زیردسته فعال است. انتشار قدیمی فقط تا بازبینی حفظ
+          می‌شود.
+        </p>
+      )}
+      {p?.canonical_path && p.published && p.active && p.approved && (
+        <p>
+          نشانی عمومی فعلی:{' '}
+          <Link dir="ltr" href={p.canonical_path}>
+            {p.canonical_path}
+          </Link>
+          {!p.taxonomy_ready && ' (قدیمی؛ QR مشتری تا بازبینی غیرفعال)'}
         </p>
       )}
       <Field
@@ -229,13 +275,44 @@ function ProductFields({
             <input
               type="checkbox"
               name="published"
-              checked={published && valid}
-              disabled={!valid}
+              checked={published}
+              disabled={!valid && !published}
               onChange={(e) => setPublished(e.target.checked)}
             />
             انتشار در ویترین
           </label>
         </>
+      )}
+    </>
+  )
+}
+function CategoryGovernance({ category }: { category?: any }) {
+  return (
+    <>
+      <label>
+        رتبه ساختاری
+        <select name="taxonomy_kind" defaultValue={category?.kind || ''}>
+          <option value="">خودکار بر اساس والد</option>
+          {category?.kind === 'legacy' && (
+            <option value="legacy">قدیمی؛ نیازمند بازبینی</option>
+          )}
+          <option value="family">خانواده</option>
+          <option value="category">دسته</option>
+          <option value="subcategory">زیردسته نهایی</option>
+        </select>
+      </label>
+      <label className="check">
+        <input
+          name="category_active"
+          type="checkbox"
+          defaultChecked={category?.active ?? true}
+        />
+        گره فعال
+      </label>
+      {category?.code && (
+        <p>
+          کد ثابت: <code>{category.code}</code>
+        </p>
       )}
     </>
   )
@@ -252,7 +329,10 @@ function RequestClassification({
   const [category, setCategory] = useState(initial || '')
   const [decision, setDecision] = useState('approved')
   const leaves = categories.filter(
-    (c) => c.parent_id && !categories.some((n) => n.parent_id === c.id),
+    (c) =>
+      c.kind === 'subcategory' &&
+      c.active &&
+      !categories.some((n) => n.parent_id === c.id),
   )
   function path(id: string) {
     const result: string[] = []
@@ -617,6 +697,8 @@ function Management() {
                         name: f.get('name'),
                         slug: f.get('slug'),
                         parent_id: f.get('parent_id') || null,
+                        taxonomy_kind: f.get('taxonomy_kind') || undefined,
+                        active: f.get('category_active') === 'on',
                       },
                       'دسته ذخیره شد.',
                     ),
@@ -636,6 +718,7 @@ function Management() {
                       ))}
                     </select>
                   </label>
+                  <CategoryGovernance />
                   <button disabled={busy}>ثبت دسته</button>
                 </form>
                 <form
@@ -682,6 +765,8 @@ function Management() {
                         name: f.get('name'),
                         slug: f.get('slug'),
                         parent_id: f.get('parent_id') || null,
+                        taxonomy_kind: f.get('taxonomy_kind') || undefined,
+                        active: f.get('category_active') === 'on',
                       }),
                     )}
                   >
@@ -700,6 +785,7 @@ function Management() {
                           ))}
                       </select>
                     </label>
+                    <CategoryGovernance category={c} />
                     <button disabled={busy}>ذخیره دسته</button>
                   </form>
                 ))}
@@ -738,6 +824,14 @@ function Management() {
                   </form>
                 ))}
               </details>
+              {managed.taxonomy_review?.some(
+                (r: any) => r.status === 'pending',
+              ) && (
+                <p className="notice">
+                  محصولات دارای طبقه‌بندی قدیمی تا بازبینی در نشانی قبلی
+                  می‌مانند؛ انتشار مجدد و QR مشتری نیازمند تکمیل سه سطح است.
+                </p>
+              )}
               {managed.products.map((p: Product) => (
                 <details
                   className="card product-editor"

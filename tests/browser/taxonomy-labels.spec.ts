@@ -62,7 +62,8 @@ test("Persian draft publication, optional-RFID bulk labels, print sizing, canoni
   const editor = page.locator(`[data-product-id="${pid}"]`);
   await editor.locator("summary").click();
   await expect(editor).toContainText("پیش‌نویس");
-  await editor.getByLabel("دسته اصلی", { exact: true }).selectOption("jewelry");
+  await editor.getByLabel("خانواده", { exact: true }).selectOption("jewelry");
+  await editor.getByLabel("دسته اصلی", { exact: true }).selectOption("rings");
   await editor.locator('[name="category_id"]').selectOption("ring");
   await editor.locator('[name="slug"]').fill("label-product");
   await expect(editor.locator('[name="published"]')).toBeEnabled();
@@ -140,11 +141,14 @@ test("Persian draft publication, optional-RFID bulk labels, print sizing, canoni
   try {
     await publicPage.goto(new URL(permanent).pathname);
     await expect(publicPage).toHaveURL(
-      new RegExp(`/products/jewelry/ring/label-product/${pid}$`),
+      new RegExp(`/fa/products/jewelry/rings/ring/label-product-[a-f0-9]{32}$`),
     );
     await expect(
       publicPage.locator('head link[rel="canonical"]'),
-    ).toHaveAttribute("href", `/products/jewelry/ring/label-product/${pid}`);
+    ).toHaveAttribute(
+      "href",
+      `/fa/products/jewelry/rings/ring/label-product-${(await db.query("SELECT public_key FROM didar_product WHERE id=$1", [pid])).rows[0].public_key}`,
+    );
     await expect(publicPage.locator(".breadcrumbs")).toContainText("زیورآلات");
     await expect(publicPage.locator(".breadcrumbs")).toContainText("انگشتر");
     await expect(
@@ -158,7 +162,9 @@ test("Persian draft publication, optional-RFID bulk labels, print sizing, canoni
     });
     await publicPage.goto(new URL(permanent).pathname);
     await expect(publicPage).toHaveURL(
-      new RegExp(`/products/jewelry/necklace/renamed-product/${pid}$`),
+      new RegExp(
+        `/fa/products/jewelry/necklaces/necklace/renamed-product-[a-f0-9]{32}$`,
+      ),
     );
     await expect(publicPage.locator(".breadcrumbs")).toContainText("گردنبند");
     const legacy = await publicPage.request.get("/products/" + pid, {
