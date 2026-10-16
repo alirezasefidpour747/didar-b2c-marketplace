@@ -1,3 +1,13 @@
+import {
+  publicOrder,
+  pricingLock,
+  quoteOffer,
+  cartPrice,
+  publicPrice,
+  merchantPricingRead,
+  merchantPricingWrite,
+} from "./merchant-profiles";
+import { cartQuote, paymentMethod } from "./merchant-quote";
 import { classificationRead } from "./facets";
 import { publicProductLink } from "./taxonomy";
 import { labels } from "./labels";
@@ -11,7 +21,7 @@ import {
   sessionUser,
   demoAccountAllowed,
 } from "./auth";
-import { integer, price, withPolicy } from "./pricing";
+import { integer, withPolicy } from "./pricing";
 import { catalog, manage } from "./catalog";
 import { performCommerce } from "./commerce";
 import { performPhase1 } from "./phase1";
@@ -52,6 +62,16 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "quote") {
+    if (req.method !== "POST") throw new Error("METHOD_NOT_ALLOWED");
+    return cartQuote(b);
+  }
+  if (action === "merchant-pricing") {
+    const u = await requireUser(req, ["admin", "supplier"]);
+    return req.method === "GET"
+      ? merchantPricingRead(u)
+      : merchantPricingWrite(u, b);
+  }
   if (!["GET", "POST"].includes(req.method))
     throw new Error("METHOD_NOT_ALLOWED");
   if (
@@ -177,6 +197,7 @@ export async function perform(action: string, req: any): Promise<any> {
   if (action === "checkout") {
     const u = await requireUser(req, ["customer"]);
     const key = text(b.idempotency_key, 100);
+    const method = paymentMethod(b.payment_method);
     if (!Array.isArray(b.lines) || b.lines.length < 1 || b.lines.length > 30)
       throw new Error("INVALID_LINES");
     const address = {
@@ -196,6 +217,7 @@ export async function perform(action: string, req: any): Promise<any> {
         offer_id: text(l.offer_id, 100),
         quantity: integer(l.quantity, "QUANTITY", 1, 100),
         version: integer(l.version, "VERSION", 1),
+        quote_key: l.quote_key,
       }))
       .sort((a: any, b: any) => a.offer_id.localeCompare(b.offer_id));
     if (new Set(lines.map((l: any) => l.offer_id)).size !== lines.length)
@@ -212,7 +234,8 @@ export async function perform(action: string, req: any): Promise<any> {
         "SELECT * FROM didar_order WHERE customer_id=$1 AND idempotency_key=$2",
         [u.id, key],
       );
-      if (existing) return { order: existing };
+      if (existing) return { order: publicOrder(existing) };
+      await pricingLock(c);
       const {
         rows: [rate],
       } = await c.query("SELECT * FROM didar_rate WHERE id=1 FOR SHARE");
@@ -245,25 +268,34 @@ export async function perform(action: string, req: any): Promise<any> {
         )
           throw new Error("CONFLICT_STOCK");
         if (o.version !== l.version) throw new Error("CONFLICT_OFFER_CHANGED");
+        const quoted = await quoteOffer(c, pricingRate, o, method);
+        if (
+          (quoted.merchant_profile && !l.quote_key) ||
+          (l.quote_key && l.quote_key !== quoted.quote_key)
+        )
+          throw new Error("CONFLICT_PROFILE_QUOTE_CHANGED");
         const breakdown = {
-          ...price({
-            ...pricingRate,
-            ...o,
-            labor_irr: Number(o.labor_irr),
-            rate_irr: Number(rate.rate_irr),
-            fee_irr: Number(rate.fee_irr ?? 0),
-            tax_bps: rate.tax_bps,
-          }),
+          ...quoted,
           policy: {
             purity: o.purity,
             labor_mode: o.labor_mode,
             labor_bps: o.labor_bps,
             fixed_labor_irr: Number(o.labor_irr),
-            pricing_policy_id: pricingRate.pricing_policy_id,
-            distribution_bps: pricingRate.distribution_bps,
-            retail_bps: pricingRate.retail_bps,
-            vat_bps: pricingRate.vat_bps,
-            taxable_components: pricingRate.taxable_components,
+            pricing_policy_id: quoted.merchant_profile
+              ? null
+              : pricingRate.pricing_policy_id,
+            merchant_profile_version_id: quoted.merchant_profile?.version_id,
+            tax_version_id: quoted.merchant_profile?.tax.id,
+            distribution_bps: quoted.merchant_profile
+              ? undefined
+              : pricingRate.distribution_bps,
+            retail_bps: quoted.merchant_profile
+              ? undefined
+              : pricingRate.retail_bps,
+            vat_bps: quoted.merchant_profile?.tax.bps ?? pricingRate.vat_bps,
+            taxable_components:
+              quoted.merchant_profile?.tax.taxable_components ??
+              pricingRate.taxable_components,
             making_mode: o.making_mode,
             making_bps: o.making_bps,
             making_weight_mg: o.making_weight_mg,
@@ -272,12 +304,19 @@ export async function perform(action: string, req: any): Promise<any> {
         total += breakdown.total_irr * l.quantity;
         snapshots.push({ ...o, quantity: l.quantity, breakdown });
       }
+      const pricingSummary = cartPrice(snapshots, method);
+      if (
+        (snapshots.some((l) => l.breakdown.merchant_profile) && !b.quote_key) ||
+        (b.quote_key && b.quote_key !== pricingSummary.quote_key)
+      )
+        throw new Error("CONFLICT_PROFILE_QUOTE_CHANGED");
+      total = pricingSummary.total_irr;
       integer(total, "TOTAL", 1, Number.MAX_SAFE_INTEGER);
       const id = uid();
       const {
         rows: [order],
       } = await c.query(
-        "INSERT INTO didar_order(id,customer_id,idempotency_key,total_irr,status,address,rate_snapshot) VALUES($1,$2,$3,$4,'pending',$5,$6) RETURNING *",
+        "INSERT INTO didar_order(id,customer_id,idempotency_key,total_irr,status,address,rate_snapshot,payment_method,pricing_snapshot) VALUES($1,$2,$3,$4,'pending',$5,$6,$7,$8) RETURNING *",
         [
           id,
           u.id,
@@ -285,6 +324,8 @@ export async function perform(action: string, req: any): Promise<any> {
           total,
           JSON.stringify(address),
           JSON.stringify(pricingRate),
+          method,
+          JSON.stringify(pricingSummary),
         ],
       );
       for (const l of snapshots) {
@@ -313,7 +354,7 @@ export async function perform(action: string, req: any): Promise<any> {
           );
       }
       await audit(c, u.id, "checkout", { order_id: id, total_irr: total });
-      return { order };
+      return { order: publicOrder(order) };
     });
   }
   if (action === "orders") {
@@ -330,9 +371,22 @@ export async function perform(action: string, req: any): Promise<any> {
     }
     await expireOrders();
     const { rows: orders } = await db.query(
-      `SELECT o.id,o.status,o.created_at,o.expires_at,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'stock_mode',l.stock_mode,'items',(SELECT json_agg(json_build_object('reservation_id',r.id,'uid',i.uid,'weight_mg',i.weight_mg,'status',r.status,'fulfillment_status',r.fulfillment_status,'return_status',ret.status)) FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id LEFT JOIN didar_item_return ret ON ret.reservation_id=r.id WHERE r.order_line_id=l.id),'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC`,
+      `SELECT o.id,o.status,o.created_at,o.expires_at,o.payment_method,o.pricing_snapshot,(SELECT status FROM didar_payment_attempt pa WHERE pa.order_id=o.id LIMIT 1) payment_status,${u.role === "supplier" ? "NULL" : "o.total_irr"} total_irr,${u.role === "supplier" ? "'{}'::jsonb" : "o.address"} address,json_agg(json_build_object('id',l.id,'stock_mode',l.stock_mode,'items',(SELECT json_agg(json_build_object('reservation_id',r.id,'uid',i.uid,'weight_mg',i.weight_mg,'status',r.status,'fulfillment_status',r.fulfillment_status,'return_status',ret.status)) FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id LEFT JOIN didar_item_return ret ON ret.reservation_id=r.id WHERE r.order_line_id=l.id),'fulfillment_status',l.fulfillment_status,'tracking_number',l.tracking_number,'carrier',l.carrier,'fulfillment_updated_at',l.fulfillment_updated_at,'title',l.title,'quantity',l.quantity,'weight_mg',l.weight_mg,'breakdown',l.breakdown,'supplier_id',l.supplier_id,'supplier_name',(SELECT s.name FROM didar_supplier s WHERE s.id=l.supplier_id))) lines FROM didar_order o JOIN didar_order_line l ON l.order_id=o.id WHERE ($1='admin' OR ($1='customer' AND o.customer_id=$2) OR ($1='supplier' AND l.supplier_id=$3)) GROUP BY o.id ORDER BY o.created_at DESC`,
       [u.role, u.id, u.supplier_id],
     );
+    if (u.role !== "admin")
+      for (const o of orders) {
+        o.pricing_snapshot =
+          u.role === "supplier"
+            ? { payment_method: o.payment_method }
+            : {
+                ...o.pricing_snapshot,
+                order_charges: o.pricing_snapshot?.order_charges?.filter(
+                  (r: any) => r.payer === "CUSTOMER",
+                ),
+              };
+        for (const l of o.lines) l.breakdown = publicPrice(l.breakdown, u.role);
+      }
     return { orders };
   }
   if (action === "classification") {

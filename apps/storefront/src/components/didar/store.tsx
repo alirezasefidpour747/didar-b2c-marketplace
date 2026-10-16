@@ -11,6 +11,7 @@ import {
 } from 'react'
 import { copy, errors, number } from './locale'
 export type Price = {
+  [key: string]: any
   distribution_irr?: number
   retail_irr?: number
   pricing_policy_id?: number
@@ -23,6 +24,8 @@ export type Price = {
   total_irr: number
 }
 export type Offer = {
+  prices?: Record<string, Price> | null
+  price_unavailable_reason?: string | null
   stock_mode?: string
   making_mode?: string
   making_bps?: number
@@ -92,6 +95,8 @@ export type Collection = {
   product_ids?: string[]
 }
 type Store = {
+  paymentMethod: string
+  setPaymentMethod: (m: string) => void
   products: Product[]
   categories: Category[]
   collections: Collection[]
@@ -118,6 +123,7 @@ export const useDidar = () => {
   return s
 }
 export function DidarProvider({ children }: { children: ReactNode }) {
+  const [paymentMethod, setPaymentMethod] = useState('CASH')
   const [products, setProducts] = useState<Product[]>([]),
     [categories, setCategories] = useState<Category[]>([]),
     [collections, setCollections] = useState<Collection[]>([]),
@@ -180,6 +186,11 @@ export function DidarProvider({ children }: { children: ReactNode }) {
   }
   useEffect(() => {
     const t = sessionStorage.getItem('didar-session') || ''
+    setPaymentMethod(
+      sessionStorage.getItem('didar-price-method') === 'CREDIT'
+        ? 'CREDIT'
+        : 'CASH',
+    )
     setToken(t)
     try {
       const c = JSON.parse(localStorage.getItem('didar-cart') || '{}')
@@ -211,6 +222,9 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     })()
   }, []) // Bootstrap once; later calls use the current session.
   useEffect(() => {
+    if (ready) sessionStorage.setItem('didar-price-method', paymentMethod)
+  }, [ready, paymentMethod])
+  useEffect(() => {
     if (ready) localStorage.setItem('didar-cart', JSON.stringify(cart))
   }, [cart, ready])
   useEffect(() => {
@@ -228,6 +242,8 @@ export function DidarProvider({ children }: { children: ReactNode }) {
   return (
     <Context.Provider
       value={{
+        paymentMethod,
+        setPaymentMethod,
         products,
         categories,
         collections,
@@ -360,4 +376,21 @@ export function RequireUser({
       </div>
     )
   return <>{children}</>
+}
+
+export function PaymentMethodPicker() {
+  const { paymentMethod, setPaymentMethod } = useDidar()
+  return (
+    <label>
+      روش محاسبه قیمت
+      <select
+        aria-label="روش محاسبه قیمت"
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+      >
+        <option value="CASH">نقدی</option>
+        <option value="CREDIT">اعتباری؛ محاسبه و پرداخت آزمایشی</option>
+      </select>
+    </label>
+  )
 }

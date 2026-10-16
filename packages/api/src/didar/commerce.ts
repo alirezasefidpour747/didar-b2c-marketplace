@@ -1,3 +1,4 @@
+import { publicOrder } from "./merchant-profiles";
 import { recognizePayment } from "./finance";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
@@ -60,7 +61,7 @@ async function payment(req: any) {
     )
       throw new Error("INVALID_PAYMENT_ATTEMPT");
     if (o.status !== "pending")
-      return { order: o, payment: publicPayment(attempt) };
+      return { order: publicOrder(o), payment: publicPayment(attempt) };
     let status = reservationStatus(
       o.status,
       new Date(o.expires_at),
@@ -97,7 +98,7 @@ async function payment(req: any) {
       });
     }
     if (operation === "initialize" && status === "pending")
-      return { order: o, payment: publicPayment(attempt) };
+      return { order: publicOrder(o), payment: publicPayment(attempt) };
     let outcome: "success" | "failure" | "cancelled" | "expired" = "expired";
     let reference: string | undefined;
     if (status === "pending") {
@@ -136,7 +137,7 @@ async function payment(req: any) {
       status,
       outcome,
     });
-    return { order, payment: publicPayment(attempt) };
+    return { order: publicOrder(order), payment: publicPayment(attempt) };
   });
 }
 async function fulfillment(req: any) {

@@ -3,7 +3,7 @@ import { PricingBreakdown } from './catalog'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { RequireUser, useDidar } from './store'
+import { RequireUser, useDidar, PaymentMethodPicker } from './store'
 import { date, money, number, states, weight } from './locale'
 export function Login() {
   const { api, run, busy, authenticate, user, setMessage } = useDidar()
@@ -110,9 +110,27 @@ export function Login() {
     </section>
   )
 }
-export function CheckoutForm() {
-  const { products, rate, cart, setCart, user, api, run, busy, refresh } =
-      useDidar(),
+export function CheckoutForm({
+  quote,
+  quoteLoading,
+  quoteError,
+}: {
+  quote: any
+  quoteLoading: boolean
+  quoteError: string
+}) {
+  const {
+      products,
+      rate,
+      cart,
+      setCart,
+      user,
+      api,
+      run,
+      busy,
+      refresh,
+      paymentMethod,
+    } = useDidar(),
     router = useRouter()
   const [draftReady, setDraftReady] = useState(false)
   const [address, setAddress] = useState({
@@ -123,13 +141,22 @@ export function CheckoutForm() {
     postal_code: '',
   })
   const all = products.flatMap((p) =>
-      p.offers.map((o) => ({ ...o, title: p.title })),
+      p.offers.map((o) => ({
+        ...o,
+        price: o.prices?.[paymentMethod] ?? o.price,
+        title: p.title,
+      })),
     ),
     lines = all.filter((o) => cart[o.id] > 0)
   const missing = Object.keys(cart).filter(
     (id) => !all.some((o) => o.id === id),
   )
   const invalid = lines.some((o) => !o.price || cart[o.id] > o.quantity)
+  const quoteMatches =
+    quote &&
+    quote.payment_method === paymentMethod &&
+    quote.lines.length === Object.keys(cart).length &&
+    quote.lines.every((l: any) => cart[l.offer_id] === l.quantity)
   useEffect(() => {
     try {
       const draft = JSON.parse(
@@ -158,28 +185,44 @@ export function CheckoutForm() {
       <p>
         جمع کل:{' '}
         <strong>
-          {money(
-            lines.reduce(
-              (s, o) => s + (o.price?.total_irr || 0) * cart[o.id],
-              0,
-            ),
-          )}
+          {quote ? money(quote.total_irr) : 'در حال محاسبه قیمت معتبر…'}
         </strong>
       </p>
+      <PaymentMethodPicker />
+      {quoteLoading ? <p role="status">در حال تأیید قیمت سبد…</p> : null}
+      {quoteError ? <p role="alert">{quoteError}</p> : null}
+      {quote?.order_charges?.length ? (
+        <ul>
+          {quote.order_charges.map((c: any) => (
+            <li key={c.service_key}>
+              {c.label}؛ یک‌بار در سفارش: {money(c.amount_irr)} · مالیات{' '}
+              {money(c.tax_irr)}
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <p className="muted">
         فروشنده: دیدار. قیمت نهایی در ثبت سفارش قفل می‌شود. رزرو موجودی ۱۵ دقیقه
-        است. هزینه ارسال این سندباکس صفر است.
+        است. خدمات اختیاری فقط طبق پروفایل مصوب در جمع سبد آمده‌اند.
       </p>
       {user?.role === 'customer' ? (
         <form
           onSubmit={(e) => {
             e.preventDefault()
             run(async () => {
-              if (missing.length || !lines.length || invalid)
+              if (
+                missing.length ||
+                !lines.length ||
+                invalid ||
+                !quoteMatches ||
+                quoteLoading ||
+                quoteError
+              )
                 throw new Error('محصول ناموجود را از سبد حذف کنید.')
               // Keep an uncertain network result recoverable across reloads of this cart intent.
               const signature = JSON.stringify({
                 customer: user.id,
+                payment_method: paymentMethod,
                 cart: Object.entries(cart).sort(([a], [b]) =>
                   a.localeCompare(b),
                 ),
@@ -201,12 +244,15 @@ export function CheckoutForm() {
               )
               const d = await api('checkout', {
                 idempotency_key,
-                rate_version: rate.version,
+                rate_version: quote.rate_version,
+                payment_method: paymentMethod,
+                quote_key: quote.quote_key,
                 quote_expires_at: rate.quote_expires_at,
-                lines: lines.map((o) => ({
-                  offer_id: o.id,
-                  quantity: cart[o.id],
+                lines: quote.lines.map((o: any) => ({
+                  offer_id: o.offer_id,
+                  quantity: o.quantity,
                   version: o.version,
+                  quote_key: o.breakdown.quote_key,
                 })),
                 address,
               })
@@ -261,7 +307,15 @@ export function CheckoutForm() {
           )}
           <button
             className="primary"
-            disabled={busy || !lines.length || !!missing.length || invalid}
+            disabled={
+              busy ||
+              !lines.length ||
+              !!missing.length ||
+              invalid ||
+              !quoteMatches ||
+              quoteLoading ||
+              !!quoteError
+            }
           >
             ثبت و تأیید قیمت سفارش
           </button>
@@ -278,9 +332,68 @@ export function CheckoutForm() {
   )
 }
 export function Cart({ checkoutOnly = false }: { checkoutOnly?: boolean }) {
-  const { products, cart, setCart, loading } = useDidar()
+  const { products, cart, setCart, loading, api, paymentMethod, rate } =
+    useDidar()
+  const [quote, setQuote] = useState<any>(null),
+    [quoteLoading, setQuoteLoading] = useState(false),
+    [quoteError, setQuoteError] = useState('')
+  const signature = JSON.stringify({
+    cart: Object.entries(cart).sort(([a], [b]) => a.localeCompare(b)),
+    method: paymentMethod,
+    rate: rate?.version,
+    offers: products
+      .flatMap((p) => p.offers)
+      .filter((o) => cart[o.id])
+      .map((o) => ({
+        id: o.id,
+        version: o.version,
+        key: o.prices?.[paymentMethod]?.quote_key || o.price?.quote_key,
+      })),
+  })
+  useEffect(() => {
+    let live = true
+    setQuote(null)
+    setQuoteError('')
+    if (!Object.keys(cart).length) {
+      setQuoteLoading(false)
+      return
+    }
+    setQuoteLoading(true)
+    const timer = setTimeout(
+      () =>
+        api('quote', {
+          payment_method: paymentMethod,
+          lines: Object.entries(cart).map(([offer_id, quantity]) => ({
+            offer_id,
+            quantity,
+          })),
+        })
+          .then((d) => {
+            if (live) setQuote(d)
+          })
+          .catch((e) => {
+            if (live) setQuoteError(e.message)
+          })
+          .finally(() => {
+            if (live) setQuoteLoading(false)
+          }),
+      150,
+    )
+    return () => {
+      live = false
+      clearTimeout(timer)
+    }
+  }, [signature, api])
   const all = products.flatMap((p) =>
-    p.offers.map((o) => ({ ...o, title: p.title, product_id: p.id })),
+    p.offers.map((o) => ({
+      ...o,
+      price:
+        quote?.lines.find((l: any) => l.offer_id === o.id)?.breakdown ||
+        o.prices?.[paymentMethod] ||
+        o.price,
+      title: p.title,
+      product_id: p.id,
+    })),
   )
   const lines = all.filter((o) => cart[o.id] > 0),
     missing = Object.keys(cart).filter((id) => !all.some((o) => o.id === id))
@@ -355,7 +468,11 @@ export function Cart({ checkoutOnly = false }: { checkoutOnly?: boolean }) {
               <Link href="/checkout">رفتن به صفحه تسویه‌حساب ←</Link>
             )}
           </div>
-          <CheckoutForm />
+          <CheckoutForm
+            quote={quote}
+            quoteLoading={quoteLoading}
+            quoteError={quoteError}
+          />
         </div>
       )}
     </section>
@@ -558,7 +675,16 @@ function OrderList({ id }: { id?: string }) {
                 </p>
                 <p>
                   {weight(l.weight_mg)} × {number(l.quantity)} ·{' '}
-                  {money(l.breakdown.total_irr * l.quantity)}
+                  {money(
+                    l.breakdown.total_irr * l.quantity +
+                      (l.breakdown.order_allocations || [])
+                        .flat()
+                        .filter((r: any) => r.payer === 'CUSTOMER')
+                        .reduce(
+                          (s: number, r: any) => s + r.amount_irr + r.tax_irr,
+                          0,
+                        ),
+                  )}
                 </p>
                 <PricingBreakdown value={l.breakdown} />
                 <div className="tracking">

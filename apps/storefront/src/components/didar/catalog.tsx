@@ -1,7 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useDidar, type Product, type Offer } from './store'
+import {
+  useDidar,
+  PaymentMethodPicker,
+  type Product,
+  type Offer,
+} from './store'
 import { money, weight, number, date } from './locale'
 export function ImageAsset({
   src,
@@ -73,8 +78,9 @@ export function ProductImage({
     </div>
   )
 }
-export function OfferCard({ offer: o }: { offer: Offer }) {
-  const { add, busy } = useDidar()
+export function OfferCard({ offer }: { offer: Offer }) {
+  const { add, busy, paymentMethod } = useDidar()
+  const o = { ...offer, price: offer.prices?.[paymentMethod] ?? offer.price }
   return (
     <div className="offer" data-offer-id={o.id}>
       <div>
@@ -95,20 +101,7 @@ export function OfferCard({ offer: o }: { offer: Offer }) {
       )}
       <details>
         <summary>جزئیات قیمت</summary>
-        {o.price && (
-          <p>
-            اصل طلا: {money(o.price.metal_irr)}
-            <br />
-            اجرت: {money(o.price.labor_irr)}
-            <br />
-            توزیع: {money(o.price.distribution_irr ?? 0)} · خرده‌فروشی:{' '}
-            {money(o.price.retail_irr ?? o.price.margin_irr)}
-            <br />
-            مالیات واقعی VAT به ریال: {money(o.price.tax_irr)}
-            <br />
-            هزینه‌ها: {money(o.price.fee_irr || 0)}
-          </p>
-        )}
+        <PricingBreakdown value={o.price} />
         {o.terms && <p>شرایط تأمین: {o.terms}</p>}
       </details>
       <button disabled={!o.quantity || !o.price || busy} onClick={() => add(o)}>
@@ -175,7 +168,7 @@ export function Catalog({
   discoverySlug?: string
   home?: boolean
 }) {
-  const { categories, collections } = useDidar()
+  const { categories, collections, paymentMethod } = useDidar()
   const [query, setQuery] = useState<Record<string, string>>({}),
     [page, setPage] = useState(1),
     [data, setData] = useState<any>(null),
@@ -200,6 +193,7 @@ export function Catalog({
   }, [])
   const params = new URLSearchParams({
     ...query,
+    payment_method: paymentMethod,
     page: String(page),
     limit: '12',
     ...(categorySlug ? { category_slug: categorySlug } : {}),
@@ -319,6 +313,7 @@ export function Catalog({
           </Link>
         ))}
       </nav>
+      <PaymentMethodPicker />
       <form
         className="filters"
         role="search"
@@ -505,6 +500,7 @@ export function ProductDetail({ id }: { id: string }) {
             {p.category} · {p.jewelry_type}
           </p>
           <h1>{p.title}</h1>
+          <PaymentMethodPicker />
           <div className="browse-links">
             {Object.entries(p.classification || {}).flatMap(([facet, values]) =>
               values.map((v) => (
@@ -570,6 +566,13 @@ export function PricingBreakdown({ value: p }: { value: any }) {
   return (
     <details className="price-breakdown">
       <summary>اجزای قیمت به ریال</summary>
+      {p.merchant_profile ? (
+        <p>
+          {p.merchant_profile.name} · نسخه {p.merchant_profile.version} · از{' '}
+          {date(p.merchant_profile.effective_from)} ·{' '}
+          {p.payment_method === 'CREDIT' ? 'اعتباری' : 'نقدی'}
+        </p>
+      ) : null}
       <p>
         اصل طلا: {money(p.metal_irr)} · اجرت: {money(p.labor_irr)}
       </p>
@@ -577,13 +580,60 @@ export function PricingBreakdown({ value: p }: { value: any }) {
         توزیع: {money(p.distribution_irr ?? 0)} · خرده‌فروشی:{' '}
         {money(p.retail_irr ?? p.margin_irr)}
       </p>
+      {p.merchant_profile ? (
+        <p>
+          عملیات فروش اعتباری دیدار: {money(p.credit_irr || 0)} · اجرت{' '}
+          {p.merchant_profile.merchant_type === 'RETAILER'
+            ? 'کامل خرده‌فروش'
+            : 'تأمین‌کننده'}{' '}
+          از عرضه
+        </p>
+      ) : null}
       <p>
         مالیات واقعی VAT: {money(p.vat_irr ?? p.tax_irr)} · هزینه:{' '}
         {money(p.fee_irr ?? 0)} · گرد کردن: {money(p.rounding_irr ?? 0)}
       </p>
+      {p.profile_charges?.length ? (
+        <ul>
+          {p.profile_charges.map((r: any) => (
+            <li key={r.code}>
+              {r.label}: {money(r.amount_irr)} ·{' '}
+              {
+                (
+                  {
+                    ALWAYS: 'نقدی و اعتباری',
+                    CREDIT_ONLY: 'فقط اعتباری',
+                    CASH_ONLY: 'فقط نقدی',
+                    BY_PAYMENT_METHOD: 'طبق روش پرداخت',
+                    DISABLED: 'غیرفعال',
+                  } as any
+                )[r.application_mode]
+              }{' '}
+              ·{' '}
+              {
+                (
+                  {
+                    GOLD_BASE_750_IRR: 'اصل طلا',
+                    MAKING_IRR: 'اجرت عرضه',
+                    GOLD_PLUS_MAKING_IRR: 'طلا + اجرت',
+                    FIXED_IRR: 'ریال ثابت',
+                  } as any
+                )[r.applied_rule?.basis]
+              }
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {p.order_rules?.some(
+        (r: any) => r.applied && r.payer === 'CUSTOMER' && r.amount_irr > 0,
+      ) ? (
+        <p>خدمات مشترک سفارش، یک‌بار در سبد افزوده می‌شوند.</p>
+      ) : null}
       <p>
         مجموع هر قطعه: {money(p.total_irr)} · نسخه سیاست:{' '}
-        {p.pricing_policy_id ?? 'تاریخی'}
+        {p.merchant_profile
+          ? 'مالیات ' + p.merchant_profile.tax.version
+          : (p.pricing_policy_id ?? 'تاریخی')}
       </p>
     </details>
   )

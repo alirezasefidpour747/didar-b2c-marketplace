@@ -44,6 +44,31 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  CONFLICT_PROFILE_QUOTE_CHANGED:
+    'پروفایل، روش پرداخت یا قیمت عرضه تغییر کرده است؛ قیمت سبد را تازه و دوباره تأیید کنید.',
+  CONFLICT_PROFILE_OVERLAP:
+    'بازه تخصیص پروفایل هم‌پوشانی دارد؛ از تعویض پروفایل یا بازه بدون هم‌پوشانی استفاده کنید.',
+  CONFLICT_SHARED_CHARGE:
+    'قاعده خدمت مشترک بین تأمین‌کنندگان ناسازگار است؛ مدیر باید مبلغ، مبنا و مالیات آن را هماهنگ کند.',
+  CONFLICT_MERCHANT_PROFILE_REQUIRED:
+    'این نوع تأمین‌کننده نیازمند تخصیص فعال به نسخه مصوب پروفایل است.',
+  CONFLICT_IMMUTABLE_PRICING_VERSION:
+    'نسخه بررسی‌شده تغییرپذیر نیست؛ نسخه تازه ثبت کنید.',
+  CONFLICT_MERCHANT_TYPE_ASSIGNMENT:
+    'نوع جدید با تخصیص فعلی یا آینده سازگار نیست؛ ابتدا تخصیص ناسازگار را پایان دهید.',
+  CONFLICT_PRICING_ASSIGNMENT_HISTORY:
+    'تاریخچه تخصیص قابل بازنویسی نیست؛ پایان فعلی یا لغو آینده را ثبت کنید.',
+  CONFLICT_TAX_POLICY_INACTIVE:
+    'سیاست مالیات غیرفعال است؛ مدیر باید نسخه معتبر را تخصیص دهد.',
+  INVALID_PROFILE_COMPONENTS:
+    'سه جزء مستقل توزیع، خرده‌فروشی و عملیات اعتباری با دامنه هر قطعه لازم است.',
+  INVALID_APPROVED_TAX_POLICY:
+    'نسخه مالیات باید پیش از تأیید پروفایل، فعال و مصوب باشد.',
+  INVALID_MERCHANT_PROFILE:
+    'پروفایل باید مصوب، فعال و برای نوع این تأمین‌کننده مجاز باشد.',
+  INVALID_ORDER_CHARGE:
+    'خدمت یک‌بار در سفارش نیازمند مبلغ ثابت ریال و کد مشترک است.',
+
   CONFLICT_FACET_CARDINALITY:
     'این محصول یک جایگاه تجاری تأییدشده دارد؛ ابتدا مقدار قبلی را بازنشسته کنید.',
   CONFLICT_CLASSIFICATION_APPROVED:

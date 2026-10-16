@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'catalog',
+  'quote',
+  'merchant-pricing',
   'classification',
   'labels',
   'product-link',

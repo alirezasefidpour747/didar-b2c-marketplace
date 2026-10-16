@@ -1,3 +1,4 @@
+import { recognizedProfilePrice } from "./merchant-profiles";
 import { acceptanceRead, acceptanceWrite } from "./finance-uat";
 import { tahesabRead, tahesabWrite } from "./tahesab";
 import { projectEvent, ledgerRead } from "./finance-ledger";
@@ -138,7 +139,15 @@ export async function recognizePayment(c: any, order: any, actor: string) {
       `SELECT r.id reservation_id,i.uid,i.id item_id,i.line_id invoice_line_id,b.id invoice_id,b.invoice_number FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id JOIN didar_intake_line il ON il.id=i.line_id JOIN didar_intake_batch b ON b.id=il.batch_id WHERE r.order_line_id=$1 ORDER BY r.id`,
       [l.id],
     );
-    for (const item of items.length ? items : [{ reservation_id: null }]) {
+    for (const [unitIndex, item] of (items.length
+      ? items
+      : [{ reservation_id: null }]
+    ).entries()) {
+      const priced = recognizedProfilePrice(
+        l.breakdown,
+        items.length ? unitIndex : null,
+        items.length ? 1 : l.quantity,
+      );
       const amounts = entitlement(
         l,
         l.contract,
@@ -164,15 +173,12 @@ export async function recognizePayment(c: any, order: any, actor: string) {
           title: l.contract.ownership === "CONSIGNMENT" ? "SUPPLIER" : "DIDAR",
           recognition: "verified_customer_payment",
           rate_irr: String(order.rate_snapshot.rate_irr),
-          price: l.breakdown,
+          price: priced.price,
           quantity: items.length ? 1 : l.quantity,
           due_at: new Date(
             Date.now() + l.contract.due_days * 86400000,
           ).toISOString(),
-          customer_payment_irr: String(
-            BigInt(l.breakdown.total_irr) *
-              BigInt(items.length ? 1 : l.quantity),
-          ),
+          customer_payment_irr: priced.total.toString(),
         },
       });
       if (BigInt(event.gold_ug) > 0n)

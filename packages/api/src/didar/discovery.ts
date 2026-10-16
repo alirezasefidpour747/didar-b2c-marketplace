@@ -2,6 +2,7 @@ import vocabulary from "./facet-vocabulary.json";
 const dimensions = new Set(vocabulary.map((f) => f.code));
 const keys = new Set([
   "page",
+  "payment_method",
   "limit",
   "q",
   "category",
@@ -64,6 +65,11 @@ export function parseDiscovery(q: any = {}, curation = false) {
         throw new Error("INVALID_FILTER_VALUE");
       filters[f] = [...new Set(a)] as string[];
     }
+  if (
+    q.payment_method !== undefined &&
+    !["CASH", "CREDIT"].includes(q.payment_method)
+  )
+    throw new Error("INVALID_PAYMENT_METHOD");
   const locale = q.locale === undefined ? "fa" : string(q.locale, 2);
   if (!["fa", "en", "ar", "fr"].includes(locale))
     throw new Error("INVALID_LOCALE");

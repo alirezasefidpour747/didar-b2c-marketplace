@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { MerchantPricing } from './merchant-pricing'
 import {
   ClassificationHub,
   ProductClassification,
@@ -466,6 +467,7 @@ function Management() {
           ['inventory', 'موجودی و عرضه'],
           ['catalog', admin ? 'کاتالوگ و تصاویر' : 'درخواست محصول'],
           ['classification', 'طبقه‌بندی و پیشنهادها'],
+          ['pricing', 'پروفایل قیمت‌گذاری'],
           ...(admin
             ? [
                 ['suppliers', 'تأمین‌کنندگان'],
@@ -504,6 +506,7 @@ function Management() {
             )}
           </div>
         ))}
+      {tab === 'pricing' && <MerchantPricing />}
       {tab === 'classification' && (
         <ClassificationHub collections={collections} />
       )}

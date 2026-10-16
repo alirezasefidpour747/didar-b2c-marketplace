@@ -1,6 +1,6 @@
 # DIDAR B2C — Two Merchant Types and Versioned Gold-First Pricing Profiles
 
-**Status:** Owner-confirmed commercial calculation rules on 2026-10-16. IMPLEMENTATION REQUIRED; this document does not claim code already supports per-Merchant profiles.
+**Status:** Owner-confirmed commercial calculation rules on 2026-10-16. Software implementation and verification are delivered; see [the implementation handoff](MERCHANT_PRICING_IMPLEMENTATION.md) for the exact scope, test results and pending external acceptance.
 **Precedence:** This document and the updated GitHub Issue #6 supersede the previous incorrect "commission is a percentage of the Merchant's making-charge amount" interpretation. Existing Phase 1/Phase 2 behavior must be preserved unless changed explicitly here.
 **Working repository:** `alirezasefidpour747/didar-b2c-marketplace`; reuse existing `didar_supplier`, `didar_offer`, `didar_pricing_policy`, checkout snapshots, finance ledger and Persian RTL management interface. No replacement application, no wholesale B2B platform.
 
@@ -85,3 +85,7 @@ In **the existing Persian `/manage`**, add:
 - Legacy data unchanged and safe classification migration in populated and clean databases.
 
 **Implementation contract:** one integrated PostgreSQL migration → pricing service → catalog/checkout API → actual Persian admin/merchant/customer UI → real regression/browser tests. Publish only verified implementation with exact commit SHA/test results. No Oracle, live finance, live Tahesab or real RFID dependencies. Updating this document is NOT software implementation.
+
+## Implementation handoff — Issue #6
+
+The configurable implementation follows this document together with the newer [C-applicability owner clarification](https://github.com/alirezasefidpour747/didar-b2c-marketplace/issues/6#issuecomment-6217603606) and complete implementation mission: C supports ALWAYS/CREDIT_ONLY/CASH_ONLY/BY_PAYMENT_METHOD/DISABLED, future merchant types share one mathematical engine, and optional services require explicitly approved payer/scope/tax rules. See [implementation, API, decisions, reference calculations and verification](MERCHANT_PRICING_IMPLEMENTATION.md) for delivered behavior and remaining external acceptance. The original source formulas above remain the approved examples; they are not universal statutory/commercial defaults.

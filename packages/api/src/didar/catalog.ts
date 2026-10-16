@@ -1,3 +1,10 @@
+import {
+  pricingLock,
+  effectiveProfile,
+  quoteWithProfile,
+  publicPrice,
+} from "./merchant-profiles";
+import { paymentMethod } from "./merchant-quote";
 import { classificationWrite, saveCollection } from "./facets";
 import {
   discoverySelection,
@@ -9,7 +16,7 @@ import {
 import { productPath } from "./taxonomy";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
-import { integer, price, withPolicy } from "./pricing";
+import { integer, withPolicy } from "./pricing";
 import { hashPassword, demoAccountAllowed } from "./auth";
 import { authorize, permissions } from "./permissions";
 const text = (value: unknown, max = 250) => {
@@ -38,6 +45,8 @@ const slug = (value: unknown) => {
 export async function catalog(user?: any, query?: any) {
   return transaction(async (c) => {
     await c.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY");
+    await pricingLock(c);
+    const method = paymentMethod(query?.payment_method);
     const {
       rows: [rate],
     } = await c.query("SELECT * FROM didar_rate WHERE id=1");
@@ -72,6 +81,15 @@ export async function catalog(user?: any, query?: any) {
       "SELECT * FROM didar_collection_product WHERE product_id=ANY($1::text[])",
       [products.map((p: any) => p.id)],
     );
+    const merchantProfiles = new Map<string, any>();
+    for (const supplier of new Set(offers.map((o: any) => o.supplier_id))) {
+      try {
+        merchantProfiles.set(supplier, await effectiveProfile(c, supplier));
+      } catch (e: any) {
+        if (!e.message.startsWith("CONFLICT_")) throw e;
+        merchantProfiles.set(supplier, { unavailable: e.message });
+      }
+    }
     for (const p of products) {
       Object.assign(p, await productPath(c, p));
       p.images = images
@@ -88,16 +106,37 @@ export async function catalog(user?: any, query?: any) {
         .map((o: any) => ({
           ...o,
           labor_irr: Number(o.labor_irr),
-          price: stale
-            ? null
-            : price({
-                ...pricingRate,
-                ...o,
-                labor_irr: Number(o.labor_irr),
-                purity: p.purity,
-                rate_irr: Number(rate.rate_irr),
-                fee_irr: Number(rate.fee_irr ?? 0),
-              }),
+          price_unavailable_reason:
+            merchantProfiles.get(o.supplier_id)?.unavailable || null,
+          price:
+            stale || merchantProfiles.get(o.supplier_id)?.unavailable
+              ? null
+              : publicPrice(
+                  quoteWithProfile(
+                    pricingRate,
+                    { ...o, purity: p.purity },
+                    method,
+                    merchantProfiles.get(o.supplier_id),
+                  ),
+                  user?.role,
+                ),
+          prices:
+            stale || merchantProfiles.get(o.supplier_id)?.unavailable
+              ? null
+              : Object.fromEntries(
+                  ["CASH", "CREDIT"].map((m) => [
+                    m,
+                    publicPrice(
+                      quoteWithProfile(
+                        pricingRate,
+                        { ...o, purity: p.purity },
+                        m,
+                        merchantProfiles.get(o.supplier_id),
+                      ),
+                      user?.role,
+                    ),
+                  ]),
+                ),
         }));
     }
     const { rows: categories } = await c.query(

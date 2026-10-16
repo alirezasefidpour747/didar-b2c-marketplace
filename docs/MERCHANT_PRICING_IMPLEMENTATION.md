@@ -1,0 +1,86 @@
+# Issue #6 — merchant pricing implementation and handoff
+
+Implements the owner-confirmed Issue #6 and its C-applicability clarification over baseline `69e631c2b06b54cf26844193af3a2cc98dadfb2c`. Incoming documentation commit `a85e312` adds the separate merchant-growth/CRM roadmap; it is preserved without claiming those later phases are implemented. The supplied multi-profile mission and [owner clarification](https://github.com/alirezasefidpour747/didar-b2c-marketplace/issues/6#issuecomment-6217603606) take precedence over earlier credit-only assumptions. This extends the existing Didar/Mercur application and `pricing.ts`; it does not introduce a second price engine or another marketplace.
+
+## Capabilities and decisions
+
+- Merchant commercial types are a registry independent of auth roles and profiles. MANUFACTURER, RETAILER and LEGACY_UNCLASSIFIED are the only seeded type definitions; future types use the same math. Optional recommended profiles are hints, never automatic assignments.
+- Named reusable profiles have immutable codes, descriptions, applicable types, active/retired state, draft/approved/rejected numbered versions and an append-only audit. Editing an approved calculation means creating another version. All versions take M from existing Offer making terms, including percent, fixed gold-equivalent or explicit legacy fixed IRR making. Profiles cannot silently replace supplier making or contracts.
+- Each version selects a separately approved central tax-policy version. Tax rates are configurable basis points, not a statutory hardcoded 10%. Approved versions freeze rate and taxable groups; future changes require a new version. Suppliers cannot set tax or shared Didar rules.
+- D, R and C have separate typed rules. Percent rules use the precise 750-equivalent gold monetary base, the rounded making IRR amount, or the explicitly defined rounded `gold + making` IRR subtotal. No rule can reference another D/R/C rule, preventing accidental compounding/cycles. Fixed IRR is explicit. Basis points use integer arithmetic and BigInt rational upward rounding. Legacy arithmetic and its rational pre-rounding VAT convention remain unchanged. Profile VAT uses actual rounded customer-payable component IRR values, once per item, with the profile's final rounding step.
+- Every rule has ALWAYS, CREDIT_ONLY, CASH_ONLY, BY_PAYMENT_METHOD or DISABLED applicability. BY_PAYMENT_METHOD contains independent cash and credit atomic rules. C is **not** forced to zero for CASH. Credit here is a pricing condition in the existing sandbox, not a loan, funded Wallet balance, credit underwriting or an external transfer.
+- Optional packaging, shipping and operating-service rules have explicit component, payer (CUSTOMER/MERCHANT/DIDAR), recipient (DIDAR/THIRD_PARTY), and ITEM/ORDER scope. Nothing is enabled/charged from a guessed business cost. A DIDAR→DIDAR self-charge is invalid. Noncustomer assessments do not inflate customer totals or customer VAT.
+- ORDER services require fixed IRR and a stable shared service key. Matching declarations across a mixed-merchant cart are charged once. Different amounts, bases, tax rates, payer or recipient for the same key fail with `CONFLICT_SHARED_CHARGE`; the engine never arbitrarily chooses a supplier's price. Declaring the same shared key is an explicit agreement that one service benefits its eligible order lines, including shared merchant/internal assessments.
+- Once-per-order amounts and VAT are allocated equally across eligible units, with integer residuals assigned in sorted offer/unit-slot order. Allocations add back exactly to the one order charge. Exact reservations use their stable sorted reservation IDs when recognizing unit events. A partial return reverses that unit's allocated charges, VAT and provisional costs once; all returns reverse the full order allocation without duplication. This is the documented reversible sandbox refund policy, not a claim about a future carrier's nonrefundable real costs.
+
+## Effective assignment, quote and checkout contract
+
+Administrators classify a merchant explicitly, approve a profile/tax version, then assign an effective interval. PostgreSQL serializes assignment writes and rejects overlap, incompatible types, unapproved versions and retroactive history rewriting. `switch` closes the current interval and inserts the replacement atomically. Future intervals can be cancelled; current intervals can be ended. Existing closed intervals cannot be extended/re-keyed. A classified merchant without a valid effective approved assignment has no purchasable quote; it never silently falls back to legacy margins. An unclassified legacy merchant retains the existing global policy exactly until deliberately migrated.
+
+Catalog, private simulator and cart all call the same `price()` through the shared quote resolver. Catalog offers expose CASH/CREDIT quotes and their actual method. Search price sorting/filtering uses the selected method. Unit quote keys bind offer/rate version, effective assignment, immutable profile/rules/tax and calculated amounts. `POST /didar/quote` computes the authoritative complete cart, shared charges, quantities, current offer versions, rate version and cart quote key.
+
+Profiled checkout requires both the cart key and every unit quote key. The backend recomputes and verifies everything under the shared merchant-pricing lock before committing, while management changes hold the exclusive lock. Concurrent assignment/profile/tax changes therefore either wait until acceptance commits or produce an explicit conflict/requote. Offer and rate checks and exact-UID reservation remain authoritative. Missing/stale keys cannot silently consent to a new price. Legacy callers remain supported until a merchant is explicitly profiled. Idempotent retries return the previously accepted order even after future profile changes; the storefront keeps the same cart/address/method intent key across automatic requotes.
+
+Orders freeze merchant/type, profile/version, effective assignment, full applied rules and selected payment conditions, tax-policy version, global gold rate, making terms, amounts and order-charge allocations. Exact UID is authoritatively linked by the existing reservation to its order line and financial sale event. PostgreSQL guards pricing snapshots against changes; payment only finalizes the accepted amounts. Public/customer projections hide internal/merchant-only assessments; supplier order totals and competitors' cart lines remain isolated. Suppliers can read/simulate their own assigned terms, not competitors' private configurations, and cannot write the registry/tax/profile/assignment lifecycle.
+
+## Financial integration
+
+Existing SALE_EXPOSURE remains the single recognition event per physical UID/legacy sale, with its idempotent journal and original contract snapshot. Supplier fine-gold/rial entitlement uses the unchanged Offer M and contract; D/R/C do not enter supplier gold entitlement or Wallet balances.
+
+Customer-payable D/R/C/service assessments post to explicit `PROFILE_DISTRIBUTION_REVENUE`, `PROFILE_RETAIL_REVENUE`, `PROFILE_CREDIT_REVENUE`, or `PROFILE_PARTNER_PAYABLE` when an external recipient is configured. Their amounts are removed from the prior residual agent/principal revenue calculation, preventing double revenue. Customer VAT stays `VAT_PAYABLE`. The original metal/making principal/agency residual, supplier payables, gold instruments and COGS treatment remain intact.
+
+Approved MERCHANT-payer service assessments create separate `MERCHANT_SERVICE_RECEIVABLE` with the appropriate revenue/partner counterpart; they are **not** silently deducted from contractual gold/rial settlement. DIDAR internal costs create `PROFILE_OPERATING_COST_ACCRUAL` / `PROFILE_PARTNER_PAYABLE` provisional pairs. These explicit sandbox accruals are not supplier invoices paid, bank execution, procurement completion or external settlements. Tax on a separate merchant/internal cost is not guessed or added to customer VAT. All financial journals balance independently by instrument. Returns use the existing immutable reversal path, including allocated service amounts, receivables and accruals; no original posting is edited/deleted. Legal commercial treatment and live supplier service collection require owner/accountant acceptance before real use.
+
+## Database and preservation
+
+`bun run db:setup` applies `packages/api/src/didar/merchant-pricing-schema.sql` after the existing taxonomy/facet migrations. It creates merchant types, tax-policy/version, profile/version/component rules, assignment history and pricing audit tables, adds commercial type/revision to existing suppliers and method/pricing snapshots to existing orders. It does not reset data or fabricate UIDs. **No profile, tax rate/version or assignment is seeded.** Owner-approved 3%/7% and 3%/2.5% examples only populate an editor when the administrator explicitly clicks the example buttons; they still require save/review/assignment. The mathematical engine contains no new commercial-rate defaults.
+
+Both preserved stopped historical PostgreSQL snapshots were copied with read-only source mounts into uniquely labelled network-isolated disposable volumes. Migration replay preserved original product/offer/order/paid-line fingerprints and existing collection memberships. Each retained its two suppliers as LEGACY_UNCLASSIFIED, with 3 type definitions, 0 profiles, 0 tax versions and 0 assignments. The original services stayed stopped and their volumes/configuration were not written. These old snapshots predate exact UID/Phase 2 tables and are not claimed to be current production; the full current PostgreSQL test separately fingerprints UIDs, RFID, paid snapshots, financial events and journal postings across repeated migration.
+
+| Historical snapshot | Products / offers / orders | Original-field preservation |
+| --- | --- | --- |
+| Existing Compose copy | 7 / 8 / 2 | unchanged; see existing [reconciliation fingerprints](audits/b2c-taxonomy-reconciliation.md) |
+| Existing native local copy | 15 / 8 / 3 | unchanged; same linked audit |
+
+## APIs and UI routes
+
+- `GET /didar/merchant-pricing`: authenticated DIDAR registry/history/offer picker; suppliers receive only their own assignments/profile versions/terms and eligible offers. Internal DIDAR cost rules are excluded from supplier terms.
+- `POST /didar/merchant-pricing`: `type_save`, `classify`, `profile_save`, `tax_policy_save`, `tax_draft`, `tax_review`, `version_draft`, `version_review`, `assign`, `switch`, `assignment_end`, `assignment_cancel`, `preview`. Writes require administrator authority and a reason; registry metadata uses optimistic revisions. Preview accepts own `offer_id`, `payment_method`, optional ISO `at` for scheduled effective profiles; it does not execute a financial operation.
+- Profile rule example: `{code:'credit', component:'credit', mode:'PERCENT', basis:'GOLD_BASE_750_IRR', value:250, application_mode:'ALWAYS', payer:'CUSTOMER', recipient:'DIDAR', scope:'ITEM', label:'عملیات فروش اعتباری دیدار'}`. BY_PAYMENT_METHOD uses `cash_rule`/`credit_rule` atomic `{mode,basis,value}` objects. Primary distribution/retail/credit rules are ITEM scope; additional service rules may be ORDER with `service_key`.
+- `POST /didar/quote`: `{payment_method:'CASH'|'CREDIT', lines:[{offer_id,quantity}]}`. Returns authoritative line breakdowns/current versions, shared customer charges, `rate_version`, `quote_key`, `total_irr`. This is a preview, not an inventory reservation or live transaction.
+- Existing `POST /didar/checkout`: add `payment_method`, cart `quote_key`, and each line's `quote_key` from `/quote`, retaining idempotency key, address, quantity, rate/offer version. Existing legacy API callers remain compatible for unprofiled merchants.
+- Public/management catalog uses the shared quote engine; paginated catalog accepts `payment_method`. Existing product paths, UID resolver, labels and discovery queries are retained.
+
+The existing Persian `/manage` has **پروفایل قیمت‌گذاری**; `/manage/pricing` opens the same authenticated component directly. It includes merchant types and classification, central tax drafts/review, reusable profile registry and metadata retirement, example-assisted independent rule editor, version cloning/review, dated assignment/switch/end/cancel, history and actual-offer CASH/CREDIT simulator. Supplier mode is read-only. Making stays in the existing offer/intake editor. Current profile name/version/effective date and G/M/D/R/C/T/P are visible in price details.
+
+PDP/catalog and cart have a Persian payment-calculation selector, retained for the session across reload/login. The actual cart quote drives displayed totals and confirmation. Confirmation is disabled for a loading, mismatched or invalid quote. Customer order details show the frozen method/profile and allocated line totals. Persian error messages explain profile conflicts and missing approvals. No new storefront locale, live credit application, gateway or fee is implied.
+
+## Reference calculations (explicit owner examples, not global defaults)
+
+For 100g at purity 750, rate 65,000,000 IRR/g and Offer making 12%: G=6,500,000,000 and M=780,000,000 IRR.
+
+| Profile | D | R | C (ALWAYS, including CASH) | T at configured 10% of M+D+R+C | P |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Manufacturer: 3% + 7% | 195,000,000 | 455,000,000 | 0 | 143,000,000 | **8,073,000,000 IRR / 124.2g equivalent** |
+| Retailer: 3% + 2.5% | 195,000,000 | 0 | 162,500,000 | 113,750,000 | **7,751,250,000 IRR / 119.25g equivalent** |
+
+No percentage is applied to another Didar percentage or to supplier making in these examples. Explicit alternative bases are only used when an approved rule selects them. Profile D/R/C gold-equivalent metadata is explicitly a conversion of the charged IRR at the quoted gold rate, not a physical gold payable. Supplier 100% gold entitlement remains 112g at 750 (84,000,000µg fine gold), independent of the customer D/R/C configuration.
+
+## Verification, status and remaining acceptance
+
+Use `bun run local:test`: fresh labelled loopback PostgreSQL/Redis, additive migration/seed, native API/admin/vendor/Next production builds, backend pricing/commerce/financial regressions, native HTTP integration and Playwright against the real API/PostgreSQL. Owner services, configuration and persistent volumes are not used. Reviewed release verification on 2026-10-16: **135 backend tests passed, 0 failed, 1,680 assertions; 1 native Medusa HTTP integration test passed; all 19 Playwright journeys passed**. API, admin, vendor and Next.js production builds passed. The release source/artifact/platform receipt matched afterward and `git diff --check` passed. The new browser flows create/review tax and merchant profiles, classify and assign two types, compare prices on one master, execute CASH and CREDIT sandbox checkout, retain selected method, and enforce supplier-only read scope. Backend cases also verify C modes and alternative bases, zero values, stale/racing quotes, shared service allocation, payer separation, exact UID/contract preservation, balanced/reversed journals, immutable rows and strict PostgreSQL rule validation.
+
+**DONE:** Issue #6 database, engine, lifecycle/API, Persian management/supplier/customer workflows, financial integration, automated verification and handoff. **PENDING:** native Mac/hardware acceptance and actual legal/commercial configuration approval described below. **BLOCKED:** no Issue #6 implementation blocker; live Tahesab mapping remains the pre-existing separate specification blocker.
+
+External acceptance remains **MAC_UAT_PENDING / MAC_PRINT_SCAN_UAT_PENDING / REAL_RFID_PENDING**. Native Mac operator testing, real scale/printer/camera/RFID, legal VAT rules, commercial approval of actual merchant profiles/cost allocation/refund terms and accountant review of provisional accrual/service receivable treatment remain owner work. The pre-existing real Tahesab mapping remains BLOCKED_BY_SPEC; mock/dry-run stays authoritative for testing. No live banking/loan/transfer, procurement execution, Oracle or cloud staging is introduced or executed. Publishing code to main is not a production database migration or live commercial activation.
+
+## Changed files
+
+| Area | Files |
+| --- | --- |
+| Schema and seed | `packages/api/src/didar/merchant-pricing-schema.sql`; `packages/api/src/scripts/didar-seed.ts` |
+| Engine, lifecycle and cart quote | `packages/api/src/didar/pricing.ts`, `merchant-profiles.ts`, `merchant-quote.ts` |
+| API/commerce/finance integration | `packages/api/src/didar/catalog.ts`, `discovery.ts`, `service.ts`, `commerce.ts`, `finance.ts`, `finance-ledger.ts`; new `src/api/didar/merchant-pricing/route.ts` and `quote/route.ts` |
+| Persian UI and storefront | `apps/storefront/src/components/didar/merchant-pricing.tsx`, `manage.tsx`, `catalog.tsx`, `customer.tsx`, `store.tsx`, `locale.ts`; `src/app/manage/pricing/page.tsx`; `src/app/api/didar/[action]/route.ts` |
+| Tests and commands | `tests/merchant-pricing.test.ts`, `tests/browser/merchant-pricing.spec.ts`, `package.json`, `scripts/local/test.mjs` |
+| Documentation | This handoff; `docs/MERCHANT_TWO_TYPE_PRICING_PROFILES.md`, `docs/MAC_UAT_CHECKLIST.md`, `README.md` |

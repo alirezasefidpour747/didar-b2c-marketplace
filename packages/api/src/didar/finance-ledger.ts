@@ -105,17 +105,49 @@ export async function projectEvent(c: any, e: any) {
     value = (n: bigint) => round(n * rate, 750000n);
   if (e.kind === "SALE_EXPOSURE") {
     const total = BigInt(s.customer_payment_irr),
-      vat = BigInt(s.price.tax_irr) * BigInt(s.quantity),
+      vat =
+        s.price.recognized_vat_irr !== undefined
+          ? BigInt(s.price.recognized_vat_irr)
+          : BigInt(s.price.tax_irr) * BigInt(s.quantity),
       goldValue = value(gold),
       payable = goldValue + irr;
     add("CASH_CLEARING", "IRR", total);
     add("VAT_PAYABLE", "IRR", -vat);
     add("SUPPLIER_RIAL_PAYABLE", "IRR", -irr, supplier);
     add("SUPPLIER_GOLD_VALUATION", "IRR", -goldValue, supplier);
+    let separated = 0n;
+    for (const charge of s.price.recognized_charges || []) {
+      const amount = BigInt(charge.amount_irr);
+      if (!amount) continue;
+      const revenue = "PROFILE_" + charge.component.toUpperCase() + "_REVENUE";
+      if (charge.payer === "CUSTOMER") {
+        separated += amount;
+        add(
+          charge.recipient === "DIDAR" ? revenue : "PROFILE_PARTNER_PAYABLE",
+          "IRR",
+          -amount,
+        );
+      } else if (charge.payer === "MERCHANT")
+        pair(
+          "MERCHANT_SERVICE_RECEIVABLE",
+          charge.recipient === "DIDAR" ? revenue : "PROFILE_PARTNER_PAYABLE",
+          "IRR",
+          amount,
+          supplier,
+          "DIDAR",
+        );
+      else
+        pair(
+          "PROFILE_OPERATING_COST_ACCRUAL",
+          "PROFILE_PARTNER_PAYABLE",
+          "IRR",
+          amount,
+        );
+    }
     add(
       s.ownership === "CONSIGNMENT" ? "AGENT_REVENUE" : "PRINCIPAL_REVENUE",
       "IRR",
-      -(total - vat - payable),
+      -(total - vat - payable - separated),
     );
     pair(
       "CONTRACT_GOLD_EXPENSE",
