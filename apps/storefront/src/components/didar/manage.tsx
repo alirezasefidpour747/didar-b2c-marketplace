@@ -44,6 +44,7 @@ const num = (f: FormData, k: string) => Number(f.get(k) || 0)
 function productData(f: FormData) {
   return {
     title: f.get('title'),
+    slug: f.get('slug') || 'product',
     description: f.get('description'),
     category_id: f.get('category_id') || null,
     category: f.get('category') || '',
@@ -67,6 +68,32 @@ function ProductFields({
   categories: any[]
   request?: boolean
 }) {
+  const [selected, setSelected] = useState(p?.category_id || '')
+  const [published, setPublished] = useState(p?.published ?? false)
+  const chain = (id: string): any[] => {
+    const found: any[] = []
+    const seen = new Set<string>()
+    let c = categories.find((c) => c.id === id)
+    while (c && !seen.has(c.id)) {
+      seen.add(c.id)
+      found.unshift(c)
+      c = categories.find((n) => n.id === c.parent_id)
+    }
+    return found
+  }
+  const leaves = categories.filter(
+    (c) =>
+      c.parent_id &&
+      !categories.some((n) => n.parent_id === c.id) &&
+      chain(c.id).length >= 2,
+  )
+  const parentOptions = categories.filter((c) =>
+    leaves.some((l) => l.parent_id === c.id),
+  )
+  const [parent, setParent] = useState(
+    categories.find((c) => c.id === selected)?.parent_id || '',
+  )
+  const valid = leaves.some((c) => c.id === selected)
   return (
     <>
       {!request && (
@@ -109,17 +136,59 @@ function ProductFields({
         value={p?.jewelry_type}
         required={false}
       />
+      <Field
+        name="slug"
+        label="نامک محصول (انگلیسی)"
+        value={p?.slug || 'product'}
+      />
       <label>
         دسته
-        <select name="category_id" defaultValue={p?.category_id || ''}>
+        <select
+          aria-label="دسته اصلی"
+          value={parent}
+          onChange={(e) => {
+            setParent(e.target.value)
+            setSelected('')
+            setPublished(false)
+          }}
+        >
           <option value="">انتخاب دسته</option>
-          {categories.map((c) => (
-            <option value={c.id} key={c.id}>
-              {c.name}
+          {parentOptions.map((c) => (
+            <option key={c.id} value={c.id}>
+              {chain(c.id)
+                .map((n) => n.name)
+                .join(' / ')}
             </option>
           ))}
         </select>
       </label>
+      <label>
+        زیردسته
+        <select
+          name="category_id"
+          value={selected}
+          disabled={!parent}
+          onChange={(e) => {
+            setSelected(e.target.value)
+            if (!e.target.value) setPublished(false)
+          }}
+        >
+          <option value="">انتخاب زیردسته</option>
+          {leaves
+            .filter((c) => c.parent_id === parent)
+            .map((c) => (
+              <option value={c.id} key={c.id}>
+                {c.name}
+              </option>
+            ))}
+        </select>
+      </label>
+      {!valid && (
+        <p role="status">
+          پیش‌نویس و بارگذاری تصویر مجاز است؛ انتشار و QR مشتری نیازمند دسته و
+          زیردسته کامل است.
+        </p>
+      )}
       <Field
         name="purity"
         label="عیار هزارگانی"
@@ -160,12 +229,78 @@ function ProductFields({
             <input
               type="checkbox"
               name="published"
-              defaultChecked={p?.published ?? true}
+              checked={published && valid}
+              disabled={!valid}
+              onChange={(e) => setPublished(e.target.checked)}
             />
             انتشار در ویترین
           </label>
         </>
       )}
+    </>
+  )
+}
+function RequestClassification({
+  categories,
+  initial,
+  busy,
+}: {
+  categories: any[]
+  initial?: string
+  busy: boolean
+}) {
+  const [category, setCategory] = useState(initial || '')
+  const [decision, setDecision] = useState('approved')
+  const leaves = categories.filter(
+    (c) => c.parent_id && !categories.some((n) => n.parent_id === c.id),
+  )
+  function path(id: string) {
+    const result: string[] = []
+    const seen = new Set<string>()
+    let c = categories.find((c) => c.id === id)
+    while (c && !seen.has(c.id)) {
+      seen.add(c.id)
+      result.unshift(c.name)
+      c = categories.find((n) => n.id === c.parent_id)
+    }
+    return result.join(' / ')
+  }
+  const valid = leaves.some((c) => c.id === category)
+  return (
+    <>
+      <label>
+        طبقه‌بندی برای تأیید محصول
+        <select
+          name="category_id"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="">انتخاب دسته و زیردسته</option>
+          {leaves.map((c) => (
+            <option key={c.id} value={c.id}>
+              {path(c.id)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        تصمیم
+        <select
+          name="decision"
+          value={decision}
+          onChange={(e) => setDecision(e.target.value)}
+        >
+          <option value="approved">تأیید</option>
+          <option value="rejected">رد</option>
+        </select>
+      </label>
+      {!valid && decision === 'approved' && (
+        <p role="status">تأیید و انتشار نیازمند طبقه‌بندی کامل است.</p>
+      )}
+      <Field name="reason" label="توضیح بررسی" required={false} />
+      <button disabled={busy || (decision === 'approved' && !valid)}>
+        ثبت تصمیم درخواست
+      </button>
     </>
   )
 }
@@ -258,7 +393,7 @@ function Management() {
           </button>
         ))}
         <Link href="/manage/finance">حساب‌ها و قراردادهای مالی</Link>
-            <Link href="/manage/operations">پذیرش، UID و RFID و مجوزها</Link>
+        <Link href="/manage/operations">پذیرش، UID و RFID و مجوزها</Link>
         <Link href="/orders">سفارش‌ها و ارسال</Link>
       </nav>
       {!admin &&
@@ -680,21 +815,18 @@ function Management() {
                         kind: 'review_request',
                         id: r.id,
                         decision: f.get('decision'),
+                        category_id: f.get('category_id') || null,
                         reason: f.get('reason'),
                       },
                       'درخواست بررسی شد.',
                     ),
                   )}
                 >
-                  <label>
-                    تصمیم
-                    <select name="decision">
-                      <option value="approved">تأیید</option>
-                      <option value="rejected">رد</option>
-                    </select>
-                  </label>
-                  <Field name="reason" label="توضیح بررسی" required={false} />
-                  <button disabled={busy}>ثبت تصمیم درخواست</button>
+                  <RequestClassification
+                    categories={categories}
+                    initial={r.payload?.category_id}
+                    busy={busy}
+                  />
                 </form>
               )}
             </article>

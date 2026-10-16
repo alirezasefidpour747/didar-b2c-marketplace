@@ -1,3 +1,4 @@
+import { productPath } from "./taxonomy";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import { integer, price, withPolicy } from "./pricing";
@@ -39,7 +40,7 @@ export async function catalog(user?: any) {
       new Date(rate.updated_at).getTime() + 24 * 60 * 60 * 1000,
     ).toISOString();
     const { rows: products } = await c.query(
-      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
+      `SELECT p.* FROM didar_product p WHERE $1='admin' OR (p.active AND p.published AND p.approved AND didar_taxonomy_valid(p.category_id)) OR ($1='supplier' AND (EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$2) OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$2))) ORDER BY p.id`,
       [user?.role || "public", user?.supplier_id || null],
     );
     const { rows: offers } = await c.query(
@@ -53,6 +54,7 @@ export async function catalog(user?: any) {
       "SELECT * FROM didar_collection_product",
     );
     for (const p of products) {
+      Object.assign(p, await productPath(c, p));
       p.images = images
         .filter((i: any) => i.product_id === p.id)
         .map((i: any) => ({
@@ -121,6 +123,7 @@ function productInput(b: any, old: any = {}) {
   if (min && max && min > max) throw new Error("INVALID_WEIGHT_RANGE");
   return {
     title: text(p.title, 150),
+    slug: slug(p.slug || "product"),
     category: optional(p.category, 100) || "بدون دسته",
     category_id: p.category_id ? text(p.category_id, 100) : null,
     description: optional(p.description, 5000),
@@ -130,12 +133,15 @@ function productInput(b: any, old: any = {}) {
     min_weight_mg: min,
     max_weight_mg: max,
     active: bool(p.active, true),
-    published: bool(p.published, true),
+    published: bool(p.published, false),
     approved: bool(p.approved, true),
     attributes: p.attributes ?? {},
   };
 }
 async function saveProduct(req: any, u: any, b: any, c: any) {
+  await c.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+    "didar:category-tree",
+  ]);
   const id = b.id ? text(b.id) : randomUUID();
   const {
     rows: [old],
@@ -164,6 +170,12 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
     ]);
     if (!category) throw new Error("INVALID_CATEGORY");
     p.category = category.name;
+  }
+  if (p.published) {
+    const {
+      rows: [classification],
+    } = await c.query("SELECT didar_taxonomy_valid($1) valid", [p.category_id]);
+    if (!classification.valid) throw new Error("INVALID_PUBLICATION_TAXONOMY");
   }
   if (b.collection_ids !== undefined) {
     if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
@@ -251,6 +263,7 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
         JSON.stringify(p.attributes),
       ],
     );
+    await c.query("UPDATE didar_product SET slug=$1 WHERE id=$2", [p.slug, id]);
     if (b.collection_ids !== undefined) {
       if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
         throw new Error("INVALID_COLLECTIONS");
@@ -649,7 +662,14 @@ export async function manage(req: any, u: any) {
           ? await saveProduct(
               req,
               u,
-              { ...r.payload, published: true, approved: true },
+              {
+                ...r.payload,
+                ...(b.category_id !== undefined
+                  ? { category_id: b.category_id }
+                  : {}),
+                published: true,
+                approved: true,
+              },
               c,
             )
           : null;

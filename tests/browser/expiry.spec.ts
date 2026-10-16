@@ -25,7 +25,7 @@ test.beforeAll(async () => {
   expect(response.status).toBe(200);
   customerId = (await response.json()).user.id;
   await db.query(
-    "INSERT INTO didar_product(id,title,category,purity) VALUES($1,$2,'QA expiry',750)",
+    "INSERT INTO didar_product(id,title,category,purity,category_id,published) VALUES($1,$2,'QA expiry',750,'ring',true)",
     [productId, tag],
   );
   await db.query(
@@ -35,9 +35,16 @@ test.beforeAll(async () => {
 });
 test.afterAll(async () => {
   try {
-    await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [productId]);
-    await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [offerId]);
-  } finally { await db.end(); }
+    await db.query(
+      "UPDATE didar_product SET active=false,published=false WHERE id=$1",
+      [productId],
+    );
+    await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [
+      offerId,
+    ]);
+  } finally {
+    await db.end();
+  }
 });
 
 test("expired reservation is shown to the customer and restores available pieces", async ({

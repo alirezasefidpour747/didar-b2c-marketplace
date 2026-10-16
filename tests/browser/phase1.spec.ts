@@ -59,7 +59,9 @@ test("admin UI creates supplier/product, weighs and tags units, posts stock; sup
     const p = admin.getByTestId("product-form");
     await p.locator('[name="title"]').fill(tag);
     await p.locator('[name="purity"]').fill("750");
+    await p.getByLabel("دسته اصلی", { exact: true }).selectOption("jewelry");
     await p.locator('[name="category_id"]').selectOption("ring");
+    await p.locator('[name="published"]').check();
     await p.locator('[name="attributes"]').fill('{"qa":"physical"}');
     await p.getByRole("button", { name: "ثبت در کاتالوگ Mercur" }).click();
     await expect
@@ -75,14 +77,12 @@ test("admin UI creates supplier/product, weighs and tags units, posts stock; sup
     await admin
       .getByRole("button", { name: "تأمین‌کنندگان", exact: true })
       .click();
-    const sf = admin
-      .locator("form")
-      .filter({
-        has: admin.getByRole("heading", {
-          name: "تأمین‌کننده جدید",
-          exact: true,
-        }),
-      });
+    const sf = admin.locator("form").filter({
+      has: admin.getByRole("heading", {
+        name: "تأمین‌کننده جدید",
+        exact: true,
+      }),
+    });
     await sf.locator('[name="name"]').fill(tag);
     await sf.locator('[name="email"]').fill(email);
     await sf.locator('[name="password"]').fill(password);

@@ -44,6 +44,14 @@ export const states: Record<string, string> = {
   delivered: 'تحویل شده',
 }
 export const errors: Record<string, string> = {
+  INVALID_PUBLICATION_TAXONOMY:
+    'انتشار نیازمند انتخاب زیردسته معتبر با دسته اصلی است.',
+  INVALID_LABEL_VISIBILITY:
+    'QR مشتری فقط برای قطعه پذیرفته‌شده با محصول فعال و منتشرشده مجاز است.',
+  INVALID_PUBLIC_ORIGIN: 'نشانی عمومی HTTPS برای چاپ QR مشتری تأیید نشده است.',
+  INVALID_LABEL_ITEMS:
+    'قطعات معتبر و یکتا را انتخاب کنید؛ حداکثر ۱۰۰ قطعه در هر نوبت.',
+
   CONFLICT_NO_UNEXPORTED_EVENTS:
     'رویداد مالی تازه‌ای در این دوره وجود ندارد؛ دوره، تأمین‌کننده و خروجی قبلی را بررسی کنید.',
   CONFLICT_MAPPING_REQUIRED:

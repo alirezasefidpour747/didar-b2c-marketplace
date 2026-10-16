@@ -71,6 +71,7 @@ beforeAll(async () => {
     await ok(
       {
         kind: "product",
+        category_id: "ring",
         title: tag,
         category: "QA",
         purity: 750,

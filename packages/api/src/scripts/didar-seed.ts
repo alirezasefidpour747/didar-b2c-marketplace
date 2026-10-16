@@ -1,3 +1,4 @@
+import { updateProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { projectExisting } from "../didar/finance-ledger";
 import { transaction } from "../didar/db";
 import type { ExecArgs } from "@medusajs/framework/types";
@@ -55,6 +56,25 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/taxonomy-schema.sql"),
+      "utf8",
+    ),
+  );
+  // Keep the native Medusa publication mirror private for legacy masters staged by this migration.
+  const { rows: stagedDrafts } = await db.query(
+    "SELECT p.native_id FROM didar_taxonomy_migration_draft d JOIN didar_product p ON p.id=d.product_id WHERE NOT p.published AND p.native_id IS NOT NULL",
+  );
+  if (stagedDrafts.length)
+    await updateProductsWorkflow(container).run({
+      input: {
+        products: stagedDrafts.map((p) => ({
+          id: p.native_id,
+          status: "draft" as const,
+        })),
+      },
+    });
   await transaction(projectExisting);
   for (const [id, name] of [
     ["s1", "زرین دیدار"],
@@ -100,7 +120,7 @@ export default async function seed({ container }: ExecArgs) {
         },
       });
       await db.query(
-        "INSERT INTO didar_product(id,title,category,description,purity,native_id) VALUES($1,$2,$3,$4,750,$5)",
+        "INSERT INTO didar_product(id,title,category,description,purity,native_id,category_id,published,slug) VALUES($1,$2,$3,$4,750,$5,$1,true,$1)",
         [
           id,
           title,

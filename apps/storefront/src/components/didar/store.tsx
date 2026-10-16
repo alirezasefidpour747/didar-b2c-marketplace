@@ -46,6 +46,9 @@ export type Product = {
   id: string
   title: string
   category: string
+  slug?: string
+  canonical_path?: string
+  breadcrumbs?: { id: string; name: string; slug: string }[]
   category_id?: string
   description: string
   purity: number
@@ -316,7 +319,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
         <div className="footer-links">
           <Link href="/products">کاتالوگ مشترک</Link>
           <Link href="/account/wallet">کیف پول</Link>
-              <Link href="/account">حساب مشتری</Link>
+          <Link href="/account">حساب مشتری</Link>
           <Link href="/login?register=supplier">پیوستن به تأمین‌کنندگان</Link>
         </div>
         <small>محیط آزمایشی · مبالغ به ریال · بدون پرداخت واقعی</small>

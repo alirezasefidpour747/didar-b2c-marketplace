@@ -57,9 +57,18 @@ async function post(action: string, body: unknown, token: string) {
 
 test.afterAll(async () => {
   try {
-    if (productId) await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [productId]);
-    if (supplierId) await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [supplierId]);
-  } finally { await db.end(); }
+    if (productId)
+      await db.query(
+        "UPDATE didar_product SET active=false,published=false WHERE id=$1",
+        [productId],
+      );
+    if (supplierId)
+      await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [
+        supplierId,
+      ]);
+  } finally {
+    await db.end();
+  }
 });
 
 test("admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered", async ({
@@ -153,7 +162,11 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
     await form.locator('[name="purity"]').fill("750");
     await form.locator('[name="min_weight_mg"]').fill("6000");
     await form.locator('[name="max_weight_mg"]').fill("8000");
+    await form
+      .getByLabel("دسته اصلی", { exact: true })
+      .selectOption(categoryId);
     await form.locator('[name="category_id"]').selectOption(subcategoryId);
+    await form.locator('[name="published"]').check();
     await form.getByRole("button", { name: "ثبت در کاتالوگ Mercur" }).click();
     await expect
       .poll(
@@ -268,7 +281,9 @@ test("admin approves supplier, publishes imaged product; exact-weight purchase i
       .filter({ has: customer.getByRole("heading", { name: title }) });
     await expect(card.locator(".offer")).toHaveCount(1);
     await card.getByRole("heading", { name: title }).getByRole("link").click();
-    await expect(customer).toHaveURL(new RegExp(`/products/${productId}$`));
+    await expect(customer).toHaveURL(
+      new RegExp(`/products/${tag}/${tag}-child/product/${productId}$`),
+    );
     await expect(customer.locator(".gallery-thumbs button")).toHaveCount(2);
     await expect(customer.locator(".gallery-main img")).toBeVisible();
     expect(

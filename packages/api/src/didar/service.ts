@@ -1,3 +1,5 @@
+import { publicProductLink } from "./taxonomy";
+import { labels } from "./labels";
 import { randomBytes, randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import {
@@ -65,6 +67,9 @@ export async function perform(action: string, req: any): Promise<any> {
     action !== "profile"
   )
     throw new Error("METHOD_NOT_ALLOWED");
+  if (action === "product-link" && req.method === "GET")
+    return publicProductLink(req.query);
+  if (action === "labels") return labels(req);
   const wallet = await performWallet(action, req);
   if (wallet.handled) return wallet.result;
   const financial = await performFinance(action, req);

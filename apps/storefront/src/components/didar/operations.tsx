@@ -1,4 +1,5 @@
 'use client'
+import { UIDLabels } from './uid-labels'
 import Link from 'next/link'
 import { useEffect, useState, useRef, type FormEvent } from 'react'
 import { RequireUser, useDidar } from './store'
@@ -328,6 +329,13 @@ function OperationalJourney() {
           {batch && (
             <article className="order" data-testid="batch-detail">
               <h2>فاکتور {batch.invoice_number}</h2>
+              {admin && (
+                <UIDLabels
+                  key={batch.id}
+                  batchId={batch.id}
+                  items={intake.items}
+                />
+              )}
               <p>
                 {batch.supplier} · {status[batch.status]} ·{' '}
                 {date(batch.received_at)} · عیار {batch.reference_purity}

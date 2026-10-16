@@ -116,3 +116,7 @@ The user's completion addendum also governs this implementation:
 - Add positive/negative API/database/Playwright coverage: draft without category accepted; publish without both levels blocked; category leaf selection and ancestor mapping; QR print gated on publication/public URL; valid UID resolves correct product; copied scanner UID finds same physical piece; slug rename/reclassification preserves printed QR; sold/unavailable item doesn't display false purchase offer; inactive/unpublished/nonexistent UID fails safely; cross-supplier privacy; bulk labels and duplicate-scan behavior; Phase 1/2 regression tests continue to pass.
 
 **No accounting, wallet or procurement changes are part of this requirement.**
+
+### Issue #4 implementation follow-up (2026-10-16)
+
+The preceding “not yet implemented” section records the requirement at its original baseline. Its implementation is now in `taxonomy-schema.sql`, catalog/approval guards, canonical catch-all PDP routing, the public `/i/{uid}` resolver and admin UID label controls. Operational/configuration instructions and remaining physical acceptance checks are in [`TAXONOMY_UID_LABELS.md`](TAXONOMY_UID_LABELS.md). Use the latest `PROGRESS.md`/`DELIVERY.md` verification entry for actual test results and published revision; this note alone is not a hardware or production-domain verification claim.

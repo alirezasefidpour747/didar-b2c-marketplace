@@ -120,7 +120,7 @@ beforeAll(async () => {
   customer = await fixtureAccount("customer");
   outsider = await fixtureAccount("customer");
   await db.query(
-    "INSERT INTO didar_product(id,title,category,purity) VALUES($1,$2,'QA',750)",
+    "INSERT INTO didar_product(id,title,category,purity,category_id,published) VALUES($1,$2,'QA',750,'ring',true)",
     [product, `${tag} shared ring`],
   );
   const registration = await api("register", {
@@ -159,8 +159,14 @@ beforeAll(async () => {
 afterAll(async () => {
   // Financial snapshots and events reference these fixtures permanently. Retire, do not erase.
   for (const id of [product, ...requestedProducts])
-    await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [id]);
-  if (supplierId) await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [supplierId]);
+    await db.query(
+      "UPDATE didar_product SET active=false,published=false WHERE id=$1",
+      [id],
+    );
+  if (supplierId)
+    await db.query("UPDATE didar_supplier SET active=false WHERE id=$1", [
+      supplierId,
+    ]);
   await db.end();
 });
 
@@ -280,7 +286,7 @@ test("supplier registration requires admin approval and cannot self-approve", as
 test("admin category and product edits persist publication controls", async () => {
   const category = await api(
     "manage",
-    { kind: "category", name: `${tag} rings`, slug: tag },
+    { kind: "category", name: `${tag} rings`, slug: tag, parent_id: "jewelry" },
     admin,
   );
   expect(category.status).toBe(200);
@@ -316,6 +322,16 @@ test("admin category and product edits persist publication controls", async () =
 });
 
 test("subcategory hierarchy rejects cycles and collection membership is editable", async () => {
+  // Turn a published leaf into a parent only after explicitly unpublishing its master.
+  expect(
+    (
+      await api(
+        "manage",
+        { kind: "product", id: product, published: false },
+        admin,
+      )
+    ).status,
+  ).toBe(200);
   const child = await api(
     "manage",
     {
@@ -328,6 +344,20 @@ test("subcategory hierarchy rejects cycles and collection membership is editable
   );
   expect(child.status).toBe(200);
   categoryChildren.push(child.id);
+  expect(
+    (
+      await api(
+        "manage",
+        {
+          kind: "product",
+          id: product,
+          category_id: child.id,
+          published: true,
+        },
+        admin,
+      )
+    ).status,
+  ).toBe(200);
   const cycle = await api(
     "manage",
     {
@@ -465,6 +495,7 @@ test("supplier product requests remain pending until admin review", async () => 
     "manage",
     {
       kind: "product_request",
+      category_id: "ring",
       title: `${tag} new requested bracelet`,
       category: "QA",
       purity: 750,
@@ -512,6 +543,7 @@ test("approved supplier product request becomes one shared native-linked product
     "manage",
     {
       kind: "product_request",
+      category_id: "ring",
       title,
       category: "QA",
       purity: 750,

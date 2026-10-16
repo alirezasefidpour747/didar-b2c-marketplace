@@ -120,7 +120,10 @@ export function OfferCard({ offer: o }: { offer: Offer }) {
 export function ProductCard({ product: p }: { product: Product }) {
   return (
     <article className="product">
-      <Link href={'/products/' + p.id} aria-label={'مشاهده ' + p.title}>
+      <Link
+        href={p.canonical_path || '/products/' + p.id}
+        aria-label={'مشاهده ' + p.title}
+      >
         <ProductImage product={p} />
       </Link>
       <div className="product-body">
@@ -128,7 +131,7 @@ export function ProductCard({ product: p }: { product: Product }) {
           {p.category} · عیار {number(p.purity)}
         </small>
         <h3>
-          <Link href={'/products/' + p.id}>{p.title}</Link>
+          <Link href={p.canonical_path || '/products/' + p.id}>{p.title}</Link>
         </h3>
         <p>{p.description}</p>
         <div className="offer-list">
@@ -205,7 +208,10 @@ export function Catalog({
       )
         return false
       return (
-        (!category || p.category_id === category || p.category === category) &&
+        (!category ||
+          p.breadcrumbs?.some((c) => c.id === category) ||
+          p.category_id === category ||
+          p.category === category) &&
         normalized(
           [
             p.title,
@@ -368,6 +374,11 @@ export function ProductDetail({ id }: { id: string }) {
     <section>
       <div className="breadcrumbs">
         <Link href="/">دیدار</Link> / <Link href="/products">ویترین</Link> /{' '}
+        {p.breadcrumbs?.map((c) => (
+          <span key={c.id}>
+            <Link href={'/categories/' + c.slug}>{c.name}</Link> /{' '}
+          </span>
+        ))}
         {p.title}
       </div>
       <div className="detail-grid">

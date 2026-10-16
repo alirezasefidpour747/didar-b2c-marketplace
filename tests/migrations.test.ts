@@ -33,6 +33,7 @@ test("clean and repeat additive migrations preserve legacy stock and paid snapsh
         "schema.sql",
         "commerce-schema.sql",
         "phase1-schema.sql",
+        "taxonomy-schema.sql",
       ])
         await c.query(readFileSync("packages/api/src/didar/" + file, "utf8"));
     expect(
@@ -49,6 +50,14 @@ test("clean and repeat additive migrations preserve legacy stock and paid snapsh
         )
       ).rows[0],
     ).toEqual({ breakdown: { historic_price: 123 }, stock_mode: "legacy" });
+    expect(
+      (await c.query("SELECT published FROM didar_product WHERE id='p'"))
+        .rows[0].published,
+    ).toBe(false);
+    expect(
+      (await c.query("SELECT product_id FROM didar_taxonomy_migration_draft"))
+        .rows,
+    ).toEqual([{ product_id: "p" }]);
     expect(
       (await c.query("SELECT count(*)::int n FROM didar_inventory_item"))
         .rows[0].n,

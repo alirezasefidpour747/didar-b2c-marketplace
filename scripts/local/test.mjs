@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -56,6 +56,8 @@ export async function testLocal(processes, { reuseBuild = false } = {}) {
       JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECRET: randomBytes(32).toString('hex'),
       STORE_CORS: webOrigin, ADMIN_CORS: apiOrigin, VENDOR_CORS: apiOrigin, AUTH_CORS: `${webOrigin},${apiOrigin}`,
       FILE_BACKEND_URL: `${apiOrigin}/static`, MERCUR_BACKEND_URL: 'http://localhost:9000', MEDUSA_BACKEND_URL: apiOrigin,
+      // Synthetic origin attestation for disposable label tests only; never applied to owner configuration.
+      DIDAR_PUBLIC_ORIGIN: 'https://shop.didar-gold.ir', DIDAR_PUBLIC_ORIGIN_VERIFIED: 'true',
       TEST_API_URL: apiOrigin, TEST_STOREFRONT_URL: webOrigin, MERCUR_DISABLE_TELEMETRY: 'true', NEXT_TELEMETRY_DISABLED: '1',
     }
     console.log('Disposable local QA database/services created. Persistent UAT volumes and configuration are not used.')

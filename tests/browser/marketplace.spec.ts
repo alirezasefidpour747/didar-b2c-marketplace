@@ -7,12 +7,22 @@ test("RTL catalog, supplier comparison, login, checkout and payment", async ({
   await expect(
     page.getByRole("heading", { name: "انگشتر طلای ماه" }),
   ).toBeVisible();
-  await expect(page.locator(".product").filter({has:page.getByRole("heading",{name:"انگشتر طلای ماه",exact:true})}).locator(".offer")).toHaveCount(
-    2,
-  );
+  await expect(
+    page
+      .locator(".product")
+      .filter({
+        has: page.getByRole("heading", {
+          name: "انگشتر طلای ماه",
+          exact: true,
+        }),
+      })
+      .locator(".offer"),
+  ).toHaveCount(2);
   await page
     .locator(".product")
-    .filter({has:page.getByRole("heading",{name:"انگشتر طلای ماه",exact:true})})
+    .filter({
+      has: page.getByRole("heading", { name: "انگشتر طلای ماه", exact: true }),
+    })
     .getByRole("button", { name: "افزودن به سبد +" })
     .first()
     .click();
@@ -52,9 +62,14 @@ test("supplier interface displays only owned stock", async ({ page }) => {
     page.getByRole("heading", { name: "پنل تأمین‌کننده" }),
   ).toBeVisible();
   // Retired QA offers remain visible as history. Verify tenant scope instead of a global row count.
-  await expect.poll(async () => page.locator(".inventory-form").count()).toBeGreaterThanOrEqual(4);
-  for (const row of await page.locator(".inventory-form").all()) await expect(row).toContainText("زرین دیدار");
-  await expect(page.locator(".inventory-form").filter({hasText:"گالری آفتاب"})).toHaveCount(0);
+  await expect
+    .poll(async () => page.locator(".inventory-form").count())
+    .toBeGreaterThanOrEqual(4);
+  for (const row of await page.locator(".inventory-form").all())
+    await expect(row).toContainText("زرین دیدار");
+  await expect(
+    page.locator(".inventory-form").filter({ hasText: "گالری آفتاب" }),
+  ).toHaveCount(0);
 });
 test("admin interface manages gold rate and catalog", async ({ page }) => {
   await page.goto("/");
@@ -98,8 +113,14 @@ test("mobile RTL catalog and product detail fit the viewport", async ({
   const detailLink = page
     .getByRole("heading", { name: "انگشتر طلای ماه" })
     .getByRole("link");
-  await expect(detailLink).toHaveAttribute("href", "/products/ring");
-  await Promise.all([page.waitForURL("**/products/ring"), detailLink.click()]);
+  await expect(detailLink).toHaveAttribute(
+    "href",
+    "/products/jewelry/ring/ring/ring",
+  );
+  await Promise.all([
+    page.waitForURL("**/products/jewelry/ring/ring/ring"),
+    detailLink.click(),
+  ]);
   await expect(
     page.getByRole("heading", {
       name: "انگشتر طلای ماه",

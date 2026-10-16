@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync, statSync }
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createServer, connect } from 'node:net'
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { ensureLocalConfig, readLocalConfig, validateLocal, freePort, assertLocalDocker, run } from '../scripts/local/runtime.mjs'
 import { browserLaunchOptions } from '../scripts/local/browser-options.mjs'
 import { recordBuild, verifyBuild } from '../scripts/local/build-receipt.mjs'
@@ -141,4 +141,17 @@ test('build reuse refuses changed source, damaged artifacts, another platform or
   const path = join(root, '.local/build-receipt.json'), receipt = JSON.parse(readFileSync(path, 'utf8'))
   writeFileSync(path, JSON.stringify({ ...receipt, platform: 'another-platform' })); expect(() => verifyBuild(root, ['input.ts'])).toThrow('source/artifacts/platform')
   rmSync(path); expect(() => verifyBuild(root, ['input.ts'])).toThrow('receipt missing')
+}))
+
+
+test('build receipt accepts a tracked route removal and still detects a newly added replacement route', () => fixture(root => {
+  const git = (...args: string[]) => { const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});expect(r.status,r.stderr).toBe(0) }
+  git('init','-q')
+  const outputs=['packages/api/.medusa/server/medusa-config.js','apps/storefront/.next/BUILD_ID','apps/admin/dist/index.html','apps/vendor/dist/index.html']
+  for(const path of outputs){mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),'compiled output')}
+  const old='apps/storefront/src/app/products/old.tsx', replacement='apps/storefront/src/app/products/new.tsx'
+  mkdirSync(join(root,old,'..'),{recursive:true});writeFileSync(join(root,old),'old route');git('add',old)
+  rmSync(join(root,old));writeFileSync(join(root,replacement),'new route')
+  recordBuild(root);expect(()=>verifyBuild(root)).not.toThrow()
+  writeFileSync(join(root,replacement),'changed replacement');expect(()=>verifyBuild(root)).toThrow('source/artifacts/platform')
 }))

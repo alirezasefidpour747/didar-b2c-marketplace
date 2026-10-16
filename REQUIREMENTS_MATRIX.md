@@ -136,3 +136,14 @@ Statuses: VERIFIED; IMPLEMENTED BUT UNTESTED; PARTIALLY IMPLEMENTED; MISSING; BL
 - All four Compose services healthy, matching catalog persists after API/web restart. Sixty-eight application/build source files in the source-built API image match committed inputs. Native offers, stock levels and orders remain zero after gold E2E, confirming one ledger.
 - Current evidence: verification/2026-10-15. API/source/frontend builds and typechecks pass; 390px and desktop screenshots reviewed. Four current ARM image manifests and locked native artifacts verified; no native ARM VM execution or external deployment occurred.
 - Software MVP complete; external staging pending authorized eligible Oracle Ubuntu ARM64 A1 access/capacity. Production pending approved real-money/provider/commercial/operational prerequisites. The two BLOCKED rows concern those external prerequisites, not incomplete local sandbox flows.
+
+## Issue #4 — taxonomy and permanent labels
+
+| Requirement | Implementation / evidence | Operational qualification |
+| --- | --- | --- |
+| Category → Subcategory mandatory for publication; drafts/photos legal | Additive SQL guards, API validation, dependent Persian selectors and admin approval classification; taxonomy regression suite | Legacy incomplete classifications become retained drafts with recorded prior state |
+| Hierarchical canonical master PDP and breadcrumbs | Ancestor/leaf/product slug + immutable ID; legacy and previous paths redirect by ID; category filter follows ancestors | One master across multiple supplier offers |
+| Permanent UID Code 128 and stable QR | Local SVG encoder, admin single/selected/batch generation, decode tests, permanent `/i/{uid}` | Customer QR disabled until real public HTTPS origin is configured/attested |
+| Safe public UID resolution and stock | Minimal public response; visibility guards; 307/no-store; sold UID remains a product reference, exact eligible offers determine stock | No supplier/invoice/cost/history in resolver |
+| Authorization / printing / RFID optionality | Admin-only audited API; supplier/customer/public denied; configurable physical dimensions, quiet zones, print CSS and size guards; existing HID UID lookup/count | Printer, physical scanner and phone camera UAT remain pending |
+| Preservation and regression | Repeat-migration history checks plus full existing commerce/UID/RFID/finance/checkout regressions and production builds | Actual final totals and source SHA recorded in the latest progress/delivery entries |

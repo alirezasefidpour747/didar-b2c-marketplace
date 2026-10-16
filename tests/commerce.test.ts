@@ -55,7 +55,7 @@ beforeAll(async () => {
   expect(admin).toBeTruthy();
   rateVersion = (await api("catalog")).rate.version;
   await db.query(
-    "INSERT INTO didar_product(id,title,category,purity) VALUES($1,'Test ring','Test',750)",
+    "INSERT INTO didar_product(id,title,category,purity,category_id,published) VALUES($1,'Test ring','Test',750,'ring',true)",
     [tag],
   );
   await db.query(
@@ -66,7 +66,10 @@ beforeAll(async () => {
 afterAll(async () => {
   // Preserve financial/order history; retire only this invocation's synthetic stock.
   await db.query("UPDATE didar_offer SET active=false WHERE id=$1", [oid]);
-  await db.query("UPDATE didar_product SET active=false,published=false WHERE id=$1", [tag]);
+  await db.query(
+    "UPDATE didar_product SET active=false,published=false WHERE id=$1",
+    [tag],
+  );
   await db.end();
 });
 

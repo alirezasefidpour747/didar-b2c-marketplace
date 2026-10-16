@@ -55,6 +55,7 @@ export async function financeFixture(mode = "MIXED") {
       "manage",
       {
         kind: "product",
+        category_id: "ring",
         title: tag,
         category: "QA",
         purity: 750,

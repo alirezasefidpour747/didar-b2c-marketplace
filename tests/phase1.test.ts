@@ -95,6 +95,7 @@ beforeAll(async () => {
       kind: "product",
       title: tag,
       category: "Acceptance",
+      category_id: "ring",
       purity: 750,
       description: "Physical item QA",
       published: false,

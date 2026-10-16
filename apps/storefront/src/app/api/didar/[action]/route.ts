@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'catalog',
+  'labels',
+  'product-link',
   'finance',
   'treasury',
   'wallet',
@@ -78,6 +80,12 @@ async function proxy(
       if (!id || !/^[-\w]{1,120}$/.test(id))
         return NextResponse.json({ message: 'NOT_FOUND' }, { status: 404 })
       url.searchParams.set('id', id)
+    }
+    if (action === 'product-link') {
+      for (const key of ['id', 'uid']) {
+        const value = req.nextUrl.searchParams.get(key)
+        if (value && value.length <= 100) url.searchParams.set(key, value)
+      }
     }
     if (['intake', 'inventory', 'rfid'].includes(action))
       for (const key of ['id', 'search']) {
