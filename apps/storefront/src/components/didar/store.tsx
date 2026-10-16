@@ -263,6 +263,7 @@ export function DidarProvider({ children }: { children: ReactNode }) {
           {user ? (
             <>
               <Link href="/orders">{copy.orders}</Link>
+              <Link href="/account/wallet">کیف پول</Link>
               <Link href="/account">{copy.account}</Link>
               {user.role !== 'customer' && (
                 <Link href="/manage">{copy.manage}</Link>
@@ -314,7 +315,8 @@ export function DidarProvider({ children }: { children: ReactNode }) {
         </p>
         <div className="footer-links">
           <Link href="/products">کاتالوگ مشترک</Link>
-          <Link href="/account">حساب مشتری</Link>
+          <Link href="/account/wallet">کیف پول</Link>
+              <Link href="/account">حساب مشتری</Link>
           <Link href="/login?register=supplier">پیوستن به تأمین‌کنندگان</Link>
         </div>
         <small>محیط آزمایشی · مبالغ به ریال · بدون پرداخت واقعی</small>

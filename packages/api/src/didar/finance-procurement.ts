@@ -13,6 +13,7 @@ export async function procurementRead(c:any,u:any){
    FROM didar_fin_request r JOIN didar_fin_event e ON e.id=r.sale_event_id WHERE ($1::text IS NULL OR r.supplier_id=$1) ORDER BY r.created_at,r.id`,[sid])).rows;
  for(const r of requests){const sale=await get(c,r.sale_event_id);r.balance=await obligationBalance(c,sale);r.allocated_ug=(await total(c,'ALLOCATION','sale_id',sale.id)).toString();r.overdue=new Date(r.due_at).getTime()<Date.now()&&(BigInt(r.balance.gold_ug)>0n||BigInt(r.balance.irr)>0n);r.state=r.reversed?'reversed':BigInt(r.balance.gold_ug)<=0n&&BigInt(r.balance.irr)<=0n?'settled':r.approved?'approved':'requested';}
  const facts=(await c.query(`SELECT id,kind,source_event_id,supplier_id,created_at,snapshot FROM didar_fin_event WHERE kind IN ('PURCHASE','PURCHASE_APPROVED','ALLOCATION','TITLE_TRANSFER','PHYSICAL_HANDOVER','GOLD_SETTLEMENT','RIAL_SETTLEMENT','FACT_REVERSED','SETTLEMENT_REVERSED') AND ($1::text IS NULL OR supplier_id=$1) ORDER BY created_at,id`,[sid])).rows;
+ if(u.role==='supplier')for(const fact of facts){fact.snapshot={...fact.snapshot};for(const key of ['cost_basis_irr','cost_irr','command'])delete fact.snapshot[key];}
  const purchase_stock=[] as any[];
  if(u.role==='admin') for(const p of facts.filter((e:any)=>e.kind==='PURCHASE')){
    const reversed=facts.some((r:any)=>r.kind==='FACT_REVERSED'&&r.source_event_id===p.id);
@@ -50,11 +51,13 @@ export async function procurementWrite(c:any,u:any,b:any):Promise<any|undefined>
    const requestAlloc=await total(c,'ALLOCATION','sale_id',source.id),purchaseAlloc=await total(c,'ALLOCATION','purchase_id',p.id);
    const refunded=await exists(c,'REFUND',source.id);
    if(refunded||requestAlloc+amount>BigInt(source.gold_ug)||purchaseAlloc+amount>BigInt(p.snapshot.fine_ug))throw new Error('CONFLICT_OVER_ALLOCATION');
-   kind='ALLOCATION';snapshot={...snapshot,sale_id:source.id,purchase_id:p.id,amount_ug:amount.toString()};
+   const priorCost=BigInt((await c.query(`SELECT COALESCE(sum((e.snapshot->>'cost_basis_irr')::bigint),0)::text n FROM didar_fin_event e WHERE e.kind='ALLOCATION' AND e.snapshot->>'purchase_id'=$1 AND NOT EXISTS(SELECT 1 FROM didar_fin_event r WHERE r.kind='FACT_REVERSED' AND r.source_event_id=e.id)`,[p.id])).rows[0].n);
+   const cost=purchaseAlloc+amount===BigInt(p.snapshot.fine_ug)?BigInt(p.snapshot.cost_irr)-priorCost:BigInt(p.snapshot.cost_irr)*amount/BigInt(p.snapshot.fine_ug);
+   kind='ALLOCATION';snapshot={...snapshot,sale_id:source.id,purchase_id:p.id,amount_ug:amount.toString(),cost_basis_irr:cost.toString()};
  }else if(['title_transfer','physical_handover','gold_settle'].includes(b.operation)){
    const a=await get(c,finText(b.allocation_id),'ALLOCATION');source=await get(c,a.snapshot.sale_id,'SALE_EXPOSURE');sid=source.supplier_id;
    if(await exists(c,'FACT_REVERSED',a.id)||await exists(c,'REFUND',source.id))throw new Error('CONFLICT_REVERSED');
-   snapshot={...snapshot,sale_id:source.id,allocation_id:a.id,purchase_id:a.snapshot.purchase_id,amount_ug:a.snapshot.amount_ug};
+   snapshot={...snapshot,sale_id:source.id,allocation_id:a.id,purchase_id:a.snapshot.purchase_id,amount_ug:a.snapshot.amount_ug,cost_basis_irr:a.snapshot.cost_basis_irr};
    if(b.operation==='title_transfer'){kind='TITLE_TRANSFER';snapshot.document=finText(b.document);}
    if(b.operation==='physical_handover'){
      if(!['DELIVERED','HELD_FOR_SUPPLIER'].includes(b.disposition))throw new Error('INVALID_DISPOSITION');
@@ -65,6 +68,9 @@ export async function procurementWrite(c:any,u:any,b:any):Promise<any|undefined>
      if(!facts.some((e:any)=>e.kind==='TITLE_TRANSFER')||!facts.some((e:any)=>e.kind==='PHYSICAL_HANDOVER'))throw new Error('CONFLICT_TITLE_AND_CUSTODY_REQUIRED');
      const amount=big(b.amount_ug,true),used=await total(c,'GOLD_SETTLEMENT','allocation_id',a.id),remaining=BigInt((await obligationBalance(c,source)).gold_ug);
      if(used+amount>BigInt(a.snapshot.amount_ug)||amount>remaining)throw new Error('CONFLICT_OVER_SETTLEMENT');
+     const usedCost=BigInt((await c.query(`SELECT COALESCE(sum((e.snapshot->>'cost_basis_irr')::bigint),0)::text n FROM didar_fin_event e WHERE e.kind='GOLD_SETTLEMENT' AND e.snapshot->>'allocation_id'=$1 AND NOT EXISTS(SELECT 1 FROM didar_fin_event r WHERE r.kind='SETTLEMENT_REVERSED' AND r.snapshot->>'reversed_event_id'=e.id)`,[a.id])).rows[0].n);
+     const basis=BigInt(a.snapshot.cost_basis_irr||0);
+     snapshot.cost_basis_irr=(used+amount===BigInt(a.snapshot.amount_ug)?basis-usedCost:basis*amount/BigInt(a.snapshot.amount_ug)).toString();
      kind='GOLD_SETTLEMENT';gold=-amount;snapshot.amount_ug=amount.toString();
    }
  }else if(b.operation==='rial_settle'){

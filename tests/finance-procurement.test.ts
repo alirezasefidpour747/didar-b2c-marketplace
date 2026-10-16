@@ -1,6 +1,5 @@
-import {test,expect,afterAll} from 'bun:test';
+import {test,expect} from 'bun:test';
 import {financeFixture,finAPI,finOK,finDB} from './financial-helpers';
-afterAll(async()=>finDB.end());
 test('Gate 2: paid requests, two purchases/multiple allocations, separate title/custody and partial mixed settlement',async()=>{
  const f=await financeFixture(),{sale:s1}=await f.buy(),{sale:s2}=await f.buy();
  const read=()=>finOK('treasury',undefined,f.admin);
@@ -27,10 +26,14 @@ test('Gate 2: paid requests, two purchases/multiple allocations, separate title/
  await f.command({operation:'gold_settle',allocation_id:a2.id,amount_ug:'22000000'});
  await f.command({operation:'rial_settle',sale_id:s1.id,amount_irr:'3640000000',document:'QA bank evidence'});
  data=await read();const request=data.requests.find((r:any)=>r.sale_event_id===s1.id);expect(request.balance).toEqual({gold_ug:'0',irr:'0'});expect(request.state).toBe('settled');
+ if((await finDB.query("SELECT to_regclass('didar_fin_posting') t")).rows[0].t){
+ const valuation=(await finDB.query("SELECT COALESCE(sum(p.delta),0)::text n FROM didar_fin_posting p JOIN didar_fin_journal j ON j.id=p.journal_id JOIN didar_fin_event e ON e.id=j.event_id WHERE (e.id=$1 OR e.source_event_id=$1) AND p.account='SUPPLIER_GOLD_VALUATION'",[s1.id])).rows[0].n;expect(valuation).toBe('0');
+ }
+
  expect((await finAPI('treasury',{operation:'gold_settle',allocation_id:a1.id,amount_ug:'1',reason:'overdraft',idempotency_key:crypto.randomUUID()},f.admin)).http).toBe(409);
  await f.command({operation:'reverse_settlement',event_id:settled.id,return_evidence:'QA physical gold recovered'});
  data=await read();expect(data.requests.find((r:any)=>r.sale_event_id===s1.id).balance.gold_ug).toBe('10000000');
- const own=await finOK('treasury',undefined,f.seller);expect(own.requests.every((r:any)=>r.supplier_id===f.sid)).toBe(true);expect(own.facts.some((e:any)=>e.kind==='PURCHASE')).toBe(false);
+ const own=await finOK('treasury',undefined,f.seller);expect(own.requests.every((r:any)=>r.supplier_id===f.sid)).toBe(true);expect(own.facts.some((e:any)=>e.kind==='PURCHASE')).toBe(false);expect(JSON.stringify(own)).not.toContain('cost_basis_irr');
  const before=(await finDB.query('SELECT count(*)::int n FROM didar_fin_request WHERE sale_event_id=$1',[s1.id])).rows[0].n;
  await finOK('payment',{order_id:(await finDB.query('SELECT order_id FROM didar_order_line WHERE id=$1',[s1.order_line_id])).rows[0].order_id,outcome:'success'},f.buyer);
  expect((await finDB.query('SELECT count(*)::int n FROM didar_fin_request WHERE sale_event_id=$1',[s1.id])).rows[0].n).toBe(before);

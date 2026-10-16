@@ -1,3 +1,7 @@
+## 2026-10-16 — Phase 2 Gate 3
+
+Use one event-linked append-only double-entry projection; IRR, fine-gold quantity and custody memo instruments balance separately. Wallets are liability accounts with database-enforced nonnegative balances, never editable caches. Payable-to-wallet reclassifies the same liability. Last gold discharge consumes the exact remaining IRR liability, avoiding partial-rounding residues. New stock acceptance records memo/source facts only; documented owned QA cost is required for COGS and missing history stays explicitly unvalued. No fictional legacy purchases, real withdrawals or statutory approval claims.
+
 ## 2026-10-16 — Phase 2 Gate 2
 
 Procurement request is intent, purchase is separate synthetic executed evidence, allocation is a reservation, and title, custody and payable discharge require distinct facts. IRR-only contracts must remain actionable without gold requests. Partial settlement and reversal derive balances from immutable source events. Negative supplier balances after refund of an already-settled sale represent recoverable advances; never silently delete settlement. Cost/source documents remain admin-only. No external trade or bank provider is enabled.

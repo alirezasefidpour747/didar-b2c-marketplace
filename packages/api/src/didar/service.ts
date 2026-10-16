@@ -13,6 +13,7 @@ import { catalog, manage } from "./catalog";
 import { performCommerce } from "./commerce";
 import { performPhase1 } from "./phase1";
 import { reserveItems, finalizeItems } from "./item-stock";
+import { performWallet } from "./finance-wallet";
 import { performFinance, snapshotTerms } from "./finance";
 import { isAvailable } from "./inventory";
 
@@ -64,6 +65,8 @@ export async function perform(action: string, req: any): Promise<any> {
     action !== "profile"
   )
     throw new Error("METHOD_NOT_ALLOWED");
+  const wallet = await performWallet(action, req);
+  if (wallet.handled) return wallet.result;
   const financial = await performFinance(action, req);
   if (financial.handled) return financial.result;
   const phase1 = await performPhase1(action, req);

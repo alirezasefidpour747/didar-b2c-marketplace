@@ -3,6 +3,8 @@ const allowed = new Set([
   'catalog',
   'finance',
   'treasury',
+  'wallet',
+  'ledger',
   'me',
   'login',
   'register',

@@ -1,3 +1,4 @@
+import {recordIntake,recordPhysicalReturn} from "./finance-assets";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import { requireUser } from "./auth";
@@ -273,6 +274,7 @@ async function intake(req: any, u: any) {
           batch.id,
         ],
       );
+      if(b.operation==="post")await recordIntake(c,batch.id,u.id);
       await audit(c, u.id, "intake_" + b.operation, {
         batch_id: batch.id,
         supplier_id: batch.supplier_id,
@@ -730,6 +732,7 @@ async function returns(req: any, u: any) {
       "UPDATE didar_item_return SET status=$1,updated_at=now() WHERE id=$2",
       [status, old.id],
     );
+    if(b.operation==="receive")await recordPhysicalReturn(c,mapping.id,u.id);
     await audit(c, u.id, "item_return_" + b.operation, {
       reservation_id: mapping.id,
       item_id: reservation.item_id,

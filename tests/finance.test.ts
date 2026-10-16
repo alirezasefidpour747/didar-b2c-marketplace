@@ -42,7 +42,7 @@ test('Gate 1: requests scoped, approval admin-only, future contracts not silentl
 });
 test('Gate 1: intake creates no debt, verified payment is exactly once and checkout terms survive amendments',async()=>{
  const {o,item}=await buy();order=o;
- expect((await ok()).events.filter((e:any)=>e.supplier_id===sid)).toHaveLength(0);
+ expect((await ok()).events.filter((e:any)=>e.supplier_id===sid&&e.kind==='SALE_EXPOSURE')).toHaveLength(0);
  const newer=await contractRequest({mode:'RIAL_ONLY',effective_at:'2021-01-01T00:00:00Z'});await approve(newer);
  await Promise.all([ok({order_id:o.id,outcome:'success'},buyer,'payment'),ok({order_id:o.id,outcome:'success'},buyer,'payment')]);
  const {rows:events}=await db.query("SELECT * FROM didar_fin_event WHERE order_line_id IN(SELECT id FROM didar_order_line WHERE order_id=$1) AND kind='SALE_EXPOSURE'",[o.id]);
@@ -55,7 +55,7 @@ test('Gate 1: statements scoped and append-only; return-gated refund reverses wi
  expect((await api({operation:'refund',event_id:sale.id,reason:'not returned'})).http).toBe(409);
  await ok({operation:'request',reservation_id:sale.reservation_id,reason:'QA return'},buyer,'returns');await ok({operation:'receive',reservation_id:sale.reservation_id,reason:'QA received'},admin,'returns');
  await Promise.all([ok({operation:'refund',event_id:sale.id,reason:'QA synthetic refund'}),ok({operation:'refund',event_id:sale.id,reason:'retry'})]);
- const {rows:[n]}=await db.query("SELECT sum(gold_ug)::text gold,count(*)::int n FROM didar_fin_event WHERE order_line_id=$1",[sale.order_line_id]);expect(n.gold).toBe('0');expect(n.n).toBe(2);
+ const {rows:[n]}=await db.query("SELECT sum(gold_ug)::text gold,count(*)::int n FROM didar_fin_event WHERE order_line_id=$1 AND kind IN ('SALE_EXPOSURE','REFUND')",[sale.order_line_id]);expect(n.gold).toBe('0');expect(n.n).toBe(2);
  await expect(db.query('UPDATE didar_fin_event SET gold_ug=0 WHERE id=$1',[sale.id])).rejects.toThrow();
  await expect(db.query('DELETE FROM didar_fin_contract WHERE id=$1',[contract])).rejects.toThrow();
 });
