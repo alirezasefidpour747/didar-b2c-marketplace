@@ -19,25 +19,29 @@ class LocalEnvironmentTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def run_script(self):
+    def run_script(self, success=True):
         result = subprocess.run(['node', str(SCRIPT)], cwd=self.root, capture_output=True, text=True, timeout=10)
-        self.assertEqual(result.returncode, 0, result.stderr)
+        if success:
+            self.assertEqual(result.returncode, 0, result.stderr)
+        else:
+            self.assertNotEqual(result.returncode, 0)
         return result.stdout
 
     def test_legacy_file_gets_only_one_appended_flag(self):
-        original = '# keep exact existing bytes\nJWT_SECRET=public-fixture-value\nDATABASE_URL=fixture'
+        self.run_script()
+        original = '# keep exact existing bytes\n' + self.config.read_text().replace('DIDAR_ENVIRONMENT=local\n', '').rstrip('\n')
         self.config.write_text(original)
         output = self.run_script()
         expected = original + '\nDIDAR_ENVIRONMENT=local\n'
         self.assertEqual(self.config.read_text(), expected)
         self.run_script()
         self.assertEqual(self.config.read_text(), expected)
-        self.assertNotIn('public-fixture-value', output)
+        self.assertNotIn('JWT_SECRET=', output)
 
-    def test_explicit_environment_is_preserved(self):
+    def test_explicit_or_incomplete_environment_is_preserved_and_refused(self):
         for original in ('DIDAR_ENVIRONMENT=staging\n', 'export DIDAR_ENVIRONMENT=local\n', 'DIDAR_ENVIRONMENT=\n'):
             self.config.write_text(original)
-            self.run_script()
+            self.run_script(success=False)
             self.assertEqual(self.config.read_text(), original)
 
     def test_new_file_has_private_local_configuration(self):
@@ -47,7 +51,7 @@ class LocalEnvironmentTests(unittest.TestCase):
 
     def test_existing_storefront_file_is_preserved(self):
         existing = self.root / 'apps/storefront/.env.local'
-        original = 'MEDUSA_BACKEND_URL=http://local-fixture:9000\n'
+        original = 'MEDUSA_BACKEND_URL=http://127.0.0.1:9000\n'
         existing.write_text(original)
         self.run_script()
         self.assertEqual(existing.read_text(), original)

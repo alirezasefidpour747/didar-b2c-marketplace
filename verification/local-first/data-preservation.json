@@ -1,0 +1,123 @@
+{
+  "before": {
+    "didar-postgres": {
+      "tables": {
+        "didar_inventory_item": "204|3b72da5c451385609e34b4f7bb457dc3",
+        "didar_item_rfid_binding": "78|61ba3b3f3b625b7eed9f67bbf3efd64c",
+        "didar_item_reservation": "63|f1ab3f3ca121023dbaab37556e32c9e6",
+        "didar_item_return": "9|617ee84a613263bb8b4baa854ff46750",
+        "didar_order": "64|19639aec7587bad71da7a8cae59579fd",
+        "didar_order_line": "64|1bdbda1192a6e2e0cc647250f16e4d11",
+        "didar_supplier_permission": "81|a2c63d32c4762e279b6b0a4cbf74a804"
+      },
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    "didar-gold-postgres-1": {
+      "tables": {
+        "didar_inventory_item": "29|8794afbe63f89a398556e78da79936fc",
+        "didar_item_rfid_binding": "14|154d9a32525bc21533f22b8f1df3da80",
+        "didar_item_reservation": "10|0d42519ce8ab51bee340425fb01c8d56",
+        "didar_item_return": "1|a5d3032a145a95620de936df2849bb61",
+        "didar_order": "13|4307e7b7ec614f743e081a7fe13b19b9",
+        "didar_order_line": "13|577b638dd8d3b1a2b13f06d70ae2c40c",
+        "didar_supplier_permission": "9|c526928425f00526e2840cae7ebfab2f"
+      },
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    }
+  },
+  "after_disposable_qa": {
+    "didar-postgres": {
+      "tables": {
+        "didar_inventory_item": "204|3b72da5c451385609e34b4f7bb457dc3",
+        "didar_item_rfid_binding": "78|61ba3b3f3b625b7eed9f67bbf3efd64c",
+        "didar_item_reservation": "63|f1ab3f3ca121023dbaab37556e32c9e6",
+        "didar_item_return": "9|617ee84a613263bb8b4baa854ff46750",
+        "didar_order": "64|19639aec7587bad71da7a8cae59579fd",
+        "didar_order_line": "64|1bdbda1192a6e2e0cc647250f16e4d11",
+        "didar_supplier_permission": "81|a2c63d32c4762e279b6b0a4cbf74a804"
+      },
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    "didar-gold-postgres-1": {
+      "tables": {
+        "didar_inventory_item": "29|8794afbe63f89a398556e78da79936fc",
+        "didar_item_rfid_binding": "14|154d9a32525bc21533f22b8f1df3da80",
+        "didar_item_reservation": "10|0d42519ce8ab51bee340425fb01c8d56",
+        "didar_item_return": "1|a5d3032a145a95620de936df2849bb61",
+        "didar_order": "13|4307e7b7ec614f743e081a7fe13b19b9",
+        "didar_order_line": "13|577b638dd8d3b1a2b13f06d70ae2c40c",
+        "didar_supplier_permission": "9|c526928425f00526e2840cae7ebfab2f"
+      },
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    }
+  },
+  "native_lifecycle": "passed",
+  "after_native_restart": {
+    "didar-postgres": {
+      "tables": {
+        "didar_inventory_item": "204|3b72da5c451385609e34b4f7bb457dc3",
+        "didar_item_rfid_binding": "78|61ba3b3f3b625b7eed9f67bbf3efd64c",
+        "didar_item_reservation": "63|f1ab3f3ca121023dbaab37556e32c9e6",
+        "didar_item_return": "9|617ee84a613263bb8b4baa854ff46750",
+        "didar_order": "64|19639aec7587bad71da7a8cae59579fd",
+        "didar_order_line": "64|1bdbda1192a6e2e0cc647250f16e4d11",
+        "didar_supplier_permission": "81|a2c63d32c4762e279b6b0a4cbf74a804"
+      },
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    "didar-gold-postgres-1": {
+      "tables": {
+        "didar_inventory_item": "29|8794afbe63f89a398556e78da79936fc",
+        "didar_item_rfid_binding": "14|154d9a32525bc21533f22b8f1df3da80",
+        "didar_item_reservation": "10|0d42519ce8ab51bee340425fb01c8d56",
+        "didar_item_return": "1|a5d3032a145a95620de936df2849bb61",
+        "didar_order": "13|4307e7b7ec614f743e081a7fe13b19b9",
+        "didar_order_line": "13|577b638dd8d3b1a2b13f06d70ae2c40c",
+        "didar_supplier_permission": "9|c526928425f00526e2840cae7ebfab2f"
+      },
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    }
+  },
+  "after_native_shutdown_and_compose_restore": {
+    "didar-postgres": {
+      "tables": {
+        "didar_inventory_item": "204|3b72da5c451385609e34b4f7bb457dc3",
+        "didar_item_rfid_binding": "78|61ba3b3f3b625b7eed9f67bbf3efd64c",
+        "didar_item_reservation": "63|f1ab3f3ca121023dbaab37556e32c9e6",
+        "didar_item_return": "9|617ee84a613263bb8b4baa854ff46750",
+        "didar_order": "64|19639aec7587bad71da7a8cae59579fd",
+        "didar_order_line": "64|1bdbda1192a6e2e0cc647250f16e4d11",
+        "didar_supplier_permission": "81|a2c63d32c4762e279b6b0a4cbf74a804"
+      },
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    "didar-gold-postgres-1": {
+      "tables": {
+        "didar_inventory_item": "29|8794afbe63f89a398556e78da79936fc",
+        "didar_item_rfid_binding": "14|154d9a32525bc21533f22b8f1df3da80",
+        "didar_item_reservation": "10|0d42519ce8ab51bee340425fb01c8d56",
+        "didar_item_return": "1|a5d3032a145a95620de936df2849bb61",
+        "didar_order": "13|4307e7b7ec614f743e081a7fe13b19b9",
+        "didar_order_line": "13|577b638dd8d3b1a2b13f06d70ae2c40c",
+        "didar_supplier_permission": "9|c526928425f00526e2840cae7ebfab2f"
+      },
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    }
+  }
+}

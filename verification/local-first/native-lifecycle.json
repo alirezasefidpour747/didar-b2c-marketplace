@@ -1,0 +1,18 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "api_proxy_catalog_match": true,
+  "persian_rtl_html": true,
+  "local_only_listeners": [
+    "127.0.0.1:3000",
+    "127.0.0.1:9000"
+  ],
+  "native_setup_exit": 0,
+  "native_status_exit": 0,
+  "owned_stop_exit": 0,
+  "native_restart_functional": true,
+  "ports_released_after_owned_stop": true,
+  "complete_history_rows_and_volume_identities_retained": true,
+  "mac_uat": "MAC_UAT_PENDING",
+  "hardware": "HARDWARE_PENDING"
+}

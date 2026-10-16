@@ -1,0 +1,30 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [7.33ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [2.26ms]
+(pass) local tooling rejects staging environment [0.70ms]
+(pass) local tooling rejects production environment [0.01ms]
+(pass) local tooling rejects missing environment [0.02ms]
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.17ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value [0.02ms]
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.05ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value [0.06ms]
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.91ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.40ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.29ms]
+(pass) preflight refuses an occupied port without terminating its owner [5.96ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [1137.79ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [1.96ms]
+(pass) failed child verification preserves the nonzero result [300.55ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [7.30ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [1.88ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.21ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [12.82ms]
+
+ 22 pass
+ 0 fail
+ 63 expect() calls
+Ran 22 tests across 1 file. [1.58s]

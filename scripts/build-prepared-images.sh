@@ -10,7 +10,7 @@ trap 'rm -f "$context"' EXIT
 tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=.dockerignore \
   --exclude=.aws --exclude=.ssh --exclude=.oci --exclude='*.pem' --exclude='*.key' \
   --exclude='*.p12' --exclude='*.pfx' --exclude='*.dump' --exclude='*.bundle' --exclude=backups \
-  --exclude=coverage --exclude=test-results --exclude=playwright-report \
+  --exclude=.local --exclude=coverage --exclude=test-results --exclude=playwright-report \
   --exclude=.turbo --exclude='*/.next/cache' -czf "$context" .
 docker build -f Dockerfile.prebuilt --target api -t didar-gold-api:staging - < "$context"
 cp -r apps/storefront/.next/static apps/storefront/.next/standalone/apps/storefront/.next/static

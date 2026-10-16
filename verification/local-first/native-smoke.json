@@ -1,0 +1,10 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "api_proxy_catalog_match": true,
+  "persian_rtl_html": true,
+  "local_only_listeners": [
+    "127.0.0.1:3000",
+    "127.0.0.1:9000"
+  ]
+}

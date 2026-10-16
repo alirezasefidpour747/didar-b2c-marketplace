@@ -13,7 +13,13 @@
     "dev:api": "bun run --cwd packages/api dev",
     "dev:web": "bun run --cwd apps/storefront dev",
     "build:all": "bun run --cwd packages/api codegen && bun run build:panels && bun run --cwd packages/api build && bun run --cwd apps/storefront build",
-    "build:panels": "node scripts/build-panels.mjs"
+    "build:panels": "node scripts/build-panels.mjs",
+    "local:setup": "node scripts/local.mjs setup",
+    "local:dev": "node scripts/local.mjs dev",
+    "local:status": "node scripts/local.mjs status",
+    "local:test": "node scripts/local.mjs test",
+    "local:browser": "playwright install chromium",
+    "local:stop": "node scripts/local.mjs stop"
   },
   "dependencies": {
     "@hookform/resolvers": "5.4.0",

@@ -1,0 +1,5 @@
+{
+  "prepared_archive_exclusion": "passed",
+  "public_source_retained": true,
+  "private_logs_environment_keys_backups_absent": true
+}

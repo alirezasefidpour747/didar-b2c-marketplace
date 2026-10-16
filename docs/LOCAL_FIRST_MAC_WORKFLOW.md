@@ -18,65 +18,44 @@ Repository: `https://github.com/alirezasefidpour747/didar-b2c-marketplace`. The 
 
 Prerequisites: macOS (including Apple Silicon), working Docker Desktop, Git, Node 24 and **Bun 1.4.3**. Keep Docker Desktop running. A first install needs network access and disk space. Use only synthetic QA/demo merchandise and local sandbox payments. Don't use a real merchant database or credentials.
 
-First-time checkout in macOS Terminal:
+Implemented first-time checkout in macOS Terminal:
 
 ```bash
 git clone https://github.com/alirezasefidpour747/didar-b2c-marketplace.git
 cd didar-b2c-marketplace
 git switch main
-bun install --frozen-lockfile
-node scripts/cloud-env.mjs
-bash scripts/cloud-services.sh
-bun run db:setup
+bun run local:setup
+bun run local:browser
+bun run local:test
+bun run local:dev
 ```
 
-`cloud-env.mjs` creates ignored local configuration, including `DIDAR_ENVIRONMENT=local`, a private local database URL and `DIDAR_PAYMENT_MODE=sandbox`. It **preserves existing files**, so review local nonsecret settings after switching environments. `cloud-services.sh` starts local `didar-postgres` and `didar-redis` containers, bound only to localhost; the development PostgreSQL instance uses trust authentication and must never be exposed to the network. Do not use real customer or supplier data here.
+Setup checks Node 24/Bun 1.4.3, local Docker context/daemon, loopback configuration and occupied ports, then installs frozen dependencies, starts PostgreSQL/Redis, applies additive migrations, generates official Mercur routes and builds both native panels. Existing files/secrets, database volumes, individual UIDs and orders are preserved. A fresh database uses named volume `didar-local-postgres`; legacy `didar-postgres` containers keep their existing volume. Data service ports bind 127.0.0.1 only, for native Mac access, with trust authentication restricted to synthetic local data. No Linux bridge address is used.
 
-Start the API in Terminal A (leave running):
+`local:dev` starts both native API/Next processes on 127.0.0.1, verifies health/catalog and stops them together on Ctrl+C. In another terminal use `bun run local:status` or `bun run local:stop` (only the recognized owned native dev process is signaled; data is retained). Open `http://localhost:3000`; admin/supplier UI is under `/manage`, physical intake/UID/RFID under `/manage/operations`. Native Mercur `/dashboard` and `/seller` use separate authentication. Didar disposable logins are `admin@didar.test`, `supplier@didar.test`, `customer@didar.test`, password `DidarDemo2026!`. Existing custom passwords are never reset.
 
-```bash
-cd didar-b2c-marketplace
-bun run dev:api
-```
-
-Start the Next storefront in Terminal B (leave running):
-
-```bash
-cd didar-b2c-marketplace
-bun run dev:web
-```
-
-Navigate to `http://localhost:3000`. Admin gold UI: `http://localhost:3000/manage`; intake/UID/RFID UI: `http://localhost:3000/manage/operations`. API default: `http://localhost:9000`. Use the local-only demo login documented in `README.md` for a disposable demo database, or provision distinct local accounts. Native Mercur panels at the API origin use separate authentication.
-
-For subsequent verified releases (assuming the working tree is clean):
+For a later verified release, stop dev servers, then:
 
 ```bash
 git status --short
 git switch main
 git pull --ff-only origin main
-bun install --frozen-lockfile
-bash scripts/cloud-services.sh
-bun run db:setup
+bun run local:setup
+bun run local:test
+bun run local:dev
 ```
 
-Restart the two dev servers if needed. **Do not** run `git reset --hard` or overwrite local edits; if `git status --short` reports changes, review them before pulling. Database volumes persist; do not use `docker compose down -v` or `docker volume prune`.
+Review any local changes before pulling; do not discard them. **Never** remove persistent PostgreSQL volumes/containers, run `git reset --hard`, `docker compose down -v` or `docker volume prune`. Local setup applies additive migrations. See [ENVIRONMENT.md](../ENVIRONMENT.md) for private local backups and diagnostics. No Oracle account, SSH, hosted staging or production deployment is part of acceptance.
 
-## Automated verification on Mac — current commands and known blockers
+## Automated verification on Mac — implemented commands
 
-With the local API healthy, `bun run test` runs the compiled/backend suite (the root test task waits for the API); `bun run build:all` verifies panels/API/storefront build. Browser suite is `bun run test:e2e`, **but** the current `playwright.config.ts` hardcodes `/usr/bin/chromium` unless `CHROMIUM_PATH` is set. That Linux path is not valid by default on macOS. Codex must make the config use Playwright-managed Chromium when `CHROMIUM_PATH` is unset, and honor an explicitly supplied `CHROMIUM_PATH`. After that change, run:
+`bun run local:browser` installs Playwright Chromium for the native platform. With `CHROMIUM_PATH` unset, the configuration lets Playwright choose its managed browser. An explicit path remains supported. `PLAYWRIGHT_NO_SANDBOX=1` is an optional constrained Linux Cloud override, not a Mac default.
 
-```bash
-bunx playwright install chromium
-bun run test
-bun run test:e2e
-bun run build:all
-```
+Stop `local:dev` before building/testing shared outputs. `bun run local:test` runs the complete production build, local-workflow regression guards, all backend/migration suites, native Medusa HTTP integration and the complete Playwright suite. It creates independent uniquely named PostgreSQL/Redis containers and random loopback ports, with synthetic seed data and disposable accounts. It does not read the UAT database configuration or reuse its data. On completion/failure it removes only its own disposable QA containers and anonymous test volumes; persistent UAT volumes are untouched. Server logs stay ignored under `.local/`. A guarded optional `bun run local:test --reuse-build` is available for rerunning runtime/tests against an unchanged successful production build: source, output and platform receipts must match; default tests still build afresh. Initial install/build/browser download needs network access and sufficient disk space.
 
-Before this config fix, the E2E command may fail to launch Chromium on Mac even when the application works; do not confuse a missing browser executable with a failed business workflow.
+Advanced direct commands (`bun run test`, `bun run test:e2e`, `bun run build:all`) remain available, but the direct suites use the configured API/database and retain permanent QA UID history. Prefer `local:test` for repeatable test isolation.
 
-The `node scripts/test-compose.mjs` helper currently introspects private **Linux Docker bridge container addresses**, so it is **not** a reliable generic macOS Docker Desktop runner. Do **not** recommend it as the default Mac test command until Codex replaces it with a cross-platform, secure test technique that does not publish the database or reuse production data. Option A above intentionally uses host-side app servers and the documented host test suite instead.
-
-`compose.yaml` builds a full production-style Docker stack with isolated PostgreSQL, Redis, API and storefront. It defaults to `staging` and disables demo users; do not blindly run Compose with local tests expecting demo logins. Do not run the native-host workflow and full Compose API/storefront simultaneously on ports 3000/9000. Codex may provide a simple Mac-compatible, explicitly `local` Compose UAT alternative after validating architecture-specific image builds.
+The optional `scripts/test-compose.mjs` helper now uses a loopback TCP relay over local Docker exec streams; Compose DNS/database access happen inside the API network. It never reads bridge IPs or publishes PostgreSQL. It refuses remote Docker contexts, non-local/non-demo/non-sandbox runtime, publicly bound app ports and a published database port. It tests that explicitly selected isolated Compose database; it is not the default Mac command. The existing production-style full Compose stack defaults to staging/no demo users and must not compete with native servers for 3000/9000. Actual Docker Desktop/Apple Silicon runtime verification remains **MAC_UAT_PENDING**; Linux relay tests do not establish native Mac execution.
 
 ## Manual UAT — Phase 1
 
@@ -91,10 +70,10 @@ The `node scripts/test-compose.mjs` helper currently introspects private **Linux
 
 These manual steps are UAT, not production or statutory financial acceptance. Tahesab is not called from Phase 1.
 
-## Next Codex work item — Make Mac acceptance easy and repeatable
+## Implementation and acceptance status
 
-Implement, document and **test** Mac-compatible scripts (suggested `bun run local:setup`, `bun run local:dev`, `bun run local:test`, `bun run local:status`, or equivalent) that keep PostgreSQL/Redis private, preserve existing local data and allow the owner to run the complete Phase 1 stack with very few commands. Detect macOS and Apple Silicon. Use actual supported pinned versions. Make Playwright browser installation/config portable. Address Docker Desktop vs Linux bridge behavior without exposing PostgreSQL or hardcoding private IPs. Add preflight diagnostics for port conflicts, missing Docker/Bun/Node, unhealthy services and misconfigured `DIDAR_ENVIRONMENT`. Keep demo accounts/sandbox enabled **only** for isolated `local`; fail closed otherwise. Preserve all existing tests, UI flows and business rules.
+The portable commands, environment/service/port diagnostics, data preservation guards, disposable automated-test workflow and browser configuration are implemented. See [README.md](../README.md) for the short command path and [DELIVERY.md](../DELIVERY.md) for actual Cloud results and published commit evidence.
 
-Replace the stale 'Oracle preferred staging' framing in active README/ENVIRONMENT entry points with local-first acceptance guidance, while leaving legacy Oracle deployment documentation archived/optional rather than deleting history. No Oracle VM, account, credit card, OCI credentials, remote deployment or DNS is required for acceptance. Never deploy or move real funds.
+**MAC_UAT_PENDING** until the owner runs the commands and manual checklist on a real Mac, including Apple Silicon. Record `git rev-parse HEAD`, Mac/CPU, tool versions, test results, the manual journey, stop/restart persistence and any redacted failure logs. Physical HID/RF reading, tag writing and scale measurements remain separate hardware checks. Linux software tests establish neither native Mac success nor physical-device verification.
 
-**Completion:** a fresh Mac developer can clone, install, start, test, open `localhost:3000`, exercise intake/UID/RFID, stop/restart while retaining local data, and pull a later verified `main` safely. If actual native macOS execution is unavailable to Codex, label it `MAC_UAT_PENDING` and provide exact owner steps instead of claiming it passed.
+Use one reviewed/tested task branch, then merge verified source into canonical `main`. Future bug reports should include the exact commit, screen, reproduction steps, expected/actual result and redacted logs. No Phase 2 financial features or external infrastructure are needed for this workflow.

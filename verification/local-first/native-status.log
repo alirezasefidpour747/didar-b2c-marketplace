@@ -1,0 +1,9 @@
+$ node scripts/local.mjs status
+Platform: linux/x64; Node 24.19.0; Bun 1.4.3; local Docker ready
+Native local:dev session active
+PostgreSQL: ready (local data retained)
+Redis: ready (local data retained)
+API health: ready
+API catalog: ready
+Storefront proxy: ready
+MAC_UAT_PENDING: native Mac and physical RFID acceptance are owner-run checks, not established by this diagnostic.

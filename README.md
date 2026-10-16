@@ -1,39 +1,47 @@
-> **Current workflow:** Codex Cloud development → verified GitHub `main` → macOS laptop acceptance on `localhost`. **No Oracle is required for development or testing.** Read [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), and [verification evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID is merged to `main`; supplier writes default to read-only and Phase 2 finance is excluded. Playwright currently needs an explicit Mac-compatible executable or a portable configuration fix before native Mac browser testing is guaranteed.
+> **Current workflow:** Codex Cloud development → verified GitHub `main` → macOS laptop acceptance on `localhost`. **No Oracle is required for development or testing.** Read [the unified Mac acceptance roadmap](docs/ROADMAP_TO_INTEGRATED_MAC_UAT.md), [Mac local-first workflow](docs/LOCAL_FIRST_MAC_WORKFLOW.md), [Phase 1 operations](docs/PHASE1_OPERATIONS.md), [authoritative Phase 1 scope](docs/PHASE1_UID_RFID_INTAKE.md), and [local workflow verification](verification/local-first/README.md) and [Phase 1 evidence](verification/phase1/README.md). Phase 1 intake/UID/RFID is merged to `main`; supplier writes default to read-only and Phase 2 finance is excluded. Portable Playwright configuration and local commands are implemented; native Mac UAT remains **MAC_UAT_PENDING**.
 
 # Didar Gold — دیدار گلد
 
 Persian RTL gold marketplace generated with **`bun create mercur-app@2.3.7 create marketplace`**, official basic starter plus Next.js storefront. Original upstream starter is recorded in the first implementation commit and `MERCUR_STARTER.md`; this is an application, not a clone of the Mercur development repository.
 
-## Development
+## Local Mac development and acceptance
 
-Requires Node 24, Bun 1.4.3, Docker with Compose, PostgreSQL 17 and Redis 7.
-
-```sh
-bun install --frozen-lockfile
-node scripts/cloud-env.mjs
-bash scripts/cloud-services.sh
-bun run db:setup
-bun run dev:api
-# Another terminal:
-bun run dev:web
-```
-
-`cloud-env.mjs` generates ignored local environment files, preserves existing values (appending the local environment flag only when absent from restored files), and opts into **local sandbox demo accounts**. All three use the public development-only password `DidarDemo2026!`: `customer@didar.test`, `supplier@didar.test`, `admin@didar.test`. Never seed these on a public deployment. Native Mercur panels have separate Medusa authentication; Didar gold roles sign in through the Persian storefront.
-
-The Persian storefront runs on port 3000, API on 9000. Native Mercur admin and seller panels are served under `/dashboard` and `/seller` on the API. Gold administration and supplier operations are in **مدیریت طلا** after signing in through the storefront. Each cloud task already has an isolated checkout: use it directly; don't create a worktree unless explicitly requested.
-
-## Tests and builds
-
-Start the API and seed local demo accounts first. Chromium is required for browser tests (`CHROMIUM_PATH` overrides `/usr/bin/chromium`).
+Use macOS (Intel or Apple Silicon), **Node 24**, **Bun 1.4.3**, Git and running **Docker Desktop**. Docker runs PostgreSQL 17/Redis 7; the API and Next.js run natively on your Mac. No Oracle account, remote server or payment credentials are required. Install dependencies natively; do not copy Linux/x64 `node_modules` to Apple Silicon.
 
 ```sh
-bun run test
-bun run test:e2e
-bun run --cwd packages/api test:integration:http
-bun run build:all
+git clone https://github.com/alirezasefidpour747/didar-b2c-marketplace.git
+cd didar-b2c-marketplace
+git switch main
+bun run local:setup
+bun run local:browser
+bun run local:test
+bun run local:dev
 ```
 
-The HTTP suites use the actual server. Legacy fixtures are cleaned up; physical UID/history fixtures are permanently retained under unique IDs and their QA products/suppliers retired. They exercise database transactions, stock contention, role isolation, multi-supplier checkout, payment replay and expiration. Do not run the demo tests against a production database. Gold arithmetic is also tested independently against hand-calculated amounts.
+`local:setup` checks versions, local Docker context, configuration and port conflicts, installs the frozen lockfile, starts private loopback data services, applies additive migrations and builds native panels. It preserves existing environment files, passwords, volumes, UIDs and orders. A new PostgreSQL container uses named volume `didar-local-postgres`; an existing `didar-postgres` container retains its original volume, including older anonymous volumes. Local trust authentication is only for disposable synthetic data on this laptop.
+
+`local:dev` starts both native servers on **127.0.0.1**, waits for functional readiness and stops both with **Ctrl+C**. Database containers/data remain. In another terminal run `bun run local:status`. Use `bun run local:stop` to stop the owned native servers from another terminal; it verifies the recorded process and preserves data services. Open `http://localhost:3000`, `/manage` and `/manage/operations` for human acceptance. Native Mercur `/dashboard` and `/seller` use separate framework authentication. Didar sandbox logins: `admin@didar.test`, `supplier@didar.test`, `customer@didar.test`; public test-only password **`DidarDemo2026!`**. No real customer/supplier information belongs in this database.
+
+## Automated verification and release updates
+
+Stop `local:dev` with Ctrl+C before setup, builds or tests. `bun run local:test` builds the panels/API/storefront, then runs workflow guards, all backend/migration tests, native HTTP integration and Playwright against **new disposable QA data services and random loopback app ports**. It does not read the persistent UAT database configuration. An optional `bun run local:test --reuse-build` retries verification only when a private receipt matches all application source inputs, complete relevant production outputs, Node version, OS and CPU; otherwise it refuses and requires a fresh build. QA containers and their anonymous test volumes are removed afterward; the owner's UAT volumes remain untouched. Test server logs are ignored under `.local/`.
+
+Playwright uses its own platform-specific Chromium by default (`bun run local:browser` installs it). Optional `CHROMIUM_PATH` selects a specific executable. Only constrained Linux cloud runners should explicitly set `PLAYWRIGHT_NO_SANDBOX=1`; macOS does not require that override. Native macOS/Apple Silicon acceptance is **MAC_UAT_PENDING** until actually performed by the owner. Physical RFID integration is separately pending.
+
+To take the next verified release, first stop the dev servers and inspect your working tree:
+
+```sh
+git status --short
+git switch main
+git pull --ff-only origin main
+bun run local:setup
+bun run local:test
+bun run local:dev
+```
+
+Review local changes before pulling; never reset/discard them. Never remove the persistent PostgreSQL container/volume, run `docker compose down -v`, or prune volumes. A stopped `didar-postgres` container can be restarted by setup without changing data. See the [workflow/UAT checklist](docs/LOCAL_FIRST_MAC_WORKFLOW.md) and [environment diagnostics and preservation](ENVIRONMENT.md). GitHub `main` is the canonical verified delivery; Codex Cloud performs implementation and automated checks, then the owner performs Mac UAT on that exact SHA.
+
+Advanced direct commands (`bun run test`, `bun run test:e2e`, `bun run db:setup`) use the configured host API/database and mutate fixtures there. Prefer `local:test` for repeatable isolation. Gold arithmetic, transaction races, supplier isolation and irreversible physical UID history remain covered by the existing suites.
 
 ## Domain and price contract
 
@@ -47,49 +55,15 @@ The HTTP suites use the actual server. Legacy fixtures are cleaned up; physical 
 - Approved suppliers read their own records by default. Independent admin grants can enable product requests, offer creation/editing, inventory/making-charge editing, intake drafts, RFID pairing and fulfillment updates. Verification/posting and master publication remain admin-only. Itemized quantity is derived from physical states; legacy aggregate adjustments remain explicitly separate. Admin manages catalog, suppliers, offers and pricing. Customers register, compare suppliers, maintain a local cart, enter delivery details, check out and view orders.
 - Authentication uses scrypt hashes and expiring, opaque sessions hashed in the database. Browser tokens stay in session storage and are sent through a fixed-destination same-origin Next proxy. All writes are parameterized SQL. Gold order and stock actions are audited.
 
-## Docker staging
+## Optional full Docker stack (advanced)
 
-```sh
-node scripts/configure.mjs     # creates ignored .env with generated passwords; preserves existing values
-# Set actual public origins in .env before a public build.
-docker compose up -d --build
-```
+The existing `compose.yaml` and source `Dockerfile` remain available. They default to `staging` with demo identities disabled; they are **not** the default Mac UAT workflow. Do not run their API/storefront on ports 3000/9000 while native local servers use those ports. PostgreSQL/Redis remain unpublished in full Compose, and its named `postgres`/`uploads` volumes are separate from native local UAT data.
 
-Compose includes password-protected PostgreSQL with persistent data, Redis, one-shot migration/seed, one API replica and a production Next server. Ports bind loopback; put a TLS reverse proxy in front for remote staging. Native panel API origin is baked at build time via `MERCUR_BACKEND_URL`. No demo users are created by default. `DIDAR_ENVIRONMENT=staging` and `DIDAR_SEED_DEMO=false` are the Compose defaults; destination validation refuses demo-enabled or insecure staging configuration. Set up real role accounts using `scripts/create-account.ts`; it accepts the password from standard input and never logs it. Example inside a container, with password supplied securely on stdin:
+`node scripts/configure.mjs` preserves root Compose configuration. Source builds use `docker compose up -d --build`; prepared-image packaging is a same-architecture offline fallback for an already verified cloud workspace. Never copy Linux prepared dependencies to macOS or another CPU architecture. HTTPS verification remains enabled for builds behind managed proxies; see `ENVIRONMENT.md`.
 
-```sh
-docker compose exec -T api sh -c 'cd /app && bun scripts/create-account.ts admin@example.com "Operator" admin'
-```
+For an **already isolated** local/demo-enabled Compose stack only, `node scripts/test-compose.mjs [all|api|browser]` validates its local sandbox/loopback configuration and carries SQL fixture connections through local Docker exec streams. It requires no host-accessible bridge IP and publishes no database port. It intentionally tests that stack's own database and retains permanent test UID history; use `local:test` for disposable fixtures. The relay is verified in Linux Cloud; Docker Desktop/native Mac UAT is pending.
 
-For a supplier, append `supplier SUPPLIER_ID` rather than `admin`. Create the supplier through the admin interface first. Customer registration is public. This command creates an account, not a password reset. Never put passwords into shell command arguments or commit `.env` files.
-
-Behind the Codex egress proxy, build with the injected public CA as a **BuildKit secret**, plus the existing proxy build args. TLS verification stays on:
-
-```sh
-docker build --build-arg HTTPS_PROXY --build-arg HTTP_PROXY --build-arg NO_PROXY \
-  --secret id=cloud_ca,src="$NODE_EXTRA_CA_CERTS" --target api -t didar-gold-api:staging .
-```
-
-The cloud BuildKit resolver may also need the proxy hostname supplied via `--add-host` with its existing resolved address; this is environment-specific DNS configuration, not an Internet bypass. The CA is optional outside this managed proxy and is never copied into an image layer.
-
-Sandbox payment is explicitly enabled with `DIDAR_PAYMENT_MODE=sandbox`. No real payment, live rate feed, identity verification, shipping label service, email, payout or refund provider is configured. Before Internet exposure: supply deployment access, TLS origin, real operator accounts and policies. Keep one API replica while using the starter's local event bus and in-memory native workflow locks; gold checkout itself uses PostgreSQL locks. A real-money launch needs payment-provider verification, rate-feed credentials and operational/security review.
-
-When registries are unavailable but this checkout has installed dependencies, `scripts/build-prepared-images.sh` builds the current code and packages those prepared outputs into the same API/storefront image tags, without downloading dependencies. It excludes environment files and Git metadata from the packaging context. Run `docker compose up -d --no-build` afterward. The source-building `Dockerfile` remains the clean-machine path; the prepared path requires existing verified dependencies and the local Node/Bun base images.
-
-`prepare-codegen-cache.mjs` seeds Mercur's officially supported fallback cache from the route manifest downloaded over verified HTTPS by CLI 2.3.7 on 2026-10-15. Its provenance is the CLI's default canary manifest endpoint, not a claim that a release-tagged manifest was downloaded. The tracked metadata snapshot keeps codegen working during GitHub HTTP 503 outages. Refresh it together with pinned Mercur package upgrades.
-
-## Optional historical Oracle staging (not used for local tests)
-
-See [deploy/oracle/README.md](deploy/oracle/README.md) for the Ubuntu ARM64 Ampere A1 path, limited to 2 OCPUs / 12 GB RAM. Deployment scripts operate only on an existing eligible staging VM and never provision OCI resources. They perform native ARM builds; do not transfer this machine's x64 prepared outputs. Static dependency checks and live linux/arm64 image manifests pass. Native ARM build/runtime still needs access to an eligible VM; it has not been executed here.
-
-For an isolated Linux loopback Compose test stack, explicitly enable local sandbox accounts and use the database-aware test helper:
-
-```sh
-DIDAR_ENVIRONMENT=local DIDAR_SEED_DEMO=true docker compose up -d --no-build
-node scripts/test-compose.mjs
-```
-
-The helper refuses non-local runtime/public application ports and binds both HTTP and browser SQL fixtures to the API's private Compose database, without printing credentials or publishing PostgreSQL. `api` or `browser` can be supplied to select a suite. Never seed or run demo tests against staging/production. Ordinary host development uses `bun run test` and `bun run test:e2e` against the development database described above.
+Legacy Oracle instructions remain archived in [deploy/oracle/README.md](deploy/oracle/README.md). No Oracle resources, SSH, DNS, hosted staging, credit card or external deployment are required or attempted for this workflow.
 
 ## Marketplace routes and operations
 

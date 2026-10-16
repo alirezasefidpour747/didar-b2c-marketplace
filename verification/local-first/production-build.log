@@ -1,0 +1,27 @@
+Component build succeeded before a separate runtime cold-start timeout; successful runtime retest reused these unchanged outputs with a verified receipt.
+✔ Route types generated successfully.
+✓ built in 54.99s
+✓ built in 50.95s
+{"level":"info","message":"Backend build completed successfully (53.73s)","timestamp":"2026-10-16 05:22:01"}
+[bundle-dashboards] done — the artifact serves 2 panel(s) at their configured paths.
+ ✓ Compiled successfully in 16.1s
+ ✓ Generating static pages (14/14)
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      777 B         113 kB
+├ ○ /_not-found                            130 B         102 kB
+├ ○ /account                               164 B         118 kB
+├ ƒ /api/didar/[action]                    130 B         102 kB
+├ ○ /cart                                  166 B         118 kB
+├ ƒ /categories/[slug]                     163 B         113 kB
+├ ○ /checkout                              166 B         118 kB
+├ ƒ /collections/[slug]                    163 B         113 kB
+├ ○ /login                                 164 B         118 kB
+├ ○ /manage                                127 B         119 kB
+├ ○ /manage/admin                          127 B         119 kB
+├ ○ /manage/operations                   9.58 kB         115 kB
+├ ○ /manage/supplier                       126 B         119 kB
+├ ○ /orders                                166 B         118 kB
+├ ƒ /orders/[id]                           166 B         118 kB
+├ ○ /products                              162 B         113 kB
+└ ƒ /products/[id]                         162 B         113 kB
++ First Load JS shared by all             102 kB

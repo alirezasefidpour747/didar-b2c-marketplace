@@ -28,3 +28,4 @@ MERCUR_STARTER.md
 **/*.dump
 **/*.bundle
 **/backups
+**/.local

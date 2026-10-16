@@ -1,3 +1,69 @@
+# Didar local-first Mac workflow delivery — 2026-10-16
+
+**Linux Cloud verification passed. MAC_UAT_PENDING.** This delivery implements the existing local-first specification and Gate 0 tooling. GitHub `main` is the canonical owner delivery; native Mac/Docker Desktop/Apple Silicon and real-device acceptance are not claimed. No Oracle, hosted staging, SSH, VM or production deployment is required or attempted. Phase 2 finance remains excluded.
+
+## Implemented
+
+- `local:setup`, `local:dev`, `local:status`, `local:stop`, `local:test`, `local:browser`. Pinned Node 24/Bun 1.4.3, OS/CPU/local-Docker checks, loopback environment guards, port diagnostics, functional readiness and safe owned-process shutdown. A session lock protects shared build outputs.
+- Existing native PostgreSQL containers/volumes and configuration/passwords are reused. Fresh native data uses persistent `didar-local-postgres`. Existing additive migrations preserve UIDs, exact weights, EPC/reservation/return history, permissions, prices and orders. No application business features or architecture were replaced.
+- Automated tests create independent disposable QA PostgreSQL/Redis, synthetic accounts and random loopback app ports. They never read the owner's persistent database configuration. Cleanup removes only the containers/anonymous QA volumes created by that invocation.
+- Playwright uses its managed platform Chromium by default, honors explicit `CHROMIUM_PATH`, and disables the sandbox only with explicit `PLAYWRIGHT_NO_SANDBOX=1`. Full-Compose SQL checks use a loopback Docker exec relay; no host bridge-IP access or published Compose PostgreSQL port.
+- Production build mode is explicit. Optional `local:test --reuse-build` requires matching source/lock/config, complete relevant output, Node/OS/CPU receipts. Changed/missing/damaged/cross-platform output is refused. Private `.local` state/logs are excluded from source/image contexts.
+
+## Verified results
+
+| Check | Result |
+|---|---|
+| Backend/workflow/migration/security suites | **74 passed / 570 assertions**: existing 52 plus 22 workflow regressions |
+| Native Medusa HTTP integration | **1 passed** |
+| Full Playwright production journeys | **8 passed**, zero skipped/failing tests |
+| Existing setup/deployment guards | **23 passed**, local/mocked only |
+| Official codegen, native panels, API and Next production build | Passed |
+| Native Linux setup/start/status/owned stop/restart | Passed; API/proxy data match, RTL HTML and loopback app listeners |
+| Persistent data after QA and native restart | Both databases retain identical complete rows across **7 history tables** and original volume identities; **204+29 units**, **64+13 orders** |
+| Real private Compose SQL relay | Passed, read-only; PostgreSQL unpublished |
+| Prepared archive privacy probe | Source retained; private logs, env, keys and backups excluded |
+| Native macOS/Apple Silicon/Docker Desktop | **MAC_UAT_PENDING**; Mac dependency variants checked statically only |
+| Physical RFID reader/scale/chip writing | **HARDWARE_PENDING**; software mock/HID text boundary only |
+
+The successful runtime/regression command was `CHROMIUM_PATH=/usr/bin/chromium PLAYWRIGHT_NO_SANDBOX=1 bun run local:test --reuse-build`, against a new disposable database and a receipt-verified successful production build. Earlier attempts exposed a read-only Cloud home, development-mode build leakage, a short cold-start deadline and overly short status probes. These were corrected; failed attempts are not presented as successful complete runs. Component build evidence and successful regression/lifecycle results are in [verification/local-first](verification/local-first/README.md). Existing application source was preserved; the tested Gold-First, supplier isolation, intake/UID/RFID, exact reservation/payment, return and fulfillment journeys remain operational.
+
+## Mac owner commands
+
+Prerequisites: Node 24, Bun 1.4.3, Git and running Docker Desktop. First checkout: clone this repository and `cd didar-b2c-marketplace`. For an existing clean checkout, stop native dev, inspect `git status --short`, then:
+
+```sh
+git switch main
+git pull --ff-only origin main
+bun run local:setup
+bun run local:browser
+bun run local:test
+bun run local:dev
+```
+
+In another terminal: `bun run local:status`; stop with `bun run local:stop` or Ctrl+C. Open `localhost:3000`, `/manage` and `/manage/operations`. Disposable Didar logins: `admin@didar.test`, `supplier@didar.test`, `customer@didar.test`; password `DidarDemo2026!` (existing passwords are never reset). Keep synthetic data only. Never remove persistent database containers/volumes, prune volumes or run `down -v`. Backups and diagnostics are in [ENVIRONMENT.md](ENVIRONMENT.md).
+
+Manual UAT on the exact main SHA (`git rev-parse HEAD`):
+
+1. Product/supplier creation, approval/publication, supplier isolation and grant/revoke/write denial.
+2. Grouped 5/2/12-piece intake with individually entered measurements totaling 135/127/117 g; reject mismatch, assign 19 permanent UIDs, reject duplicate EPC, verify/post and inspect supplier stock.
+3. Verify 100 g/750 Gold-First example 124.2 g-equivalent with actual IRR VAT; reserve/sell the same UID once, sandbox failure/expiry release, fulfillment and return/quarantine/restock.
+4. RFID mock/HID count: deduplicate, detect unknown/missing/sold stock; stop/restart and confirm the same UID/order history. Actual RF reading/chip writing/scale work requires hardware evidence.
+
+## Publication and remaining acceptance
+
+One reviewed task branch: `didar/local-first-mac`. Owner's merged Phase 1 and subsequent roadmap commits are preserved. Exact source publication/remote verification is recorded after normal Git push; no force push or history rewrite is permitted. Original delivery bundles remain outside Git, unchanged.
+
+The reusable Cloud install/start configuration is saved as a draft; review/save and publish it in Environment settings to persist those startup instructions. Saving the draft does not publish the environment or establish fresh-task restoration.
+
+Only owner-run native Mac UAT and real hardware checks remain outside Cloud verification. There are no Oracle/deployment credential blockers to this workflow. Live payments and Phase 2 accounting remain excluded.
+
+---
+
+# Historical Phase 1 delivery record
+
+The following earlier record predates the owner's Phase 1 merge and the current local-first workflow. Its former Oracle/PR limitations are historical, not current acceptance dependencies.
+
 # Didar Gold Phase 1 — verified implementation delivery
 
 Repository: https://github.com/alirezasefidpour747/didar-b2c-marketplace

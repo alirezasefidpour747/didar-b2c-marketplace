@@ -61,3 +61,6 @@ __pycache__/
 *.dump
 *.bundle
 backups/
+
+# Private local workflow state/logs; never source or delivery evidence
+.local/

@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { browserLaunchOptions } from "./scripts/local/browser-options.mjs";
 export default defineConfig({
   testDir: "./tests/browser",
   workers: 1,
@@ -8,10 +9,7 @@ export default defineConfig({
     headless: true,
     actionTimeout: 20000,
     navigationTimeout: 30000,
-    launchOptions: {
-      executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
-      args: ["--no-sandbox"],
-    },
+    launchOptions: browserLaunchOptions(),
   },
   reporter: "list",
 });

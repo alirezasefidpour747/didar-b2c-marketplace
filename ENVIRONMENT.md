@@ -1,65 +1,69 @@
-# Didar environment contract
+# Didar local-first environment contract
 
-Use the existing checkout with Node 24 and Bun 1.4.3. Install with `bun install --frozen-lockfile`. The official Mercur starter and exact package versions are recorded in `MERCUR_STARTER.md` and `bun.lock`. Do not copy installed dependencies or compiled outputs between x86_64 and ARM64.
+Codex Cloud develops/verifies; GitHub `main` is the verified release; the owner performs native Mac UAT. Follow [LOCAL_FIRST_MAC_WORKFLOW.md](docs/LOCAL_FIRST_MAC_WORKFLOW.md). **MAC_UAT_PENDING**: Linux Cloud does not prove native macOS/Apple Silicon or physical reader operation. No Oracle, remote SSH, hosted staging or production access is needed.
 
-## Configuration
+## Tools and commands
 
-Real configuration belongs in ignored environment files or the hosting secret manager. Never commit passwords, access tokens, private SSH keys, database backups, or `.env` files. The tracked `.env.template` files contain names and public local origins only. `scripts/cloud-env.mjs` generates private local API configuration; `scripts/configure.mjs` generates private root Compose configuration. Both preserve existing values. For a restored local API file that predates the environment guard, `cloud-env.mjs` appends `DIDAR_ENVIRONMENT=local` only when the variable is absent, preserving all existing bytes and explicit environment choices.
+Use Node **24**, Bun **1.4.3**, Git, Docker Desktop (Mac) or local Docker Engine (Cloud). PostgreSQL **17-alpine** and Redis **7-alpine** images select their native architecture. Dependencies install with the existing `bun.lock` using `--frozen-lockfile`; never transfer `node_modules` or prepared artifacts between OS/CPU architectures. No new packages or framework version changes are introduced.
 
-| Name | Purpose | Local development | Oracle staging |
-| --- | --- | --- | --- |
-| `DIDAR_ENVIRONMENT` | Controls sandbox/demo safety boundary | `local` explicitly | `staging` required |
-| `NODE_ENV` | Framework build/runtime behavior | `development` | `production` runtime; migration runner uses `development` to load source |
-| `DIDAR_SEED_DEMO` | Opts into public test identities | `true` only on isolated local test stack | `false` required |
-| `DIDAR_PAYMENT_MODE` | Payment provider mode | `sandbox` | `sandbox`; no live provider enabled |
-| `DATABASE_URL` | API PostgreSQL credentials | Ignored API `.env` | Derived inside Compose from generated database password |
-| `DIDAR_DB_PASSWORD` | Compose PostgreSQL password | Generated root `.env` | Generated on destination only, at least 32 characters |
-| `REDIS_URL` | Private Redis address | Local service | Private Compose service, no published port |
-| `JWT_SECRET`, `COOKIE_SECRET` | Native framework authentication | Separate random generated values | Separate random values, at least 32 characters each |
-| `STORE_CORS`, `ADMIN_CORS`, `VENDOR_CORS`, `AUTH_CORS` | Allowed application origins | Explicit loopback development origins | Derived from configured storefront/backend origins |
-| `MERCUR_BACKEND_URL` | Native panel API origin at build time | Local API origin | Default private loopback origin; rebuild panels after changing |
-| `STOREFRONT_URL` | Compose customer origin | Local storefront origin | Default private loopback origin |
-| `MEDUSA_BACKEND_URL` | Server-only Next proxy destination | Local API origin | `http://api:9000` on private Docker network |
-| `FILE_BACKEND_URL` | Native Mercur file URL prefix | Local API `/static` | Derived from backend origin |
-| `DIDAR_API_IMAGE`, `DIDAR_STOREFRONT_IMAGE` | Optional exact application image selection | Default staging tags | Can select retained rollback tags without rebuilding |
+- `bun run local:setup`: preflight; preserve/create private local config; frozen install; persistent data service startup; additive database migrations; official Mercur codegen; both native panel builds.
+- `bun run local:browser`: install Playwright-managed Chromium for the host OS/CPU. No browser path is assumed. Optional `CHROMIUM_PATH` is honored; `PLAYWRIGHT_NO_SANDBOX=1` is an explicit constrained Linux runner override.
+- `bun run local:dev`: run API and Next natively, both bound to 127.0.0.1. Functional readiness checks require API health and a valid storefront catalog response. Ctrl+C stops only these owned processes, retaining data services and volumes.
+- `bun run local:stop`: verify and signal only the recorded native dev wrapper; stop both owned servers and preserve data. It refuses setup/test sessions or an unrecognized/reused PID. No Docker/network access is needed for shutdown.
+- `bun run local:status`: platform/tool diagnostics, private data readiness, API health/catalog and Next proxy checks. Returns nonzero for missing/unhealthy components and withholds configuration secrets.
+- `bun run local:test`: independent disposable QA PostgreSQL/Redis, random loopback HTTP ports, additive migrations/seed, complete production builds, backend/migration/workflow guards, native Medusa HTTP health and Playwright. It never reads or connects to the persistent UAT database. Removes only the invocation's uniquely named QA containers and their anonymous volumes. Ignored logs: `.local/test-api.log`, `.local/test-web.log`.
 
-`DIDAR_ENVIRONMENT` is deliberately independent of `NODE_ENV`: migration and seed commands need source-mode framework execution, which must never authorize demo users on a staging host. The Oracle destination configuration validator rejects local/demo-enabled configuration and group/world-readable secret files. Local loopback Compose integration tests must set `DIDAR_ENVIRONMENT=local` and opt into demo seeding explicitly; do not reuse those settings externally.
+Optional `bun run local:test --reuse-build` skips compilation only after verifying a locally recorded successful-build receipt against application source/lockfile/configuration inputs, production output contents, Node version, OS and CPU. Changed/missing/damaged or cross-platform builds are refused. Default `local:test` always rebuilds. Startup readiness allows up to five minutes for cold Mercur loading while continuing functional probes; a timeout remains a failure, with private server logs retained.
 
-The internal Compose database URL uses `sslmode=disable` only for the private container network. It does not publish PostgreSQL or Redis ports. An external managed database requires verified TLS and its own supported credentials/configuration; none is provisioned by this project.
+Stop native dev servers before setup/test/build because they share source/build outputs. The wrapper refuses to build over its own active dev session; manually launched servers must also be stopped by their owner. Existing unrelated ports/processes are never killed. If a container pull/build fails, repair the prerequisite and rerun; do not reset data.
 
-## Data and accounts
+The legacy `scripts/cloud-env.mjs`/`cloud-services.sh` entry points delegate to the same portable guards/services. Shell helpers use no `rg`, GNU-specific network utilities or Linux bridge addresses. The standard native helper supports the documented localhost `postgres`/`didar` defaults and Redis DB0. Custom local service settings are preserved and refused by that helper rather than silently connected to the wrong data service.
 
-The Didar PostgreSQL tables are the authoritative gold ledger. Native Mercur stock, generic carts/orders, commissions and payouts must not be used as a second ledger for Didar gold. Product image bytes are stored in PostgreSQL with bounded uploads; database backups include those images. The separate `uploads` volume preserves native Mercur file-provider assets.
+## Local configuration and safety boundary
 
-The migration service runs native Medusa migrations and the idempotent Didar schema/seed. Existing rows and passwords are preserved; there is no reset or destructive rebuild step. Sample product/supplier records demonstrate the sandbox and must be reviewed/disabled before real business operations. Public demo credentials are development fixtures, never staging operator accounts.
+Ignored `packages/api/.env` and `apps/storefront/.env.local` contain runtime configuration. A fresh setup creates files mode0600 with independent random JWT/cookie secrets. Existing bytes/passwords are retained. An older file receives a missing `DIDAR_ENVIRONMENT=local` only after its database, Redis, payment and CORS settings demonstrate a local sandbox. Explicit staging/production or remote targets are refused, including inherited shell overrides (Bun also auto-loads a root `.env`, which may belong to the optional full Compose workflow). Keep the datasets/configurations separate; do not change a staging file to local merely to bypass a guard. When deliberately using the validated native configuration without Bun root-dotenv loading, the equivalent entry point is `node scripts/local.mjs setup|dev|status|test`. Review the named variable yourself when diagnostics reject it; no secret value is printed or auto-replaced. Older Mercur templates may still include `https://docs.medusajs.com` in `STORE_CORS`; local tooling now refuses that remote origin. For native local use, set only `STORE_CORS=http://localhost:3000` (or supply that explicit shell override), preserving database credentials and all other existing values.
 
-Create the first staging administrator with `scripts/create-account.ts`, passing its password over standard input. Never put passwords in argv or shell history. The command runs against the API container's own database environment:
+| Setting | Native local UAT |
+|---|---|
+| `DIDAR_ENVIRONMENT` | Explicit `local` required |
+| `DIDAR_PAYMENT_MODE` | Explicit `sandbox` required |
+| `DIDAR_SEED_DEMO` | `true` for disposable local demo identities; `false` retains distinct local identities |
+| `DATABASE_URL` | `postgres://postgres@localhost:5432/didar` (synthetic local trust-auth data only) |
+| `REDIS_URL` | `redis://localhost:6379` |
+| `JWT_SECRET`, `COOKIE_SECRET` | Independent generated values, at least 32 characters |
+| `STORE_CORS` | `http://localhost:3000` |
+| Admin/vendor/auth CORS | Explicit loopback origins only |
+| `MEDUSA_BACKEND_URL` | Server-only storefront destination `http://localhost:9000` |
 
-```sh
-docker compose exec -T api sh -c 'cd /app && bun scripts/create-account.ts admin@example.com "Operator" admin'
-```
+Do not use real customer records, merchant credentials or live payments. The native data ports are published **only to 127.0.0.1** because the native Mac servers need them; they are not reachable from the LAN. Full Compose keeps data ports entirely unpublished. Local Docker context/Unix socket is required; remote Docker/SSH/TCP contexts are refused. Treat every account as a disposable test identity. Existing custom passwords/accounts are never reset by migrations.
 
-Supply the input through a secure local password prompt or password manager. Provision no generic shared password on staging. Suppliers can request onboarding through the application and an administrator controls activation; the account CLI can also provision a supplier against an existing approved supplier ID.
+## Persistence and recovery
 
-## Start, verify and preserve
+The authoritative `didar_*` ledger owns inventory, UIDs, prices, reservations, orders and fulfillment. The native Mercur framework stays intact and does not become a duplicate gold ledger. Phase 1 migrations remain additive and repeatable; no historical weights or UIDs are fabricated. Supplier permissions, Gold-First policies and immutable price snapshots are unchanged.
 
-For isolated development, follow the root README's install, local-service, schema and dev-server commands. For a clean source Docker build, use `docker compose up -d --build` after generating root configuration. For Oracle use the guarded scripts in `deploy/oracle/README.md`; their native ARM path does not use prepared x86 outputs.
+Fresh native services are `didar-postgres` using named volume `didar-local-postgres`, and `didar-redis`. An existing PostgreSQL container, including its older anonymous volume, is **reused unchanged**. Redis is disposable cache. Dev shutdown and later setup/start retain the same database. Never remove the persistent PostgreSQL container or volume, use `docker compose down -v`, prune volumes, or restore an older backup to hide a failed migration. The QA runner's `docker rm -fv` applies only to containers it just created, never these persistent services.
 
-The Compose project name is fixed as `didar-gold`; named PostgreSQL/uploads volumes survive container recreation. Do not use `docker compose down -v`, remove volumes, run schema reset tools, or expose demo ports publicly. Retain periodic backups outside the source checkout with private permissions. See [rollback instructions](deploy/oracle/ROLLBACK.md) for update recovery, backup boundaries and the explicit data-loss implications of restoring a database.
-
-Only one API replica is supported by this MVP while the native starter uses process-local event/workflow providers. PostgreSQL transactions coordinate Didar checkout. A production rollout needs shared provider configuration, notification/payment/rate integrations, operational review, verified backups and TLS/access policies. Sandbox completion does not certify real-money or production readiness.
-
-For the isolated Linux Docker test stack, explicitly opt into local demo mode, then use the helper so browser SQL fixtures target the same private Compose database as the API:
+Before an important local update, stop dev writes and make a private backup outside Git:
 
 ```sh
-DIDAR_ENVIRONMENT=local DIDAR_SEED_DEMO=true docker compose up -d --no-build
-node scripts/test-compose.mjs
+mkdir -p "$HOME/DidarBackups"
+umask 077
+docker exec didar-postgres pg_dump -U postgres -Fc didar > "$HOME/DidarBackups/didar-$(date +%Y%m%d-%H%M%S).dump"
 ```
 
-The helper refuses staging/production runtime and publicly bound application ports. It derives the private Linux Docker bridge database address and holds credentials only in child-process environment, without printing them or putting them in argv. PostgreSQL remains unpublished. This path requires a local Linux Docker bridge; on a remote Docker daemon, run the checks from the same authorized private test host. Ordinary host development uses `bun run test` and `bun run test:e2e` instead.
+Check command success and retain the file privately. Restoring changes history and is not part of normal setup/update. Native uploaded product image bytes live in PostgreSQL. Native file-provider assets under `packages/api/static`/`.medusa/server/static` are ignored local files; retain them and back them up separately if used. Full Compose has distinct named `postgres`/`uploads` volumes and its original project name `didar-gold`; no migration between these local datasets is implicit.
 
-## Phase 1 verification on the restored workspace
+## Diagnostics and cloud verification
 
-The original repository, ignored environments, dependencies and databases were reused. Phase 1 adds `src/didar/phase1-schema.sql` to the existing `db:setup` sequence; it preserves legacy quantities and historical order JSON. Backend tests now include itemized intake/UID/RFID, Gold-First pricing, permission isolation and clean/repeat migrations. `scripts/test-compose.mjs` includes the new suites and still binds all fixtures to the container database.
+- Missing/closed Docker Desktop: start it, then rerun setup/status. Select the local desktop context. No VM/SSH credentials are requested.
+- Port 5432/6379 already used by another service: stop that service yourself or use your existing matching custom workflow. The helper never replaces it.
+- Port 3000/9000 occupied: stop the full Compose app services or the other native servers first. Keep their databases/volumes. `local:test` uses random ports and independent data.
+- Refused `DIDAR_ENVIRONMENT`, payment, database or CORS: review that local variable or inherited shell override; never relabel staging/production data as local to bypass the guard.
+- Missing browser: `bun run local:browser`. On Mac leave `CHROMIUM_PATH` unset unless deliberately choosing another executable. In this Linux cloud use the available system browser with `CHROMIUM_PATH=/usr/bin/chromium PLAYWRIGHT_NO_SANDBOX=1`.
+- Interrupted QA: the runner prints the uniquely named disposable QA container if cleanup fails. Inspect `docker ps -a --filter label=didar.disposable-qa=true`; remove only confirmed abandoned QA containers. Do not prune volumes globally.
 
-For a managed read-only home, use a writable Docker client cache, e.g. `export DOCKER_CONFIG=/workspace/.docker-didar-phase1`, before local image builds. Do not print or copy runtime environments into image contexts. Prepared standalone packaging now supplies a sensitive-file `.dockerignore`, because Next tracing may copy a local `.env` into standalone output. Public local-only demo identities remain intentionally gated to `DIDAR_ENVIRONMENT=local`; no Oracle deployment is authorized by running local verification.
+Cloud uses the existing checkout, Node/Bun and local services. A read-only home may need `XDG_CONFIG_HOME=/workspace/.config` and writable `DOCKER_CONFIG=/workspace/.docker-didar-phase1`. Source Docker builds preserve HTTPS verification: supply the managed public CA only via the optional BuildKit `cloud_ca` secret, and existing proxy build args when required. No actual secrets belong in build contexts. Prepared images exclude environment files, keys, backups, bundles and `.local` logs; their architecture is not portable.
+
+The optional full-Compose regression helper now relays PostgreSQL TCP streams through local Docker exec, using Compose DNS from inside the API network. It checks explicit local/demo/sandbox runtime, loopback app bindings, the shared private PostgreSQL service and absence of a published database port. Credentials stay in memory/child environment, not argv or logs. This exercises that explicitly selected Compose database; it is not the default disposable Mac test path.
+
+Legacy Oracle material in `deploy/oracle` is archived/optional and is not an acceptance dependency. Physical RFID/scale/chip encoding, live gateway and Phase 2 finance are outside the verified local software boundary.
