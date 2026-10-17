@@ -68,8 +68,10 @@ test("I18 independent real Vendor CMS keeps pending operations disabled and prev
   const storefronts = await admin.call("storefront");
   // A native merchant-home draft requires a legitimate existing storefront.
   // Keep any stable existing handle/configuration; provision only a missing QA row.
+  // Public marketplace eligibility matches the prior no-storefront supplier;
+  // the new CMS draft itself remains private and unpublished.
   if (!storefronts.stores.some((s: any) => s.supplier_id === "s1"))
-    await admin.call("storefront", { kind: "save", supplier_id: "s1", handle: "synthetic-closure-s1", name: "ویترین خصوصی ساختگی آزمون", visibility: "UNLISTED_LINK", published: false, approved: false });
+    await admin.call("storefront", { kind: "save", supplier_id: "s1", handle: "synthetic-closure-s1", name: "ویترین ساختگی آزمون", visibility: "PUBLIC_MARKETPLACE", published: true, approved: true });
   const vendor = await native("vendor"), tag = crypto.randomUUID().slice(0, 8);
   const index = await vendor.call("pages");
   const old = index.pages.find((p: any) => p.supplier_id === "s1" && p.kind === "MERCHANT_HOME" && p.route_key === "");
