@@ -1,0 +1,15 @@
+{
+  "unchanged_original_ten_case_sha256": "13715f2dc4f0ea09f63ae34d0f4c69b187dc50835492c486d480775a7d1682a4",
+  "unchanged_original_prefix_bytes": 37697,
+  "added_case_sha256": "b12dfb7c3ae5580439ebdf210bfad71678ae8b415222b06bc78091ed28641402",
+  "updated_eleven_case_sha256": "a46fb68f07c51ac6158c76fcc3c0e77a325cc93933baf3c56e7ba7e7b888c6f0",
+  "new_test_cases": 1,
+  "new_economic_scenarios": 4,
+  "application_receipt_unchanged": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  }
+}

@@ -1,0 +1,936 @@
+Platform: linux/x64; Node 24.19.0; Bun 1.4.3; local Docker ready
+$ bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    Running migrations...
+info:    Creating migrations table 'mikro_orm_migrations'...
+info:    Migrations table created successfully
+info:    
+info:    
+info:    MODULE: admin_ui
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: codegen
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: commission
+info:      ● Migrating Migration20260130132817
+info:      ✔ Migrated Migration20260130132817
+info:      ● Migrating Migration20260615120000
+info:      ✔ Migrated Migration20260615120000
+info:      ● Migrating Migration20260910000000
+info:      ✔ Migrated Migration20260910000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: custom_fields
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: media
+info:      ● Migrating Migration20260616000000
+info:      ✔ Migrated Migration20260616000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: offer
+info:      ● Migrating Migration20260520104835
+info:      ✔ Migrated Migration20260520104835
+info:      ● Migrating Migration20260526000000
+info:      ✔ Migrated Migration20260526000000
+info:      ● Migrating Migration20260622000000
+info:      ✔ Migrated Migration20260622000000
+info:      ● Migrating Migration20260804000000
+info:      ✔ Migrated Migration20260804000000
+info:      ● Migrating Migration20260908000000
+info:      ✔ Migrated Migration20260908000000
+info:      ● Migrating Migration20261007000000
+info:      ✔ Migrated Migration20261007000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: payout
+info:      ● Migrating Migration20260130132816
+info:      ✔ Migrated Migration20260130132816
+info:      ● Migrating Migration20260216152209
+info:      ✔ Migrated Migration20260216152209
+info:      ● Migrating Migration20260317000000
+info:      ✔ Migrated Migration20260317000000
+info:      ● Migrating Migration20260323170925
+info:      ✔ Migrated Migration20260323170925
+info:      ● Migrating Migration20260928120000
+info:      ✔ Migrated Migration20260928120000
+info:      ● Migrating Migration20261006120000
+info:      ✔ Migrated Migration20261006120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product_attribute
+info:      ● Migrating Migration20260601000000
+info:      ✔ Migrated Migration20260601000000
+info:      ● Migrating Migration20260601000001
+info:      ✔ Migrated Migration20260601000001
+info:      ● Migrating Migration20260601000002
+info:      ✔ Migrated Migration20260601000002
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product_edit
+info:      ● Migrating Migration20260601130000
+info:      ✔ Migrated Migration20260601130000
+info:      ● Migrating Migration20260828120000
+info:      ✔ Migrated Migration20260828120000
+info:      ● Migrating Migration20260901120000
+info:      ✔ Migrated Migration20260901120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: promotion_cost
+info:      ● Migrating Migration20260722120000
+info:      ✔ Migrated Migration20260722120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: review
+info:      ● Migrating Migration20260729120000
+info:      ✔ Migrated Migration20260729120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: seller
+info:      ● Migrating Migration20260324104737
+info:      ✔ Migrated Migration20260324104737
+info:      ● Migrating Migration20260330093053
+info:      ✔ Migrated Migration20260330093053
+info:      ● Migrating Migration20260331113435
+info:      ✔ Migrated Migration20260331113435
+info:      ● Migrating Migration20260401093720
+info:      ✔ Migrated Migration20260401093720
+info:      ● Migrating Migration20260410120000
+info:      ✔ Migrated Migration20260410120000
+info:      ● Migrating Migration20260414123048
+info:      ✔ Migrated Migration20260414123048
+info:      ● Migrating Migration20260421102419
+info:      ✔ Migrated Migration20260421102419
+info:      ● Migrating Migration20260422130000
+info:      ✔ Migrated Migration20260422130000
+info:      ● Migrating Migration20260422140000
+info:      ✔ Migrated Migration20260422140000
+info:      ● Migrating Migration20260427100000
+info:      ✔ Migrated Migration20260427100000
+info:      ● Migrating Migration20260616120000
+info:      ✔ Migrated Migration20260616120000
+info:      ● Migrating Migration20260908010000
+info:      ✔ Migrated Migration20260908010000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: vendor_ui
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: stock_location
+info:      ● Migrating Migration20240307161216
+info:      ✔ Migrated Migration20240307161216
+info:      ● Migrating Migration20241210073813
+info:      ✔ Migrated Migration20241210073813
+info:      ● Migrating Migration20250106142624
+info:      ✔ Migrated Migration20250106142624
+info:      ● Migrating Migration20250120110820
+info:      ✔ Migrated Migration20250120110820
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: inventory
+info:      ● Migrating Migration20240307132720
+info:      ✔ Migrated Migration20240307132720
+info:      ● Migrating Migration20240719123015
+info:      ✔ Migrated Migration20240719123015
+info:      ● Migrating Migration20241213063611
+info:      ✔ Migrated Migration20241213063611
+info:      ● Migrating Migration20251010131115
+info:      ✔ Migrated Migration20251010131115
+info:      ● Migrating Migration20260815185216
+info:      ✔ Migrated Migration20260815185216
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product
+info:      ● Migrating InitialSetup20240401153642
+info:      ✔ Migrated InitialSetup20240401153642
+info:      ● Migrating Migration20240601111544
+info:      ✔ Migrated Migration20240601111544
+info:      ● Migrating Migration202408271511
+info:      ✔ Migrated Migration202408271511
+info:      ● Migrating Migration20241122120331
+info:      ✔ Migrated Migration20241122120331
+info:      ● Migrating Migration20241125090957
+info:      ✔ Migrated Migration20241125090957
+info:      ● Migrating Migration20250411073236
+info:      ✔ Migrated Migration20250411073236
+info:      ● Migrating Migration20250516081326
+info:      ✔ Migrated Migration20250516081326
+info:      ● Migrating Migration20250910154539
+info:      ✔ Migrated Migration20250910154539
+info:      ● Migrating Migration20250911092221
+info:      ✔ Migrated Migration20250911092221
+info:      ● Migrating Migration20250929204438
+info:      ✔ Migrated Migration20250929204438
+info:      ● Migrating Migration20251008132218
+info:      ✔ Migrated Migration20251008132218
+info:      ● Migrating Migration20251011090511
+info:      ✔ Migrated Migration20251011090511
+info:      ● Migrating Migration20251022153442
+info:      ✔ Migrated Migration20251022153442
+info:      ● Migrating Migration20251029150809
+info:      ✔ Migrated Migration20251029150809
+info:      ● Migrating Migration20251110180907
+info:      ✔ Migrated Migration20251110180907
+info:      ● Migrating Migration20251113183352
+info:      ✔ Migrated Migration20251113183352
+info:      ● Migrating Migration20260224120000
+info:      ✔ Migrated Migration20260224120000
+info:      ● Migrating Migration20260301002050
+info:      ✔ Migrated Migration20260301002050
+info:      ● Migrating Migration20260306120000
+info:      ✔ Migrated Migration20260306120000
+info:      ● Migrating Migration20260623180000
+info:      ✔ Migrated Migration20260623180000
+info:      ● Migrating Migration20260730104846
+info:      ✔ Migrated Migration20260730104846
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: pricing
+info:      ● Migrating Migration20230929122253
+info:      ✔ Migrated Migration20230929122253
+info:      ● Migrating Migration20240322094407
+info:      ✔ Migrated Migration20240322094407
+info:      ● Migrating Migration20240322113359
+info:      ✔ Migrated Migration20240322113359
+info:      ● Migrating Migration20240322120125
+info:      ✔ Migrated Migration20240322120125
+info:      ● Migrating Migration20240626133555
+info:      ✔ Migrated Migration20240626133555
+info:      ● Migrating Migration20240704094505
+info:      ✔ Migrated Migration20240704094505
+info:      ● Migrating Migration20241127114534
+info:      ✔ Migrated Migration20241127114534
+info:      ● Migrating Migration20241127223829
+info:      ✔ Migrated Migration20241127223829
+info:      ● Migrating Migration20241128055359
+info:      ✔ Migrated Migration20241128055359
+info:      ● Migrating Migration20241212190401
+info:      ✔ Migrated Migration20241212190401
+info:      ● Migrating Migration20250408145122
+info:      ✔ Migrated Migration20250408145122
+info:      ● Migrating Migration20250409122219
+info:      ✔ Migrated Migration20250409122219
+info:      ● Migrating Migration20251009110625
+info:      ✔ Migrated Migration20251009110625
+info:      ● Migrating Migration20251112192723
+info:      ✔ Migrated Migration20251112192723
+info:      ● Migrating Migration20260429163502
+info:      ✔ Migrated Migration20260429163502
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: promotion
+info:      ● Migrating Migration20240227120221
+info:      ✔ Migrated Migration20240227120221
+info:      ● Migrating Migration20240617102917
+info:      ✔ Migrated Migration20240617102917
+info:      ● Migrating Migration20240624153824
+info:      ✔ Migrated Migration20240624153824
+info:      ● Migrating Migration20241211061114
+info:      ✔ Migrated Migration20241211061114
+info:      ● Migrating Migration20250113094144
+info:      ✔ Migrated Migration20250113094144
+info:      ● Migrating Migration20250120110700
+info:      ✔ Migrated Migration20250120110700
+info:      ● Migrating Migration20250226130616
+info:      ✔ Migrated Migration20250226130616
+info:      ● Migrating Migration20250508081510
+info:      ✔ Migrated Migration20250508081510
+info:      ● Migrating Migration20250828075407
+info:      ✔ Migrated Migration20250828075407
+info:      ● Migrating Migration20250909083125
+info:      ✔ Migrated Migration20250909083125
+info:      ● Migrating Migration20250916120552
+info:      ✔ Migrated Migration20250916120552
+info:      ● Migrating Migration20250917143818
+info:      ✔ Migrated Migration20250917143818
+info:      ● Migrating Migration20250919122137
+info:      ✔ Migrated Migration20250919122137
+info:      ● Migrating Migration20251006000000
+info:      ✔ Migrated Migration20251006000000
+info:      ● Migrating Migration20251015113934
+info:      ✔ Migrated Migration20251015113934
+info:      ● Migrating Migration20251107050148
+info:      ✔ Migrated Migration20251107050148
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: customer
+info:      ● Migrating Migration20240124154000
+info:      ✔ Migrated Migration20240124154000
+info:      ● Migrating Migration20240524123112
+info:      ✔ Migrated Migration20240524123112
+info:      ● Migrating Migration20240602110946
+info:      ✔ Migrated Migration20240602110946
+info:      ● Migrating Migration20241211074630
+info:      ✔ Migrated Migration20241211074630
+info:      ● Migrating Migration20251010130829
+info:      ✔ Migrated Migration20251010130829
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: sales_channel
+info:      ● Migrating Migration20240115152146
+info:      ✔ Migrated Migration20240115152146
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: cart
+info:      ● Migrating Migration20240222170223
+info:      ✔ Migrated Migration20240222170223
+info:      ● Migrating Migration20240831125857
+info:      ✔ Migrated Migration20240831125857
+info:      ● Migrating Migration20241106085918
+info:      ✔ Migrated Migration20241106085918
+info:      ● Migrating Migration20241205095237
+info:      ✔ Migrated Migration20241205095237
+info:      ● Migrating Migration20241216183049
+info:      ✔ Migrated Migration20241216183049
+info:      ● Migrating Migration20241218091938
+info:      ✔ Migrated Migration20241218091938
+info:      ● Migrating Migration20250120115059
+info:      ✔ Migrated Migration20250120115059
+info:      ● Migrating Migration20250212131240
+info:      ✔ Migrated Migration20250212131240
+info:      ● Migrating Migration20250326151602
+info:      ✔ Migrated Migration20250326151602
+info:      ● Migrating Migration20250508081553
+info:      ✔ Migrated Migration20250508081553
+info:      ● Migrating Migration20251017153909
+info:      ✔ Migrated Migration20251017153909
+info:      ● Migrating Migration20251208130704
+info:      ✔ Migrated Migration20251208130704
+info:      ● Migrating Migration20260626000000
+info:      ✔ Migrated Migration20260626000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: region
+info:      ● Migrating Migration20240205173216
+info:      ✔ Migrated Migration20240205173216
+info:      ● Migrating Migration20240624200006
+info:      ✔ Migrated Migration20240624200006
+info:      ● Migrating Migration20250120110744
+info:      ✔ Migrated Migration20250120110744
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: api_key
+info:      ● Migrating InitialSetup20240221144943
+info:      ✔ Migrated InitialSetup20240221144943
+info:      ● Migrating Migration20240604080145
+info:      ✔ Migrated Migration20240604080145
+info:      ● Migrating Migration20241205122700
+info:      ✔ Migrated Migration20241205122700
+info:      ● Migrating Migration20251015123842
+info:      ✔ Migrated Migration20251015123842
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: store
+info:      ● Migrating InitialSetup20240227075933
+info:      ✔ Migrated InitialSetup20240227075933
+info:      ● Migrating Migration20240621145944
+info:      ✔ Migrated Migration20240621145944
+info:      ● Migrating Migration20241206083313
+info:      ✔ Migrated Migration20241206083313
+info:      ● Migrating Migration20251202184737
+info:      ✔ Migrated Migration20251202184737
+info:      ● Migrating Migration20251212161429
+info:      ✔ Migrated Migration20251212161429
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: tax
+info:      ● Migrating Migration20240227090331
+info:      ✔ Migrated Migration20240227090331
+info:      ● Migrating Migration20240710135844
+info:      ✔ Migrated Migration20240710135844
+info:      ● Migrating Migration20240924114005
+info:      ✔ Migrated Migration20240924114005
+info:      ● Migrating Migration20241212052837
+info:      ✔ Migrated Migration20241212052837
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: currency
+info:      ● Migrating InitialSetup20240228133303
+info:      ✔ Migrated InitialSetup20240228133303
+info:      ● Migrating Migration20240624082354
+info:      ✔ Migrated Migration20240624082354
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: payment
+info:      ● Migrating Migration20240225134525
+info:      ✔ Migrated Migration20240225134525
+info:      ● Migrating Migration20240806072619
+info:      ✔ Migrated Migration20240806072619
+info:      ● Migrating Migration20241211151053
+info:      ✔ Migrated Migration20241211151053
+info:      ● Migrating Migration20250115160517
+info:      ✔ Migrated Migration20250115160517
+info:      ● Migrating Migration20250120110552
+info:      ✔ Migrated Migration20250120110552
+info:      ● Migrating Migration20250123122334
+info:      ✔ Migrated Migration20250123122334
+info:      ● Migrating Migration20250206105639
+info:      ✔ Migrated Migration20250206105639
+info:      ● Migrating Migration20250207132723
+info:      ✔ Migrated Migration20250207132723
+info:      ● Migrating Migration20250625084134
+info:      ✔ Migrated Migration20250625084134
+info:      ● Migrating Migration20250924135437
+info:      ✔ Migrated Migration20250924135437
+info:      ● Migrating Migration20250929124701
+info:      ✔ Migrated Migration20250929124701
+info:      ● Migrating Migration20260411223700
+info:      ✔ Migrated Migration20260411223700
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: order
+info:      ● Migrating Migration20240219102530
+info:      ✔ Migrated Migration20240219102530
+info:      ● Migrating Migration20240604100512
+info:      ✔ Migrated Migration20240604100512
+info:      ● Migrating Migration20240715102100
+info:      ✔ Migrated Migration20240715102100
+info:      ● Migrating Migration20240715174100
+info:      ✔ Migrated Migration20240715174100
+info:      ● Migrating Migration20240716081800
+info:      ✔ Migrated Migration20240716081800
+info:      ● Migrating Migration20240801085921
+info:      ✔ Migrated Migration20240801085921
+info:      ● Migrating Migration20240821164505
+info:      ✔ Migrated Migration20240821164505
+info:      ● Migrating Migration20240821170920
+info:      ✔ Migrated Migration20240821170920
+info:      ● Migrating Migration20240827133639
+info:      ✔ Migrated Migration20240827133639
+info:      ● Migrating Migration20240902195921
+info:      ✔ Migrated Migration20240902195921
+info:      ● Migrating Migration20240913092514
+info:      ✔ Migrated Migration20240913092514
+info:      ● Migrating Migration20240930122627
+info:      ✔ Migrated Migration20240930122627
+info:      ● Migrating Migration20241014142943
+info:      ✔ Migrated Migration20241014142943
+info:      ● Migrating Migration20241106085223
+info:      ✔ Migrated Migration20241106085223
+info:      ● Migrating Migration20241129124827
+info:      ✔ Migrated Migration20241129124827
+info:      ● Migrating Migration20241217162224
+info:      ✔ Migrated Migration20241217162224
+info:      ● Migrating Migration20250326151554
+info:      ✔ Migrated Migration20250326151554
+info:      ● Migrating Migration20250522181137
+info:      ✔ Migrated Migration20250522181137
+info:      ● Migrating Migration20250702095353
+info:      ✔ Migrated Migration20250702095353
+info:      ● Migrating Migration20250704120229
+info:      ✔ Migrated Migration20250704120229
+info:      ● Migrating Migration20250910130000
+info:      ✔ Migrated Migration20250910130000
+info:      ● Migrating Migration20251016160403
+info:      ✔ Migrated Migration20251016160403
+info:      ● Migrating Migration20251016182939
+info:      ✔ Migrated Migration20251016182939
+info:      ● Migrating Migration20251017155709
+info:      ✔ Migrated Migration20251017155709
+info:      ● Migrating Migration20251114100559
+info:      ✔ Migrated Migration20251114100559
+info:      ● Migrating Migration20251125164002
+info:      ✔ Migrated Migration20251125164002
+info:      ● Migrating Migration20251210112909
+info:      ✔ Migrated Migration20251210112909
+info:      ● Migrating Migration20251210112924
+info:      ✔ Migrated Migration20251210112924
+info:      ● Migrating Migration20251225120947
+info:      ✔ Migrated Migration20251225120947
+info:      ● Migrating Migration20260106185528
+info:      ✔ Migrated Migration20260106185528
+info:      ● Migrating Migration20260625000000
+info:      ✔ Migrated Migration20260625000000
+info:      ● Migrating Migration20260729154253
+info:      ✔ Migrated Migration20260729154253
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: settings
+info:      ● Migrating Migration20250717162007
+info:      ✔ Migrated Migration20250717162007
+info:      ● Migrating Migration20260127081758
+info:      ✔ Migrated Migration20260127081758
+info:      ● Migrating Migration20260615151246
+info:      ✔ Migrated Migration20260615151246
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: auth
+info:      ● Migrating Migration20240205025928
+info:      ✔ Migrated Migration20240205025928
+info:      ● Migrating Migration20240529080336
+info:      ✔ Migrated Migration20240529080336
+info:      ● Migrating Migration20241202100304
+info:      ✔ Migrated Migration20241202100304
+info:      ● Migrating Migration20260514083900
+info:      ✔ Migrated Migration20260514083900
+info:      ● Migrating Migration20260525090000
+info:      ✔ Migrated Migration20260525090000
+info:      ● Migrating Migration20260604120000
+info:      ✔ Migrated Migration20260604120000
+info:      ● Migrating Migration20260616075929
+info:      ✔ Migrated Migration20260616075929
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: auth
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: auth
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: user
+info:      ● Migrating Migration20240214033943
+info:      ✔ Migrated Migration20240214033943
+info:      ● Migrating Migration20240703095850
+Note: If the index "IDX_user_email" fails to create, then delete any existing users with duplicate emails before retrying the migration.
+info:      ✔ Migrated Migration20240703095850
+info:      ● Migrating Migration20241202103352
+info:      ✔ Migrated Migration20241202103352
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: fulfillment
+info:      ● Migrating Migration20240311145700_InitialSetupMigration
+info:      ✔ Migrated Migration20240311145700_InitialSetupMigration
+info:      ● Migrating Migration20240821170957
+info:      ✔ Migrated Migration20240821170957
+info:      ● Migrating Migration20240917161003
+info:      ✔ Migrated Migration20240917161003
+info:      ● Migrating Migration20241217110416
+info:      ✔ Migrated Migration20241217110416
+info:      ● Migrating Migration20250113122235
+info:      ✔ Migrated Migration20250113122235
+info:      ● Migrating Migration20250120115002
+info:      ✔ Migrated Migration20250120115002
+info:      ● Migrating Migration20250822130931
+info:      ✔ Migrated Migration20250822130931
+info:      ● Migrating Migration20250825132614
+info:      ✔ Migrated Migration20250825132614
+info:      ● Migrating Migration20251114133146
+info:      ✔ Migrated Migration20251114133146
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: fulfillment
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: fulfillment
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: notification
+info:      ● Migrating Migration20240509083918_InitialSetupMigration
+info:      ✔ Migrated Migration20240509083918_InitialSetupMigration
+info:      ● Migrating Migration20240628075401
+info:      ✔ Migrated Migration20240628075401
+info:      ● Migrating Migration20240830094712
+info:      ✔ Migrated Migration20240830094712
+info:      ● Migrating Migration20250120110514
+info:      ✔ Migrated Migration20250120110514
+info:      ● Migrating Migration20251028172715
+info:      ✔ Migrated Migration20251028172715
+info:      ● Migrating Migration20251121123942
+info:      ✔ Migrated Migration20251121123942
+info:      ● Migrating Migration20251121150408
+info:      ✔ Migrated Migration20251121150408
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: notification
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: notification
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: search
+info:      ● Migrating Migration20260805085626
+info:      ✔ Migrated Migration20260805085626
+info:      ● Migrating Migration20260903085616
+info:      ✔ Migrated Migration20260903085616
+info:      ● Migrating Migration20260911115931
+info:      ✔ Migrated Migration20260911115931
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: search
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: search
+info:      ● Migrating Migration20260807120000
+info:      ✔ Migrated Migration20260807120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: cache
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: event_bus
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: workflows
+info:      ● Migrating Migration20231228143900
+info:      ✔ Migrated Migration20231228143900
+info:      ● Migrating Migration20241206101446
+info:      ✔ Migrated Migration20241206101446
+info:      ● Migrating Migration20250128174331
+info:      ✔ Migrated Migration20250128174331
+info:      ● Migrating Migration20250505092459
+info:      ✔ Migrated Migration20250505092459
+info:      ● Migrating Migration20250819104213
+info:      ✔ Migrated Migration20250819104213
+info:      ● Migrating Migration20250819110924
+info:      ✔ Migrated Migration20250819110924
+info:      ● Migrating Migration20250908080305
+info:      ✔ Migrated Migration20250908080305
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: locking
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: permissions
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    Migrations completed
+info:    
+info:    Syncing links...
+info:    ┌──────────────────────────────────────────────────────────────────────────────┐│                                                                              ││   Created following links tables                                             ││   - cart.cart <> payment.payment_collection (cart_payment_collection)        ││   - cart.cart <> promotion.promotions (cart_promotion)                       ││   - customer.customer <> payment.account_holder (customer_account_holder)    ││   - stock_location.location <> fulfillment.fulfillment_provider              ││   (location_fulfillment_provider)                                            ││   - stock_location.location <> fulfillment.fulfillment_set                   ││   (location_fulfillment_set)                                                 ││   - user.invite <> rbac.rbac_role (invite_rbac_role)                         ││   - order.order <> cart.cart (order_cart)                                    ││   - order.order <> fulfillment.fulfillments (order_fulfillment)              ││   - order.order <> payment.payment_collection (order_payment_collection)     ││   - order.order <> promotion.promotions (order_promotion)                    ││   - order.return <> fulfillment.fulfillments (return_fulfillment)            ││   - product.product <> sales_channel.sales_channel (product_sales_channel)   ││   - product.product <> fulfillment.shipping_profile                          ││   (product_shipping_profile)                                                 ││   - product.variant <> inventory.inventory                                   ││   (product_variant_inventory_item)                                           ││   - product.variant <> pricing.price_set (product_variant_price_set)         ││   - api_key.api_key <> sales_channel.sales_channel                           ││   (publishable_api_key_sales_channel)                                        ││   - region.region <> payment.payment_provider (region_payment_provider)      ││   - sales_channel.sales_channel <> stock_location.location                   ││   (sales_channel_stock_location)                                             ││   - fulfillment.shipping_option <> pricing.price_set                         ││   (shipping_option_price_set)                                                ││   - user.user <> rbac.rbac_role (user_rbac_role)                             ││   - promotion.campaign <> seller.seller (promotion_campaign_seller_seller)   ││   - cart.line_item <> offer.offer (cart_line_item_offer_offer)               ││   - product.product_category <> seller.seller                                ││   (product_product_category_seller_seller)                                   ││   - customer.customer <> review.review (customer_customer_review_review)     ││   - seller.seller <> fulfillment.fulfillment_set                             ││   (seller_seller_fulfillment_fulfillment_set)                                ││   - inventory.inventory_item <> seller.seller                                ││   (inventory_inventory_item_seller_seller)                                   ││   - product.product_category <> media.media_image                            ││   (product_product_category_media_media_image)                               ││   - product.product_collection <> media.media_image                          ││   (product_product_collection_media_media_image)                             ││   - offer.offer <> inventory.inventory_item (offer_inventory_item)           ││   - offer.offer <> pricing.price (offer_offer_pricing_price)                 ││   - seller.order_group <> order.order (order_group_order)                    ││   - order.order_line_item <> offer.offer                                     ││   (order_order_line_item_offer_offer)                                        ││   - order.order <> payout.payout (order_order_payout_payout)                 ││   - order.order <> review.review (order_order_review_review)                 ││   - order.order <> seller.seller (order_order_seller_seller)                 ││   - payout.payout <> seller.seller (payout_payout_seller_seller)             ││   - pricing.price_list <> seller.seller (pricing_price_list_seller_seller)   ││   - product_attribute.product_attribute <> product.categories                ││   (product_category_attribute)                                               ││   - product.product <> product_attribute.product_attribute_value             ││   (product_attribute_value_link)                                             ││   - product.product <> review.review (product_product_review_review)         ││   - product.product <> seller.seller (product_seller)                        ││   - promotion.promotion <> seller.seller                                     ││   (promotion_promotion_seller_seller)                                        ││   - customer.customer_group <> seller.seller                                 ││   (customer_customer_group_seller_seller)                                    ││   - seller.seller <> customer.customer (seller_seller_customer_customer)     ││   - seller.seller <> payout.payout_account                                   ││   (seller_seller_payout_payout_account)                                      ││   - seller.seller <> review.review (seller_seller_review_review)             ││   - seller.seller <> fulfillment.service_zone                                ││   (seller_seller_fulfillment_service_zone)                                   ││   - fulfillment.shipping_option <> seller.seller                             ││   (fulfillment_shipping_option_seller_seller)                                ││   - stock_location.stock_location <> seller.seller                           ││   (stock_location_stock_location_seller_seller)                              ││                                                                              │└──────────────────────────────────────────────────────────────────────────────┘
+info:    Links sync completed
+info:    
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    No custom fields configured. Skipping.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    Migrating search indexes...
+info:    Search indexes already up-to-date
+info:    
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    No custom fields configured. Skipping.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    Creating migrations table 'script_migrations'...
+info:    Migrations table created successfully
+info:    
+info:    Pending migration scripts to execute
+info:    /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/create-super-admin-role.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+info:    
+info:    Running migration scripts...
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+info:    Starting migration to normalize currency codes...
+info:    Finished migration to normalize currency codes.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js completed (0.09s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+info:    Starting migration of product option link ids...
+info:    No ids to rewrite in product_product_option. Skipping.
+info:    No ids to rewrite in product_product_option_value. Skipping.
+info:    Finished migration of product option link ids.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js completed (0.03s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+info:    Assigning products to shipping profile
+info:    Products assigned to shipping profile
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js completed (0.04s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+info:    Assigning tax system provider to tax regions
+info:    System provider assigned to tax regions
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js completed (0.01s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+info:    Starting reconciliation of inventory_level.reserved_quantity against active reservation_item rows...
+info:    Finished reconciliation of inventory_level.reserved_quantity.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js completed (0.00s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js completed (0.01s)
+info:    
+info:    Migration scripts completed
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Didar additive migrations applied; existing catalog preserved, demo seed disabled.
+info:    Finished executing script.
+ISSUE18_FRESH_NO_DEMO_ZERO_PASS {"didar_curation_agreement":0,"didar_curation_review":0,"didar_curation_revocation":0,"didar_fin_contract":0,"didar_fin_contract_review":0,"didar_fin_event":0,"didar_fin_journal":0,"didar_fin_posting":0,"didar_inventory_item":0,"didar_native_acl":0,"didar_native_actor":0,"didar_native_seller":0,"didar_offer":0,"didar_order":0,"didar_order_line":0,"didar_product":0,"didar_product_projection":0,"didar_product_projection_job":0,"didar_sale_document":0,"didar_sale_mandate":0,"didar_sale_mandate_review":0,"didar_sale_mandate_revocation":0,"didar_sale_role":0,"didar_supplier":0,"didar_user":0,"member":0,"seller":0}
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+(node:244329) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Didar schema and shared gold catalog seeded (idempotent).
+info:    Finished executing script.
+info:    Executing script at ./src/scripts/native-qa-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Native QA fixture identities created through native services/workflows; original Didar commerce unchanged.
+info:    Finished executing script.
+bun test v1.4.3 (c6da4a4d3)
+
+tests/finance-integrated.test.ts:
+(pass) Gate 5: one integrated 5/135g + 2/127g + 12/117g +100g UID/RFID sale, mixed finance, wallet, mock close and refund [1488.65ms]
+
+ 1 pass
+ 1 filtered out
+ 0 fail
+ 127 expect() calls
+Ran 1 test across 1 file. [1.51s]
+bun test v1.4.3 (c6da4a4d3)
+
+tests/agency-allocation.test.ts:
+(pass) CORE-03 governed allocation without a second financial writer > MIXED preserves separate gold quantity/book value and rial [0.36ms]
+(pass) CORE-03 governed allocation without a second financial writer > gold-only and rial-only preserve their contractual instruments [0.09ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct sale has own revenue and no agency principal payable [0.05ms]
+(pass) CORE-03 governed allocation without a second financial writer > a signed conversion delta must derive from the original metal/making price [0.22ms]
+(pass) CORE-03 governed allocation without a second financial writer > negative unexplained allocations fail closed [0.04ms]
+(pass) CORE-03 governed allocation without a second financial writer > approved CASH/CREDIT profile beneficiaries remain explicit [0.51ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct mode never charges an uncontracted physical supplier as merchant [0.07ms]
+(pass) CORE-03 governed allocation without a second financial writer > profile unknown recipient/component never becomes a generic residual [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > new mode is only enabled through all three explicit sandbox flags [0.06ms]
+
+tests/issue18-acceptance.test.ts:
+(pass) I18 independent RETAILER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [1075.13ms]
+(pass) I18 independent MANUFACTURER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [848.19ms]
+(pass) I18 independent DIRECT_DIDAR has no external principal obligation or duplicated agency journal [847.33ms]
+(pass) I18 independent partial GOLD/IRR settlement then return/refund keeps original allocation and explicit recoverable [767.01ms]
+(pass) I18 independent accepted-order mandate replacement and commercial suspension block payment without consuming UID [501.00ms]
+(pass) I18 independent curation gates catalog/count/PDP/media and invoice; two shops race the same physical UID [2596.93ms]
+(pass) I18 independent unknown beneficiary fails before collection; approved beneficiary is separately frozen once [839.66ms]
+(pass) I18 independent changed approved profile/tax before payment requires requote and never collects old terms [567.22ms]
+(pass) I18 independent mandate governance denies unauthenticated/customer/supplier approval and unapproved sales [439.87ms]
+(pass) I18 independent revocation and expiry invalidate new economics without rewriting contract history [457.73ms]
+
+ 19 pass
+ 0 fail
+ 681 expect() calls
+Ran 19 tests across 2 files. [9.18s]
+bun test v1.4.3 (c6da4a4d3)
+
+tests/onboarding-media.test.ts:
+(pass) bounded real decoding rejects disguised, oversized, corrupt and extreme-dimension images [9.93ms]
+(pass) orientation, color, transparency and private metadata normalize to proportional decoded WebP variants [420.54ms]
+(pass) merchant draft/join requests are idempotent and preserve actual creator/assistant identities with default-deny governance [87.77ms]
+(pass) private merchant new-master approval remains hidden before its first eligible public Offer [347.83ms]
+(pass) central image size, quality and byte-budget policy is admin-only, validated and revision-checked [27.25ms]
+(pass) photo receipts and variants persist privately, upload replay does not duplicate, pending product requires approval [433.64ms]
+(pass) shared Master media remains merchant-owned across scoped/public image URLs and catalog projections [542.07ms]
+(pass) twenty real authorized image operations are decoded and persisted; quotas and revocation are enforced [4872.83ms]
+(pass) media migration replay and disposable database restart preserve source IDs, variants and commerce history [1374.89ms]
+
+ 9 pass
+ 0 fail
+ 152 expect() calls
+Ran 9 tests across 1 file. [8.85s]
+bun test v1.4.3 (c6da4a4d3)
+
+tests/content.test.ts:
+(pass) typed blocks reject scripts, unsafe paths, tenant dot escapes and unbounded layout; starter is structural only [2.31ms]
+(pass) editorial media is real decoded, approved but private until publication, and video is normalized silent with immutable bytes [54.05ms]
+(pass) all block types persist, draft/preview isolation, approval/publish uses live public product truth, range is bounded [314.91ms]
+(pass) immutable versions, concurrent revisions, scheduled cutover, idempotency, pause and rollback preserve URL and audit [1565.23ms]
+(pass) merchant A media/pages cannot leak to B, global or anonymous invite readers; fresh grant revocation and unsafe CTA rejected [256.95ms]
+(pass) additive media/content migration replays retain bytes, immutable UID stock, paid snapshots and publications [50.96ms]
+(pass) central content capability, sanitized immutable presets and future campaign adapters cannot widen merchant authority [79.30ms]
+(pass) CMS upgrades the exact existing share slug and preserves original visit attribution without cloning masters [711.47ms]
+
+ 8 pass
+ 1 filtered out
+ 0 fail
+ 112 expect() calls
+Ran 8 tests across 1 file. [5.10s]
+info:    Executing script at ./src/scripts/didar-product-projection.ts...
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+info:    Processing product.updated which has 1 subscribers
+[storefront-cache-revalidate] revalidation failed: [TypeError: fetch failed] {
+  [cause]: AggregateError
+      at internalConnectMultiple (node:net:1339:18)
+      at afterConnectMultiple (node:net:1942:7) {
+    code: 'ECONNREFUSED',
+    [errors]: [ [Error], [Error] ]
+  }
+}
+DIDAR_PROJECTION_BATCH [{"product_id":"2659cdbc-e8a4-4983-acd5-e9eb962e2f35","revision":"2","status":"DONE"},{"product_id":"321e36db-322d-450f-8533-0f231ba513d5","revision":"2","status":"DONE"},{"product_id":"98bd90ca-9510-447b-8756-f9ffaa32e021","revision":"2","status":"DONE"},{"product_id":"a69db99a-f356-4cef-83af-605fe904cf65","revision":"2","status":"DONE"},{"product_id":"bracelet","revision":"1","status":"DONE"},{"product_id":"cad3aa29-9fca-4393-b78f-cb52b302c2b7","revision":"2","status":"DONE"},{"product_id":"earring","revision":"1","status":"DONE"},{"product_id":"necklace","revision":"1","status":"DONE"},{"product_id":"ring","revision":"1","status":"DONE"}]
+DIDAR_PROJECTION_STATUS [{"product_id":"ring","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:44:06.076Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:06.836Z","error_code":null},{"product_id":"necklace","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:44:06.034Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:07.002Z","error_code":null},{"product_id":"earring","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:44:05.990Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:07.216Z","error_code":null},{"product_id":"cad3aa29-9fca-4393-b78f-cb52b302c2b7","source_revision":"2","projected_revision":"2","updated_at":"2026-10-17T17:44:05.942Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:24.047Z","error_code":null},{"product_id":"bracelet","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:44:05.893Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:07.117Z","error_code":null},{"product_id":"a69db99a-f356-4cef-83af-605fe904cf65","source_revision":"2","projected_revision":"2","updated_at":"2026-10-17T17:44:05.840Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:34.825Z","error_code":null},{"product_id":"98bd90ca-9510-447b-8756-f9ffaa32e021","source_revision":"2","projected_revision":"2","updated_at":"2026-10-17T17:44:05.755Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:47.202Z","error_code":null},{"product_id":"321e36db-322d-450f-8533-0f231ba513d5","source_revision":"2","projected_revision":"2","updated_at":"2026-10-17T17:44:05.661Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:42.092Z","error_code":null},{"product_id":"2659cdbc-e8a4-4983-acd5-e9eb962e2f35","source_revision":"2","projected_revision":"2","updated_at":"2026-10-17T17:44:05.389Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:47.202Z","error_code":null},{"product_id":"c2d20f49-a6e3-4e68-971d-a482b03f7ff3","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:33.821Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:33.814Z","error_code":null},{"product_id":"a3e917a9-44e9-42d9-9dd4-a31dff512afd","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:33.540Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:33.531Z","error_code":null},{"product_id":"6ed94b81-888b-43cd-9d7d-f17941eef75c","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:32.975Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:32.969Z","error_code":null},{"product_id":"04ddad26-3401-4e1b-9345-563cbc0d4273","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:32.521Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:32.513Z","error_code":null},{"product_id":"d2200554-7945-4d0a-be1a-918b97e5a2cf","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:31.953Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:31.942Z","error_code":null},{"product_id":"1fb3598d-422e-4c04-b57c-c0d9a08a91f5","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:31.379Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:31.374Z","error_code":null},{"product_id":"24542dd4-99e6-44a8-a8c6-b1f56c2f7f3c","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:31.103Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:31.093Z","error_code":null},{"product_id":"6f916c5d-a10e-4af7-92b7-fed6d75f0007","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:29.177Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:29.167Z","error_code":null},{"product_id":"cc14085e-5448-4281-ad9a-4eb525dc8c50","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:28.851Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:28.847Z","error_code":null},{"product_id":"d61f91ec-eef3-4dd0-8e9f-3976d5eb13ea","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:28.569Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:28.564Z","error_code":null},{"product_id":"26437d44-3e3b-436c-975d-6ec11574f9b6","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:28.026Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:28.020Z","error_code":null},{"product_id":"77be69bc-a72f-433c-8cae-e6938b59237b","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:27.263Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:27.255Z","error_code":null},{"product_id":"5e7307a9-12d9-4e49-8a08-40c91c06b661","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:26.425Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:26.413Z","error_code":null},{"product_id":"3ac99a3a-9639-4599-82ce-8b2adc17729a","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:25.540Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:25.534Z","error_code":null},{"product_id":"bfdbc987-036d-4817-8b2a-bf84f30ec3ad","source_revision":"1","projected_revision":"1","updated_at":"2026-10-17T17:43:24.472Z","status":"DONE","attempts":0,"available_at":"2026-10-17T17:43:24.461Z","error_code":null}]
+info:    Finished executing script.
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Didar additive migrations applied; existing catalog preserved, demo seed disabled.
+info:    Finished executing script.
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Didar additive migrations applied; existing catalog preserved, demo seed disabled.
+info:    Finished executing script.
+ISSUE18_RUNTIME_REPLAY_RESTART_RESTORE_PASS {"didar_tables":89,"counts":{"didar_product":24,"didar_offer":43,"didar_inventory_item":36,"didar_order":13,"didar_order_line":13,"didar_fin_event":49,"didar_fin_journal":45,"didar_fin_posting":188,"didar_media_asset":25,"didar_media_variant":75,"didar_media_video":1,"didar_content_version":5,"didar_content_publication":5,"didar_sale_mandate":13,"didar_sale_mandate_review":13,"didar_sale_mandate_revocation":3,"didar_sale_role":12,"didar_sale_document":9,"didar_product_projection":24,"didar_product_projection_job":29},"native_file_bytes_preserved":true,"native_panels_html_assets":true,"native_auth_bridge":true,"redis_process_restart":true,"invoice_sequence_state_preserved":true,"projection_acknowledgements":{"tracked":24,"non_done":0,"ack_mismatch":0},"build_receipt":{"platform":"linux","arch":"x64","node":"24.19.0","source":"5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc","outputs":"63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"},"source_fingerprint_sha256":"77fd71b822a8dc0b909f092adc43210833402ac5d1a84d2ee4ef80aaf7d28256"}
