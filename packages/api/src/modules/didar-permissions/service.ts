@@ -30,7 +30,7 @@ export default class PermissionsService implements IPermissionResolver {
           ).rows[0]
         : (
             await db.query(
-              "SELECT sm.is_owner,sm.role_id,s.status native_status FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND s.deleted_at IS NULL",
+              "SELECT sm.is_owner,sm.role_id,s.status native_status FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND m.is_active AND s.deleted_at IS NULL",
               [actor.actor_id, actor.seller_id || ""],
             )
           ).rows[0];

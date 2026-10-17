@@ -1,7 +1,7 @@
 'use client'
 import { ShareActions } from './sharing'
 import { ScopedLink as Link } from './store'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   useDidar,
   PaymentMethodPicker,
@@ -32,28 +32,64 @@ export function ImageAsset({
 }) {
   const { mediaURL, mediaHeaders } = useDidar()
   privateImage = privateImage || !!mediaHeaders
-  const [blob, setBlob] = useState('')
+  const credentials = privateImage
+    ? JSON.stringify(
+        mediaHeaders
+          ? mediaHeaders()
+          : {
+              authorization:
+                'Bearer ' +
+                (typeof window === 'undefined'
+                  ? ''
+                  : sessionStorage.getItem('didar-session') || ''),
+            },
+      )
+    : ''
+  // Key both the result and failure to the request, so a new source or native
+  // authentication context cannot display a previous private object's bytes.
+  const request = useMemo(
+    () => ({
+      url: mediaURL ? mediaURL(src) : src,
+      headers: credentials
+        ? (JSON.parse(credentials) as Record<string, string>)
+        : undefined,
+    }),
+    [src, privateImage, mediaURL, credentials],
+  )
+  const [image, setImage] = useState<{
+    request: typeof request | null
+    url: string
+    failed: boolean
+  }>({ request: null, url: '', failed: false })
   useEffect(() => {
     if (!privateImage) return
     const controller = new AbortController()
-    let owned = ''
-    fetch(mediaURL ? mediaURL(src) : src, {
-      headers: mediaHeaders ? mediaHeaders() : { authorization: 'Bearer ' + (sessionStorage.getItem('didar-session') || '') },
+    let owned = '',
+      active = true
+    fetch(request.url, {
+      headers: request.headers,
       signal: controller.signal,
     })
       .then(async (r) => {
         if (!r.ok) throw new Error('image')
-        owned = URL.createObjectURL(await r.blob())
-        setBlob(owned)
+        const bytes = await r.blob()
+        if (!active) return
+        owned = URL.createObjectURL(bytes)
+        setImage({ request, url: owned, failed: false })
       })
-      .catch(() => {})
+      .catch(() => {
+        if (active) setImage({ request, url: '', failed: true })
+      })
     return () => {
+      active = false
       controller.abort()
       if (owned) URL.revokeObjectURL(owned)
     }
-  }, [src, privateImage, mediaURL, mediaHeaders])
-  const url = privateImage ? blob : (mediaURL ? mediaURL(src) : src)
-  return url ? (
+  }, [request, privateImage])
+  const current = image.request === request
+  const failed = current && image.failed
+  const url = privateImage ? (current ? image.url : '') : request.url
+  return url && !failed ? (
     <img
       className={className}
       src={url}
@@ -64,10 +100,11 @@ export function ImageAsset({
       height={height}
       loading={eager ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : undefined}
+      onError={() => setImage({ request, url: '', failed: true })}
     />
   ) : (
     <div className="photo-placeholder" role="img" aria-label={alt}>
-      در حال دریافت تصویر…
+      {failed ? 'تصویر در دسترس نیست' : 'در حال دریافت تصویر…'}
     </div>
   )
 }
