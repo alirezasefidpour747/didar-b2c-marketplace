@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
+import { Pool } from "../../packages/api/node_modules/pg";
+const fixtureDB = new Pool({ connectionString: process.env.DATABASE_URL });
+test.afterAll(async () => {
+  if (process.env.DIDAR_DISPOSABLE_QA === "true")
+    await fixtureDB.query(
+      "DELETE FROM didar_native_actor WHERE user_id IN ('demo-admin','demo-supplier','native-staff-canonical')",
+    );
+  await fixtureDB.end();
+});
 test.use({ locale: "fa-IR" });
 const origin = process.env.TEST_API_URL || "http://localhost:9000";
 const evidence = ".local/evidence/mercur-native";
@@ -30,6 +39,15 @@ test("real native Admin and Vendor shells navigate connected Didar products, pri
   page.on("pageerror", (e: any) => errors.push(e.message));
   await signIn(page, "/dashboard", "native-admin@didar.test");
   await page.goto(origin + "/dashboard/didar");
+  await expect(
+    page.getByRole("heading", { name: "اتصال حساب موجود دیدار", exact: true }),
+  ).toBeVisible();
+  await page.getByLabel("ایمیل حساب دیدار").fill("admin@didar.test");
+  await page.getByLabel("رمز حساب دیدار").fill("DidarDemo2026!");
+  await page
+    .getByRole("button", { name: "اتصال امن حساب", exact: true })
+    .click();
+
   await expect(
     page.getByRole("heading", { name: "دیدار · مدیریت مرکزی", exact: true }),
   ).toBeVisible();
@@ -97,6 +115,44 @@ test("real native Admin and Vendor shells navigate connected Didar products, pri
     .toBeGreaterThan(0);
   await previewImage.scrollIntoViewIfNeeded();
   await page.screenshot({ path: evidence + "/admin-cms.png", fullPage: true });
+  await page
+    .getByRole("link", { name: "اتصال فروشگاه بومی", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "دسترسی بومی همکاران", exact: true }),
+  ).toBeVisible();
+  const ownAccess = page
+    .locator("form")
+    .filter({
+      has: page.getByRole("heading", {
+        name: "مدیر دیدار · admin@didar.test",
+        exact: true,
+      }),
+    });
+  await ownAccess.getByLabel("محدودیت ورود بومی").selectOption("READ_ONLY");
+  await ownAccess
+    .getByLabel("دلیل ثبت تغییر")
+    .fill("QA last administrator restriction guard");
+  await ownAccess
+    .getByRole("button", { name: "ثبت محدودیت ورود", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("حداقل یک مدیر بومی");
+  await page.screenshot({
+    path: evidence + "/admin-native-access.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("link", { name: "کیف پول آزمایشی", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "مانده‌ها", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "ثبت عملیات داخلی آزمایشی",
+      exact: true,
+    }),
+  ).toBeVisible();
   const vendor = await browser.newPage();
   const vendorErrors: string[] = [];
   vendor.on("pageerror", (e: any) => vendorErrors.push(e.message));
@@ -346,4 +402,194 @@ test("native Admin publishes a classified master, prints real permanent UID labe
     published: false,
     active: false,
   });
+});
+
+test("native staff and global editor see only authorized sidebar routes and persist scoped CMS drafts without becoming administrators", async ({
+  page,
+  browser,
+}) => {
+  test.setTimeout(120000);
+  mkdirSync(evidence, { recursive: true });
+  await signIn(page, "/seller", "native-staff@didar.test");
+  await page.goto(origin + "/seller/didar/connect");
+  await expect(page.getByLabel("ایمیل حساب دیدار")).toBeVisible();
+  await page
+    .getByLabel("ایمیل حساب دیدار")
+    .fill("native-staff-didar@didar.test");
+  await page.getByLabel("رمز حساب دیدار").fill("DidarStaff2026!");
+  await page
+    .getByRole("button", { name: "اتصال امن حساب", exact: true })
+    .click();
+  await expect(
+    page.getByText("حساب موجود متصل است.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "دفتر حسابداری", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "محصول و عرضه دیدار", exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "صفحه‌ساز بصری", exact: true }).click();
+  await expect(page.getByLabel("دامنه صفحه", { exact: true })).toHaveValue(
+    "s1",
+  );
+  expect(
+    await page
+      .getByLabel("دامنه صفحه", { exact: true })
+      .locator("option")
+      .evaluateAll((options) =>
+        options.map((o) => (o as HTMLOptionElement).value),
+      ),
+  ).toEqual(["s1"]);
+  const title = "پیش‌نویس همکار بومی " + crypto.randomUUID().slice(0, 8);
+  await page.getByLabel("عنوان صفحه", { exact: true }).fill(title);
+  await page.getByRole("button", { name: "افزودن بلوک", exact: true }).click();
+  await page
+    .getByLabel("عنوان بلوک", { exact: true })
+    .last()
+    .fill("محتوای مجاز فروشگاه");
+  await page
+    .getByRole("button", { name: "ذخیره نسخه پیش‌نویس", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: new RegExp(title) }),
+  ).toBeVisible();
+  const statuses = await page.evaluate(async () => {
+    const headers = {
+      authorization:
+        "Bearer " + localStorage.getItem("mercur_vendor_auth_token"),
+      "x-seller-id": localStorage.getItem("mercur_vendor_seller_id") || "",
+    };
+    const results = [];
+    for (const path of [
+      "/vendor/didar/ledger",
+      "/vendor/customers",
+      "/vendor/didar/pages?options=1&supplier_id=s2",
+    ])
+      results.push((await fetch(path, { headers })).status);
+    return results;
+  });
+  expect(statuses).toEqual([403, 403, 403]);
+  await page.screenshot({
+    path: evidence + "/vendor-staff-cms.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: evidence + "/vendor-staff-390.png",
+    fullPage: true,
+  });
+  const editor = await browser.newPage();
+  await signIn(editor, "/dashboard", "native-content@didar.test");
+  await editor.goto(origin + "/dashboard/didar/pages");
+  await expect(editor.getByLabel("دامنه صفحه", { exact: true })).toHaveValue(
+    "DIDAR",
+  );
+  await expect(
+    editor.getByRole("link", { name: "دفتر حسابداری", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    editor.getByRole("link", { name: "محصول و عرضه دیدار", exact: true }),
+  ).toHaveCount(0);
+  await editor.screenshot({
+    path: evidence + "/admin-content-operator.png",
+    fullPage: true,
+  });
+  await editor.close();
+});
+
+test("protected legacy deep links resume through actual native login and seller selection without exposing credentials", async ({
+  browser,
+}) => {
+  test.setTimeout(120000);
+  for (const [email, nativeEmail, base, target] of [
+    [
+      "admin@didar.test",
+      "native-admin@didar.test",
+      "/dashboard",
+      "/pricing?product_id=ring",
+    ],
+    [
+      "supplier@didar.test",
+      "native-supplier@didar.test",
+      "/seller",
+      "/storefront",
+    ],
+    ["admin@didar.test", "native-admin@didar.test", "/dashboard", "/wallet"],
+  ]) {
+    const context = await browser.newContext(),
+      page = await context.newPage();
+    await page.goto("/login");
+    await page.getByLabel("ایمیل", { exact: true }).fill(email);
+    await page.getByLabel("رمز عبور", { exact: true }).fill("DidarDemo2026!");
+    await page.getByRole("button", { name: "ورود", exact: true }).click();
+    await page.waitForURL((u) => u.pathname !== "/login");
+    await expect(
+      page.getByRole("link", { name: "مدیریت طلا", exact: true }),
+    ).toHaveCount(0);
+    // Independent setup: another failed browser worker can clean prior links.
+    // Prove both identities over the real API without installing native browser
+    // credentials; the journey below must still perform native UI login.
+    const didarToken = await page.evaluate(() =>
+      sessionStorage.getItem("didar-session"),
+    );
+    const auth = await page.request.post(
+      origin +
+        "/auth/" +
+        (base === "/dashboard" ? "user" : "member") +
+        "/emailpass",
+      { data: { email: nativeEmail, password: "DidarNative2026!" } },
+    );
+    expect(auth.status()).toBe(200);
+    const nativeToken = (await auth.json()).token;
+    const seller =
+      base === "/seller"
+        ? (
+            await fixtureDB.query(
+              "SELECT seller_id FROM didar_native_seller WHERE supplier_id='s1'",
+            )
+          ).rows[0].seller_id
+        : null;
+    const connection = await page.request.post(
+      origin +
+        (base === "/dashboard" ? "/admin" : "/vendor") +
+        "/didar/connect",
+      {
+        headers: {
+          authorization: "Bearer " + nativeToken,
+          ...(seller ? { "x-seller-id": seller } : {}),
+        },
+        data: { didar_token: didarToken },
+      },
+    );
+    expect(connection.status()).toBe(200);
+    await page.goto(
+      target === "/wallet" ? "/account/wallet" : "/manage" + target,
+    );
+    await expect(page).toHaveURL(new RegExp(base + "/login"));
+    await page.locator("input[name=email]").fill(nativeEmail);
+    await page.locator("input[name=password]").fill("DidarNative2026!");
+    await page.locator("button[type=submit]").click();
+    if (base === "/seller") {
+      await page.waitForURL((u) => u.pathname === "/seller/store-select");
+      await page.getByRole("button", { name: /دیدار s1/ }).click();
+    }
+    await expect(page).toHaveURL(origin + base + "/didar" + target);
+    await expect(page.locator(".didar-extension")).toBeVisible();
+    expect(page.url()).not.toMatch(/token|password|Bearer/);
+    await page.screenshot({
+      path:
+        evidence +
+        (base === "/dashboard"
+          ? "/admin-legacy-handoff.png"
+          : "/vendor-legacy-handoff.png"),
+      fullPage: true,
+    });
+    await context.close();
+  }
 });

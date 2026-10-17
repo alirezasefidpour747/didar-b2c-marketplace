@@ -65,7 +65,7 @@ export function NativeWorkspace({
       const c = await api("context");
       setUser(c.user);
       setPublicOrigin(c.public_origin || "");
-      await refresh();
+      if (c.can_catalog !== false) await refresh();
     } catch (e: any) {
       setMessage(e.message);
     } finally {
@@ -172,6 +172,15 @@ export function NativeWorkspace({
         )}
         {!ready ? (
           <Text>در حال دریافت حساب…</Text>
+        ) : user &&
+          user.native_supplier_id &&
+          (!user.supplier_active ||
+            user.supplier_status !== "approved" ||
+            user.native_seller_status !== "open") ? (
+          <p role="status">
+            پرونده شما متصل است؛ تأیید فروشگاه بومی و تأمین‌کننده دیدار برای
+            شروع فعالیت لازم است. سوابق و شناسه‌های شما محفوظ است.
+          </p>
         ) : user ? (
           children
         ) : (
@@ -198,7 +207,7 @@ export function NativeWorkspace({
                   const proof = await response.json();
                   if (!response.ok) throw Error(proof.message);
                   await api("connect", { didar_token: proof.token });
-                  await load();
+                  window.location.reload();
                 });
               }}
             >

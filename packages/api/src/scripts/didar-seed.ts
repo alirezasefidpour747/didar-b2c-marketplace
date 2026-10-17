@@ -109,6 +109,24 @@ export default async function seed({ container }: ExecArgs) {
     );
   await transaction(seedFacetVocabulary);
   await transaction(projectExisting);
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/native-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/native-acl-schema.sql"),
+      "utf8",
+    ),
+  );
+  await db.query(
+    fs.readFileSync(
+      path.join(process.cwd(), "src/didar/native-lifecycle-schema.sql"),
+      "utf8",
+    ),
+  );
   const seedDemo =
     process.env.DIDAR_SEED_DEMO === "true" &&
     process.env.DIDAR_ENVIRONMENT === "local" &&
@@ -219,7 +237,6 @@ export default async function seed({ container }: ExecArgs) {
       );
     }
   }
-  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/native-schema.sql"), "utf8"));
   console.log("Didar schema and shared gold catalog seeded (idempotent).");
   await db.end();
 }

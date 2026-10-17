@@ -57,7 +57,9 @@ test("supplier interface displays only owned stock", async ({ page }) => {
   await page.getByLabel("ایمیل", { exact: true }).fill("supplier@didar.test");
   await page.getByLabel("رمز عبور", { exact: true }).fill("DidarDemo2026!");
   await page.getByRole("button", { name: "ورود", exact: true }).click();
-  await page.getByRole("link", { name: "مدیریت طلا" }).click();
+  await page.waitForURL(u => u.pathname !== "/login");
+  await expect(page.getByRole("link", { name: "مدیریت طلا" })).toHaveCount(0);
+  await page.goto("/manage");
   await expect(
     page.getByRole("heading", { name: "پنل تأمین‌کننده" }),
   ).toBeVisible();
@@ -77,7 +79,9 @@ test("admin interface manages gold rate and catalog", async ({ page }) => {
   await page.getByLabel("ایمیل", { exact: true }).fill("admin@didar.test");
   await page.getByLabel("رمز عبور", { exact: true }).fill("DidarDemo2026!");
   await page.getByRole("button", { name: "ورود", exact: true }).click();
-  await page.getByRole("link", { name: "مدیریت طلا" }).click();
+  await page.waitForURL(u => u.pathname !== "/login");
+  await expect(page.getByRole("link", { name: "مدیریت طلا" })).toHaveCount(0);
+  await page.goto("/manage");
   await expect(
     page.getByRole("heading", { name: "مدیریت بازار دیدار" }),
   ).toBeVisible();

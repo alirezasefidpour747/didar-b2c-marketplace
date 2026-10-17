@@ -1,3 +1,4 @@
+import { nativeAccess } from "./native-access";
 import { db, transaction } from "./db";
 import { sessionUser, demoAccountAllowed } from "./auth";
 import { nativeActors } from "./native-context";
@@ -12,15 +13,15 @@ const domains: Record<string, string> = {
   orders: "orders",
   manage: "products",
   classification: "products",
-  onboarding: "products",
+  onboarding: "didar.onboarding",
   media: "products",
   image: "products",
-  "content-media": "products",
-  "media-file": "products",
-  pages: "products",
+  "content-media": "didar.content",
+  "media-file": "didar.content",
+  pages: "didar.content",
   "merchant-pricing": "products",
-  storefront: "sellers",
-  sharing: "products",
+  storefront: "didar.storefront",
+  sharing: "didar.sharing",
   operations: "inventory_items",
   intake: "inventory_items",
   items: "inventory_items",
@@ -61,34 +62,62 @@ async function actor(req: any) {
     seller: vendor ? req.seller_context.seller_id : null,
   };
 }
-async function linked(a: any) {
+async function canConnect(a: any, u: any) {
+  if (a.type === "user")
+    return (
+      u.role === "admin" ||
+      (u.role === "customer" &&
+        !!(
+          await db.query(
+            "SELECT 1 FROM didar_content_operator WHERE user_id=$1 AND active",
+            [u.id],
+          )
+        ).rowCount)
+    );
+  const mapping = (
+    await db.query(
+      "SELECT supplier_id FROM didar_native_seller WHERE seller_id=$1 AND active",
+      [a.seller],
+    )
+  ).rows[0];
+  if (!mapping) return false;
+  if (u.role === "supplier") return mapping.supplier_id === u.supplier_id;
+  return (
+    u.role === "customer" &&
+    !!(
+      await db.query(
+        "SELECT 1 FROM didar_merchant_member WHERE user_id=$1 AND supplier_id=$2 AND active",
+        [u.id, mapping.supplier_id],
+      )
+    ).rowCount
+  );
+}
+async function linked(a: any, action: string, method: string) {
   const u = (
     await db.query(
-      `SELECT u.id,u.email,u.name,u.role,u.supplier_id,s.status supplier_status,s.active supplier_active
- FROM didar_native_actor n JOIN didar_user u ON u.id=n.user_id LEFT JOIN didar_supplier s ON s.id=u.supplier_id
- WHERE n.actor_type=$1 AND n.actor_id=$2 AND n.active`,
+      `SELECT u.id,u.email,u.name,u.role,u.supplier_id FROM didar_native_actor n JOIN didar_user u ON u.id=n.user_id WHERE n.actor_type=$1 AND n.actor_id=$2 AND n.active`,
       [a.type, a.id],
     )
   ).rows[0];
-  if (
-    !u ||
-    !demoAccountAllowed(u.email) ||
-    (a.type === "user" ? u.role !== "admin" : u.role !== "supplier")
-  )
+  if (!u || !demoAccountAllowed(u.email) || !(await canConnect(a, u)))
     throw Error("FORBIDDEN");
   if (a.type === "member") {
-    // Re-read native membership without the core's query cache: revocation is immediate.
-    const membership = await db.query(
-      `SELECT 1 FROM seller_member sm JOIN member m ON m.id=sm.member_id
-    JOIN seller se ON se.id=sm.seller_id JOIN didar_native_seller n ON n.seller_id=sm.seller_id
-    WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL
-    AND se.deleted_at IS NULL AND n.active AND n.supplier_id=$3`,
-      [a.id, a.seller, u.supplier_id],
-    );
+    const scope = (
+      await db.query(
+        `SELECT n.supplier_id,s.active supplier_active,s.status supplier_status,se.status native_seller_status
+   FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller se ON se.id=sm.seller_id
+   JOIN didar_native_seller n ON n.seller_id=sm.seller_id JOIN didar_supplier s ON s.id=n.supplier_id
+   WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND se.deleted_at IS NULL AND n.active`,
+        [a.id, a.seller],
+      )
+    ).rows[0];
+    if (!scope) throw Error("FORBIDDEN");
+    Object.assign(u, scope, { native_supplier_id: scope.supplier_id });
     if (
-      !membership.rowCount ||
-      !u.supplier_active ||
-      u.supplier_status !== "approved"
+      (!scope.supplier_active ||
+        scope.supplier_status !== "approved" ||
+        scope.native_seller_status !== "open") &&
+      !(action === "context" || (action === "onboarding" && method === "GET"))
     )
       throw Error("FORBIDDEN");
   } else if (
@@ -109,28 +138,14 @@ export async function nativeHandler(req: any, res: any) {
       action = req.params.action;
     if (action === "connect") {
       if (req.method !== "POST") throw Error("METHOD_NOT_ALLOWED");
-      right(req, a.type === "user" ? "users" : "products", true);
+      // Connection grants no capability; both existing identities and scoped grants must be proven.
       // Dual authenticated proof, never email matching or client role assertions.
       const u = await sessionUser({
         headers: {
           authorization: "Bearer " + String(req.body?.didar_token || ""),
         },
       });
-      if (
-        !u ||
-        !demoAccountAllowed(u.email) ||
-        (a.type === "user" ? u.role !== "admin" : u.role !== "supplier")
-      )
-        throw Error("FORBIDDEN");
-      if (
-        a.type === "member" &&
-        !(
-          await db.query(
-            "SELECT 1 FROM didar_native_seller WHERE seller_id=$1 AND supplier_id=$2 AND active",
-            [a.seller, u.supplier_id],
-          )
-        ).rowCount
-      )
+      if (!u || !demoAccountAllowed(u.email) || !(await canConnect(a, u)))
         throw Error("FORBIDDEN");
       await transaction(async (c) => {
         const prior = (
@@ -155,16 +170,24 @@ export async function nativeHandler(req: any, res: any) {
       });
       return res.json({ ok: true });
     }
-    const u = await linked(a);
+    const u = await linked(a, action, req.method);
     nativeActors.set(req, u);
     if (action === "context")
       return res.json({
         user: u,
         seller_id: a.seller,
+        can_catalog:
+          !req.permissions_enforced ||
+          ["view", "edit", "manage"].includes(req.permissions?.products),
         public_origin: (process.env.STORE_CORS || "").split(",")[0],
       });
-    if (action === "seller-links") {
+    if (action === "access-links") {
       if (a.type !== "user") throw Error("FORBIDDEN");
+      right(req, "users", req.method !== "GET");
+      return res.json(await nativeAccess(req, u));
+    }
+    if (action === "seller-links") {
+      if (a.type !== "user" || u.role !== "admin") throw Error("FORBIDDEN");
       right(req, "sellers", req.method !== "GET");
       if (req.method === "GET")
         return res.json({
@@ -212,6 +235,23 @@ export async function nativeHandler(req: any, res: any) {
     }
     if (!domains[action] && !["me", "catalog"].includes(action))
       throw Error("NOT_FOUND");
+    if (
+      u.role === "customer" &&
+      ![
+        "context",
+        "me",
+        "catalog",
+        "onboarding",
+        "media",
+        "image",
+        "pages",
+        "content-media",
+        "media-file",
+        "storefront",
+        "sharing",
+      ].includes(action)
+    )
+      throw Error("FORBIDDEN");
     if (domains[action]) {
       let key = domains[action];
       if (a.type === "member" && key === "sellers") key = "store";
@@ -229,7 +269,19 @@ export async function nativeHandler(req: any, res: any) {
           )[req.body?.kind] || key;
       if (action === "finance" && req.body?.operation === "refund")
         key = "orders.refunds";
-      right(req, key, req.method !== "GET" && req.method !== "HEAD");
+      const write =
+        !["GET", "HEAD"].includes(req.method) &&
+        !(action === "pages" && req.body?.operation === "preview");
+      if (["media", "image"].includes(action) && u.role === "customer") {
+        if (
+          !["didar.content", "didar.onboarding"].some((k) =>
+            ["edit", "manage", ...(!write ? ["view"] : [])].includes(
+              req.permissions?.[k],
+            ),
+          )
+        )
+          throw Error("FORBIDDEN");
+      } else right(req, key, write);
     }
     if (action === "catalog") {
       right(req, "products", false);
@@ -247,7 +299,7 @@ export async function nativeHandler(req: any, res: any) {
           ? 403
           : m === "NOT_FOUND"
             ? 404
-            : e.code === "23505"
+            : e.code === "23505" || m.startsWith("CONFLICT")
               ? 409
               : m.startsWith("INVALID") || m === "METHOD_NOT_ALLOWED"
                 ? 400
@@ -257,7 +309,7 @@ export async function nativeHandler(req: any, res: any) {
       message:
         status === 500
           ? "INTERNAL_ERROR"
-          : status === 409
+          : e.code === "23505"
             ? "CONFLICT_DUPLICATE"
             : m,
     });

@@ -1,19 +1,21 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  type ReactNode,
-} from 'react'
+import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { copy, errors, number } from './locale'
-import { DidarContext as Context, type User, type Offer, type Product, type Category, type Collection } from '../../../../../packages/didar-ui/src/store'
+import {
+  DidarContext as Context,
+  type User,
+  type Offer,
+  type Product,
+  type Category,
+  type Collection,
+} from '../../../../../packages/didar-ui/src/store'
 export * from '../../../../../packages/didar-ui/src/store'
 export function DidarProvider({ children }: { children: ReactNode }) {
   const scopeQueue = useRef<Promise<any>>(Promise.resolve())
   const [menuOpen, setMenuOpen] = useState(false)
+  const [workspace, setWorkspace] = useState<any>(null)
   const [cartHandle, setCartHandle] = useState<string | null>(null)
   const [store, setStore] = useState<any>(null)
   const [scopeReady, setScopeReady] = useState(false)
@@ -155,11 +157,21 @@ export function DidarProvider({ children }: { children: ReactNode }) {
         if (t) {
           try {
             const me = await api('me', undefined, t)
-            if (active) setUser(me.user)
+            if (active && sessionStorage.getItem('didar-session') === t) {
+              setUser(me.user)
+              // Only an authoritative session response may invalidate this
+              // exact credential, never an older request or navigation abort.
+              if (!me.user) {
+                sessionStorage.removeItem('didar-session')
+                setToken('')
+              }
+            }
           } catch {
-            if (!active) return
-            sessionStorage.removeItem('didar-session')
-            setToken('')
+            if (!active || sessionStorage.getItem('didar-session') !== t) return
+            // Navigation can cancel a successful server response. Preserve the
+            // credential so the next page can validate it instead of logging
+            // out a freshly registered merchant-context customer.
+            setMessage('دریافت حساب ممکن نشد؛ صفحه را تازه کنید.')
           }
         }
       } catch (e) {
@@ -189,6 +201,19 @@ export function DidarProvider({ children }: { children: ReactNode }) {
     setMessage('')
     setMenuOpen(false)
   }, [path])
+  useEffect(() => {
+    let active = true
+    setWorkspace(null)
+    if (user)
+      api('workspace')
+        .then((d) => {
+          if (active) setWorkspace(d)
+        })
+        .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [user?.id, api])
   function authenticate(d: { user: User; token: string }) {
     setToken(d.token)
     setUser(d.user)
@@ -276,31 +301,24 @@ export function DidarProvider({ children }: { children: ReactNode }) {
               <Link href={scopedHref('/orders')}>{copy.orders}</Link>
               <Link href={scopedHref('/account/wallet')}>کیف پول</Link>
               <Link href={scopedHref('/account')}>{copy.account}</Link>
-              {user.role === 'customer' &&
-                user.merchant_memberships?.some(
-                  (m) => m.permission === 'ONBOARDING',
-                ) && <Link href="/manage/onboarding">همراهی فروشنده</Link>}
-              {user.role === 'customer' &&
-                user.merchant_memberships?.some(
-                  (m) => m.permission === 'STOREFRONT',
-                ) && <Link href="/manage/storefront">مدیریت ویترین مجاز</Link>}
-              {user.role === 'customer' &&
-                user.merchant_memberships?.some(
-                  (m) => m.permission === 'SHARE',
-                ) && <Link href="/manage/sharing">اشتراک فروشنده مجاز</Link>}
-              {(user.role !== 'customer' ||
+              {workspace?.panel_origin &&
+              (user.role !== 'customer' ||
                 user.content_operator ||
-                user.merchant_memberships?.some((m) =>
-                  ['CONTENT_EDIT', 'CONTENT_PUBLISH'].includes(m.permission),
-                )) && <Link href="/manage/pages">صفحه‌ساز</Link>}
-              {user.role !== 'customer' && (
-                <>
-                  <Link href="/manage">{copy.manage}</Link>
-                  <Link href="/manage/storefront">ویترین من</Link>
-                  <Link href="/manage/sharing">اشتراک محصولات</Link>
-                  <Link href="/manage/onboarding">شروع فروش</Link>
-                </>
-              )}
+                user.merchant_memberships?.length) ? (
+                <a
+                  href={
+                    workspace.panel_origin +
+                    (workspace.surface === 'admin' ||
+                    user.role === 'admin' ||
+                    user.content_operator
+                      ? '/dashboard'
+                      : '/seller') +
+                    '/handoff?to=%2Fdidar%2Fconnect'
+                  }
+                >
+                  فضای کاری دیدار
+                </a>
+              ) : null}
               <button
                 onClick={() =>
                   run(async () => {

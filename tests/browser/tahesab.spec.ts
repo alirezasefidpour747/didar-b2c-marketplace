@@ -17,14 +17,12 @@ test("Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempot
     }),
   ).toBeVisible();
   await expect(page.getByRole("note")).toContainText("BLOCKED_BY_SPEC");
-  const map = page
-    .locator("form")
-    .filter({
-      has: page.getByRole("button", {
-        name: "ثبت نسخه نگاشت آزمایشی",
-        exact: true,
-      }),
-    });
+  const map = page.locator("form").filter({
+    has: page.getByRole("button", {
+      name: "ثبت نسخه نگاشت آزمایشی",
+      exact: true,
+    }),
+  });
   await map.locator('[name="supplier_id"]').selectOption("s1");
   for (const [name, value] of Object.entries({
     merchant_code: "QA_S1",
@@ -62,21 +60,24 @@ test("Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempot
   await expect
     .poll(() => Date.now() - new Date(funded.event.created_at).getTime())
     .toBeGreaterThan(1100);
-  const close = page
-    .locator("form")
-    .filter({
-      has: page.getByRole("button", {
-        name: "تهیه خروجی تجمیعی آزمایشی",
-        exact: true,
-      }),
-    });
+  const close = page.locator("form").filter({
+    has: page.getByRole("button", {
+      name: "تهیه خروجی تجمیعی آزمایشی",
+      exact: true,
+    }),
+  });
   await close.locator('[name="supplier_id"]').selectOption("s1");
   await close
     .locator('[name="start_at"]')
-    .fill(new Date(Date.now() - 86400000).toISOString().slice(0, 19));
+    .fill(
+      new Date(Date.now() - 86400000)
+        .toISOString()
+        .slice(0, 19)
+        .replace(/:00$/, ""),
+    );
   await close
     .locator('[name="end_at"]')
-    .fill(new Date().toISOString().slice(0, 19));
+    .fill(new Date().toISOString().slice(0, 19).replace(/:00$/, ""));
   await close
     .getByRole("button", { name: "تهیه خروجی تجمیعی آزمایشی", exact: true })
     .click();

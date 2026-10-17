@@ -4,11 +4,11 @@ import { StorefrontAdmin } from "@didar-ui/storefront-admin";
 export const config: RouteConfig = {
   label: "ویترین فروشگاه",
   group: "didar",
-  permissions: ["store:view"],
+  permissions: ["didar.storefront:view"],
   rank: 6,
 };
 export const handle = {
-  permissions: ["store:view"],
+  permissions: ["didar.storefront:view"],
   breadcrumb: () => "ویترین فروشگاه",
 };
 export default function Page() {

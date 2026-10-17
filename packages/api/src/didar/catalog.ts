@@ -78,7 +78,7 @@ export async function catalog(
       ],
     );
     const { rows: offers } = await c.query(
-      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved' AND (($4::text IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=$4))) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
+      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved' AND didar_native_saleable_supplier(s.id) AND (($4::text IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=$4))) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
       [
         user?.role || "public",
         user?.supplier_id || null,

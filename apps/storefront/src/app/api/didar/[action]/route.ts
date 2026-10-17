@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
+  'workspace',
   'storefront',
   'media',
   'pages',
@@ -198,6 +199,21 @@ async function proxy(
       response.ok
     ) {
       payload = JSON.parse(new TextDecoder().decode(bytes))
+    }
+    if (action === 'workspace' && response.ok) {
+      payload = JSON.parse(new TextDecoder().decode(bytes))
+      const configured = process.env.DIDAR_PANEL_ORIGIN
+      const fallback = process.env.MEDUSA_BACKEND_URL
+      let panelOrigin = ''
+      try {
+        const p = new URL(configured || fallback || '')
+        const local = ['localhost', '127.0.0.1', '[::1]'].includes(p.hostname)
+        if (!p.username && !p.password && !p.search && !p.hash && p.pathname === '/' &&
+          (p.protocol === 'https:' || (local && p.protocol === 'http:')) &&
+          (configured || local)) panelOrigin = p.origin
+      } catch {}
+      payload.panel_origin = panelOrigin
+      payload.ready = !!payload.ready && !!panelOrigin
     }
     const contextToken = payload?.context_token
     const visitToken = payload?.visit_token

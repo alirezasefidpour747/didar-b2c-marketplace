@@ -5,7 +5,7 @@ import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
 export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels'].map(name => `./tests/${name}.test.ts`)
-export async function testLocal(processes, { reuseBuild = false } = {}) {
+export async function testLocal(processes, { reuseBuild = false, noDemoOnly = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
   const names = [`didar-qa-pg-${suffix}`, `didar-qa-redis-${suffix}`]
@@ -61,7 +61,19 @@ export async function testLocal(processes, { reuseBuild = false } = {}) {
       TEST_API_URL: apiOrigin, TEST_STOREFRONT_URL: webOrigin, MERCUR_DISABLE_TELEMETRY: 'true', NEXT_TELEMETRY_DISABLED: '1',
     }
     console.log('Disposable local QA database/services created. Persistent UAT volumes and configuration are not used.')
-    await run('bun', ['run', 'db:setup'], { env })
+    await run('bun', ['run', 'db:setup'], { env: noDemoOnly ? { ...env, DIDAR_SEED_DEMO: 'false' } : env })
+    if (noDemoOnly) {
+      // A fresh no-demo database must receive the bridge tables without any
+      // canonical/demo identity or commerce seed. This would catch the original
+      // early-return installer defect, unlike replaying after a demo install.
+      const sql = `SELECT json_build_object('actors',(SELECT count(*) FROM didar_native_actor),'sellers',(SELECT count(*) FROM didar_native_seller),'policies',(SELECT count(*) FROM didar_native_acl),'users',(SELECT count(*) FROM didar_user),'products',(SELECT count(*) FROM didar_product),'orders',(SELECT count(*) FROM didar_order));`
+      const counts = JSON.parse(capture('docker', ['exec',names[0],'psql','-U','postgres','-d','didar_qa','-At','-c',sql]))
+      if (Object.values(counts).some(count => count !== 0)) throw new Error('Fresh no-demo installer created identities or commerce')
+      console.log('FRESH_NON_DEMO_INSTALL_VERIFIED ' + JSON.stringify(counts))
+      return
+    }
+    // Upgrade path must apply native tables with demo/account creation disabled.
+    await run('bun', ['run','--cwd','packages/api','medusa','exec','./src/scripts/didar-seed.ts'], { env: { ...env, DIDAR_SEED_DEMO: 'false' } })
     await run('bun', ['run','--cwd','packages/api','medusa','exec','./src/scripts/native-qa-seed.ts'], {env})
     if (reuseBuild) console.log('Reusing production build: source, complete output and platform receipt verified.')
     else {

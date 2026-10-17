@@ -63,8 +63,8 @@ async function main() {
     acquireLock()
     // Test owns its own disposable services, credentials and app ports; UAT config is not read.
     const { testLocal } = await import('./local/test.mjs')
-    if (process.argv.slice(3).some(arg => arg !== '--reuse-build')) throw new Error('Unknown test option; use --reuse-build only with a verified receipt')
-    await testLocal(processes, { reuseBuild: process.argv.includes('--reuse-build') })
+    if (process.argv.slice(3).some(arg => !['--reuse-build','--no-demo-install-only'].includes(arg))) throw new Error('Unknown test option; use --reuse-build only with a verified receipt')
+    await testLocal(processes, { reuseBuild: process.argv.includes('--reuse-build'), noDemoOnly: process.argv.includes('--no-demo-install-only') })
     return
   }
   const env = mode === 'setup' ? ensureLocalConfig() : readLocalConfig()

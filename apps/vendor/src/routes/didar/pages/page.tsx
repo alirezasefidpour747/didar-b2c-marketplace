@@ -4,11 +4,11 @@ import { PageBuilder } from "@didar-ui/content-editor";
 export const config: RouteConfig = {
   label: "صفحه‌ساز بصری",
   group: "didar",
-  permissions: ["products:view"],
+  permissions: ["didar.content:view"],
   rank: 8,
 };
 export const handle = {
-  permissions: ["products:view"],
+  permissions: ["didar.content:view"],
   breadcrumb: () => "صفحه‌ساز بصری",
 };
 export default function Page() {

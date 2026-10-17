@@ -1,18 +1,17 @@
-import { loadEnv } from '@medusajs/framework/utils'
-import { withMercur } from '@mercurjs/core'
-import fs from 'fs'
-import path from 'path'
+import { loadEnv } from "@medusajs/framework/utils";
+import { withMercur } from "@mercurjs/core";
+import fs from "fs";
+import path from "path";
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 const secret = (name: string) => {
-  const value = process.env[name]
-  if (process.env.NODE_ENV === 'production' && (!value || value.length < 32)) {
-    throw new Error(`${name} must be configured with at least 32 characters`)
+  const value = process.env[name];
+  if (process.env.NODE_ENV === "production" && (!value || value.length < 32)) {
+    throw new Error(`${name} must be configured with at least 32 characters`);
   }
-  return value || 'development-only-do-not-use-in-production'
-}
-
+  return value || "development-only-do-not-use-in-production";
+};
 
 // Resolves where a dashboard app lives:
 // - in the source tree (development): ../../apps/<name>
@@ -21,9 +20,11 @@ const secret = (name: string) => {
 //   scripts/bundle-dashboards.mjs during `build`. The compiled config runs from the
 //   artifact root, so __dirname points there.
 const dashboardAppDir = (name: string) => {
-  const bundled = path.join(__dirname, 'dashboards', name)
-  return fs.existsSync(bundled) ? bundled : path.join(__dirname, `../../apps/${name}`)
-}
+  const bundled = path.join(__dirname, "dashboards", name);
+  return fs.existsSync(bundled)
+    ? bundled
+    : path.join(__dirname, `../../apps/${name}`);
+};
 
 module.exports = withMercur({
   projectConfig: {
@@ -34,44 +35,46 @@ module.exports = withMercur({
       adminCors: process.env.ADMIN_CORS!,
       vendorCors: process.env.VENDOR_CORS!,
       authCors: process.env.AUTH_CORS!,
-      jwtSecret: secret('JWT_SECRET'),
-      cookieSecret: secret('COOKIE_SECRET'),
-    }
+      jwtSecret: secret("JWT_SECRET"),
+      cookieSecret: secret("COOKIE_SECRET"),
+    },
   },
   featureFlags: {
-    seller_registration: true
+    seller_registration: true,
   },
   modules: [
+    { resolve: "./src/modules/didar-permissions" },
     {
-      resolve: '@mercurjs/core/modules/admin-ui',
+      resolve: "@mercurjs/core/modules/admin-ui",
       options: {
-        appDir: dashboardAppDir('admin'),
-        path: '/dashboard',
-      }
+        appDir: dashboardAppDir("admin"),
+        path: "/dashboard",
+      },
     },
     {
-      resolve: '@mercurjs/core/modules/vendor-ui',
+      resolve: "@mercurjs/core/modules/vendor-ui",
       options: {
-        appDir: dashboardAppDir('vendor'),
-        path: '/seller',
-      }
+        appDir: dashboardAppDir("vendor"),
+        path: "/seller",
+      },
     },
     {
-      resolve: '@medusajs/medusa/file',
+      resolve: "@medusajs/medusa/file",
       options: {
         providers: [
           {
-            resolve: '@medusajs/medusa/file-local',
-            id: 'local',
+            resolve: "@medusajs/medusa/file-local",
+            id: "local",
             options: {
               // The local provider bakes this into every uploaded file URL.
               // It must be the publicly reachable origin in production, or
               // images resolve to localhost and render broken.
-              backend_url: process.env.FILE_BACKEND_URL || 'http://localhost:9000/static',
+              backend_url:
+                process.env.FILE_BACKEND_URL || "http://localhost:9000/static",
             },
           },
         ],
       },
     },
   ],
-})
+});

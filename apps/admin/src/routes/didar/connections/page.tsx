@@ -1,6 +1,9 @@
 import type { RouteConfig } from "@mercurjs/dashboard-sdk";
 import { Workspace } from "../../../lib/didar";
-import { NativeSellerLinks } from "@didar-ui/native-seller-links";
+import {
+  NativeSellerLinks,
+  NativeAccessAdmin,
+} from "@didar-ui/native-seller-links";
 export const config: RouteConfig = {
   label: "اتصال فروشگاه بومی",
   group: "didar",
@@ -15,6 +18,7 @@ export default function Page() {
   return (
     <Workspace>
       <NativeSellerLinks />
+      <NativeAccessAdmin />
     </Workspace>
   );
 }

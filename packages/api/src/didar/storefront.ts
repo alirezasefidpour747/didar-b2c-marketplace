@@ -19,6 +19,8 @@ export async function merchantAccess(
   permission: string,
 ) {
   if (!u) throw new Error("UNAUTHORIZED");
+  if (u.native_supplier_id && u.native_supplier_id !== sid)
+    throw new Error("FORBIDDEN");
   if (u.role === "admin" || (u.role === "supplier" && u.supplier_id === sid))
     return authorize(c, u, sid);
   const s = (
@@ -38,6 +40,7 @@ export async function merchantAccess(
 export async function storeAllowed(c: any, f: any, u: any, lock = false) {
   if (!f || !f.published || !f.approved || !f.active || f.status !== "approved")
     throw new Error("NOT_FOUND");
+  if (!(await c.query("SELECT didar_native_saleable_supplier($1) ok", [f.supplier_id])).rows[0].ok) throw Error("NOT_FOUND");
   if (f.visibility !== "INVITE_ONLY") return;
   if (!u) throw new Error("UNAUTHORIZED");
   if (
@@ -93,6 +96,7 @@ export async function storeScope(req: any, c: any = db, lock = false) {
   return storeProjection(f);
 }
 export async function assertOfferScope(c: any, o: any, scope: any) {
+  if (!(await c.query("SELECT didar_native_saleable_supplier($1) ok", [o.supplier_id])).rows[0].ok) throw Error("CONFLICT_STORE_SCOPE");
   if (
     scope
       ? o.supplier_id !== scope.supplier_id
@@ -174,16 +178,16 @@ export async function storefront(req: any) {
   if (!u) throw new Error("UNAUTHORIZED");
   if (req.method === "GET") {
     const { rows: stores } = await db.query(
-      `SELECT f.*,s.name supplier_name FROM didar_storefront f JOIN didar_supplier s ON s.id=f.supplier_id WHERE $1='admin' OR f.supplier_id=$2 OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=f.supplier_id AND m.user_id=$3 AND m.active) ORDER BY f.handle`,
-      [u.role, u.supplier_id || null, u.id],
+      `SELECT f.*,s.name supplier_name FROM didar_storefront f JOIN didar_supplier s ON s.id=f.supplier_id WHERE ($4::text IS NULL OR f.supplier_id=$4) AND ($1='admin' OR f.supplier_id=$2 OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=f.supplier_id AND m.user_id=$3 AND m.active)) ORDER BY f.handle`,
+      [u.role, u.supplier_id || null, u.id, u.native_supplier_id || null],
     );
     const { rows: suppliers } = await db.query(
-      `SELECT s.id,s.name,s.active,s.status FROM didar_supplier s WHERE $1='admin' OR s.id=$2 OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=s.id AND m.user_id=$3 AND m.active) ORDER BY s.name`,
-      [u.role, u.supplier_id || null, u.id],
+      `SELECT s.id,s.name,s.active,s.status FROM didar_supplier s WHERE ($4::text IS NULL OR s.id=$4) AND ($1='admin' OR s.id=$2 OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=s.id AND m.user_id=$3 AND m.active)) ORDER BY s.name`,
+      [u.role, u.supplier_id || null, u.id, u.native_supplier_id || null],
     );
     const { rows: members } = await db.query(
-      `SELECT m.supplier_id,m.user_id,m.permission,m.active FROM didar_merchant_member m WHERE $1='admin' OR m.supplier_id=$2 OR m.user_id=$3`,
-      [u.role, u.supplier_id || null, u.id],
+      `SELECT m.supplier_id,m.user_id,m.permission,m.active FROM didar_merchant_member m WHERE ($4::text IS NULL OR m.supplier_id=$4) AND ($1='admin' OR m.supplier_id=$2 OR m.user_id=$3)`,
+      [u.role, u.supplier_id || null, u.id, u.native_supplier_id || null],
     );
     return { stores, suppliers, members };
   }

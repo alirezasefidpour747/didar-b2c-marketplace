@@ -1,3 +1,4 @@
+import { workspace } from "./workspace";
 import { content } from "./content";
 import { contentMedia } from "./content-media";
 import { media } from "./media";
@@ -68,6 +69,7 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "workspace") return workspace(req);
   if (action === "pages") return content(req);
   if (action === "content-media") return contentMedia(req);
   if (action === "media") return media(req);
@@ -124,18 +126,19 @@ export async function perform(action: string, req: any): Promise<any> {
     if (!u) return { user: null };
     const memberships = (
       await db.query(
-        "SELECT m.supplier_id,m.permission FROM didar_merchant_member m JOIN didar_supplier s ON s.id=m.supplier_id WHERE m.user_id=$1 AND m.active AND s.active AND s.status='approved'",
-        [u.id],
+        "SELECT m.supplier_id,m.permission FROM didar_merchant_member m JOIN didar_supplier s ON s.id=m.supplier_id WHERE m.user_id=$1 AND m.active AND s.active AND s.status='approved' AND ($2::text IS NULL OR m.supplier_id=$2)",
+        [u.id, u.native_supplier_id || null],
       )
     ).rows;
     const content_operator =
-      u.role === "admin" ||
-      !!(
-        await db.query(
-          "SELECT 1 FROM didar_content_operator WHERE user_id=$1 AND active",
-          [u.id],
-        )
-      ).rowCount;
+      !u.native_supplier_id &&
+      (u.role === "admin" ||
+        !!(
+          await db.query(
+            "SELECT 1 FROM didar_content_operator WHERE user_id=$1 AND active",
+            [u.id],
+          )
+        ).rowCount);
     return {
       user: { ...u, merchant_memberships: memberships, content_operator },
     };

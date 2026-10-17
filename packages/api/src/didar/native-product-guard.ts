@@ -7,12 +7,10 @@ export async function nativeProductGuard(req: any, res: any, next: any) {
   // Seller gold requests always use the governed Didar workflow. A uniform
   // response also prevents probing another merchant's private native product ID.
   if (/^\/vendor\/products(?:\/|$)/.test(path))
-    return res
-      .status(409)
-      .json({
-        message: "CONFLICT_USE_DIDAR_PRODUCT_EDITOR",
-        type: "not_allowed",
-      });
+    return res.status(409).json({
+      message: "CONFLICT_USE_DIDAR_PRODUCT_EDITOR",
+      type: "not_allowed",
+    });
   let id = path.match(/^\/(admin|vendor)\/products\/([^/]+)/)?.[2];
   if (!id) return next();
   try {

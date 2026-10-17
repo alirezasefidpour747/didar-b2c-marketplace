@@ -1,6 +1,6 @@
 # Native panel recovery mapping
 
-Native recovery implementation against owner baseline `dfcc604`; primary role journeys are implemented. See the implementation handoff and verification receipt for actual completed checks and remaining staff/cutover parity.
+Native recovery implementation against owner baseline `dfcc604`; primary role journeys are implemented. See the implementation handoff and verification receipt for completed checks, restricted-role integration and protected cutover.
 
 Mercur 2.3.7's installed `panel-extensions/{overview,create-page,widgets,custom-fields}.mdx`, API conventions, frontend patterns and store team model were inspected alongside the actual shipped authentication middleware and extension target declarations. Actual paths already agree with the owner: Admin `/dashboard`, Vendor `/seller`. Historical AGENTS path labels were reversed; no route reset was necessary.
 
@@ -34,4 +34,4 @@ Native Medusa orders, generic inventory quantities and generic payouts are not s
 
 ## Cutover gate
 
-Legacy routes are retained until each replacement passes authenticated functional parity. Redirects must send only the appropriate role to the correct native protected route and preserve deep IDs; native authentication still applies. No implementation here claims production was inspected. Native staff delegation and later CRM/campaign/reward capabilities require their own verified default-deny grants; linking a seller does not authorize every account sharing its email or store.
+Legacy routes are retained until each replacement passes authenticated functional parity. Redirects must send only the appropriate role to the correct native protected route and preserve deep IDs; native authentication still applies. No implementation here claims production was inspected. Native staff delegation uses existing selected-merchant grants plus the native permission resolver; linking a seller does not authorize every account sharing its email or store. Later CRM/campaign/reward capabilities require their own verified default-deny grants.

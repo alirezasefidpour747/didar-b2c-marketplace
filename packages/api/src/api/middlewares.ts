@@ -1,9 +1,20 @@
 import { defineMiddlewares, authenticate } from "@medusajs/medusa";
 
+import { nativeVendorPrivacy } from "../didar/native-vendor-privacy";
 import { nativeProductGuard } from "../didar/native-product-guard";
 
 export default defineMiddlewares({
   routes: [
+    {
+      matcher: /^\/vendor\/(members\/me|sellers(?:\/[^/]+(?:\/members\/me)?)?)$/,
+      method: ["GET", "POST"],
+      middlewares: [
+        authenticate("member", ["session", "bearer"], {
+          allowUnregistered: true,
+        }),
+        nativeVendorPrivacy,
+      ],
+    },
     {
       matcher: /^\/admin\/products\/.+/,
       middlewares: [

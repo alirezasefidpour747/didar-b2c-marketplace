@@ -17,8 +17,8 @@ export async function onboarding(req: any) {
     });
   }
   const { rows: suppliers } = await db.query(
-    `SELECT id,name,status,active,commercial_type,pricing_revision FROM didar_supplier s WHERE $1='admin' OR ($1='supplier' AND s.id=$2) OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=s.id AND m.user_id=$3 AND m.permission='ONBOARDING' AND m.active) ORDER BY name`,
-    [u.role, u.supplier_id || null, u.id],
+    `SELECT id,name,status,active,commercial_type,pricing_revision FROM didar_supplier s WHERE ($4::text IS NULL OR s.id=$4) AND ($1='admin' OR ($1='supplier' AND s.id=$2) OR EXISTS(SELECT 1 FROM didar_merchant_member m WHERE m.supplier_id=s.id AND m.user_id=$3 AND m.permission='ONBOARDING' AND m.active)) ORDER BY name`,
+    [u.role, u.supplier_id || null, u.id, u.native_supplier_id || null],
   );
   const sid = q.supplier_id || u.supplier_id || suppliers[0]?.id;
   if (!sid) return { suppliers, requests: [], products: [], assets: [] };

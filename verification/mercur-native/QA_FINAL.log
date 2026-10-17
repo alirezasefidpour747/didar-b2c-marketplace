@@ -1,0 +1,38 @@
+Final recovery verification — 2026-10-17
+Full regression command: CHROMIUM_PATH=/usr/bin/chromium PLAYWRIGHT_NO_SANDBOX=1 bun run local:test -- --reuse-build
+Prior fresh build command: bun run local:test (all four builds passed; this exposed and led to the customer-session correction)
+Final changed storefront build: NODE_ENV=production bun run --cwd apps/storefront build
+Complete current source/output/platform receipt verified before the final full suite.
+Backend: 174 passed; 0 failed; 2238 assertions.
+Native HTTP: 1 passed.
+
+  ✓   1 tests/browser/acceptance.spec.ts:2:5 › Gate 5 Persian reconciliation screen records DB-derived checks without claiming Mac or live financial acceptance (1.3s)
+  ✓   2 tests/browser/content.spec.ts:42:5 › Persian page builder publishes the six core blocks, real video/slider/mosaic, responsive preview and live quote without a parallel cart (15.8s)
+  ✓   3 tests/browser/expiry.spec.ts:50:5 › expired reservation is shown to the customer and restores available pieces (2.1s)
+  ✓   4 tests/browser/facets.spec.ts:40:5 › Persian product classification, F11 membership and server discovery persist into the same mobile and desktop PDP (7.1s)
+  ✓   5 tests/browser/facets.spec.ts:155:5 › supplier proposes own controlled classification and DIDAR reviews it through Persian UI (5.7s)
+  ✓   6 tests/browser/facets.spec.ts:266:5 › DIDAR vocabulary drafts/reviews, retirement, timed merchandising and curated pages use persisted Persian controls (6.6s)
+  ✓   7 tests/browser/finance.spec.ts:2:5 › Gate 1 Persian finance: admin contract request/review and supplier isolation (3.2s)
+  ✓   8 tests/browser/marketplace.spec.ts:2:5 › RTL catalog, supplier comparison, login, checkout and payment (1.6s)
+  ✓   9 tests/browser/marketplace.spec.ts:54:5 › supplier interface displays only owned stock (1.4s)
+  ✓  10 tests/browser/marketplace.spec.ts:76:5 › admin interface manages gold rate and catalog (1.8s)
+  ✓  11 tests/browser/marketplace.spec.ts:100:5 › mobile RTL catalog and product detail fit the viewport (908ms)
+  ✓  12 tests/browser/merchant-pricing.spec.ts:49:5 › Persian admin creates and approves tax/profile versions, assigns two merchant types and customer pays the exact merchant-specific cash prices (13.4s)
+  ✓  13 tests/browser/merchant-pricing.spec.ts:331:5 › merchant sees only own terms; customer switches cash/credit rules and freezes the selected method in checkout (4.3s)
+  ✓  14 tests/browser/native-panels.spec.ts:32:5 › real native Admin and Vendor shells navigate connected Didar products, pricing, UID, CMS and storefront; customer remains B2C (10.2s)
+  ✓  15 tests/browser/native-panels.spec.ts:262:5 › native Admin publishes a classified master, prints real permanent UID labels and the customer resolves the current PDP (6.0s)
+  ✓  16 tests/browser/native-panels.spec.ts:407:5 › native staff and global editor see only authorized sidebar routes and persist scoped CMS drafts without becoming administrators (4.4s)
+  ✓  17 tests/browser/native-panels.spec.ts:506:5 › protected legacy deep links resume through actual native login and seller selection without exposing credentials (12.0s)
+  ✓  18 tests/browser/onboarding-media.spec.ts:38:5 › Persian assisted wizard registers a merchant, proposes one shared master, processes a large camera file, approves real WebP media and preserves private store access (13.2s)
+  ✓  19 tests/browser/operational.spec.ts:74:5 › admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered (15.2s)
+  ✓  20 tests/browser/phase1.spec.ts:43:5 › admin UI creates supplier/product, weighs and tags units, posts stock; supplier read-only; real UID sale and RFID variance (12.7s)
+  ✓  21 tests/browser/proxy.spec.ts:4:5 › storefront proxy rejects oversized chunked JSON before forwarding to the API (14ms)
+  ✓  22 tests/browser/proxy.spec.ts:31:5 › an interrupted customer session bootstrap preserves the credential and a real retry restores the account (1.0s)
+  ✓  23 tests/browser/storefront.spec.ts:28:5 › Merchant A entry survives central registration, PDP, quote and sandbox purchase; Merchant B stays inaccessible (10.8s)
+  ✓  24 tests/browser/tahesab.spec.ts:2:5 › Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempotent, vendor mapping remains blocked (4.1s)
+  ✓  25 tests/browser/taxonomy-labels.spec.ts:16:5 › Persian draft publication, optional-RFID bulk labels, print sizing, canonical breadcrumbs and QR continuity (5.6s)
+  ✓  26 tests/browser/treasury.spec.ts:2:5 › Gate 2 treasury UI records and approves a synthetic purchase through real APIs (4.1s)
+  ✓  27 tests/browser/wallet.spec.ts:11:5 › Gate 3 Persian wallet UI funds/releases synthetic money and customer reserves without admin funding privileges (3.2s)
+
+Browser: 27 passed; 0 failed.
+CODEX_LINUX_VERIFIED; owner Mac/hardware/live provider acceptance is not claimed.
