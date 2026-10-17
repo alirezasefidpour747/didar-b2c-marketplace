@@ -1198,3 +1198,73 @@ test("I18 independent revocation and expiry invalidate new economics without rew
     ).status,
   ).toBe(409);
 }, 60000);
+
+test("I18 independent AGENCY MERCHANT-paid fees bind the actual principal once for both commercial types and CASH/CREDIT", async () => {
+  for (const type of ["RETAILER", "MANUFACTURER"] as const) {
+    const f = await fixture(), pricing = await profile(f, type, false, "MERCHANT");
+    const { offer, items } = await intake(f, 2);
+    await approve(await mandate(f));
+    const soldUids: string[] = [];
+    for (const method of ["CASH", "CREDIT"]) {
+      const { q, order } = await accepted(f, offer, method);
+      await Promise.all([1, 2, 3].map(() => ok("/didar/payment", f.buyer, { order_id: order.id, outcome: "success" })));
+      const facts = await sales(order);
+      expect(facts).toHaveLength(1);
+      const sale = facts[0], allocation = sale.snapshot.allocation;
+      expect(sale.snapshot.sale_role).toMatchObject({ mode: "AGENCY", principal_id: f.sid, physical_supplier_id: f.sid, collector: "DIDAR", on_behalf: true });
+      expect(allocation.profile_version_id).toBe(pricing.version);
+      expect(allocation.tax_version_id).toBe(pricing.tax);
+      expect(allocation.collection_irr).toBe(String(q.total_irr));
+      expect(BigInt(allocation.collection_irr)).toBe(BigInt(allocation.seller_gold_book_irr) + BigInt(allocation.seller_rial_irr) + BigInt(allocation.didar_share_irr) + BigInt(allocation.third_party_irr) + BigInt(allocation.tax_irr));
+      const charges = allocation.charges;
+      expect(charges).toHaveLength(method === "CREDIT" ? 3 : 2);
+      for (const charge of charges) {
+        expect(charge.payer).toBe("MERCHANT");
+        expect(charge.payer_id).toBe(f.sid);
+        expect(charge.payee_id).toBe("DIDAR");
+        expect(charge.profile_version_id).toBe(pricing.version);
+        expect(charge.tax_version_id).toBe(pricing.tax);
+        expect(BigInt(charge.amount_irr)).toBeGreaterThan(0n);
+      }
+      const fee = charges.reduce((sum: bigint, charge: any) => sum + BigInt(charge.amount_irr), 0n);
+      const rows = await postings(sale);
+      balanced(rows);
+      const receivables = rows.filter((p: any) => p.account === "MERCHANT_SERVICE_RECEIVABLE");
+      expect(receivables.length).toBeGreaterThan(0);
+      expect(receivables.every((p: any) => p.party === "supplier:" + f.sid && p.instrument === "IRR" && BigInt(p.delta) > 0n)).toBe(true);
+      expect(receivables.reduce((sum: bigint, p: any) => sum + BigInt(p.delta), 0n)).toBe(fee);
+      for (const charge of charges) {
+        const revenue = rows.filter((p: any) => p.account === "PROFILE_" + charge.component.toUpperCase() + "_REVENUE");
+        expect(revenue).toHaveLength(1);
+        expect(revenue[0].party).toBe("DIDAR");
+        expect(revenue[0].delta).toBe("-" + charge.amount_irr);
+      }
+      const cash = rows.filter((p: any) => p.account === "CASH_CLEARING");
+      expect(cash).toHaveLength(1);
+      expect(cash[0].delta).toBe(String(q.total_irr));
+      expect(rows.filter((p: any) => p.account === "SUPPLIER_GOLD_PAYABLE")).toHaveLength(1);
+      expect(rows.find((p: any) => p.account === "SUPPLIER_GOLD_PAYABLE").delta).toBe("-42000000");
+      expect(rows.filter((p: any) => p.account === "SUPPLIER_RIAL_PAYABLE")).toHaveLength(1);
+      expect(rows.find((p: any) => p.account === "SUPPLIER_RIAL_PAYABLE").delta).toBe("-" + allocation.seller_rial_irr);
+      expect(rows.filter((p: any) => p.account === "PRINCIPAL_REVENUE")).toHaveLength(0);
+      expect(rows.every((p: any) => p.party === "DIDAR" || p.party === "supplier:" + f.sid)).toBe(true);
+      expect((await db.query("SELECT count(*)::int n FROM didar_fin_journal WHERE event_id=$1", [sale.id])).rows[0].n).toBe(1);
+      expect((await db.query("SELECT count(*)::int n FROM didar_payment_attempt WHERE order_id=$1", [order.id])).rows[0].n).toBe(1);
+      const invoice = await ok("/didar/invoice?order_id=" + order.id, f.buyer);
+      expect(invoice.documents).toHaveLength(1);
+      expect(invoice.documents[0].snapshot.lines[0].customer_charges).toEqual([]);
+      expect(invoice.documents[0].snapshot.total_irr).toBe(String(q.total_irr));
+      expect(invoice.documents[0].snapshot.lines[0].uids).toEqual([sale.snapshot.uid]);
+      for (const hidden of ["allocation", "payer_id", "owned_cost_irr", "cost_basis_irr", "contract_request", "customer_id", "postal_code"])
+        expect(JSON.stringify(invoice)).not.toContain(hidden);
+      const frozen = fingerprint(sale.snapshot);
+      await ok("/didar/payment", f.buyer, { order_id: order.id, outcome: "success" });
+      expect(await sales(order)).toHaveLength(1);
+      expect(fingerprint((await sales(order))[0].snapshot)).toBe(frozen);
+      expect(await ok("/didar/invoice?order_id=" + order.id, f.seller)).toEqual(invoice);
+      expect(items.some((item: any) => item.uid === sale.snapshot.uid)).toBe(true);
+      soldUids.push(sale.snapshot.uid);
+    }
+    expect(new Set(soldUids).size).toBe(2);
+  }
+}, 120000);

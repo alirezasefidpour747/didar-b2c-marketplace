@@ -10,6 +10,7 @@ const safe = process.env.DIDAR_DISPOSABLE_QA === "true" &&
   /^postgres(?:ql)?:\/\/[^@]+@127\.0\.0\.1:\d+\/didar_qa$/.test(process.env.DATABASE_URL || "");
 const db = new Pool({ connectionString: process.env.DATABASE_URL });
 const suppliers: string[] = [], products: string[] = [];
+let createdS1Storefront = false;
 const evidence = ".local/evidence/issue18";
 function gate() {
   let release!: () => void;
@@ -52,6 +53,12 @@ async function paints(page: Page) {
 }
 test.afterAll(async () => {
   if (safe) {
+    if (createdS1Storefront) {
+      // Restore the exact previous absence, so subsequent native managed-launch
+      // acceptance still exercises first save and approval rather than our setup.
+      const removed = await db.query("DELETE FROM didar_storefront WHERE supplier_id='s1' AND handle='synthetic-closure-s1'");
+      expect(removed.rowCount).toBe(1);
+    }
     if (suppliers.length) await db.query("UPDATE didar_supplier SET active=false WHERE id=ANY($1::text[])", [suppliers]);
     if (products.length) await db.query("UPDATE didar_product SET active=false,published=false WHERE id=ANY($1::text[])", [products]);
     // Existing suite convention: synthetic bridge/login-window isolation only.
@@ -70,8 +77,10 @@ test("I18 independent real Vendor CMS keeps pending operations disabled and prev
   // Keep any stable existing handle/configuration; provision only a missing QA row.
   // Public marketplace eligibility matches the prior no-storefront supplier;
   // the new CMS draft itself remains private and unpublished.
-  if (!storefronts.stores.some((s: any) => s.supplier_id === "s1"))
+  if (!storefronts.stores.some((s: any) => s.supplier_id === "s1")) {
     await admin.call("storefront", { kind: "save", supplier_id: "s1", handle: "synthetic-closure-s1", name: "ویترین ساختگی آزمون", visibility: "PUBLIC_MARKETPLACE", published: true, approved: true });
+    createdS1Storefront = true;
+  }
   const vendor = await native("vendor"), tag = crypto.randomUUID().slice(0, 8);
   const index = await vendor.call("pages");
   const old = index.pages.find((p: any) => p.supplier_id === "s1" && p.kind === "MERCHANT_HOME" && p.route_key === "");
