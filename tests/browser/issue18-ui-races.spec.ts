@@ -73,7 +73,7 @@ test("I18 independent real Vendor CMS keeps pending operations disabled and prev
   test.setTimeout(120000); mkdirSync(evidence, { recursive: true });
   const admin = await native("admin");
   const storefronts = await admin.call("storefront");
-  // A native merchant-home draft requires a legitimate existing storefront.
+  // A native merchant-owned category draft requires an existing storefront.
   // Keep any stable existing handle/configuration; provision only a missing QA row.
   // Public marketplace eligibility matches the prior no-storefront supplier;
   // the new CMS draft itself remains private and unpublished.
@@ -82,11 +82,13 @@ test("I18 independent real Vendor CMS keeps pending operations disabled and prev
     createdS1Storefront = true;
   }
   const vendor = await native("vendor"), tag = crypto.randomUUID().slice(0, 8);
+  const routeKey = (await db.query("SELECT slug FROM didar_category WHERE id='ring' AND active")).rows[0].slug;
   const index = await vendor.call("pages");
-  const old = index.pages.find((p: any) => p.supplier_id === "s1" && p.kind === "MERCHANT_HOME" && p.route_key === "");
+  // Keep the merchant home route untouched for original native staff acceptance.
+  const old = index.pages.find((p: any) => p.supplier_id === "s1" && p.kind === "CATEGORY_LANDING" && p.route_key === routeKey);
   const existing = old ? await vendor.call("pages?page_id=" + old.id) : null;
   const title = "پیش‌نویس مستقل هم‌زمان " + tag;
-  const draft = await vendor.call("pages", { operation: "draft", supplier_id: "s1", kind: "MERCHANT_HOME", route_key: "", title,
+  const draft = await vendor.call("pages", { operation: "draft", supplier_id: "s1", kind: "CATEGORY_LANDING", route_key: routeKey, title,
     blocks: [{ id: crypto.randomUUID(), type: "BRAND_STORY", theme: "WHITE", title: "متن پیش از ویرایش", body: "" }],
     ...(existing ? { page_id: old.id, revision: existing.page.revision } : {}) });
   const optionsReady = gate(), releaseOptions = gate(), detailReady = gate(), releaseDetail = gate();
@@ -117,7 +119,9 @@ test("I18 independent real Vendor CMS keeps pending operations disabled and prev
   try {
     await page.goto(origin + "/seller/didar/pages");
     await optionsReady.promise; await staleReady.promise;
-    releaseStale.release(); await staleDelivered.promise; await paints(page);
+    releaseStale.release(); await staleDelivered.promise;
+    await expect(page.getByRole("status").filter({ hasText: "دسترسی مجاز نیست." })).toBeVisible();
+    await paints(page);
     const open = page.getByRole("button", { name: new RegExp(title) });
     await expect(open).toBeVisible();
     // The index request has completed, but the unrelated real options request
@@ -178,7 +182,9 @@ test("I18 independent native Admin sharing ignores a late real response from the
   });
   try {
     await select.selectOption(a.sid); await receivedA.promise;
+    const currentB = page.waitForResponse(r => r.url().includes("/admin/didar/sharing?") && new URL(r.url()).searchParams.get("supplier_id") === b.sid);
     await select.selectOption(b.sid);
+    await (await currentB).finished(); await paints(page);
     await expect(page.getByRole("checkbox", { name: b.title, exact: true })).toBeVisible();
     const late = page.waitForResponse(r => r.url().includes("/admin/didar/sharing?") && new URL(r.url()).searchParams.get("supplier_id") === a.sid);
     releaseA.release(); await deliveredA.promise; await (await late).finished(); await paints(page);
