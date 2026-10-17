@@ -64,6 +64,12 @@ test.afterAll(async () => {
 test("I18 independent real Vendor CMS keeps pending operations disabled and previews the saved current version", async ({ page }) => {
   if (!safe) throw Error("Disposable loopback QA required");
   test.setTimeout(120000); mkdirSync(evidence, { recursive: true });
+  const admin = await native("admin");
+  const storefronts = await admin.call("storefront");
+  // A native merchant-home draft requires a legitimate existing storefront.
+  // Keep any stable existing handle/configuration; provision only a missing QA row.
+  if (!storefronts.stores.some((s: any) => s.supplier_id === "s1"))
+    await admin.call("storefront", { kind: "save", supplier_id: "s1", handle: "synthetic-closure-s1", name: "ویترین خصوصی ساختگی آزمون", visibility: "UNLISTED_LINK", published: false, approved: false });
   const vendor = await native("vendor"), tag = crypto.randomUUID().slice(0, 8);
   const index = await vendor.call("pages");
   const old = index.pages.find((p: any) => p.supplier_id === "s1" && p.kind === "MERCHANT_HOME" && p.route_key === "");
