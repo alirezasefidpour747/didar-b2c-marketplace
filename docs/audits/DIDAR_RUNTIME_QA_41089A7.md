@@ -6,7 +6,7 @@
 
 Assignment authority: [Issue #7, Chief Architect checkpoint](https://github.com/alirezasefidpour747/didar-b2c-marketplace/issues/7#issuecomment-6231727909), specialist **03 — DIDAR Deployment & Runtime QA** only. Reviewed source: **`41089a7a0ac8084b74bb3a7f128f9a9ca038528b`**. GitHub `main` independently resolved to that exact SHA during this review. This report does not perform specialist 02's F01–F12 delta audit or accept an architecture.
 
-Read-only live-browser observations were made around **08:30–08:34 UTC on 2026-10-17**. The SSH attempt at 08:30 UTC failed with `Network is unreachable` before authentication. Consequently the exact running SHA and host/container internals remain unknown. The findings below do not identify an old commit as the current deployment.
+Read-only live-browser observations were made around **08:30–08:32 UTC on 2026-10-17**. The SSH attempt at 08:30 UTC failed with `Network is unreachable` before authentication. Consequently the exact running SHA and host/container internals remain unknown. The findings below do not identify an old commit as the current deployment.
 
 ## 2. Server topology and inspection boundary
 
