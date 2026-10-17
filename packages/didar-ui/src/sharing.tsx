@@ -1,6 +1,6 @@
 'use client'
 import { ContentPage } from './content-page'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDidar, RequireUser } from './store'
 import { ProductCard } from './catalog'
 import { number, money } from './locale'
@@ -10,7 +10,7 @@ export function ShareActions({ path, title }: { path: string; title: string }) {
     [status, setStatus] = useState(''),
     [native, setNative] = useState(false)
   useEffect(() => {
-    setURL(new URL(path, (publicOrigin || window.location.origin)).toString())
+    setURL(new URL(path, publicOrigin || window.location.origin).toString())
     setNative(typeof navigator.share === 'function')
   }, [path, publicOrigin])
   const text = title + '\n' + url
@@ -140,24 +140,53 @@ function SharingEditor() {
   const { api, run, busy } = useDidar(),
     [stores, setStores] = useState<any[]>([]),
     [sid, setSid] = useState(''),
-    [data, setData] = useState<any>(null),
+    [result, setData] = useState<any>(null),
+    [loadedSid, setLoadedSid] = useState(''),
+    [loadingScope, setLoadingScope] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
-    [editing, setEditing] = useState<any>(null)
+    [editing, setEditing] = useState<any>(null),
+    currentSid = useRef(sid),
+    generation = useRef(0)
+  currentSid.current = sid
+  const data = loadedSid === sid ? result : null
+  const scopeReady = !!sid && loadedSid === sid && !loadingScope
   useEffect(() => {
+    let active = true
     run(async () => {
       const d = await api('storefront')
+      if (!active) return
       setStores(d.suppliers)
-      setSid(d.suppliers[0]?.id || '')
+      setSid((previous) =>
+        d.suppliers.some((s: any) => s.id === previous)
+          ? previous
+          : d.suppliers[0]?.id || '',
+      )
     })
+    return () => {
+      active = false
+    }
   }, [api])
   const load = useCallback(async () => {
-    if (sid)
-      setData(await api('sharing?supplier_id=' + encodeURIComponent(sid)))
+    if (!sid || currentSid.current !== sid) return
+    const request = ++generation.current
+    setLoadingScope(true)
+    try {
+      const next = await api('sharing?supplier_id=' + encodeURIComponent(sid))
+      if (request !== generation.current || currentSid.current !== sid) return
+      setData(next)
+      setLoadedSid(sid)
+    } finally {
+      if (request === generation.current && currentSid.current === sid)
+        setLoadingScope(false)
+    }
   }, [api, sid])
   useEffect(() => {
     run(load)
     setEditing(null)
     setSelected([])
+    return () => {
+      generation.current++
+    }
   }, [load])
   const move = (index: number, delta: number) =>
     setSelected((xs) => {
@@ -189,6 +218,20 @@ function SharingEditor() {
           ))}
         </select>
       </label>
+      {!scopeReady && sid && (
+        <p role="status">
+          {loadingScope
+            ? 'در حال دریافت محصولات همین فروشگاه…'
+            : 'محصولات فروشگاه انتخاب‌شده هنوز آماده نیستند؛ دوباره دریافت کنید.'}
+        </p>
+      )}
+      <button
+        type="button"
+        disabled={busy || loadingScope || !sid}
+        onClick={() => run(load)}
+      >
+        دریافت محصولات همین فروشگاه
+      </button>
       <form
         className="card"
         key={editing?.id || 'new'}
@@ -196,6 +239,8 @@ function SharingEditor() {
           e.preventDefault()
           const f = new FormData(e.currentTarget)
           run(async () => {
+            if (!scopeReady)
+              throw Error('ابتدا محصولات فروشگاه انتخاب‌شده را دریافت کنید.')
             await api('sharing', {
               kind: 'save',
               supplier_id: sid,
@@ -303,7 +348,7 @@ function SharingEditor() {
           />
           انتشار صفحه منتخب
         </label>
-        <button className="primary" disabled={busy || !sid}>
+        <button className="primary" disabled={busy || !scopeReady}>
           ذخیره صفحه منتخب
         </button>
         <button

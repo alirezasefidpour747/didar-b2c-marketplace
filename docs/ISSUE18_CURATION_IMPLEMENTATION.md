@@ -22,6 +22,8 @@ The SQL predicate is also disabled on every pooled connection unless all of `DID
 
 The Mercur Admin agency SDK route contains connected request/review/revoke controls. Vendor sees its scoped read-only agreements. Existing customer checkout and pending-order views disclose B as actual seller and A as curator only, with zero additional curator fee. The actual seller can read its own invoice through the native history permission, including commercial suspension; attribution grants A no invoice or customer access.
 
+The native mutation runner counts all pending operations, so a completed background option request cannot enable preview while a save/detail refresh is still running. The sharing editor binds each response to the requested/current supplier and displays cards only after that scope has loaded; a late response from a previous scope cannot replace the selected store or enable submission. Independent browser regressions delay real backend responses to verify these races.
+
 ## Explicit limits
 
 A as actual reseller of B stock is denied. No approved upstream title/entitlement/settlement architecture or contract is inferred from generic agency approval. Permanent UID resolution continues to respect original global/private stock rules; knowing a private UID does not become a global publication grant. No live financial transaction, rollout, owner-server change, CRM work, automatic merge or statutory invoice certification is included. Independent test reports and final receipts, rather than this implementation description, establish what actually passed.
