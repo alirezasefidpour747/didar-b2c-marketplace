@@ -4,6 +4,7 @@ import { CuratedPage } from './sharing'
 import { Wallet } from './wallet'
 import { Catalog, ProductDetail, RateBar, ImageAsset } from './catalog'
 import { Login, Cart, Account, Orders } from './customer'
+import { Invoice } from '../../../../../packages/didar-ui/src/invoice'
 import { useDidar, ScopedLink as Link } from './store'
 export function MerchantStore({ segments }: { segments: string[] }) {
   const { store, products, scopeReady } = useDidar()
@@ -27,6 +28,8 @@ export function MerchantStore({ segments }: { segments: string[] }) {
     return <Cart checkoutOnly={section === 'checkout'} />
   if (section === 'account' && id === 'wallet') return <Wallet />
   if (section === 'account') return <Account />
+  if (section === 'orders' && id && segments[2] === 'invoice')
+    return <Invoice orderId={id} />
   if (section === 'orders') return <Orders id={id} />
   if (section === 'products') return <Catalog />
   if (section === 'categories')

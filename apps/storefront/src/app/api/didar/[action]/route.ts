@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'workspace',
   'history',
+  'agency',
+  'curation',
+  'invoice',
   'storefront',
   'media',
   'pages',
@@ -125,6 +128,16 @@ async function proxy(
       `/didar/${action}`,
       process.env.MEDUSA_BACKEND_URL || 'http://localhost:9000',
     )
+    if (action === 'invoice') {
+      const ids = req.nextUrl.searchParams.getAll('order_id')
+      if (
+        req.method !== 'GET' || ids.length !== 1 ||
+        !/^[A-Za-z0-9_-]{1,100}$/.test(ids[0]) ||
+        [...req.nextUrl.searchParams.keys()].some(key => key !== 'order_id')
+      )
+        return NextResponse.json({ message: 'INVALID_INVOICE' }, { status: 400 })
+      url.searchParams.set('order_id', ids[0])
+    }
     if (
       [
         'catalog',

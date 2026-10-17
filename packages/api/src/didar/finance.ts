@@ -1,3 +1,4 @@
+import { agencyAllocation, issueAgencyCredit } from "./agency";
 import { recognizedProfilePrice } from "./merchant-profiles";
 import { acceptanceRead, acceptanceWrite } from "./finance-uat";
 import { tahesabRead, tahesabWrite } from "./tahesab";
@@ -131,13 +132,13 @@ export function entitlement(l: any, contract: any, rate: bigint, quantity = 1) {
 export async function recognizePayment(c: any, order: any, actor: string) {
   await finLock(c);
   const { rows: lines } = await c.query(
-    `SELECT l.*,t.snapshot contract FROM didar_order_line l JOIN didar_fin_sale_terms t ON t.line_id=l.id WHERE l.order_id=$1 ORDER BY l.id`,
+    `SELECT l.*,t.snapshot contract,r.snapshot sale_role FROM didar_order_line l JOIN didar_fin_sale_terms t ON t.line_id=l.id LEFT JOIN didar_sale_role r ON r.line_id=l.id WHERE l.order_id=$1 ORDER BY l.id`,
     [order.id],
   );
   for (const l of lines) {
     const { rows: items } = await c.query(
-      `SELECT r.id reservation_id,i.uid,i.id item_id,i.line_id invoice_line_id,b.id invoice_id,b.invoice_number FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id JOIN didar_intake_line il ON il.id=i.line_id JOIN didar_intake_batch b ON b.id=il.batch_id WHERE r.order_line_id=$1 ORDER BY r.id`,
-      [l.id],
+      `SELECT r.id reservation_id,i.uid,i.id item_id,i.line_id invoice_line_id,b.id invoice_id,b.invoice_number FROM didar_item_reservation r JOIN didar_inventory_item i ON i.id=r.item_id JOIN didar_intake_line il ON il.id=i.line_id JOIN didar_intake_batch b ON b.id=il.batch_id WHERE r.order_line_id=$1 ORDER BY CASE WHEN $2::boolean THEN i.id ELSE r.id END`,
+      [l.id, !!l.sale_role],
     );
     for (const [unitIndex, item] of (items.length
       ? items
@@ -154,6 +155,12 @@ export async function recognizePayment(c: any, order: any, actor: string) {
         BigInt(order.rate_snapshot.rate_irr),
         items.length ? 1 : l.quantity,
       );
+      const allocation = l.sale_role ? agencyAllocation(l.sale_role, priced.price, amounts, priced.total, BigInt(order.rate_snapshot.rate_irr), items.length ? 1 : l.quantity) : null;
+      if (l.sale_role && JSON.stringify(allocation)!==JSON.stringify(l.sale_role.accepted_allocations?.[unitIndex])) {
+        // JSONB changes key order; compare structural equality through PostgreSQL.
+        const equal=(await c.query("SELECT $1::jsonb=$2::jsonb same",[JSON.stringify(allocation),JSON.stringify(l.sale_role.accepted_allocations?.[unitIndex]??null)])).rows[0].same;
+        if(!equal) throw Error("CONFLICT_AGENCY_ALLOCATION_CHANGED");
+      }
       const event = await appendEvent(c, {
         intent: "sale:" + l.id + ":" + (item.reservation_id || "legacy"),
         kind: "SALE_EXPOSURE",
@@ -167,6 +174,7 @@ export async function recognizePayment(c: any, order: any, actor: string) {
           ...item,
           ...(await saleAssetSnapshot(c, item)),
           ...amounts,
+          ...(l.sale_role ? { sale_role: l.sale_role, allocation } : {}),
           contract: l.contract,
           ownership: l.contract.ownership,
           custody: "DIDAR",
@@ -200,7 +208,9 @@ export async function financeRead(c: any, u: any) {
   const events = (
     await c.query(
       `SELECT id,intent,kind,supplier_id,order_line_id,reservation_id,source_event_id,gold_ug,irr,created_at,
-    snapshot-'price'-'customer_payment_irr'-'cost_basis_irr'-'owned_cost_irr'-'items'-'command' AS snapshot FROM didar_fin_event WHERE ($1::text IS NULL OR supplier_id=$1) ORDER BY created_at DESC,id DESC LIMIT 500`,
+    (CASE WHEN $1::text IS NOT NULL THEN
+      CASE WHEN kind IN ('JEWELRY_VALUATION','PURCHASE') THEN snapshot-'cost_irr'-'document' ELSE snapshot-'cost_irr' END
+      ELSE snapshot END)-'price'-'customer_payment_irr'-'cost_basis_irr'-'owned_cost_irr'-'items'-'command'-'sale_role'-'allocation' AS snapshot FROM didar_fin_event WHERE ($1::text IS NULL OR supplier_id=$1) ORDER BY created_at DESC,id DESC LIMIT 500`,
       [supplier],
     )
   ).rows;
@@ -359,6 +369,7 @@ export async function performFinance(action: string, req: any) {
         },
         actor_id: u.id,
       });
+      await issueAgencyCredit(c, event);
       await audit(c, u.id, "finance_refund", {
         event_id: event.id,
         supplier_id: sale.supplier_id,

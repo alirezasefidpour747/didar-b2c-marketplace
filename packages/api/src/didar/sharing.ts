@@ -3,7 +3,7 @@ import { transaction } from "./db";
 import { sessionUser, digest } from "./auth";
 import { clean, merchantAccess, storeScope } from "./storefront";
 import { audit } from "./permissions";
-const eligibility = `p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$1 AND o.active AND o.quantity>0)`;
+const eligibility = `p.active AND p.published AND p.approved AND didar_public_taxonomy(p.id,p.category_id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND didar_scoped_offer(o.id,$1) AND o.active AND o.quantity>0)`;
 export async function attribution(req: any, c: any, scope: any) {
   const token = req.headers?.["x-didar-visit"];
   if (!scope || typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token))
@@ -121,7 +121,7 @@ export async function sharing(req: any) {
       throw new Error("INVALID_STOREFRONT_REQUIRED");
     const valid = (
       await c.query(
-        `SELECT p.id FROM didar_product p WHERE p.id=ANY($2::text[]) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$1) ${b.published ? `AND ${eligibility}` : ""}`,
+        `SELECT p.id FROM didar_product p WHERE p.id=ANY($2::text[]) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND (o.supplier_id=$1 OR didar_curated_offer(o.id,$1))) ${b.published ? `AND ${eligibility}` : ""}`,
         [sid, b.product_ids],
       )
     ).rows;

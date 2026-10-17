@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import { RequireUser, useDidar, ScopedLink as Link } from './store'
 import { PricingBreakdown } from './catalog'
-import {date,money,number,states,weight} from './locale'
+import { date, money, number, states, weight } from './locale'
+import { SaleRoleDisclosure } from './invoice'
 export function Orders({ id }: { id?: string }) {
   return (
     <RequireUser>
@@ -61,12 +62,23 @@ function OrderList({ id }: { id?: string }) {
             <small>
               شناسه سفارش: <code>{o.id}</code>
             </small>
+            {user?.role === 'customer' && (
+              <p>
+                <Link href={'/orders/' + o.id + '/invoice'}>
+                  فاکتور و اسناد اصلاحی سفارش
+                </Link>
+              </p>
+            )}
             {o.lines.map((l: any) => (
               <div className="order-line" key={l.id || l.offer_id}>
                 <h3>{l.title}</h3>
                 <p className="muted">
                   تأمین‌کننده: {l.supplier_name || l.supplier_id}
                 </p>
+                <SaleRoleDisclosure
+                  role={l.breakdown?.sale_role}
+                  curation={l.breakdown?.curation}
+                />
                 <p>
                   {weight(l.weight_mg)} × {number(l.quantity)} ·{' '}
                   {money(

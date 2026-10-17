@@ -135,7 +135,7 @@ async function resources(c: any, page: any, blocks: any[], publishing = false) {
           !p.classified ||
           !(
             await c.query(
-              `SELECT 1 FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.product_id=$1 AND o.active AND s.active AND s.status='approved' AND (($2::text IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=$2)`,
+              `SELECT 1 FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE o.product_id=$1 AND o.active AND s.active AND s.status='approved' AND didar_scoped_offer(o.id,$2)`,
               [id, sid],
             )
           ).rowCount))

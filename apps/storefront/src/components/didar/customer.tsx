@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { RequireUser, useDidar, PaymentMethodPicker } from './store'
 import { money, weight } from './locale'
+import { SaleRoleDisclosure } from '../../../../../packages/didar-ui/src/invoice'
 export function Login() {
   const { api, run, busy, authenticate, user, setMessage, scopedHref } =
     useDidar()
@@ -205,8 +206,19 @@ export function CheckoutForm({
           ))}
         </ul>
       ) : null}
+      {quote?.lines?.map(
+        (line: any) =>
+          line.breakdown?.sale_role && (
+            <section key={line.offer_id} aria-label="نقش فروشنده پیش از پرداخت">
+              <SaleRoleDisclosure
+                role={line.breakdown.sale_role}
+                curation={line.breakdown.curation}
+              />
+            </section>
+          ),
+      )}
       <p className="muted">
-        فروشنده: دیدار. قیمت نهایی در ثبت سفارش قفل می‌شود. رزرو موجودی ۱۵ دقیقه
+        قیمت نهایی و نقش فروشنده در ثبت سفارش قفل می‌شود. رزرو موجودی ۱۵ دقیقه
         است. خدمات اختیاری فقط طبق پروفایل مصوب در جمع سبد آمده‌اند.
       </p>
       {user?.role === 'customer' ? (

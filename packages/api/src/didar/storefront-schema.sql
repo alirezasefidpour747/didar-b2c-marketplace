@@ -31,15 +31,27 @@ CREATE INDEX IF NOT EXISTS didar_store_context_expiry_idx ON didar_store_context
 ALTER TABLE didar_order ADD COLUMN IF NOT EXISTS origin_supplier_id text REFERENCES didar_supplier(id);
 ALTER TABLE didar_order ADD COLUMN IF NOT EXISTS storefront_snapshot jsonb;
 CREATE INDEX IF NOT EXISTS didar_order_origin_idx ON didar_order(origin_supplier_id,created_at);
-CREATE OR REPLACE FUNCTION didar_global_supplier(sid text) RETURNS boolean LANGUAGE sql STABLE AS $$
+-- A replay of an older migration must not downgrade CORE-03 visibility.
+DO $replay$
+BEGIN
+ IF to_regclass('didar_curation_agreement') IS NULL THEN
+  EXECUTE $definition$CREATE OR REPLACE FUNCTION didar_global_supplier(sid text) RETURNS boolean LANGUAGE sql STABLE AS $$
  SELECT NOT EXISTS(SELECT 1 FROM didar_storefront f WHERE f.supplier_id=sid AND (f.visibility<>'PUBLIC_MARKETPLACE' OR NOT f.published OR NOT f.approved))
-$$;
-CREATE OR REPLACE FUNCTION didar_visible_product(pid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
+$$;$definition$;
+ END IF;
+END $replay$;
+-- A replay of an older migration must not downgrade CORE-03 visibility.
+DO $replay$
+BEGIN
+ IF to_regclass('didar_curation_agreement') IS NULL THEN
+  EXECUTE $definition$CREATE OR REPLACE FUNCTION didar_visible_product(pid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
  SELECT EXISTS(SELECT 1 FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id
  WHERE o.product_id=pid AND o.active AND s.active AND s.status='approved' AND
  ((sid IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=sid))
  OR (sid IS NULL AND NOT EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=pid AND NOT didar_global_supplier(o.supplier_id)) AND NOT EXISTS(SELECT 1 FROM didar_product_request r WHERE r.product_id=pid AND r.status='approved' AND r.payload->>'join_product_id' IS NULL AND NOT didar_global_supplier(r.supplier_id)))
-$$;
+$$;$definition$;
+ END IF;
+END $replay$;
 CREATE OR REPLACE FUNCTION didar_storefront_identity_guard() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
  IF NEW.supplier_id IS DISTINCT FROM OLD.supplier_id OR NEW.handle IS DISTINCT FROM OLD.handle THEN RAISE EXCEPTION 'CONFLICT_STABLE_HANDLE'; END IF;

@@ -5,7 +5,7 @@ import { bootstrapAcceptance } from './bootstrap-acceptance.mjs'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy', 'pre-rollout-authorization'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy', 'pre-rollout-authorization', 'agency-allocation', 'projection-durability', 'issue18-acceptance'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false, noDemoOnly = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -52,7 +52,7 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
     do { webPort = await freePort() } while (webPort === apiPort)
     const apiOrigin = `http://127.0.0.1:${apiPort}`, webOrigin = `http://127.0.0.1:${webPort}`
     const env = {
-      ...process.env, DIDAR_DISPOSABLE_QA: 'true', NODE_ENV: 'development', DIDAR_ENVIRONMENT: 'local', DIDAR_PAYMENT_MODE: 'sandbox', DIDAR_SEED_DEMO: 'true',
+      ...process.env, DIDAR_DISPOSABLE_QA: 'true', NODE_ENV: 'development', DIDAR_ENVIRONMENT: 'local', DIDAR_PAYMENT_MODE: 'sandbox', DIDAR_AGENCY_MODE: noDemoOnly ? '' : 'sandbox', DIDAR_SEED_DEMO: 'true',
       DATABASE_URL: `postgres://postgres@127.0.0.1:${pgPort}/didar_qa`, REDIS_URL: `redis://127.0.0.1:${redisPort}`,
       JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECRET: randomBytes(32).toString('hex'),
       STORE_CORS: webOrigin, ADMIN_CORS: apiOrigin, VENDOR_CORS: apiOrigin, AUTH_CORS: `${webOrigin},${apiOrigin}`,

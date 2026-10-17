@@ -61,17 +61,29 @@ BEGIN
 END $$;
 DROP TRIGGER IF EXISTS didar_media_source_guard ON didar_media_asset;
 CREATE TRIGGER didar_media_source_guard BEFORE INSERT OR UPDATE ON didar_media_asset FOR EACH ROW EXECUTE FUNCTION didar_media_source_guard();
-CREATE OR REPLACE FUNCTION didar_media_visible(aid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
+-- A replay of an older migration must not downgrade CORE-03 visibility.
+DO $replay$
+BEGIN
+ IF to_regclass('didar_curation_agreement') IS NULL THEN
+  EXECUTE $definition$CREATE OR REPLACE FUNCTION didar_media_visible(aid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
  SELECT coalesce((SELECT a.status='approved' AND (a.visibility='SHARED_MASTER' OR a.supplier_id=sid OR (sid IS NULL AND EXISTS(SELECT 1 FROM didar_supplier s WHERE s.id=a.supplier_id AND s.active AND s.status='approved' AND didar_global_supplier(s.id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.supplier_id=s.id AND o.product_id=a.product_id AND o.active)))) FROM didar_media_asset a WHERE a.id=aid),false)
-$$;
+$$;$definition$;
+ END IF;
+END $replay$;
 
 -- A private merchant new-master approval cannot open a public discovery window before first intake.
-CREATE OR REPLACE FUNCTION didar_visible_product(pid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
+-- A replay of an older migration must not downgrade CORE-03 visibility.
+DO $replay$
+BEGIN
+ IF to_regclass('didar_curation_agreement') IS NULL THEN
+  EXECUTE $definition$CREATE OR REPLACE FUNCTION didar_visible_product(pid text,sid text DEFAULT NULL) RETURNS boolean LANGUAGE sql STABLE AS $$
  SELECT EXISTS(SELECT 1 FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id
  WHERE o.product_id=pid AND o.active AND s.active AND s.status='approved' AND
  ((sid IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=sid))
  OR (sid IS NULL AND NOT EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=pid AND NOT didar_global_supplier(o.supplier_id)) AND NOT EXISTS(SELECT 1 FROM didar_product_request r WHERE r.product_id=pid AND r.status='approved' AND r.payload->>'join_product_id' IS NULL AND NOT didar_global_supplier(r.supplier_id)))
-$$;
+$$;$definition$;
+ END IF;
+END $replay$;
 
 DROP TRIGGER IF EXISTS didar_media_variant_guard ON didar_media_variant;
 CREATE TRIGGER didar_media_variant_guard BEFORE UPDATE OR DELETE ON didar_media_variant FOR EACH ROW EXECUTE FUNCTION didar_onboarding_immutable_event();
