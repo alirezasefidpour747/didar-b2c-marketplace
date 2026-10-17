@@ -51,6 +51,7 @@
       "name": "@acme/admin",
       "version": "2.3.7",
       "dependencies": {
+        "@didar/ui": "workspace:*",
         "@mercurjs/admin": "2.3.7",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -64,6 +65,7 @@
       "name": "@mercurjs/storefront",
       "version": "2.3.7",
       "dependencies": {
+        "@didar/ui": "workspace:*",
         "@headlessui/react": "^2.2.1",
         "@hookform/resolvers": "^3.10.0",
         "@medusajs/icons": "2.21.2",
@@ -127,6 +129,7 @@
       "name": "@acme/vendor",
       "version": "2.3.7",
       "dependencies": {
+        "@didar/ui": "workspace:*",
         "@mercurjs/vendor": "2.3.7",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -168,6 +171,18 @@
         "jest": "^29.7.0",
         "prop-types": "^15.8.1",
         "yalc": "^1.0.0-pre.53",
+      },
+    },
+    "packages/didar-ui": {
+      "name": "@didar/ui",
+      "version": "0.0.0",
+      "dependencies": {
+        "@medusajs/ui": "4.2.3",
+        "react-router-dom": "7.18.1",
+      },
+      "peerDependencies": {
+        "react": ">=18 <20",
+        "react-dom": ">=18 <20",
       },
     },
   },
@@ -509,6 +524,8 @@
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
     "@dabh/diagnostics": ["@dabh/diagnostics@2.0.9", "", { "dependencies": { "@so-ric/colorspace": "^1.1.6", "enabled": "2.0.x", "kuler": "^2.0.0" } }, "sha512-R6siwR65Hm+3yfgP7o8DKhNvputQAwfoz9zTc3kyDudnomj2/BcLmD+uGQQPICjuFUp8ounPBU+jmKsocwVVAg=="],
+
+    "@didar/ui": ["@didar/ui@workspace:packages/didar-ui"],
 
     "@dnd-kit/accessibility": ["@dnd-kit/accessibility@3.1.1", "", { "dependencies": { "tslib": "^2.0.0" }, "peerDependencies": { "react": ">=16.8.0" } }, "sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw=="],
 

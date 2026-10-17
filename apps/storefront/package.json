@@ -39,7 +39,8 @@
     "tailwind-merge": "^2.6.0",
     "talkjs": "^0.37.0",
     "uuid": "^11.0.5",
-    "zod": "4.6.5"
+    "zod": "4.6.5",
+    "@didar/ui": "workspace:*"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.3",

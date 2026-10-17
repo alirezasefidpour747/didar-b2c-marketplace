@@ -1,0 +1,21 @@
+/* Local scope only: the original Mercur shell, navigation and controls retain Medusa tokens. */
+.didar-extension { direction:rtl; font-family:Tahoma,Arial,sans-serif; line-height:1.9; min-width:0; overflow-wrap:anywhere; }
+.didar-extension h1 {font-size:1.35rem;font-weight:700;margin-block:1rem;}
+.didar-extension h2,.didar-extension h3 {font-size:1.1rem;font-weight:600;margin-block:1rem;}
+.didar-extension form,.didar-extension fieldset,.didar-extension .panel {display:grid;gap:12px;margin-block:16px;min-width:0;}
+.didar-extension label {display:grid;gap:4px;}
+.didar-extension input,.didar-extension select,.didar-extension textarea {border:1px solid var(--border-base);border-radius:6px;padding:8px;background:var(--bg-field);color:var(--fg-base);max-width:100%;min-width:0;}
+.didar-extension input[type=checkbox],.didar-extension input[type=radio] {width:auto;justify-self:start;}
+.didar-extension button,.didar-extension .primary {border:1px solid var(--border-base);border-radius:6px;padding:6px 12px;cursor:pointer;}
+.didar-extension button:disabled {opacity:.5;cursor:default;}
+.didar-extension a {color:var(--fg-interactive);text-decoration:underline;}
+.didar-extension table {display:block;max-width:100%;overflow-x:auto;width:100%;border-collapse:collapse;margin-block:16px;}
+.didar-extension td,.didar-extension th {text-align:start;padding:8px;border-bottom:1px solid var(--border-base);white-space:normal;min-width:70px;}
+.didar-extension img {max-width:180px;max-height:180px;object-fit:contain;}
+.didar-extension .grid,.didar-extension .form-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:16px;}
+.didar-extension .tabs {display:flex;gap:8px;flex-wrap:wrap;margin-block:16px;}
+.didar-extension pre {white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;}
+.didar-extension .cms-page img {max-width:100%;max-height:none;}
+.didar-extension .cms-editor-row {display:grid;gap:10px;min-width:0;}
+.didar-extension :focus-visible {outline:2px solid var(--fg-interactive);outline-offset:3px;}
+@media(max-width:640px) {.didar-extension{padding:12px}.didar-extension table{font-size:.8rem}}

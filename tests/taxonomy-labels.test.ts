@@ -42,11 +42,29 @@ function decode(svg: string, format: BarcodeFormat) {
         255 * (1 - alpha),
     );
   }
+  if (format === BarcodeFormat.QR_CODE) {
+    const first = gray.findIndex((v) => v < 128),
+      top = Math.floor(first / png.width),
+      left = first % png.width;
+    let run = 0;
+    while (left + run < png.width && gray[top * png.width + left + run] < 128)
+      run++;
+    const module = run / 7; // the top-left finder has a seven-module outer black edge
+    expect(module).toBeGreaterThan(0);
+    expect(left).toBeGreaterThanOrEqual(4 * module);
+    expect(top).toBeGreaterThanOrEqual(4 * module);
+  }
   const reader = new MultiFormatReader();
   reader.setHints(
     new Map<any, any>([
       [DecodeHintType.POSSIBLE_FORMATS, [format]],
       [DecodeHintType.TRY_HARDER, true],
+      // This input is the exact generated, axis-aligned SVG, not a camera frame.
+      // Decode the actual module matrix; ZXing's camera finder can select incidental
+      // data patterns for valid random QR payloads even at higher raster resolution.
+      ...(format === BarcodeFormat.QR_CODE
+        ? [[DecodeHintType.PURE_BARCODE, true]]
+        : []),
     ]),
   );
   return reader

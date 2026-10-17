@@ -1,3 +1,13 @@
+## Mercur-native recovery — verified primary implementation; parity/cutover continues (2026-10-17)
+
+DIDAR management now has actual SDK routes in **`apps/admin` `/dashboard/didar`** and **`apps/vendor` `/seller/didar`**, using the original authenticated Mercur shells, navigation, Product widgets/custom-field display and the existing Didar services/database. Public shopping, merchant public shops, accounts and orders remain in Next. Reusable controls are single-source in `packages/didar-ui`; `/manage` remains a transition surface until restricted staff and protected cutover parity are complete.
+
+Native proof/linking uses existing identities and approved native Seller↔Didar Supplier mappings; no email impersonation, copied products/inventory/orders/finance, original volume reset or live provider execution. Source includes guards against generic native edits of gold master projections and uniform seller mutation denial. Production panels resolve same-origin correctly, and API artifacts include additive SQL resources.
+
+**Primary technical verification:** 166 backend tests / 2,107 assertions, 1 native HTTP test, all current production builds, and authenticated native Admin/Vendor plus B2C browser journeys including 390px layouts. Final browser totals/source receipt and actual screenshots are recorded in [the native verification receipt](verification/mercur-native/RESULTS.md). Two read-only historical clones preserve audited commerce/image fingerprints.
+
+[Implementation and operator connection](docs/MERCUR_NATIVE_RECOVERY_IMPLEMENTATION.md) · [complete legacy→native mapping](docs/MERCUR_NATIVE_RECOVERY_MAPPING.md). **Still pending:** restricted native staff/content operators, pending-supplier parity, protected legacy cutover/customer-only navigation, then CRM/campaign/agent/referral/Growth Center Phases 5–9. The entire roadmap is not complete. No owner Mac test is requested between phases.
+
 ## Merchant growth Phase 4 — DONE & TESTED (2026-10-16)
 
 Delivered the PostgreSQL luxury Visual CMS on Phase 3 main `95836630ce29cef3a23a251a6f0991116cae8f76`. Persian `/manage/pages` composes all eleven typed blocks with protected real image/video processing, desktop/mobile media, structural presets, drag/up/down reorder, authenticated noindex preview, immutable blocks/titles, optimistic drafts, review, schedule/publish/pause/rollback and actual actor audit. The same renderer serves Didar/merchant home, category/collection and existing curated share pages. Existing ProductCard/OfferCard, profiles, stock, UID, cart and accounting remain authoritative; no copied prices, new catalog or sharing engine.

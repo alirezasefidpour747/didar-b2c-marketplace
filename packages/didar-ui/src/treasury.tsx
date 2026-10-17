@@ -1,0 +1,407 @@
+'use client'
+import { Link } from './store'
+import { useEffect, useState, type FormEvent } from 'react'
+import { RequireUser, useDidar } from './store'
+import { FinanceField, Fine, formValues } from './finance'
+import { date, number } from './locale'
+const labels: Record<string, string> = {
+  requested: 'درخواست خرید؛ اجرا نشده',
+  approved: 'تأیید درخواست',
+  settled: 'تعهد طلا تسویه شده',
+  reversed: 'برگشت تعهد',
+  PURCHASE: 'خرید دستی آزمایشی',
+  PURCHASE_APPROVED: 'تأیید خرید',
+  ALLOCATION: 'تخصیص',
+  TITLE_TRANSFER: 'تأیید انتقال مالکیت',
+  PHYSICAL_HANDOVER: 'تأیید تحویل یا نگهداری برای تأمین‌کننده',
+  GOLD_SETTLEMENT: 'تسویه طلا',
+  RIAL_SETTLEMENT: 'تسویه ریال',
+  FACT_REVERSED: 'برگشت ثبت',
+  SETTLEMENT_REVERSED: 'برگشت تسویه',
+}
+export function Treasury() {
+  return (
+    <RequireUser roles={['admin', 'supplier']}>
+      <Content />
+    </RequireUser>
+  )
+}
+function Content() {
+  const { api, user, run, busy, setMessage } = useDidar(),
+    [data, setData] = useState<any>(null)
+  const load = async () => setData(await api('treasury'))
+  useEffect(() => {
+    let active = true
+    void api('treasury')
+      .then((d) => {
+        if (active) setData(d)
+      })
+      .catch((e) => {
+        if (active) setMessage(e.message)
+      })
+    return () => {
+      active = false
+    }
+  }, [api, setMessage])
+  const send = async (b: any) => {
+    await api('treasury', {
+      ...b,
+      idempotency_key: crypto.randomUUID(),
+      synthetic: true,
+    })
+    await load()
+  }
+  const submit = (e: FormEvent<HTMLFormElement>, b: any) => {
+    const f = formValues(e)
+    void run(() => send({ ...f, ...b }))
+  }
+  if (!data) return <p>در حال دریافت خزانه…</p>
+  const admin = user?.role === 'admin',
+    purchases = data.facts.filter((e: any) => e.kind === 'PURCHASE'),
+    allocations = data.facts.filter((e: any) => e.kind === 'ALLOCATION')
+  return (
+    <main dir="rtl" className="container">
+      <h1>تدارک طلا، خزانه و تسویه</h1>
+      <p>
+        فقط ثبت دستی آزمایشی؛ درخواست و تخصیص به معنی خرید، انتقال مالکیت یا
+        تسویه نیست.
+      </p>
+      <nav>
+        <Link href="/manage/finance">حساب‌ها و قراردادها</Link> ·{' '}
+        <Link href="/manage/operations">پذیرش و موجودی</Link>
+      </nav>
+      <section>
+        <h2>درخواست‌های خرید ناشی از فروش</h2>
+        {data.requests.map((r: any) => (
+          <article key={r.id}>
+            <h3>{r.id}</h3>
+            <p>
+              {labels[r.state]} {r.overdue ? '· سررسید گذشته' : ''} · سررسید{' '}
+              {r.due_at ? date(r.due_at) : '—'}
+            </p>
+            <p>
+              اصل درخواست <Fine value={r.gold_ug} /> · تخصیص{' '}
+              <Fine value={r.allocated_ug} /> · مانده تعهد طلا{' '}
+              <Fine value={r.balance.gold_ug} /> · ریال {number(r.balance.irr)}
+            </p>
+            {admin && !r.approved && !r.reversed && (
+              <form
+                onSubmit={(e) =>
+                  submit(e, {
+                    operation: 'request_approve',
+                    sale_id: r.sale_event_id,
+                  })
+                }
+              >
+                <FinanceField name="reason" label="دلیل تأیید درخواست" />
+                <button disabled={busy}>تأیید درخواست خرید</button>
+              </form>
+            )}
+            {admin && (
+              <form
+                onSubmit={(e) =>
+                  submit(e, {
+                    operation: 'rial_settle',
+                    sale_id: r.sale_event_id,
+                  })
+                }
+              >
+                <FinanceField
+                  name="amount_irr"
+                  label="مبلغ تسویه ریال آزمایشی"
+                  type="number"
+                />
+                <FinanceField
+                  name="document"
+                  label="سند پرداخت شبیه‌سازی‌شده"
+                />
+                <FinanceField name="reason" label="شرح تسویه ریال" />
+                <button disabled={busy}>ثبت تسویه ریال آزمایشی</button>
+              </form>
+            )}
+          </article>
+        ))}
+      </section>
+      <section>
+        <h2>تعهدات قراردادهای فقط ریال</h2>
+        {data.rial_obligations.map((r: any) => (
+          <article key={r.id}>
+            <h3>{r.id}</h3>
+            <p>
+              مانده {number(r.balance.irr)} ریال · سررسید {date(r.due_at)}
+            </p>
+            {admin && (
+              <form
+                onSubmit={(e) =>
+                  submit(e, { operation: 'rial_settle', sale_id: r.id })
+                }
+              >
+                <FinanceField
+                  name="amount_irr"
+                  label="مبلغ تسویه قرارداد ریالی"
+                  type="number"
+                />
+                <FinanceField name="document" label="سند تسویه قرارداد ریالی" />
+                <FinanceField name="reason" label="شرح تسویه قرارداد ریالی" />
+                <button disabled={busy}>تسویه قرارداد ریالی آزمایشی</button>
+              </form>
+            )}
+          </article>
+        ))}
+      </section>
+      {admin && (
+        <section>
+          <h2>
+            ثبت خرید واقعیِ شبیه‌سازی‌شده؛ درخواست معامله خارجی ارسال نمی‌شود
+          </h2>
+          <form
+            onSubmit={(e) => {
+              const f = formValues(e)
+              void run(() =>
+                send({
+                  ...f,
+                  operation: 'purchase',
+                  title_confirmed: f.title_confirmed === 'yes',
+                }),
+              )
+            }}
+          >
+            <FinanceField name="counterparty" label="طرف خرید آزمایشی" />
+            <FinanceField name="document" label="شماره سند خرید" />
+            <FinanceField
+              name="weight_mg"
+              label="وزن خرید؛ میلی‌گرم واقعی"
+              type="number"
+            />
+            <FinanceField
+              name="purity"
+              label="عیار واقعی؛ از ۱ تا ۱۰۰۰"
+              type="number"
+              value={750}
+            />
+            <FinanceField
+              name="cost_irr"
+              label="بهای تمام‌شده؛ ریال"
+              type="number"
+            />
+            <FinanceField
+              name="rate_irr"
+              label="نرخ ثبت‌شده؛ ریال هر گرم ۷۵۰"
+              type="number"
+            />
+            <FinanceField name="custody" label="محل نگهداری / متولی" />
+            <label>
+              تأیید مالکیت خرید
+              <select name="title_confirmed">
+                <option value="no">هنوز تأیید نشده</option>
+                <option value="yes">با سند آزمایشی تأیید شده</option>
+              </select>
+            </label>
+            <input name="currency" value="IRR" type="hidden" />
+            <FinanceField name="reason" label="شرح ثبت دستی" />
+            <button disabled={busy}>ثبت خرید آزمایشی</button>
+          </form>
+        </section>
+      )}
+      {admin && (
+        <section>
+          <h2>خریدها و تخصیص</h2>
+          {purchases.map((p: any) => (
+            <article key={p.id}>
+              <h3>
+                {p.snapshot.document} · {p.snapshot.counterparty}
+              </h3>
+              <p>
+                <Fine value={p.snapshot.fine_ug} /> ·{' '}
+                {number(p.snapshot.cost_irr)} ریال · نگهداری{' '}
+                {p.snapshot.custody}
+              </p>
+              <p>
+                در مالکیت دیدار{' '}
+                <Fine
+                  value={
+                    data.purchase_stock.find((s: any) => s.purchase_id === p.id)
+                      ?.owned_ug || '0'
+                  }
+                />{' '}
+                · تخصیص‌نیافته{' '}
+                <Fine
+                  value={
+                    data.purchase_stock.find((s: any) => s.purchase_id === p.id)
+                      ?.unallocated_ug || '0'
+                  }
+                />
+              </p>
+              <code>{p.id}</code>
+              {!data.facts.some(
+                (e: any) =>
+                  e.kind === 'PURCHASE_APPROVED' && e.source_event_id === p.id,
+              ) && (
+                <form
+                  onSubmit={(e) =>
+                    submit(e, {
+                      operation: 'purchase_approve',
+                      purchase_id: p.id,
+                    })
+                  }
+                >
+                  <FinanceField name="reason" label="دلیل تأیید خرید" />
+                  <button disabled={busy}>تأیید خرید ثبت‌شده</button>
+                </form>
+              )}
+              <form
+                onSubmit={(e) =>
+                  submit(e, { operation: 'allocate', purchase_id: p.id })
+                }
+              >
+                <label>
+                  درخواست مقصد
+                  <select name="sale_id">
+                    {data.requests
+                      .filter((r: any) => r.approved && !r.reversed)
+                      .map((r: any) => (
+                        <option key={r.id} value={r.sale_event_id}>
+                          {r.id}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                <FinanceField
+                  name="amount_ug"
+                  label="مقدار تخصیص؛ میکروگرم طلای خالص"
+                  type="number"
+                />
+                <FinanceField name="reason" label="دلیل تخصیص" />
+                <button disabled={busy}>ثبت تخصیص</button>
+              </form>
+              <form
+                onSubmit={(e) =>
+                  submit(e, { operation: 'reverse_fact', event_id: p.id })
+                }
+              >
+                <FinanceField
+                  name="reason"
+                  label="دلیل برگشت خرید تخصیص‌نیافته"
+                />
+                <button disabled={busy}>برگشت خرید تخصیص‌نیافته</button>
+              </form>
+            </article>
+          ))}
+        </section>
+      )}
+      <section>
+        <h2>تخصیص‌ها؛ مالکیت و تحویل مستقل</h2>
+        {allocations.map((a: any) => (
+          <article key={a.id}>
+            <h3>{a.id}</h3>
+            <p>
+              <Fine value={a.snapshot.amount_ug} />
+            </p>
+            {admin && (
+              <>
+                {!data.facts.some(
+                  (e: any) =>
+                    e.kind === 'TITLE_TRANSFER' &&
+                    e.snapshot.allocation_id === a.id,
+                ) && (
+                  <form
+                    onSubmit={(e) =>
+                      submit(e, {
+                        operation: 'title_transfer',
+                        allocation_id: a.id,
+                      })
+                    }
+                  >
+                    <FinanceField name="document" label="سند انتقال مالکیت" />
+                    <FinanceField name="reason" label="شرح انتقال مالکیت" />
+                    <button disabled={busy}>تأیید انتقال مالکیت</button>
+                  </form>
+                )}
+                {!data.facts.some(
+                  (e: any) =>
+                    e.kind === 'PHYSICAL_HANDOVER' &&
+                    e.snapshot.allocation_id === a.id,
+                ) && (
+                  <form
+                    onSubmit={(e) =>
+                      submit(e, {
+                        operation: 'physical_handover',
+                        allocation_id: a.id,
+                      })
+                    }
+                  >
+                    <label>
+                      وضعیت فیزیکی
+                      <select name="disposition">
+                        <option value="DELIVERED">تحویل به تأمین‌کننده</option>
+                        <option value="HELD_FOR_SUPPLIER">
+                          نگهداری امانی برای تأمین‌کننده
+                        </option>
+                      </select>
+                    </label>
+                    <FinanceField name="document" label="سند دریافت یا امانت" />
+                    <FinanceField name="reason" label="شرح وضعیت فیزیکی" />
+                    <button disabled={busy}>تأیید وضعیت فیزیکی</button>
+                  </form>
+                )}
+                <form
+                  onSubmit={(e) =>
+                    submit(e, { operation: 'gold_settle', allocation_id: a.id })
+                  }
+                >
+                  <FinanceField
+                    name="amount_ug"
+                    label="مقدار تسویه؛ میکروگرم خالص"
+                    type="number"
+                  />
+                  <FinanceField name="reason" label="شرح تسویه طلا" />
+                  <button disabled={busy}>ثبت تسویه طلا آزمایشی</button>
+                </form>
+                <form
+                  onSubmit={(e) =>
+                    submit(e, { operation: 'reverse_fact', event_id: a.id })
+                  }
+                >
+                  <FinanceField
+                    name="reason"
+                    label="دلیل لغو تخصیص اجرا نشده"
+                  />
+                  <button disabled={busy}>برگشت تخصیص اجرا نشده</button>
+                </form>
+              </>
+            )}
+          </article>
+        ))}
+      </section>
+      <section>
+        <h2>گردش خزانه و تسویه</h2>
+        {data.facts.map((e: any) => (
+          <article key={e.id}>
+            <h3>{labels[e.kind]}</h3>
+            <p>
+              {date(e.created_at)} · {e.snapshot.reason}
+            </p>
+            {admin &&
+              ['GOLD_SETTLEMENT', 'RIAL_SETTLEMENT'].includes(e.kind) && (
+                <form
+                  onSubmit={(ev) =>
+                    submit(ev, {
+                      operation: 'reverse_settlement',
+                      event_id: e.id,
+                    })
+                  }
+                >
+                  <FinanceField
+                    name="return_evidence"
+                    label="سند بازگشت وجه یا طلا؛ آزمایشی"
+                  />
+                  <FinanceField name="reason" label="دلیل برگشت تسویه" />
+                  <button disabled={busy}>برگشت تسویه با سند</button>
+                </form>
+              )}
+          </article>
+        ))}
+      </section>
+    </main>
+  )
+}

@@ -18,7 +18,7 @@
     "medusa"
   ],
   "scripts": {
-    "build": "medusa build && node ./scripts/bundle-dashboards.mjs",
+    "build": "medusa build && node ./scripts/bundle-dashboards.mjs && node ./scripts/bundle-didar-schema.mjs",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "start": "medusa start",
     "dev": "medusa develop",

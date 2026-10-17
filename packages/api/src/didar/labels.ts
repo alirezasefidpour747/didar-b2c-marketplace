@@ -44,8 +44,10 @@ export const labelSVG = (bcid: "code128" | "qrcode", text: string) =>
       text,
       scale: 3,
       ...(bcid === "code128" ? { height: 12 } : {}),
-      paddingwidth: bcid === "code128" ? 10 : 4,
-      paddingheight: 4,
+      // BWIP QR modules are 2 units wide: 8 units preserve the required
+      // four-module quiet zone. Permanent resolver payloads are unchanged.
+      paddingwidth: bcid === "code128" ? 10 : 8,
+      paddingheight: bcid === "qrcode" ? 8 : 4,
       ...(bcid === "qrcode" ? { eclevel: "M" } : {}),
     }),
   ).toString("base64");

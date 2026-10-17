@@ -219,6 +219,7 @@ export default async function seed({ container }: ExecArgs) {
       );
     }
   }
+  await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar/native-schema.sql"), "utf8"));
   console.log("Didar schema and shared gold catalog seeded (idempotent).");
   await db.end();
 }
