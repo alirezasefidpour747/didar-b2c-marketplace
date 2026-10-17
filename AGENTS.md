@@ -2,6 +2,10 @@
 
 **This is a Mercur marketplace project — an open-source AI-native multi-vendor marketplace built on MedusaJS v2.**
 
+## Owner directive: develop the NATIVE Mercur panels (2026-10-17)
+
+**MANDATORY BEFORE EVERY NEW FEATURE:** Read [`docs/MERCUR_NATIVE_PANEL_ARCHITECTURE.md`](docs/MERCUR_NATIVE_PANEL_ARCHITECTURE.md). DIDAR is a customized **Mercur/Medusa** marketplace. DO NOT replace its Admin/Vendor panels with a parallel Next.js dashboard. Extend **`apps/admin`** (`/dashboard`), **`apps/vendor`** (`/seller`) via the Mercur Dashboard SDK, and reserve **`apps/storefront`** for B2C public and customer experience. Existing Next `/manage` pages are legacy transition surfaces, NOT the target Admin or Vendor UI. Build parity and safe, role-aware cutover; never delete data or rewrite existing DIDAR Product Master, Merchant Offers, exact UID/Gold-First pricing/ledger. Native Medusa/Mercur product, seller and order conventions are to be reused **when business semantics match**, with tested links/adapters for Didar's physical UID and gold-specific financial history. All technical deliverables require real native-panel browser journeys plus backend tests. Owner Mac testing remains only after all features.
+
 ## Read the docs first
 
 Before any non-trivial change, read the **bundled documentation** — it ships as a dependency, so it is offline and version-matched to this project's packages:
@@ -43,5 +47,5 @@ bun run dev
 This starts:
 
 - Backend API at `http://localhost:9000`
-- Admin Panel at `http://localhost:9000/seller`
-- Vendor Panel at `http://localhost:9000/dashboard`
+- Admin Panel at `http://localhost:9000/dashboard`
+- Vendor Panel at `http://localhost:9000/seller`
