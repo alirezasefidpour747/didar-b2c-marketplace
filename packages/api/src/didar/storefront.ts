@@ -35,12 +35,26 @@ export async function merchantAccess(
       [sid, u.id, permission],
     )
   ).rowCount;
-  if (!s?.active || s.status !== "approved" || !m) throw new Error("FORBIDDEN");
+  if (
+    !s?.active ||
+    s.status !== "approved" ||
+    !m ||
+    !(await c.query("SELECT didar_native_saleable_supplier($1) ok", [sid]))
+      .rows[0].ok
+  )
+    throw new Error("FORBIDDEN");
 }
 export async function storeAllowed(c: any, f: any, u: any, lock = false) {
   if (!f || !f.published || !f.approved || !f.active || f.status !== "approved")
     throw new Error("NOT_FOUND");
-  if (!(await c.query("SELECT didar_native_saleable_supplier($1) ok", [f.supplier_id])).rows[0].ok) throw Error("NOT_FOUND");
+  if (
+    !(
+      await c.query("SELECT didar_native_saleable_supplier($1) ok", [
+        f.supplier_id,
+      ])
+    ).rows[0].ok
+  )
+    throw Error("NOT_FOUND");
   if (f.visibility !== "INVITE_ONLY") return;
   if (!u) throw new Error("UNAUTHORIZED");
   if (
@@ -96,7 +110,14 @@ export async function storeScope(req: any, c: any = db, lock = false) {
   return storeProjection(f);
 }
 export async function assertOfferScope(c: any, o: any, scope: any) {
-  if (!(await c.query("SELECT didar_native_saleable_supplier($1) ok", [o.supplier_id])).rows[0].ok) throw Error("CONFLICT_STORE_SCOPE");
+  if (
+    !(
+      await c.query("SELECT didar_native_saleable_supplier($1) ok", [
+        o.supplier_id,
+      ])
+    ).rows[0].ok
+  )
+    throw Error("CONFLICT_STORE_SCOPE");
   if (
     scope
       ? o.supplier_id !== scope.supplier_id
@@ -292,7 +313,15 @@ export async function storefront(req: any) {
         ],
       );
     } else throw new Error("INVALID_ACTION");
-    await audit(c, u.id, `storefront_${b.kind}`, { supplier_id: sid });
+    await audit(c, u.id, `storefront_${b.kind}`, {
+      real_actor_id: u.id,
+      target_merchant_id: sid,
+      supplier_id: sid,
+      on_behalf: u.role === "admin",
+      permission: b.permission,
+      target_user_email: b.kind === "member" ? b.email : undefined,
+      active: b.active,
+    });
     return { ok: true };
   });
 }

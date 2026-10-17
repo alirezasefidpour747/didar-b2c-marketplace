@@ -499,7 +499,14 @@ async function approved(c: any, id: string) {
   const {
     rows: [s],
   } = await c.query("SELECT * FROM didar_supplier WHERE id=$1 FOR SHARE", [id]);
-  if (!s || !s.active || s.status !== "approved") throw new Error("FORBIDDEN");
+  if (
+    !s ||
+    !s.active ||
+    s.status !== "approved" ||
+    !(await c.query("SELECT didar_native_saleable_supplier($1) ok", [id]))
+      .rows[0].ok
+  )
+    throw new Error("FORBIDDEN");
   return s;
 }
 export async function manage(req: any, u: any) {

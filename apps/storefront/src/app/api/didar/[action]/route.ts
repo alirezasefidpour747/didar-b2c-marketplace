@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'workspace',
+  'history',
   'storefront',
   'media',
   'pages',

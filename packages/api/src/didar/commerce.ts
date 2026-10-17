@@ -66,6 +66,12 @@ async function payment(req: any) {
       throw new Error("INVALID_PAYMENT_ATTEMPT");
     if (o.status !== "pending")
       return { order: publicOrder(o), payment: publicPayment(attempt) };
+    // Payment is a new economic action even when a pre-suspension reservation exists.
+    const commercial = await c.query(
+      "SELECT 1 FROM didar_order_line l JOIN didar_supplier s ON s.id=l.supplier_id WHERE l.order_id=$1 AND (NOT s.active OR s.status<>'approved' OR NOT didar_native_saleable_supplier(s.id)) LIMIT 1",
+      [id],
+    );
+    if (commercial.rowCount) throw Error("CONFLICT_BUSINESS_SUSPENDED");
     let status = reservationStatus(
       o.status,
       new Date(o.expires_at),

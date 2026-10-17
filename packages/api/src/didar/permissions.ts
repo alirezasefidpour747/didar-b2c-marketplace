@@ -38,7 +38,9 @@ export async function authorize(
     u.role !== "supplier" ||
     u.supplier_id !== supplier ||
     !s.active ||
-    s.status !== "approved"
+    s.status !== "approved" ||
+    !(await c.query("SELECT didar_native_saleable_supplier($1) ok", [supplier]))
+      .rows[0].ok
   )
     throw new Error("FORBIDDEN");
   if (permission) {

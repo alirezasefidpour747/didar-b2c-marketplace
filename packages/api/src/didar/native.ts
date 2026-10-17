@@ -8,6 +8,7 @@ import { GET as image } from "../api/didar/image/route";
 import { mediaFile } from "./content-media";
 
 const domains: Record<string, string> = {
+  history: "didar.history",
   permissions: "sellers",
   inventory: "inventory_items",
   orders: "orders",
@@ -38,7 +39,7 @@ const domains: Record<string, string> = {
   wallet: "payments",
 };
 function right(req: any, key: string, write: boolean) {
-  if (!req.permissions_enforced) return;
+  if (!req.permissions_enforced) throw Error("FORBIDDEN");
   const allowed = req.permissions?.[key];
   const ranks: Record<string, number> = {
     none: 0,
@@ -56,6 +57,16 @@ async function actor(req: any) {
     throw Error("UNAUTHORIZED");
   // Native core verifies the selected seller AND membership before this handler.
   if (vendor && !req.seller_context?.seller_id) throw Error("FORBIDDEN");
+  if (
+    vendor &&
+    !(
+      await db.query(
+        "SELECT 1 FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND s.deleted_at IS NULL",
+        [a.actor_id, req.seller_context.seller_id],
+      )
+    ).rowCount
+  )
+    throw Error("FORBIDDEN");
   return {
     type: a.actor_type,
     id: a.actor_id,
@@ -117,7 +128,11 @@ async function linked(a: any, action: string, method: string) {
       (!scope.supplier_active ||
         scope.supplier_status !== "approved" ||
         scope.native_seller_status !== "open") &&
-      !(action === "context" || (action === "onboarding" && method === "GET"))
+      !(
+        action === "context" ||
+        (action === "history" && method === "GET" && u.role === "supplier") ||
+        (action === "onboarding" && method === "GET")
+      )
     )
       throw Error("FORBIDDEN");
   } else if (
@@ -176,9 +191,9 @@ export async function nativeHandler(req: any, res: any) {
       return res.json({
         user: u,
         seller_id: a.seller,
-        can_catalog:
-          !req.permissions_enforced ||
-          ["view", "edit", "manage"].includes(req.permissions?.products),
+        can_catalog: ["view", "edit", "manage"].includes(
+          req.permissions?.products,
+        ),
         public_origin: (process.env.STORE_CORS || "").split(",")[0],
       });
     if (action === "access-links") {
@@ -254,7 +269,17 @@ export async function nativeHandler(req: any, res: any) {
       throw Error("FORBIDDEN");
     if (domains[action]) {
       let key = domains[action];
-      if (a.type === "member" && key === "sellers") key = "store";
+      if (a.type === "member")
+        key =
+          (
+            {
+              products: "didar.catalog",
+              inventory_items: "didar.inventory",
+              orders: "didar.orders",
+              payments: "didar.finance",
+              sellers: "store",
+            } as Record<string, string>
+          )[key] || key;
       if (action === "manage" && req.method === "POST")
         key =
           (

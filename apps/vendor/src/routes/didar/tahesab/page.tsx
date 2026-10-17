@@ -4,11 +4,11 @@ import { Tahesab } from "@didar-ui/tahesab";
 export const config: RouteConfig = {
   label: "طاهساب آزمایشی",
   group: "didar",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
   rank: 5,
 };
 export const handle = {
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
   breadcrumb: () => "طاهساب آزمایشی",
 };
 export default function Page() {

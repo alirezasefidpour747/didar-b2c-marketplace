@@ -177,10 +177,12 @@ export function NativeWorkspace({
           (!user.supplier_active ||
             user.supplier_status !== "approved" ||
             user.native_seller_status !== "open") ? (
-          <p role="status">
-            پرونده شما متصل است؛ تأیید فروشگاه بومی و تأمین‌کننده دیدار برای
-            شروع فعالیت لازم است. سوابق و شناسه‌های شما محفوظ است.
-          </p>
+          <>
+            <p role="status">
+              فعالیت تجاری متوقف است؛ سوابق مجاز فقط خواندنی است.
+            </p>
+            {children}
+          </>
         ) : user ? (
           children
         ) : (

@@ -150,6 +150,7 @@ export async function sharing(req: any) {
       );
     await audit(c, u.id, "share_page_saved", {
       id,
+      real_actor_id: u.id, target_merchant_id: sid, on_behalf: u.role === "admin",
       supplier_id: sid,
       published: b.published,
       product_ids: b.product_ids,

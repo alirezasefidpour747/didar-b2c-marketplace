@@ -1,5 +1,7 @@
 # Mercur-native recovery — Chief Architect review checkpoint
 
+**Latest bounded correction: Issue #13.** The owner authorized the ADR-BIZ-01 managed-launch policy and bounded ADR-CORE-02 corrective implementation. [Current authorization/launch implementation](ISSUE13_NATIVE_AUTHORIZATION.md) and [real C01–C10 evidence](../verification/issue13/RESULTS.md) supersede the older permission details below. Independent delta verification and Chief Architect acceptance remain pending. No broader authority migration, cross-supplier resale, CRM Phases 5–9 or staging deployment is authorized. The original native recovery report below remains historical evidence.
+
 Scope: the original Mercur 2.3.7 / Medusa 2.21.2 Admin `/dashboard`, Vendor `/seller`, and Next B2C/customer application. This is a bounded native-panel recovery, not a selection of the unapproved CORE-01 alternatives.
 
 **Owner instruction, 2026-10-17:** finish this recovery, resolve browser failures, run the full regression suite, publish verified code, then **STOP**. CRM and business Phases 5–9 must not start until the Chief Architect reviews the final implementation and authorizes continuation. No CRM/campaign/agent/referral/Growth Center feature implementation is included in this recovery.

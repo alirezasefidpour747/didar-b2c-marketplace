@@ -4,11 +4,11 @@ import { Treasury } from "@didar-ui/treasury";
 export const config: RouteConfig = {
   label: "خزانه و تسویه",
   group: "didar",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export const handle = {
   breadcrumb: () => "خزانه و تسویه",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export default function Page() {
   return (

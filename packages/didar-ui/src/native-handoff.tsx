@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 const key = "didar-native-return";
 const feature =
-  /^\/didar(?:\/(?:connect|connections|pricing|operations|finance|treasury|ledger|tahesab|acceptance|onboarding|storefront|sharing|wallet|orders(?:\/[\w-]+)?|pages(?:\/preview\/[\w-]+)?))?$/;
+  /^\/didar(?:\/(?:history|connect|connections|pricing|operations|finance|treasury|ledger|tahesab|acceptance|onboarding|storefront|sharing|wallet|orders(?:\/[\w-]+)?|pages(?:\/preview\/[\w-]+)?))?$/;
 export function safeNativeReturn(value: string) {
   try {
     const u = new URL(value, "https://native.invalid");

@@ -30,7 +30,7 @@ export default class PermissionsService implements IPermissionResolver {
           ).rows[0]
         : (
             await db.query(
-              "SELECT sm.is_owner,sm.role_id FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND s.deleted_at IS NULL",
+              "SELECT sm.is_owner,sm.role_id,s.status native_status FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND s.deleted_at IS NULL",
               [actor.actor_id, actor.seller_id || ""],
             )
           ).rows[0];
@@ -68,33 +68,88 @@ export default class PermissionsService implements IPermissionResolver {
         ).rowCount
       )
         allowed = { "didar.content": "edit" };
-    } else if (!link) {
-      allowed = native.is_owner ? full() : { store: "view" };
-    } else if (link.role === "supplier") {
-      const match = (
-        await db.query(
-          "SELECT 1 FROM didar_native_seller WHERE seller_id=$1 AND supplier_id=$2 AND active",
-          [actor.seller_id, link.supplier_id],
-        )
-      ).rowCount;
-      if (match) allowed = full();
-    } else if (link.role === "customer") {
+    } else {
+      // Native membership/ownership proves bootstrap context, not commerce authority.
       allowed = { store: "view" };
-      const rows = (
-        await db.query(
-          "SELECT m.permission FROM didar_merchant_member m JOIN didar_native_seller n ON n.supplier_id=m.supplier_id WHERE m.user_id=$1 AND m.active AND n.active AND n.seller_id=$2",
-          [link.id, actor.seller_id],
-        )
-      ).rows;
-      const keys: Record<string, string> = {
-        STOREFRONT: "didar.storefront",
-        SHARE: "didar.sharing",
-        ONBOARDING: "didar.onboarding",
-        CONTENT_EDIT: "didar.content",
-        CONTENT_PUBLISH: "didar.content",
-      };
-      for (const { permission } of rows)
-        if (keys[permission]) allowed[keys[permission]] = "edit";
+      if (link) {
+        const scope = (
+          await db.query(
+            "SELECT s.id,s.active,s.status FROM didar_native_seller n JOIN didar_supplier s ON s.id=n.supplier_id WHERE n.seller_id=$1 AND n.active",
+            [actor.seller_id],
+          )
+        ).rows[0];
+        const owner =
+          scope && link.role === "supplier" && link.supplier_id === scope.id;
+        const eligible =
+          scope?.active &&
+          scope.status === "approved" &&
+          native.native_status === "open";
+        if (owner) {
+          // Historical reads are scoped by canonical services; no native bank or customer access.
+          allowed["didar.history"] = "view";
+          allowed["didar.onboarding"] = "view";
+          if (eligible) {
+            Object.assign(allowed, {
+              products: "view",
+              offers: "view",
+              orders: "view",
+              inventory_items: "view",
+              "didar.catalog": "view",
+              "didar.inventory": "view",
+              "didar.orders": "view",
+              "didar.finance": "view",
+              // Existing canonical supplier ownership permits these non-gold merchant actions.
+              "didar.storefront": "edit",
+              "didar.sharing": "edit",
+              "didar.content": "edit",
+              "didar.onboarding": "edit",
+            });
+            const grants = new Set(
+              (
+                await db.query(
+                  "SELECT permission FROM didar_supplier_permission WHERE supplier_id=$1 AND granted",
+                  [scope.id],
+                )
+              ).rows.map((r: any) => r.permission),
+            );
+            if (
+              [
+                "REQUEST_PRODUCT_CREATION",
+                "CREATE_OWN_OFFER",
+                "EDIT_OWN_OFFER",
+                "EDIT_OWN_INVENTORY",
+                "EDIT_OWN_MAKING_CHARGE",
+                "SUGGEST_OWN_CLASSIFICATION",
+              ].some((p) => grants.has(p))
+            )
+              allowed["didar.catalog"] = "edit";
+            if (
+              ["CREATE_OWN_INTAKE", "EDIT_OWN_INVENTORY", "PAIR_OWN_RFID"].some(
+                (p) => grants.has(p),
+              )
+            )
+              allowed["didar.inventory"] = "edit";
+            if (grants.has("UPDATE_OWN_FULFILLMENT"))
+              allowed["didar.orders"] = "edit";
+          }
+        } else if (link.role === "customer" && eligible) {
+          const rows = (
+            await db.query(
+              "SELECT permission FROM didar_merchant_member WHERE user_id=$1 AND supplier_id=$2 AND active",
+              [link.id, scope.id],
+            )
+          ).rows;
+          const keys: Record<string, string> = {
+            STOREFRONT: "didar.storefront",
+            SHARE: "didar.sharing",
+            ONBOARDING: "didar.onboarding",
+            CONTENT_EDIT: "didar.content",
+            CONTENT_PUBLISH: "didar.content",
+          };
+          for (const { permission } of rows)
+            if (keys[permission]) allowed[keys[permission]] = "edit";
+        }
+      }
     }
     if (policy) {
       if (!policy.active) return {};

@@ -179,6 +179,8 @@ export const errors: Record<string, string> = {
   CONFLICT_VERSION: "اطلاعات تغییر کرده است؛ صفحه را تازه کنید.",
   UNAUTHORIZED: "ایمیل یا رمز عبور نادرست است، یا نشست پایان یافته است.",
   FORBIDDEN: "دسترسی مجاز نیست.",
+  CONFLICT_BUSINESS_SUSPENDED:
+    "فعالیت تجاری فروشنده متوقف است؛ پرداخت تازه ممکن نیست. سوابق سفارش شما محفوظ است.",
   INVALID_ADDRESS: "شماره همراه و کد پستی را بررسی کنید.",
   INVALID_PASSWORD_MIN_12: "رمز عبور باید حداقل ۱۲ نویسه باشد.",
   CONFLICT_DUPLICATE: "این مورد قبلاً ثبت شده است.",

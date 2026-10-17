@@ -1,10 +1,11 @@
 import { randomBytes } from 'node:crypto'
 import { mkdirSync, openSync, closeSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { bootstrapAcceptance } from './bootstrap-acceptance.mjs'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false, noDemoOnly = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -70,11 +71,15 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
       const counts = JSON.parse(capture('docker', ['exec',names[0],'psql','-U','postgres','-d','didar_qa','-At','-c',sql]))
       if (Object.values(counts).some(count => count !== 0)) throw new Error('Fresh no-demo installer created identities or commerce')
       console.log('FRESH_NON_DEMO_INSTALL_VERIFIED ' + JSON.stringify(counts))
-      return
+      Object.assign(env, {DIDAR_SEED_DEMO:'false', DIDAR_BOOTSTRAP_EMAIL:'first-admin@bootstrap.invalid', DIDAR_BOOTSTRAP_PASSWORD:randomBytes(20).toString('hex'), NATIVE_BOOTSTRAP_PASSWORD:randomBytes(20).toString('hex')})
+      await run('bun',['run','--cwd','packages/api','medusa','exec','./src/scripts/provision-first-admin.ts'],{env})
+      await run('bun',['run','--cwd','packages/api','medusa','exec','./src/scripts/didar-seed.ts'],{env})
     }
+    if (!noDemoOnly) {
     // Upgrade path must apply native tables with demo/account creation disabled.
     await run('bun', ['run','--cwd','packages/api','medusa','exec','./src/scripts/didar-seed.ts'], { env: { ...env, DIDAR_SEED_DEMO: 'false' } })
     await run('bun', ['run','--cwd','packages/api','medusa','exec','./src/scripts/native-qa-seed.ts'], {env})
+    }
     if (reuseBuild) console.log('Reusing production build: source, complete output and platform receipt verified.')
     else {
       await run('bun', ['run', 'build:all'], { env: { ...env, NODE_ENV: 'production' } })
@@ -89,6 +94,13 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
       env: { ...env, NODE_ENV: 'production' }, stdio: ['ignore', webFD, webFD],
     })
     await waitHTTP(`${webOrigin}/api/didar/catalog`, async r => { const d = await r.json(); return Array.isArray(d.products) && !!d.rate })
+    if(noDemoOnly) {
+      await bootstrapAcceptance(env)
+      const counts=JSON.parse(capture('docker',['exec',names[0],'psql','-U','postgres','-d','didar_qa','-At','-c',"SELECT json_build_object('admins',(SELECT count(*) FROM didar_user WHERE role='admin'),'bridges',(SELECT count(*) FROM didar_native_actor),'products',(SELECT count(*) FROM didar_product),'orders',(SELECT count(*) FROM didar_order),'demo',(SELECT count(*) FROM didar_user WHERE email LIKE '%@didar.test'))"]))
+      if(counts.admins!==1 || counts.bridges!==1 || counts.products!==0 || counts.orders!==0 || counts.demo!==0) throw Error('No-demo bootstrap changed commerce or created demo identities')
+      console.log('C09_REPEAT_MIGRATION_NO_DEMO_VERIFIED '+JSON.stringify(counts))
+      return
+    }
     await run('bun', ['test', './tests/local-workflow.test.ts', ...backendFiles], { env })
     await run('bun', ['run', '--cwd', 'packages/api', 'test:integration:http'], { env })
     await run('node', ['scripts/local/browser-login-window.mjs'], { env })

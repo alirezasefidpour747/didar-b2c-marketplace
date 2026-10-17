@@ -1,3 +1,4 @@
+import { supplierHistory } from "./supplier-history";
 import { workspace } from "./workspace";
 import { content } from "./content";
 import { contentMedia } from "./content-media";
@@ -69,6 +70,7 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  if (action === "history") return supplierHistory(req);
   if (action === "workspace") return workspace(req);
   if (action === "pages") return content(req);
   if (action === "content-media") return contentMedia(req);
@@ -447,6 +449,30 @@ export async function perform(action: string, req: any): Promise<any> {
     );
   }
   if (action === "manage") {
+    const statusActor = await sessionUser(req);
+    if (req.method === "GET" && statusActor?.role === "supplier") {
+      const supplier = (
+        await db.query(
+          "SELECT id,name,status,active,didar_native_saleable_supplier(id) native_saleable FROM didar_supplier WHERE id=$1",
+          [statusActor.supplier_id],
+        )
+      ).rows[0];
+      if (
+        supplier &&
+        (!supplier.active ||
+          supplier.status !== "approved" ||
+          !supplier.native_saleable)
+      )
+        return {
+          status_only: true,
+          suppliers: [supplier],
+          products: [],
+          categories: [],
+          collections: [],
+          permissions: [],
+          product_requests: [],
+        };
+    }
     const u = await requireUser(req, ["supplier", "admin"]);
     return manage(req, u);
   }

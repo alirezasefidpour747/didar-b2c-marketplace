@@ -4,11 +4,11 @@ import { Finance } from "@didar-ui/finance";
 export const config: RouteConfig = {
   label: "قرارداد و حساب طلا",
   group: "didar",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
   rank: 4,
 };
 export const handle = {
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
   breadcrumb: () => "قرارداد و حساب طلا",
 };
 export default function Page() {

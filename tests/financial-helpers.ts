@@ -25,15 +25,17 @@ export async function finOK(action: string, body?: any, token = "") {
   return r;
 }
 let sharedAdminToken = "";
-export async function financeFixture(mode = "MIXED") {
+export async function financeFixture(mode = "MIXED", adminOverride?: string) {
   const tag = "fin-helper-" + crypto.randomUUID(),
     password = "DidarFinance2026!";
-  const admin = (sharedAdminToken ||= (
-    await finOK("login", {
-      email: "admin@didar.test",
-      password: "DidarDemo2026!",
-    })
-  ).token);
+  const admin =
+    adminOverride ||
+    (sharedAdminToken ||= (
+      await finOK("login", {
+        email: "admin@didar.test",
+        password: "DidarDemo2026!",
+      })
+    ).token);
   const sid = (
     await finOK(
       "manage",

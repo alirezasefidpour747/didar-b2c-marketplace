@@ -133,7 +133,7 @@ test("native admin and member authentication, dual proof, immediate revocation a
     seller,
   );
   expect(ownerBootstrap.status).toBe(200);
-  expect(await ownerBootstrap.text()).toContain("QA_PRIVATE_NATIVE_BANK");
+  expect(await ownerBootstrap.text()).not.toContain("QA_PRIVATE_NATIVE_BANK");
   const result = await request(
     "/vendor/didar/manage",
     vendor,

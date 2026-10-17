@@ -4,11 +4,11 @@ import { Ledger } from "@didar-ui/ledger";
 export const config: RouteConfig = {
   label: "دفتر حسابداری",
   group: "didar",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export const handle = {
   breadcrumb: () => "دفتر حسابداری",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export default function Page() {
   return (

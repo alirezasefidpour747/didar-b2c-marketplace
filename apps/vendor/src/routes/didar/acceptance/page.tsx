@@ -4,11 +4,11 @@ import { Acceptance } from "@didar-ui/acceptance";
 export const config: RouteConfig = {
   label: "کنترل پذیرش مالی",
   group: "didar",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export const handle = {
   breadcrumb: () => "کنترل پذیرش مالی",
-  permissions: ["payments:view"],
+  permissions: ["didar.finance:view"],
 };
 export default function Page() {
   return (

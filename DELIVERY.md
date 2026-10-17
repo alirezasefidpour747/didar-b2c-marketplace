@@ -1,3 +1,9 @@
+## Issue #13 — bounded authorization and managed merchant launch (2026-10-17)
+
+Implemented under owner-approved ADR-BIZ-01 and the explicitly assigned bounded ADR-CORE-02 design: bootstrap-only unlinked native owners; current-business and per-action native grants; governed gold actions separated from generic commerce writers; legacy suspension/revocation parity; audited own-history read and pending status; real Admin on-behalf launch, progressive staff handover and explicit no-demo first Admin setup. See [implementation](docs/ISSUE13_NATIVE_AUTHORIZATION.md) and [C01–C10 evidence](verification/issue13/RESULTS.md) for exact results, screenshots and remaining architectural limits.
+
+**STOP after verified publication for Chief Architect / independent delta review. CRM Phases 5–9, cross-supplier retailer resale, staging deployment and commerce/identity authority migration remain unauthorized.** Historical recovery checkpoints below retain their original result counts.
+
 ## Mercur-native recovery — Chief Architect review checkpoint (2026-10-17)
 
 The original **Admin `/dashboard/didar`** and **Vendor `/seller/didar`** contain real SDK routes, navigation, Product widgets/custom-field display and existing Didar PostgreSQL services. Restricted merchant staff/global content operators use native permissions without role promotion; pending status, audited access controls, seller lifecycle eligibility and protected legacy deep-link handoff are implemented. Customer navigation has no internal management tabs. Linked operator orders/wallet use native panels; customer history/wallet remain in B2C. Missing native connection/public origin retains the guarded transition page.

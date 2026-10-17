@@ -1,12 +1,23 @@
+import { nativeProductReadGuard } from "../didar/native-product-visibility";
+import { nativeErrorHandler } from "../didar/native-error-handler";
+import {
+  nativePermissionBoundary,
+  nativeVendorBoundary,
+} from "../didar/native-vendor-boundary";
 import { defineMiddlewares, authenticate } from "@medusajs/medusa";
 
 import { nativeVendorPrivacy } from "../didar/native-vendor-privacy";
 import { nativeProductGuard } from "../didar/native-product-guard";
 
 export default defineMiddlewares({
+  errorHandler: nativeErrorHandler,
   routes: [
+    { matcher: "/admin/*", middlewares: [nativePermissionBoundary] },
+    { matcher: "/vendor/*", middlewares: [nativePermissionBoundary] },
+    { matcher: "/vendor/*", middlewares: [nativeVendorBoundary] },
     {
-      matcher: /^\/vendor\/(members\/me|sellers(?:\/[^/]+(?:\/members\/me)?)?)$/,
+      matcher:
+        /^\/vendor\/(members\/me|sellers(?:\/[^/]+(?:\/members\/me)?)?)$/,
       method: ["GET", "POST"],
       middlewares: [
         authenticate("member", ["session", "bearer"], {
@@ -26,6 +37,7 @@ export default defineMiddlewares({
       matcher: /^\/vendor\/products(?:\/.*)?$/,
       middlewares: [
         authenticate("member", ["session", "bearer"]),
+        nativeProductReadGuard,
         nativeProductGuard,
       ],
     },

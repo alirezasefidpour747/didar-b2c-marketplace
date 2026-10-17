@@ -37,6 +37,21 @@ export async function requireUser(req: any, roles: string[]) {
   const u = await sessionUser(req);
   if (!u) throw new Error("UNAUTHORIZED");
   if (!roles.includes(u.role)) throw new Error("FORBIDDEN");
+  if (u.role === "supplier") {
+    const action = String(req.path || req.originalUrl || "")
+      .split("?")[0]
+      .split("/")
+      .pop();
+    if (!["history", "profile"].includes(action || "")) {
+      const business = (
+        await db.query(
+          "SELECT active AND status='approved' AND didar_native_saleable_supplier(id) ok FROM didar_supplier WHERE id=$1",
+          [u.supplier_id],
+        )
+      ).rows[0];
+      if (!business?.ok) throw Error("FORBIDDEN");
+    }
+  }
   return u;
 }
 

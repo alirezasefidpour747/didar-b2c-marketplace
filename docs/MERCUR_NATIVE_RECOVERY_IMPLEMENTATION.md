@@ -1,5 +1,7 @@
 # Mercur-native recovery checkpoint
 
+**Issue #13 correction:** [native permissions / managed merchant launch](ISSUE13_NATIVE_AUTHORIZATION.md) now bounds native owner/supplier rights, denies unsupported generic payment access, preserves DIDAR financial reporting, adds lawful own-history and proves clean first-Admin bootstrap. Consult its matrix and [current evidence](../verification/issue13/RESULTS.md); older recovery details below are subordinate to this bounded correction. Stop for Chief Architect review after verified publication.
+
 Owner architecture baseline: `dfcc604` (2026-10-17). Native Admin is `/dashboard`, Vendor `/seller`, and the Next app remains the customer/public application. This checkpoint implements original-panel integration; it does not declare growth Phases 5–9 complete.
 
 ## Delivered implementation
