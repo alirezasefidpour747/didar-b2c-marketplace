@@ -1,0 +1,201 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/pre-rollout-authorization.test.ts:
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"canonical-private","products_count":0,"variants_count":1,"returned_product_ids":["prod_01M55AG23G8E254GSJ785966D2"]}
+50 |   expect(productList.products).toEqual([]);
+51 |   expect(productList.count).toBe(0);
+52 |   expect((await request("/vendor/products/" + id, vendor, undefined, selected)).status).toBe(404);
+53 |   const variants = await ok("/vendor/product-variants?product_id=" + encodeURIComponent(id) + "&limit=1", vendor, undefined, selected);
+54 |   console.log("INDEPENDENT_VARIANT_VISIBILITY", JSON.stringify({ kind, products_count: productList.count, variants_count: variants.count, returned_product_ids: variants.variants.map((v: any) => v.product_id) }));
+55 |   expect(variants.variants).toEqual([]);
+                                 ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "allow_backorder": false,
++     "barcode": null,
++     "created_at": "2026-10-17T16:18:08.670Z",
++     "ean": null,
++     "height": null,
++     "hs_code": null,
++     "id": "variant_01M55AG24YK2G5MJ8YJBZFXSXP",
++     "length": null,
++     "manage_inventory": false,
++     "material": null,
++     "metadata": null,
++     "mid_code": null,
++     "origin_country": null,
++     "product": {
++       "collection": null,
++       "collection_id": null,
++       "created_at": "2026-10-17T16:18:08.625Z",
++       "deleted_at": null,
++       "description": "Integrated finance QA",
++       "discountable": true,
++       "external_id": null,
++       "handle": "didar-a1ec52f2-e246-4abd-a7c9-62896e988f8c",
++       "height": null,
++       "hs_code": null,
++       "id": "prod_01M55AG23G8E254GSJ785966D2",
++       "is_giftcard": false,
++       "length": null,
++       "material": null,
++       "metadata": {
++         "didar": true,
++         "jewelry_type": "",
++         "max_weight_mg": null,
++         "min_weight_mg": null,
++         "purity": 750,
++         "reference": "",
++       },
++       "mid_code": null,
++       "origin_country": null,
++       "status": "published",
++       "subtitle": null,
++       "thumbnail": null,
++       "title": "fin-helper-4a2d49c6-ab79-428b-af90-b1a7a9ed5e33",
++       "type": null,
++       "type_id": null,
++       "updated_at": "2026-10-17T16:18:08.625Z",
++       "weight": null,
++       "width": null,
++     },
++     "product_id": "prod_01M55AG23G8E254GSJ785966D2",
++     "sku": null,
++     "title": "Standard",
++     "upc": null,
++     "updated_at": "2026-10-17T16:18:08.670Z",
++     "variant_rank": 0,
++     "weight": null,
++     "width": null,
++   },
++ ]
+
+- Expected  - 1
++ Received  + 60
+
+      at <anonymous> (/workspace/didar-b2c-marketplace/tests/pre-rollout-authorization.test.ts:55:29)
+(fail) separate Vendor variant list/count must preserve product visibility: canonical-private [66.32ms]
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"native-unmapped","products_count":0,"variants_count":1,"returned_product_ids":["prod_01M55AG2BSS2NACFNN00VWVHRZ"]}
+50 |   expect(productList.products).toEqual([]);
+51 |   expect(productList.count).toBe(0);
+52 |   expect((await request("/vendor/products/" + id, vendor, undefined, selected)).status).toBe(404);
+53 |   const variants = await ok("/vendor/product-variants?product_id=" + encodeURIComponent(id) + "&limit=1", vendor, undefined, selected);
+54 |   console.log("INDEPENDENT_VARIANT_VISIBILITY", JSON.stringify({ kind, products_count: productList.count, variants_count: variants.count, returned_product_ids: variants.variants.map((v: any) => v.product_id) }));
+55 |   expect(variants.variants).toEqual([]);
+                                 ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   {
++     "allow_backorder": false,
++     "barcode": null,
++     "created_at": "2026-10-17T16:18:08.930Z",
++     "ean": null,
++     "height": null,
++     "hs_code": null,
++     "id": "variant_01M55AG2D2TTJ6Y631CCYRP05T",
++     "length": null,
++     "manage_inventory": false,
++     "material": null,
++     "metadata": null,
++     "mid_code": null,
++     "origin_country": null,
++     "product": {
++       "collection": null,
++       "collection_id": null,
++       "created_at": "2026-10-17T16:18:08.890Z",
++       "deleted_at": null,
++       "description": null,
++       "discountable": true,
++       "external_id": null,
++       "handle": "authorization-review-35fcd319-393b-4ed0-b6af-9dba3197f17d",
++       "height": null,
++       "hs_code": null,
++       "id": "prod_01M55AG2BSS2NACFNN00VWVHRZ",
++       "is_giftcard": false,
++       "length": null,
++       "material": null,
++       "metadata": null,
++       "mid_code": null,
++       "origin_country": null,
++       "status": "published",
++       "subtitle": null,
++       "thumbnail": null,
++       "title": "Independent unmapped native master 5581d51a-4c8a-46bf-8dc4-53c1bf805a43",
++       "type": null,
++       "type_id": null,
++       "updated_at": "2026-10-17T16:18:08.890Z",
++       "weight": null,
++       "width": null,
++     },
++     "product_id": "prod_01M55AG2BSS2NACFNN00VWVHRZ",
++     "sku": null,
++     "title": "Private native variant",
++     "upc": null,
++     "updated_at": "2026-10-17T16:18:08.930Z",
++     "variant_rank": 0,
++     "weight": null,
++     "width": null,
++   },
++ ]
+
+- Expected  - 1
++ Received  + 53
+
+      at <anonymous> (/workspace/didar-b2c-marketplace/tests/pre-rollout-authorization.test.ts:55:29)
+(fail) separate Vendor variant list/count must preserve product visibility: native-unmapped [74.16ms]
+INDEPENDENT_DEACTIVATED_MEMBER [{"path":"/vendor/products","status":200},{"path":"/vendor/offers","status":200},{"path":"/vendor/orders","status":200},{"path":"/vendor/didar/manage","status":200},{"path":"/vendor/didar/history","status":200}]
+67 |     await db.query("UPDATE member SET is_active=false WHERE id=$1", [actor]);
+68 |     const outcomes = [];
+69 |     for (const path of ["/vendor/products", "/vendor/offers", "/vendor/orders", "/vendor/didar/manage", "/vendor/didar/history"])
+70 |       outcomes.push({ path, status: (await request(path, vendor, undefined, selected)).status });
+71 |     console.log("INDEPENDENT_DEACTIVATED_MEMBER", JSON.stringify(outcomes));
+72 |     for (const outcome of outcomes) expect(outcome.status, outcome.path).toBe(403);
+                                                                              ^
+error: /vendor/products
+
+Expected: 403
+Received: 200
+
+      at <anonymous> (/workspace/didar-b2c-marketplace/tests/pre-rollout-authorization.test.ts:72:74)
+(fail) deactivated native Member cannot retain generic or DIDAR commerce through an existing bearer [173.84ms]
+INDEPENDENT_PUBLIC_MIRROR [{"path":"/store/products?id=prod_01M55AG23G8E254GSJ785966D2&limit=1","status":200,"count":1,"product_ids":["prod_01M55AG23G8E254GSJ785966D2"]},{"path":"/store/products/prod_01M55AG23G8E254GSJ785966D2","status":200,"detail_id":"prod_01M55AG23G8E254GSJ785966D2"}]
+80 |     const data = await response.json();
+81 |     outcomes.push({ path, status: response.status, count: data.count, product_ids: data.products?.map((p: any) => p.id), detail_id: data.product?.id });
+82 |   }
+83 |   console.log("INDEPENDENT_PUBLIC_MIRROR", JSON.stringify(outcomes));
+84 |   expect(outcomes[0].status).toBe(200);
+85 |   expect(outcomes[0].count).toBe(0);
+                                 ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/workspace/didar-b2c-marketplace/tests/pre-rollout-authorization.test.ts:85:29)
+(fail) public native Store API cannot disclose a DIDAR-private master through its published mirror [48.18ms]
+INDEPENDENT_COMPENSATION {"edit_status":500,"before_native_status":"draft","after_native_status":"published","canonical_unchanged":true}
+102 |     const after = await ok("/admin/products/" + row.native_id, admin);
+103 |     const canonical = (await db.query("SELECT md5(row_to_json(p)::text) fingerprint FROM didar_product p WHERE id=$1", [created.id])).rows[0];
+104 |     console.log("INDEPENDENT_COMPENSATION", JSON.stringify({ edit_status: edit.status, before_native_status: before.product.status, after_native_status: after.product.status, canonical_unchanged: canonical.fingerprint === row.fingerprint }));
+105 |     expect(canonical.fingerprint).toBe(row.fingerprint);
+106 |     expect(after.product.title).toBe(before.product.title);
+107 |     expect(after.product.status).toBe("draft");
+                                       ^
+error: expect(received).toBe(expected)
+
+Expected: "draft"
+Received: "published"
+
+      at <anonymous> (/workspace/didar-b2c-marketplace/tests/pre-rollout-authorization.test.ts:107:34)
+(fail) failed canonical edit must compensate an unapproved native mirror back to draft [185.36ms]
+(pass) authorized public native variants retain original list/count/pagination behavior [31.63ms]
+
+ 1 pass
+ 5 fail
+ 32 expect() calls
+Ran 6 tests across 1 file. [1426.00ms]
