@@ -61,7 +61,7 @@ async function actor(req: any) {
     vendor &&
     !(
       await db.query(
-        "SELECT 1 FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND s.deleted_at IS NULL",
+        "SELECT 1 FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller s ON s.id=sm.seller_id WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND m.is_active AND s.deleted_at IS NULL",
         [a.actor_id, req.seller_context.seller_id],
       )
     ).rowCount
@@ -118,7 +118,7 @@ async function linked(a: any, action: string, method: string) {
         `SELECT n.supplier_id,s.active supplier_active,s.status supplier_status,se.status native_seller_status
    FROM seller_member sm JOIN member m ON m.id=sm.member_id JOIN seller se ON se.id=sm.seller_id
    JOIN didar_native_seller n ON n.seller_id=sm.seller_id JOIN didar_supplier s ON s.id=n.supplier_id
-   WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND se.deleted_at IS NULL AND n.active`,
+   WHERE sm.member_id=$1 AND sm.seller_id=$2 AND sm.deleted_at IS NULL AND m.deleted_at IS NULL AND m.is_active AND se.deleted_at IS NULL AND n.active`,
         [a.id, a.seller],
       )
     ).rows[0];
