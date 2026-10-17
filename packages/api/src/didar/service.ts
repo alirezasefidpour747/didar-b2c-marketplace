@@ -1,3 +1,5 @@
+import { performAgency, snapshotAgency } from "./agency";
+import { curation, curationQuote } from "./curation";
 import { supplierHistory } from "./supplier-history";
 import { workspace } from "./workspace";
 import { content } from "./content";
@@ -70,6 +72,9 @@ export async function expireOrders() {
 }
 export async function perform(action: string, req: any): Promise<any> {
   const b = req.body || {};
+  const agency = await performAgency(action, req);
+  if (agency.handled) return agency.result;
+  if (action === "curation") return curation(req);
   if (action === "history") return supplierHistory(req);
   if (action === "workspace") return workspace(req);
   if (action === "pages") return content(req);
@@ -314,9 +319,15 @@ export async function perform(action: string, req: any): Promise<any> {
           throw new Error("CONFLICT_STOCK");
         await assertOfferScope(c, o, scope);
         if (o.version !== l.version) throw new Error("CONFLICT_OFFER_CHANGED");
-        const quoted = await quoteOffer(c, pricingRate, o, method);
+        const quoted = await curationQuote(
+          c,
+          o,
+          scope,
+          await quoteOffer(c, pricingRate, o, method),
+        );
         if (
-          (quoted.merchant_profile && !l.quote_key) ||
+          ((quoted.merchant_profile || quoted.sale_role || quoted.curation) &&
+            !l.quote_key) ||
           (l.quote_key && l.quote_key !== quoted.quote_key)
         )
           throw new Error("CONFLICT_PROFILE_QUOTE_CHANGED");
@@ -352,7 +363,13 @@ export async function perform(action: string, req: any): Promise<any> {
       }
       const pricingSummary = cartPrice(snapshots, method);
       if (
-        (snapshots.some((l) => l.breakdown.merchant_profile) && !b.quote_key) ||
+        (snapshots.some(
+          (l) =>
+            l.breakdown.merchant_profile ||
+            l.breakdown.sale_role ||
+            l.breakdown.curation,
+        ) &&
+          !b.quote_key) ||
         (b.quote_key && b.quote_key !== pricingSummary.quote_key)
       )
         throw new Error("CONFLICT_PROFILE_QUOTE_CHANGED");
@@ -396,6 +413,7 @@ export async function perform(action: string, req: any): Promise<any> {
           ],
         );
         await snapshotTerms(c, lineID, l.supplier_id);
+        await snapshotAgency(c, lineID, u.id);
         if (l.stock_mode === "itemized")
           await reserveItems(c, l, lineID, order.expires_at);
         else

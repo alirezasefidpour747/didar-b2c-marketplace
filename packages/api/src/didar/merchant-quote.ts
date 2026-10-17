@@ -1,3 +1,4 @@
+import { curationQuote } from "./curation";
 import { storeScope, assertOfferScope } from "./storefront";
 import { transaction } from "./db";
 import { integer, withPolicy } from "./pricing";
@@ -57,7 +58,12 @@ export async function cartQuote(b: any, req: any = { headers: {} }) {
         version: o.version,
         supplier_id: o.supplier_id,
         title: o.title,
-        breakdown: await quoteOffer(c, rate, o, method),
+        breakdown: await curationQuote(
+          c,
+          o,
+          scope,
+          await quoteOffer(c, rate, o, method),
+        ),
       });
     }
     const summary = cartPrice(lines, method);

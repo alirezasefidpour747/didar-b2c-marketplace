@@ -1,0 +1,42 @@
+{
+  "source_commit": "7b31849bb61255d5dc009c7e24a51051f12154b2",
+  "test_source_commit": "010c66a5d55554e6e3fffd834851827630958b1d",
+  "initial": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "final": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "initial_equals_final": true,
+  "test_files": 50,
+  "test_source_aggregate_sha256": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a",
+  "test_source_current_and_copy_match": true,
+  "backend": {
+    "tests": 192,
+    "assertions": 3583,
+    "failures": 0
+  },
+  "tooling": {
+    "tests": 23,
+    "assertions": 67,
+    "failures": 0
+  },
+  "native_http_jest": {
+    "tests": 1,
+    "failures": 0
+  },
+  "browser": {
+    "tests": 32,
+    "failures": 0
+  },
+  "harness_exit_code": null,
+  "harness_note": "Executor connection interruption after Playwright reported32 passed; harness became defunct before final marker/cleanup. No harness exit0 claimed. Original build receipt and all50test sources independently verified after reconnection; owned cleanup recorded separately."
+}

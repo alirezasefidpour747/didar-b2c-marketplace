@@ -9,6 +9,9 @@ import { mediaFile } from "./content-media";
 
 const domains: Record<string, string> = {
   history: "didar.history",
+  agency: "payments",
+  curation: "payments",
+  invoice: "didar.history",
   permissions: "sellers",
   inventory: "inventory_items",
   orders: "orders",
@@ -130,7 +133,9 @@ async function linked(a: any, action: string, method: string) {
         scope.native_seller_status !== "open") &&
       !(
         action === "context" ||
-        (action === "history" && method === "GET" && u.role === "supplier") ||
+        (["history", "invoice", "agency", "curation"].includes(action) &&
+          method === "GET" &&
+          u.role === "supplier") ||
         (action === "onboarding" && method === "GET")
       )
     )
@@ -268,7 +273,7 @@ export async function nativeHandler(req: any, res: any) {
     )
       throw Error("FORBIDDEN");
     if (domains[action]) {
-      let key = domains[action];
+      let key = action === "invoice" && a.type === "user" ? "orders" : domains[action];
       if (a.type === "member")
         key =
           (

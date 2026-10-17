@@ -1,0 +1,67 @@
+{
+  "didar_tables": 89,
+  "counts": {
+    "didar_product": 24,
+    "didar_offer": 43,
+    "didar_inventory_item": 36,
+    "didar_order": 13,
+    "didar_order_line": 13,
+    "didar_fin_event": 49,
+    "didar_fin_journal": 45,
+    "didar_fin_posting": 188,
+    "didar_media_asset": 25,
+    "didar_media_variant": 75,
+    "didar_media_video": 1,
+    "didar_content_version": 5,
+    "didar_content_publication": 5,
+    "didar_sale_mandate": 13,
+    "didar_sale_mandate_review": 13,
+    "didar_sale_mandate_revocation": 3,
+    "didar_sale_role": 12,
+    "didar_sale_document": 9,
+    "didar_product_projection": 24,
+    "didar_product_projection_job": 29
+  },
+  "native_file_bytes_preserved": true,
+  "native_panels_html_assets": true,
+  "native_auth_bridge": true,
+  "redis_process_restart": true,
+  "invoice_sequence_state_preserved": true,
+  "projection_acknowledgements": {
+    "tracked": 24,
+    "non_done": 0,
+    "ack_mismatch": 0
+  },
+  "build_receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "source_fingerprint_sha256": "77fd71b822a8dc0b909f092adc43210833402ac5d1a84d2ee4ef80aaf7d28256",
+  "application_commit": "7b31849bb61255d5dc009c7e24a51051f12154b2",
+  "independently_executed_test_commands": [
+    {
+      "tests": "finance-integrated.test.ts one integrated",
+      "pass": 1,
+      "assertions": 127
+    },
+    {
+      "tests": "agency-allocation.test.ts + issue18-acceptance.test.ts",
+      "pass": 19,
+      "assertions": 681,
+      "scope": "9 allocation tests plus repeated execution of the other reviewer-authored 10 HTTP tests; not 19 additional unique acceptance scenarios"
+    },
+    {
+      "tests": "onboarding-media.test.ts",
+      "pass": 9,
+      "assertions": 152
+    },
+    {
+      "tests": "content.test.ts selected real CMS/media cases",
+      "pass": 8,
+      "assertions": 112
+    }
+  ]
+}

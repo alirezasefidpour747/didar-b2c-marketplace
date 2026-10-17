@@ -120,7 +120,12 @@ export async function assertOfferScope(c: any, o: any, scope: any) {
     throw Error("CONFLICT_STORE_SCOPE");
   if (
     scope
-      ? o.supplier_id !== scope.supplier_id
+      ? !(
+          await c.query("SELECT didar_scoped_offer($1,$2) ok", [
+            o.id,
+            scope.supplier_id,
+          ])
+        ).rows[0].ok
       : !(await c.query("SELECT didar_global_supplier($1) ok", [o.supplier_id]))
           .rows[0].ok
   )
@@ -163,7 +168,7 @@ export async function storefront(req: any) {
       if (!p) throw new Error("NOT_FOUND");
       const first = (
         await db.query(
-          `SELECT cp.product_id FROM didar_share_product cp JOIN didar_product m ON m.id=cp.product_id WHERE cp.page_id=$1 AND m.active AND m.approved AND m.published AND didar_public_taxonomy(m.id,m.category_id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=m.id AND o.supplier_id=$2 AND o.active AND o.quantity>0) ORDER BY cp.position LIMIT 1`,
+          `SELECT cp.product_id FROM didar_share_product cp JOIN didar_product m ON m.id=cp.product_id WHERE cp.page_id=$1 AND m.active AND m.approved AND m.published AND didar_public_taxonomy(m.id,m.category_id) AND EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=m.id AND didar_scoped_offer(o.id,$2) AND o.active AND o.quantity>0) ORDER BY cp.position LIMIT 1`,
           [p.id, f.supplier_id],
         )
       ).rows[0];

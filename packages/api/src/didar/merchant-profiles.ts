@@ -1,3 +1,4 @@
+import { agencyQuote } from "./agency";
 import { randomUUID, createHash } from "node:crypto";
 import { transaction } from "./db";
 import { integer, price, withPolicy } from "./pricing";
@@ -195,7 +196,7 @@ export async function quoteOffer(
   at?: string,
 ) {
   const merchant_profile = await effectiveProfile(c, offer.supplier_id, at);
-  return quoteWithProfile(rate, offer, method, merchant_profile);
+  return agencyQuote(c, offer, quoteWithProfile(rate, offer, method, merchant_profile), rate);
 }
 export function quoteWithProfile(
   rate: any,

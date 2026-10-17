@@ -1,0 +1,27 @@
+{
+  "tested_application_commit": "7b31849bb61255d5dc009c7e24a51051f12154b2",
+  "tested_test_commit": "acf767b90ad69823e6d85bd062297e0f4b634fcf",
+  "command": "PATH=/workspace/tooling/node_modules/.bin:$PATH CHROMIUM_PATH=/usr/bin/chromium PLAYWRIGHT_NO_SANDBOX=1 bun run local:test -- --reuse-build",
+  "backend_and_tooling": {
+    "pass": 215,
+    "fail": 0,
+    "assertions": 3650
+  },
+  "native_http_jest": {
+    "pass": 1,
+    "fail": 0
+  },
+  "browser": {
+    "pass": 31,
+    "fail": 1,
+    "failure": "reviewer CMS fixture retained S1 MERCHANT_HOME, conflicting with later staff create; diagnostic not finalgreen"
+  },
+  "exit_code": 1,
+  "production_receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  }
+}

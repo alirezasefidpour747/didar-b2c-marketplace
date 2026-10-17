@@ -1,0 +1,10 @@
+{"name":"G4_ISOLATION","postgres":"17","redis":"7","copied_compiled_api":true,"non_demo_mandates":0,"owner_access":false}
+{"name":"G4_REAL_SIGKILL_AFTER_NATIVE_COMMIT","status":"PASS","native_count":1,"stable_native_id":true,"concurrent_edit_blocked_until_kill":true,"source_revision":"2","projected_revision":"2"}
+{"name":"G4_FINAL_CANONICAL_COMMIT_FAILURE","status":"PASS","canonical_rows":0,"jobs":0,"native_rows":0}
+{"name":"G4_FINAL_ACK_COMMIT_FAILURE","status":"PASS","native_survives":true,"replay_same_id":true,"native_count":1}
+{"name":"G4_TERMINAL_AND_OPERATOR_REPAIR","status":"PASS","bounded_attempts":5,"actual_native_workflow_database_failure":true,"terminal_not_auto_retried":true,"explicit_repair":true}
+{"name":"G4_COMPENSATION_REMOVED_FORWARD_REPAIR","status":"PASS","native_preserved_after_error":true,"inverse_writer":false,"retry_repairs_same_id":true}
+{"name":"G4_CONCURRENT_AND_STALE_REVISIONS","status":"PASS","source_revision":4,"projected_revision":4,"jobs":[{"revision":"1","status":"SUPERSEDED"},{"revision":"2","status":"SUPERSEDED"},{"revision":"3","status":"SUPERSEDED"},{"revision":"4","status":"DONE"}],"native_count":1}
+{"name":"G4_PARTIAL_NATIVE_WORKFLOW_RECOVERY","status":"PASS","original_native_workflow":true,"variants_before":0,"variants_after":1,"stable_native_id":true}
+{"name":"G4_PENDING_PRIVATE_NATIVE_HTTP_DENIAL","status":"PASS","public_before":{"list":200,"count":1,"detail":200},"native_still_published":true,"canonical_revoked":{"list":200,"count":0,"detail":404}}
+{"name":"G4_STABLE_LINK_GUARD","status":"PASS"}

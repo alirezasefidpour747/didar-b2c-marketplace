@@ -1,3 +1,5 @@
+import { agencyQuote } from "./agency";
+import { curationQuote } from "./curation";
 import { merchantAccess, clean } from "./storefront";
 import { onboardingEvent, attachRequestedMedia } from "./media";
 import { storeScope } from "./storefront";
@@ -18,7 +20,8 @@ import {
 } from "./discovery";
 import { productPath } from "./taxonomy";
 import { randomUUID } from "node:crypto";
-import { db, transaction } from "./db";
+import { db, transaction, afterCommit } from "./db";
+import { runProductProjections } from "./projection";
 import { integer, withPolicy } from "./pricing";
 import { hashPassword, demoAccountAllowed } from "./auth";
 import { authorize, permissions } from "./permissions";
@@ -78,7 +81,7 @@ export async function catalog(
       ],
     );
     const { rows: offers } = await c.query(
-      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved' AND didar_native_saleable_supplier(s.id) AND (($4::text IS NULL AND didar_global_supplier(o.supplier_id)) OR o.supplier_id=$4))) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
+      `SELECT o.*,s.name supplier FROM didar_offer o JOIN didar_supplier s ON s.id=o.supplier_id WHERE ($1='admin' OR ($1='supplier' AND o.supplier_id=$2) OR ($1='public' AND o.active AND s.active AND s.status='approved' AND didar_native_saleable_supplier(s.id) AND didar_scoped_offer(o.id,$4))) AND o.product_id=ANY($3::text[]) ORDER BY o.id`,
       [
         user?.role || "public",
         user?.supplier_id || null,
@@ -134,43 +137,46 @@ export async function catalog(
       p.collection_ids = links
         .filter((l: any) => l.product_id === p.id)
         .map((l: any) => l.collection_id);
-      p.offers = offers
-        .filter((o: any) => o.product_id === p.id)
-        .map((o: any) => ({
-          ...o,
-          labor_irr: Number(o.labor_irr),
-          price_unavailable_reason:
-            merchantProfiles.get(o.supplier_id)?.unavailable || null,
-          price:
-            stale || merchantProfiles.get(o.supplier_id)?.unavailable
-              ? null
-              : publicPrice(
-                  quoteWithProfile(
+      p.offers = await Promise.all(
+        offers
+          .filter((o: any) => o.product_id === p.id)
+          .map(async (o: any) => {
+            let unavailable =
+              merchantProfiles.get(o.supplier_id)?.unavailable || null;
+            const prices: Record<string, any> = {};
+            if (!stale && !unavailable) {
+              try {
+                for (const m of ["CASH", "CREDIT"]) {
+                  const base = quoteWithProfile(
                     pricingRate,
                     { ...o, purity: p.purity },
-                    method,
-                    merchantProfiles.get(o.supplier_id),
-                  ),
-                  user?.role,
-                ),
-          prices:
-            stale || merchantProfiles.get(o.supplier_id)?.unavailable
-              ? null
-              : Object.fromEntries(
-                  ["CASH", "CREDIT"].map((m) => [
                     m,
-                    publicPrice(
-                      quoteWithProfile(
-                        pricingRate,
-                        { ...o, purity: p.purity },
-                        m,
-                        merchantProfiles.get(o.supplier_id),
-                      ),
-                      user?.role,
+                    merchantProfiles.get(o.supplier_id),
+                  );
+                  prices[m] = publicPrice(
+                    await curationQuote(
+                      c,
+                      o,
+                      scope,
+                      await agencyQuote(c, { ...o, purity: p.purity }, base, pricingRate),
                     ),
-                  ]),
-                ),
-        }));
+                    user?.role,
+                  );
+                }
+              } catch (e: any) {
+                if (!e.message.startsWith("CONFLICT_")) throw e;
+                unavailable = e.message;
+              }
+            }
+            return {
+              ...o,
+              labor_irr: Number(o.labor_irr),
+              price_unavailable_reason: unavailable,
+              price: stale || unavailable ? null : prices[method],
+              prices: stale || unavailable ? null : prices,
+            };
+          }),
+      );
     }
     const { rows: categories } = await c.query(
       "SELECT * FROM didar_category WHERE $1='admin' OR active ORDER BY name",
@@ -350,153 +356,61 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
     [id, p.min_weight_mg, p.max_weight_mg],
   );
   if (outside) throw new Error("INVALID_EXISTING_OFFER_WEIGHT");
-  const metadata = {
-    didar: true,
-    purity: p.purity,
-    reference: p.reference,
-    jewelry_type: p.jewelry_type,
-    min_weight_mg: p.min_weight_mg,
-    max_weight_mg: p.max_weight_mg,
-  };
-  const previousNative = native;
-  try {
-    if (native) {
-      const { updateProductsWorkflow } =
-        await import("@medusajs/medusa/core-flows");
-      await updateProductsWorkflow(req.scope).run({
-        input: {
-          products: [
-            {
-              id: native,
-              title: p.title,
-              description: p.description,
-              status:
-                p.active && p.published && p.approved ? "published" : "draft",
-              metadata,
-            },
-          ],
-        },
-      });
-    } else {
-      const { createProductsWorkflow } =
-        await import("@mercurjs/core/workflows");
-      const { result } = await createProductsWorkflow(req.scope).run({
-        input: {
-          created_by: u.id,
-          products: [
-            {
-              title: p.title,
-              description: p.description,
-              handle: `didar-${id}`,
-              status:
-                p.active && p.published && p.approved ? "published" : "draft",
-              variants: [{ title: "Standard" }],
-              metadata,
-            },
-          ],
-        },
-      });
-      native = result[0].id;
-    }
-    await c.query(
-      `INSERT INTO didar_product(id,title,category,description,purity,native_id,active,category_id,reference,jewelry_type,min_weight_mg,max_weight_mg,published,approved,attributes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,category=EXCLUDED.category,description=EXCLUDED.description,purity=EXCLUDED.purity,native_id=EXCLUDED.native_id,active=EXCLUDED.active,category_id=EXCLUDED.category_id,reference=EXCLUDED.reference,jewelry_type=EXCLUDED.jewelry_type,min_weight_mg=EXCLUDED.min_weight_mg,max_weight_mg=EXCLUDED.max_weight_mg,published=EXCLUDED.published,approved=EXCLUDED.approved,attributes=EXCLUDED.attributes`,
-      [
-        id,
-        p.title,
-        p.category,
-        p.description,
-        p.purity,
-        native,
-        p.active,
-        p.category_id,
-        p.reference,
-        p.jewelry_type,
-        p.min_weight_mg,
-        p.max_weight_mg,
-        p.published,
-        p.approved,
-        JSON.stringify(p.attributes),
-      ],
-    );
-    await c.query("UPDATE didar_product SET slug=$1 WHERE id=$2", [p.slug, id]);
-    await c.query(
-      "UPDATE didar_taxonomy_review SET status='resolved',resolved_by=$2,resolved_at=now() WHERE product_id=$1 AND status='pending' AND didar_taxonomy_valid($3)",
-      [id, u.id, p.category_id],
-    );
-    if (b.collection_ids !== undefined) {
-      if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
-        throw new Error("INVALID_COLLECTIONS");
-      await c.query(
-        "DELETE FROM didar_collection_product WHERE product_id=$1",
-        [id],
-      );
-      for (const cid of new Set(b.collection_ids))
-        await c.query("INSERT INTO didar_collection_product VALUES($1,$2)", [
-          text(cid),
-          id,
-        ]);
-    }
-    if (old && old.purity !== p.purity) {
-      await c.query(
-        "SELECT id FROM didar_offer WHERE product_id=$1 ORDER BY id FOR UPDATE",
-        [id],
-      );
-      await c.query(
-        "UPDATE didar_offer SET version=version+1 WHERE product_id=$1",
-        [id],
-      );
-    }
-    await audit(c, u.id, old ? "product_updated" : "product_created", {
+  await c.query(
+    `INSERT INTO didar_product(id,title,category,description,purity,native_id,active,category_id,reference,jewelry_type,min_weight_mg,max_weight_mg,published,approved,attributes) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,category=EXCLUDED.category,description=EXCLUDED.description,purity=EXCLUDED.purity,native_id=EXCLUDED.native_id,active=EXCLUDED.active,category_id=EXCLUDED.category_id,reference=EXCLUDED.reference,jewelry_type=EXCLUDED.jewelry_type,min_weight_mg=EXCLUDED.min_weight_mg,max_weight_mg=EXCLUDED.max_weight_mg,published=EXCLUDED.published,approved=EXCLUDED.approved,attributes=EXCLUDED.attributes`,
+    [
       id,
-      ...p,
-    });
-    return { id };
-  } catch (error) {
-    // Native workflows use their own transaction. Compensate their mirror if the gold write fails.
-    if (native) {
-      try {
-        if (previousNative) {
-          const { updateProductsWorkflow } =
-            await import("@medusajs/medusa/core-flows");
-          await updateProductsWorkflow(req.scope).run({
-            input: {
-              products: [
-                {
-                  id: native,
-                  title: old.title,
-                  description: old.description,
-                  status:
-                    old.active && old.published && old.approved
-                      ? "published"
-                      : "draft",
-                  metadata: {
-                    didar: true,
-                    purity: old.purity,
-                    reference: old.reference,
-                    jewelry_type: old.jewelry_type,
-                    min_weight_mg: old.min_weight_mg,
-                    max_weight_mg: old.max_weight_mg,
-                  },
-                },
-              ],
-            },
-          });
-        } else {
-          const { deleteProductsWorkflow } =
-            await import("@medusajs/medusa/core-flows");
-          await deleteProductsWorkflow(req.scope).run({
-            input: { ids: [native] },
-          });
-        }
-      } catch {
-        console.error(
-          "Didar native product compensation failed; reconciliation required for",
-          id,
-        );
-      }
-    }
-    throw error;
+      p.title,
+      p.category,
+      p.description,
+      p.purity,
+      native,
+      p.active,
+      p.category_id,
+      p.reference,
+      p.jewelry_type,
+      p.min_weight_mg,
+      p.max_weight_mg,
+      p.published,
+      p.approved,
+      JSON.stringify(p.attributes),
+    ],
+  );
+  await c.query("UPDATE didar_product SET slug=$1 WHERE id=$2", [p.slug, id]);
+  await c.query(
+    "UPDATE didar_taxonomy_review SET status='resolved',resolved_by=$2,resolved_at=now() WHERE product_id=$1 AND status='pending' AND didar_taxonomy_valid($3)",
+    [id, u.id, p.category_id],
+  );
+  if (b.collection_ids !== undefined) {
+    if (!Array.isArray(b.collection_ids) || b.collection_ids.length > 50)
+      throw new Error("INVALID_COLLECTIONS");
+    await c.query("DELETE FROM didar_collection_product WHERE product_id=$1", [
+      id,
+    ]);
+    for (const cid of new Set(b.collection_ids))
+      await c.query("INSERT INTO didar_collection_product VALUES($1,$2)", [
+        text(cid),
+        id,
+      ]);
   }
+  if (old && old.purity !== p.purity) {
+    await c.query(
+      "SELECT id FROM didar_offer WHERE product_id=$1 ORDER BY id FOR UPDATE",
+      [id],
+    );
+    await c.query(
+      "UPDATE didar_offer SET version=version+1 WHERE product_id=$1",
+      [id],
+    );
+  }
+  await audit(c, u.id, old ? "product_updated" : "product_created", {
+    id,
+    ...p,
+  });
+  afterCommit(c, () =>
+    runProductProjections(req.scope, { productId: id, limit: 1 }),
+  );
+  return { id };
 }
 async function approved(c: any, id: string) {
   const {

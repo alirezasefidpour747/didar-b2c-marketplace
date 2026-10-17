@@ -1,0 +1,15 @@
+{
+  "owned_scratch": "/workspace/work/issue18-independent-1792260397339-285196",
+  "stopped_process_ids": [
+    285837,
+    285886,
+    285887
+  ],
+  "removed_owned_disposable_services": [
+    "didar-qa-redis-480c899a6a1ef61d",
+    "didar-qa-pg-480c899a6a1ef61d"
+  ],
+  "scope": "Only exact owned scratch processes and matching labeled anonymous QA PG/Redis; no shared runtime, original volume or owner configuration touched.",
+  "harness_exit_code": null,
+  "cleanup": "manual_after_executor_interruption"
+}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Container, Heading, Text, Button, Input, Label } from "@medusajs/ui";
 import { errors } from "./locale";
@@ -23,6 +23,7 @@ export function NativeWorkspace({
     [publicOrigin, setPublicOrigin] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("CASH"),
     [cart, setCart] = useState<Record<string, number>>({});
+  const pending = useRef(0);
   const api = useCallback(
     async (action: string, body?: any) => {
       if (!/^[a-z-]+(?:\?.*)?$/.test(action)) throw Error("INVALID_ACTION");
@@ -76,6 +77,7 @@ export function NativeWorkspace({
     load();
   }, [load]);
   async function run(fn: () => Promise<void>) {
+    pending.current++;
     setBusy(true);
     setMessage("");
     try {
@@ -83,7 +85,8 @@ export function NativeWorkspace({
     } catch (e: any) {
       setMessage(e.message);
     } finally {
-      setBusy(false);
+      pending.current--;
+      setBusy(pending.current > 0);
     }
   }
   const LinkComponent = useCallback(

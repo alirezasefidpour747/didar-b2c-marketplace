@@ -111,6 +111,26 @@ export async function projectEvent(c: any, e: any) {
           : BigInt(s.price.tax_irr) * BigInt(s.quantity),
       goldValue = value(gold),
       payable = goldValue + irr;
+    if (s.sale_role) {
+      const a=s.allocation;
+      if (!a || a.collection_irr!==total.toString() || a.seller_gold_book_irr!==goldValue.toString() || a.seller_rial_irr!==irr.toString())
+        throw Error("CONFLICT_AGENCY_ALLOCATION");
+      add("CASH_CLEARING","IRR",total);
+      add("VAT_PAYABLE","IRR",-BigInt(a.tax_irr));
+      add("SUPPLIER_RIAL_PAYABLE","IRR",-irr,supplier);
+      add("SUPPLIER_GOLD_VALUATION","IRR",-goldValue,supplier);
+      add(s.sale_role.mode==="AGENCY"?"AGENT_REVENUE":"PRINCIPAL_REVENUE","IRR",-BigInt(a.didar_share_irr));
+      for (const charge of a.charges) {
+        const amount=BigInt(charge.amount_irr), payee=charge.payee_id==="DIDAR"?"DIDAR":"supplier:"+charge.payee_id;
+        const revenue=charge.payee_id==="DIDAR"?"PROFILE_"+charge.component.toUpperCase()+"_REVENUE":"PROFILE_PARTNER_PAYABLE";
+        if(charge.payer==="CUSTOMER" && charge.payee_id!=="DIDAR") add(revenue,"IRR",-amount,payee);
+        else if(charge.payer==="MERCHANT") {
+          if(s.sale_role.mode!=="AGENCY" || charge.payer_id!==s.sale_role.principal_id) throw Error("CONFLICT_AGENCY_DIRECT_PAYER");
+          pair("MERCHANT_SERVICE_RECEIVABLE",revenue,"IRR",amount,"supplier:"+charge.payer_id,payee);
+        }
+        else if(charge.payer==="DIDAR") pair("PROFILE_OPERATING_COST_ACCRUAL",revenue,"IRR",amount,"DIDAR",payee);
+      }
+    } else {
     add("CASH_CLEARING", "IRR", total);
     add("VAT_PAYABLE", "IRR", -vat);
     add("SUPPLIER_RIAL_PAYABLE", "IRR", -irr, supplier);
@@ -149,6 +169,7 @@ export async function projectEvent(c: any, e: any) {
       "IRR",
       -(total - vat - payable - separated),
     );
+    }
     pair(
       "CONTRACT_GOLD_EXPENSE",
       "SUPPLIER_GOLD_PAYABLE",
@@ -196,6 +217,23 @@ export async function projectEvent(c: any, e: any) {
     for (const p of rows) {
       if (e.kind === "REFUND" && p.instrument === "MEMO_GOLD_UG") continue;
       add(p.account, p.instrument, -BigInt(p.delta), p.party);
+    }
+    if(e.kind==="REFUND" && s.sale_role) {
+      // Prior settlement is not undone. Reclassify the resulting debit claim as
+      // an explicit recoverable against the same seller, in its original units.
+      for(const [account,instrument,recoverable] of [
+        ["SUPPLIER_RIAL_PAYABLE","IRR","SUPPLIER_REFUND_RECOVERABLE"],
+        ["SUPPLIER_GOLD_PAYABLE","GOLD_UG","SUPPLIER_REFUND_RECOVERABLE"],
+        ["SUPPLIER_GOLD_VALUATION","IRR","SUPPLIER_REFUND_RECOVERABLE_VALUATION"],
+      ]) {
+        const prior=(await c.query(`SELECT COALESCE(sum(p.delta),0)::text n FROM didar_fin_posting p
+          JOIN didar_fin_journal j ON j.id=p.journal_id JOIN didar_fin_event x ON x.id=j.event_id
+          WHERE (x.id=$1 OR x.source_event_id=$1) AND p.account=$2 AND p.instrument=$3 AND p.party=$4`,
+          [e.source_event_id,account,instrument,supplier])).rows[0];
+        const reversed=lines.filter(p=>p.account===account && p.instrument===instrument && p.party===supplier).reduce((n,p)=>n+p.delta,0n);
+        const claim=BigInt(prior.n)+reversed;
+        if(claim>0n) pair(recoverable,account,instrument,claim,supplier,supplier);
+      }
     }
   } else if (e.kind === "PURCHASE") {
     pair(
