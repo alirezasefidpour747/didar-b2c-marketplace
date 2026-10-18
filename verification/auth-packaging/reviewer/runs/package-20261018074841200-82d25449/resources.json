@@ -1,0 +1,195 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "scratch": "/workspace/work/auth-packaging-review-package-20261018074841200-82d25449",
+  "protected": [
+    {
+      "id": "583c9b911132d89992f6bd34f5189fab4b6d4bdbd5ac5be7c8ae1e4d6c168f94",
+      "name": "/didar-qa-redis-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e"
+      ]
+    },
+    {
+      "id": "68b91fee0bb9a3192cc1b30ee00d176de4156d2cab97c301f7fdbade763ca7ff",
+      "name": "/didar-qa-pg-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6"
+      ]
+    },
+    {
+      "id": "74c4b61be6e0de51b813e89ad5899f9ad37becc2511a9ce62d280f9fcd94cb5e",
+      "name": "/didar-gold-api-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_uploads"
+      ]
+    },
+    {
+      "id": "8574efd4192c67f8262ad0df55e9c35bc3b2a7926f54c380dbf16aa7144e0a11",
+      "name": "/didar-qa-redis-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb"
+      ]
+    },
+    {
+      "id": "b5377752ef2ee677c8a146ec36cefda041fd90ad4e1851f2f6ae8cd98cf5a863",
+      "name": "/didar-qa-pg-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb"
+      ]
+    },
+    {
+      "id": "b54919da06a731b478d1d22468fe114328efd625256c3b233fd655fe534d4ea2",
+      "name": "/didar-postgres",
+      "status": "exited",
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    {
+      "id": "b6a87474cd11d9c2c1d28f773c64e82693e996a42367970b884f87faa27cae01",
+      "name": "/didar-gold-redis-1",
+      "status": "exited",
+      "volumes": [
+        "44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716"
+      ]
+    },
+    {
+      "id": "cd4f9741bb955be8a0458ad958fa6a7adbf7d39a57a012ad33472ff538fb19f9",
+      "name": "/didar-gold-storefront-1",
+      "status": "exited",
+      "volumes": []
+    },
+    {
+      "id": "f3ba7ea809778d6a76d0447b421135a6aaab7cdb69d8667e7b4b823134411dff",
+      "name": "/didar-gold-postgres-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    },
+    {
+      "id": "f726ac5405f8753e55bbeb5d509079ae80de9cd2be2358807b28fd0aeff6b245",
+      "name": "/didar-redis",
+      "status": "exited",
+      "volumes": [
+        "4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "role": "postgres",
+      "name": "didar-package-review-postgres-package-20261018074841200-82d25449",
+      "id": "b9c64445bffb778a22229ce9db48f77cfb0da822ebd65ff0a43e3d4be07328a0",
+      "volumes": [
+        "20fbe28d7c2c9a95ab87627eb7b5eb4f7c6390a73f3de271bdb2f77c89ff8779"
+      ]
+    },
+    {
+      "role": "redis",
+      "name": "didar-package-review-redis-package-20261018074841200-82d25449",
+      "id": "c619ccc0175f27f8b2828d56078862f55f0ea8efb2d304ffc03d02a93e9f205d",
+      "volumes": [
+        "05417c76256690e204b0b2a7381b0f0a45bbc5b7413feae5ddeda5bb44923d70"
+      ]
+    },
+    {
+      "role": "schema",
+      "name": "didar-package-review-schema-package-20261018074841200-82d25449",
+      "id": "24ca43c21233f126d7adab89d6409f6cc408cfb2edf34e9c575517aa6763d60c",
+      "volumes": []
+    },
+    {
+      "role": "native-seed",
+      "name": "didar-package-review-native-seed-package-20261018074841200-82d25449",
+      "id": "2c4a57dbb8d23c167ab04a00e7f89c5a33381d77e75811b2c13a43177f99ef0d",
+      "volumes": []
+    },
+    {
+      "role": "api",
+      "name": "didar-package-review-api-package-20261018074841200-82d25449",
+      "id": "55bd78ea195417d326cff443bf9ce94e0e576093210d3d5d80044bca618ec509",
+      "volumes": []
+    },
+    {
+      "role": "storefront",
+      "name": "didar-package-review-storefront-package-20261018074841200-82d25449",
+      "id": "4099bc5e1bceb0f896d5fdf3186df8b968cd89c521fcb5d14f25a2a2ba79c69d",
+      "volumes": []
+    }
+  ],
+  "processes": [
+    {
+      "pid": 46447,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 46447,
+      "start_ticks": "1647711",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "qa-tls"
+    },
+    {
+      "pid": 46520,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 46520,
+      "start_ticks": "1647880",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-postgres"
+    },
+    {
+      "pid": 46590,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 46590,
+      "start_ticks": "1647892",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-redis"
+    },
+    {
+      "pid": 46886,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 46886,
+      "start_ticks": "1654945",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "schema-and-demo-seed"
+    },
+    {
+      "pid": 47333,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 47333,
+      "start_ticks": "1664707",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "native-qa-seed"
+    },
+    {
+      "pid": 47537,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 47537,
+      "start_ticks": "1673052",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-api"
+    },
+    {
+      "pid": 47691,
+      "state": "R",
+      "ppid": 46339,
+      "pgid": 47691,
+      "start_ticks": "1674215",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-storefront"
+    }
+  ],
+  "network": {
+    "name": "didar-package-review-package-20261018074841200-82d25449",
+    "id": "3af1c9544ddc650eb27a17368dc4bfa7d98b72805981dfd5d54b442427ac69be"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "run_id": "standalone-repro-20261018075848776-196c89dd",
+  "status": "PASS",
+  "failure": null,
+  "result": {
+    "status": "EXPECTED_FAILURE_REPRODUCED",
+    "missing_module": "styled-jsx/package.json",
+    "actual_container_exit": 1,
+    "raw_log": "start-and-fail.log",
+    "state": {
+      "Id": "207514b1b972135039162a8d36c4bbe24044f4a3f0f9be83a3f7d6c52d689f0a",
+      "Image": "sha256:9c8836a8c2c0217d327cf07329f0f1f861cd4927f610678b73866c7a4fd12120",
+      "NetworkMode": "none",
+      "Mounts": [],
+      "ExitCode": 1,
+      "Running": false
+    }
+  },
+  "wrapper_exit": "NOT_YET_OBSERVED_BY_TOOL_PARENT"
+}

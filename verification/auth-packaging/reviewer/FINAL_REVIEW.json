@@ -1,0 +1,220 @@
+{
+  "status": "PASS",
+  "verdict": "BOUNDED_PACKAGED_AUTH_ACCEPTANCE_PASS_STOP_FOR_CHIEF_ARCHITECT",
+  "reviewer_role": "Independent nonimplementer: application/packaging code authored only by coordinator; reviewer owns verification harness/evidence and this review.",
+  "reviewed_at": "2026-10-18T08:13:33.911580+00:00",
+  "authorized_baseline": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+  "reviewed_packaging_source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+  "primary_run_id": "package-20261018080328338-54401542",
+  "provenance_run_id": "provenance-20261018081109674-2709dec2",
+  "images": {
+    "api": {
+      "Id": "sha256:98753972be374eede0b5daf13fcc49ceb74993bafb9393a87faba56de62e6d57",
+      "RepoDigests": [],
+      "Cmd": [
+        "sh",
+        "-c",
+        "cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0"
+    },
+    "storefront": {
+      "Id": "sha256:e9c423deab03f4a71d8b1d4f99ae44cf2ea55974ff7e955bd41733970a9b9936",
+      "RepoDigests": [],
+      "Cmd": [
+        "node",
+        "runtime/storefront.mjs"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0"
+    }
+  },
+  "compiled_receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+  },
+  "full_image_provenance_actual": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.22.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37",
+    "source_files": 395
+  },
+  "tests": {
+    "persistent_tests": 16,
+    "failures": 0,
+    "expect_calls": 299,
+    "independent_http_pg_before_restart": 19,
+    "independent_http_pg_after_restart": 4,
+    "authenticated_browser_journeys": 3,
+    "browser_page_errors": [],
+    "configuration_negative_cases": 4,
+    "configuration_expected_container_exits": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "observed_exits": {
+    "persistent_tests": 0,
+    "http_before": 0,
+    "http_after": 0,
+    "browser": 0,
+    "runner": 0,
+    "supervisor": 0,
+    "provenance_wrapper": 0,
+    "monitor_self": "NOT_OBSERVED_OR_REQUIRED"
+  },
+  "parity": {
+    "status": "PASS",
+    "test_files": 52,
+    "test_aggregate": "9775326f2a325fe527927c4fb713c921a6cbd6e71d7d9f64b64d9df54ebd57a1",
+    "reviewer_executables": 8,
+    "reviewer_aggregate": "c1a1d842a86786a58f8aaff54f37659408a9d394fd5a03876ac64d95f284429b",
+    "packaging_source_files": 16,
+    "api_regular_files": 185753,
+    "api_internal_symlinks": 10715,
+    "frontend_regular_files": 3660,
+    "frontend_internal_symlinks": 140,
+    "frontend_manifest": {
+      "source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+      "files": 3799,
+      "content_sha256": "2163dc0d9191b65475ebf1172fc624b4613bfaca71f5dad5d305fa87f57fce18",
+      "entrypoint": "runtime/storefront.mjs"
+    },
+    "external_symlinks": 0,
+    "full_app_initial_equals_final": true,
+    "all_historical_reviewer_snapshots_hash_verified": true
+  },
+  "lifecycle_precision": {
+    "forced_owned_private_next": "Next handled SIGTERM and exited0 unexpectedly; PID1 stopped ingress(SIGTERM) and correctly exited1. Same immutable container subsequently restarted and passed.",
+    "controlled_stop": "Actual privateNext0/ingress signal SIGTERM/supervisor0; controlled API/Redis/PostgreSQL stops0.",
+    "readiness_polls": "Observed nonzero readiness polls retained, then0; no functional-test verdict inferred from those polls."
+  },
+  "cleanup": {
+    "status": "PASS",
+    "primary_owned_containers_removed": 10,
+    "primary_anonymous_volumes_removed": 2,
+    "protected_preserved": 10,
+    "owned_network_removed": true,
+    "ephemeral_tls_removed": true,
+    "all_owned_process_groups_gone": true,
+    "provenance_transient_container_removed": true
+  },
+  "receipts": {
+    "COMPLETE": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/COMPLETE.json",
+    "wrapper-exit": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/wrapper-exit.json",
+    "supervisor-exit": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/supervisor-exit.json",
+    "browser-exit": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/browser-exit.json",
+    "http-verdict": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/http-verdict.json",
+    "parity": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/parity.json",
+    "cleanup": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/cleanup.json",
+    "package-runtime-verdict": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/package-runtime-verdict.json",
+    "packaging-fail-closed": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/packaging-fail-closed.json",
+    "private-listener": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/private-listener.json",
+    "container-events-storefront": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/container-events-storefront.json",
+    "persistent_test_log": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/persistent-affected-tests.log",
+    "full_image_provenance": "verification/auth-packaging/reviewer/provenance/runs/provenance-20261018081109674-2709dec2/RESULT.json",
+    "provenance_observed_wrapper_exit": "verification/auth-packaging/reviewer/provenance/runs/provenance-20261018081109674-2709dec2/TOOL_OBSERVED_WRAPPER_EXIT.json",
+    "provenance_cleanup": "verification/auth-packaging/reviewer/provenance/runs/provenance-20261018081109674-2709dec2/cleanup.json"
+  },
+  "receipt_sha256": {
+    "COMPLETE": "ee3049c2aa7891a342d0ceab6b18ecf303a8e3abc46b0cc7c537317155a3d25e",
+    "wrapper-exit": "79246309d9107d474b2abafc1e56c31da1ad0377d02e3028bfa2c8f655ac5822",
+    "supervisor-exit": "a5b50c45b98e66d1089a755349a499f87b0e8f1237debc4bebea92397bfa5778",
+    "browser-exit": "09b06f46eee173ab52a5affd7665c6a25d4337d65269ee04ef5b33d3550b8d92",
+    "http-verdict": "4a9cf5a2437b01a741730799094a78065c67d422ec8a2fdf87c7a62390f377c6",
+    "parity": "8ba5824743229bd5e953e2f599a6a63ecfa534543efbb81e8de4c876baa52d15",
+    "cleanup": "6c992f52038c27586366d55f8b2188a874dd15020c8e1f7a726bd223ae1bc625",
+    "package-runtime-verdict": "82a569a1ba611a85c90b37018cae79679c908d294b4bcd915843683b2be3961c",
+    "packaging-fail-closed": "8de0d75dcbafdd9e5bda39b605ebd44e17dfd550871ce9ba52b1f8a663bd98a8",
+    "private-listener": "2fa623acfeb9e792b0d192d953914df7c459f704f19c8948589091073f40c47d",
+    "container-events-storefront": "8df6e75eff03def267d1de970dfbec9208124b34ca1b0d25ab1917206cad3461",
+    "persistent_test_log": "3f7302f4f53e9bce4ea46b32e3394ffffe1a6cb450822d26a83346b753c2160b",
+    "full_image_provenance": "979d3abb1571dd9f9d6d0272f485b85d4222fa93e22f2b45278efc65cf51b33f",
+    "provenance_observed_wrapper_exit": "fe4571bc609a041521e8e709aebbc869b021b63f88ab873c40365ffff420e461",
+    "provenance_cleanup": "6161a18b88436cd8a30d40a957be267c7ccf2f39c4003187d7c092b4cb4d3a6a"
+  },
+  "screenshots": [
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/native-admin-auth-1440.png",
+      "sha256": "a903efe946fa081058820d6c4969c15ea32a3cc62e124349738e0dca76a404bd",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/native-admin-auth-390.png",
+      "sha256": "8d62d9d5d5081d8ff6f3a30295263539a0a0ad327eb403402ef79885c9086958",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/native-vendor-auth-1440.png",
+      "sha256": "bc53df10280da320dd11ca522f503007978e60778b33b94972426e296bc807d8",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/native-vendor-auth-390.png",
+      "sha256": "8a63a8c50a69ded93d0507a0b92dd9c25c88bbfaf2da8737d2ddc84e3016abc9",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/customer-signed-ingress-auth-1440.png",
+      "sha256": "2f2f875c9dc00d0b8300ee8784143f4ee0000f654e41ce04e95ae7fe4f5b59e4",
+      "width": 1440,
+      "height": 1535
+    },
+    {
+      "path": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/screenshots/customer-signed-ingress-auth-390.png",
+      "sha256": "b308cb9d6fad9c3a388aee1144d763c5ac16bbea2f0b210369b1a6615fc44131",
+      "width": 390,
+      "height": 1856
+    }
+  ],
+  "visual_inspection": [
+    "native-admin-auth-1440.png",
+    "native-vendor-auth-390.png",
+    "customer-signed-ingress-auth-390.png"
+  ],
+  "source_config_review": {
+    "status": "PASS",
+    "must_fix_in_authorized_boundary": [],
+    "scope": "All existing Docker paths, prepared builder, fresh package/manifest containment, private/public topology, TLS prerequisites, exact signer dependency, supervised lifecycle and unchanged auth/PR24 authority."
+  },
+  "handoff_review": {
+    "path": "docs/audits/auth-packaging/FINAL_HANDOFF_FA.md",
+    "status": "PASS",
+    "sha256": "3deee6afaf279ca9719ace9df82227d38093d2a41e232a8e8cdac809f5e646a0",
+    "verdict": "Independent factual review agrees with final runtime counts, observed exits, image/source provenance, retained failures and explicit external limits."
+  },
+  "limitations": [
+    "Actual prepared Docker images on Linux/x64 verified; full source Docker compiler/image build not freshly executed.",
+    "All395 image source inputs and complete compiled outputs match the inherited accepted PR25 receipt; image Node24.22.0 differs from builder Node24.19.0 and is explicitly recorded.",
+    "Reference topology is single-host/single-API shared network namespace only. External Docker NAT, public routing, CDN/DNS/firewall and customer-peer preservation outside this namespace are not certified.",
+    "QA-only self-signed TLS: Node probes and health verified explicit CA; browser ignoreHTTPSErrors is scoped to disposable QA. No target TLS/certificates or owner secret provisioning certified.",
+    "No deployment, merge/main push, owner-host configuration, live financial/provider action, S1 or Phase5/CRM work performed by this reviewer.",
+    "Unchanged broad business/full suites, populated historical restore, finance/checkout/provider, Mac/ARM64/load/SLO and independently pruned API packaging not rerun/certified.",
+    "Inherited native authentication/throttling/password behavior and PR25 PolicyA remain unchanged; no extension of those semantics claimed.",
+    "Three failed primary attempts and two diagnostic failures remain retained; attempt3 packaging-source parity FAIL is explicitly acknowledged, not overwritten.",
+    "Images identified by actual OCI image IDs and recorded build contexts; RepoDigests empty/no registry publication; mutable external build inputs preclude promised bit-for-bit future rebuild.",
+    "Monitor self-exit was not independently observed and is not claimed; actual browser, runner and supervisor child exits were independently observed0."
+  ],
+  "pr_draft_review": {
+    "status": "PASS",
+    "path": "/workspace/work/auth-packaging-delivery/pr-body.md",
+    "sha256": "e6f2b7f9b746494a96fe52566616309cc44b85956e5d8b73f0e41b9264c04bfc",
+    "scope": "Factual draft checked; placeholders intentionally await final delivery commit. Baseline, source/image provenance, actual counts/exits, retained failures and limits accurate."
+  }
+}

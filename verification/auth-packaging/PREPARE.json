@@ -1,0 +1,69 @@
+{
+  "stages": [
+    {
+      "stage": "syntax-package-storefront",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34292,
+      "at": "2026-10-18T07:24:08.871Z"
+    },
+    {
+      "stage": "syntax-verify-package",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34299,
+      "at": "2026-10-18T07:24:08.898Z"
+    },
+    {
+      "stage": "syntax-storefront",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34306,
+      "at": "2026-10-18T07:24:08.928Z"
+    },
+    {
+      "stage": "syntax-health",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34313,
+      "at": "2026-10-18T07:24:08.956Z"
+    },
+    {
+      "stage": "shell-syntax",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34320,
+      "at": "2026-10-18T07:24:08.958Z"
+    },
+    {
+      "stage": "compose-config",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34321,
+      "at": "2026-10-18T07:24:09.040Z"
+    },
+    {
+      "stage": "inherited-build-receipt",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_by": 34285,
+      "child_pid": 34348,
+      "at": "2026-10-18T07:24:09.230Z"
+    }
+  ],
+  "status": "PASS",
+  "claims": "Syntax/config and inherited exact compiled receipt only; no image/target runtime verified by this stage."
+}

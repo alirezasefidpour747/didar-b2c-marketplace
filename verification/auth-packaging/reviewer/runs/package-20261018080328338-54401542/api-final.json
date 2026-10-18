@@ -1,0 +1,28 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "role": "api",
+  "status": "PASS",
+  "root": "/app",
+  "node": "24.22.0",
+  "platform": "linux",
+  "arch": "x64",
+  "files": 185753,
+  "content_sha256": "88fab144cea5eb3af7187d1c9c680a6cf46a811aeb08d1fcd5640cd871b431b3",
+  "internal_symlinks": 10715,
+  "internal_link_manifest_sha256": "75a86766c0c2decf73845b19afd350040671753c8088cf16a3427686217e57e3",
+  "external_symlinks": 0,
+  "auth_module": "/app/packages/auth-network/index.cjs",
+  "auth_module_sha256": "bf566fa44d8e9e8f421d7031f9e8a3a0cb67b7f885098c67a25811fff678db18",
+  "test_sources": [
+    {
+      "path": "tests/auth-hardening.test.ts",
+      "sha256": "144ccc91f1837b74ab4660fcd8b0571d38b1b19bca827e397551a03f5da462ec"
+    },
+    {
+      "path": "tests/native-product-targets.test.ts",
+      "sha256": "4d90277539ab5b80543523f587c1a3705462629d767defa46ff2c020e88d8210"
+    }
+  ],
+  "guard_source": "63682d508ebd9700de2e5f56a82b3d8573e03880a29752b5751d18ae50d0a340",
+  "auth_source": "bca226dcd22f2241731a477522b9f46dc0bdc1a1a315e4ecd99bf849ef487957"
+}

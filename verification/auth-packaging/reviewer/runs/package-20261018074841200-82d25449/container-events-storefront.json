@@ -1,0 +1,39 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "role": "storefront",
+  "container_id": "4099bc5e1bceb0f896d5fdf3186df8b968cd89c521fcb5d14f25a2a2ba79c69d",
+  "actual_close": {
+    "ExitCode": 1,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T07:53:08.165198348Z"
+  },
+  "events": [
+    {
+      "stage": "package-verified",
+      "source_sha": "909fed440806f2032ebd6cd14bc3f560a28b9f41",
+      "content_sha256": "46525920af5f03e99a52074ca2ad53314f4f101fbdd62cd2971d4679e1b96689",
+      "files": 8118
+    },
+    {
+      "at": "2026-10-18T07:53:07.872Z",
+      "stage": "private-next",
+      "event": "started",
+      "pid": 51
+    },
+    {
+      "at": "2026-10-18T07:53:07.904Z",
+      "stage": "private-next",
+      "event": "closed",
+      "code": 1,
+      "signal": null
+    },
+    {
+      "at": "2026-10-18T07:53:07.904Z",
+      "stage": "shutdown",
+      "reason": "unexpected-child-exit",
+      "failure": true
+    }
+  ],
+  "startup_errors": []
+}

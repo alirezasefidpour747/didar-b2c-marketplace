@@ -1,0 +1,18 @@
+{
+  "label": "retire-failed-artifact-images",
+  "command": "docker",
+  "args": [
+    "--host=unix:///var/run/docker.sock",
+    "image",
+    "rm",
+    "--no-prune",
+    "sha256:8e4222a011e3f27562334fced272d951784a53663213fd77518529413924f4ae",
+    "sha256:b72a502d746acef0326ca96a1a51d31447ccf889f58edaca2796dd976922a9ed"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 39761,
+  "observed_by": 39754,
+  "observed_at_utc": "2026-10-18T07:33:56.127Z"
+}

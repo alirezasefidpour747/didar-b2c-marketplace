@@ -1,0 +1,17 @@
+{
+  "label": "retire-superseded-frontend-image",
+  "command": "docker",
+  "args": [
+    "--host=unix:///var/run/docker.sock",
+    "image",
+    "rm",
+    "--no-prune",
+    "sha256:9c8836a8c2c0217d327cf07329f0f1f861cd4927f610678b73866c7a4fd12120"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 53191,
+  "observed_by": 53182,
+  "observed_at_utc": "2026-10-18T08:00:34.575Z"
+}

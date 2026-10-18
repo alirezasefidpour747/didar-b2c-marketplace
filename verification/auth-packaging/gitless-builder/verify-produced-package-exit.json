@@ -1,0 +1,10 @@
+{
+  "name": "verify-produced-package",
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 56056,
+  "observed_by": 56035,
+  "expected_code": 0,
+  "at": "2026-10-18T08:03:21.788Z"
+}

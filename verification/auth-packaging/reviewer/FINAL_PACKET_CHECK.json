@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-10-18T08:15:31.351249+00:00",
+  "scope": "Reviewer-owned packet only; safe demo fixture identities/password literals are source examples, no owner/live credentials. Pattern scan complements explicit no-envdump/no-key/token-persistence receipt design; not universal secret-detection certification.",
+  "secret_pattern_counts": {
+    "text_files": 341,
+    "private_key_blocks": 0,
+    "jwt_values": 0,
+    "authorization_values": 0,
+    "credential_urls": 0
+  },
+  "secret_findings": [],
+  "local_document_links": [
+    {
+      "document": "docs/audits/auth-packaging/INDEPENDENT_REVIEW.md",
+      "target": "../../../verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542/COMPLETE.json",
+      "exists": true
+    },
+    {
+      "document": "docs/audits/auth-packaging/INDEPENDENT_REVIEW.md",
+      "target": "../../../verification/auth-packaging/reviewer/provenance/runs/provenance-20261018081109674-2709dec2/RESULT.json",
+      "exists": true
+    },
+    {
+      "document": "docs/audits/auth-packaging/INDEPENDENT_REVIEW.md",
+      "target": "../../../verification/auth-packaging/reviewer/FINAL_REVIEW.json",
+      "exists": true
+    },
+    {
+      "document": "verification/auth-packaging/reviewer/README.md",
+      "target": "FINAL_REVIEW.json",
+      "exists": true
+    },
+    {
+      "document": "verification/auth-packaging/reviewer/README.md",
+      "target": "runs/package-20261018080328338-54401542/COMPLETE.json",
+      "exists": true
+    },
+    {
+      "document": "verification/auth-packaging/reviewer/README.md",
+      "target": "provenance/runs/provenance-20261018081109674-2709dec2/RESULT.json",
+      "exists": true
+    },
+    {
+      "document": "verification/auth-packaging/reviewer/README.md",
+      "target": "provenance/runs/provenance-20261018081109674-2709dec2/TOOL_OBSERVED_WRAPPER_EXIT.json",
+      "exists": true
+    },
+    {
+      "document": "verification/auth-packaging/reviewer/README.md",
+      "target": "../../../docs/audits/auth-packaging/INDEPENDENT_REVIEW.md",
+      "exists": true
+    }
+  ],
+  "broken_links": [],
+  "accepted_run_actual_stage_closes": {
+    "started": 43,
+    "closed": 43,
+    "nonzero": 0,
+    "all_observed_no_signal_no_spawn_error": true
+  }
+}

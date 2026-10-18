@@ -1,0 +1,10 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "stage": "native-qa-seed",
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "observed_at": "2026-10-18T07:51:36.802Z",
+  "observer_pid": 46339,
+  "child_pid": 47333
+}

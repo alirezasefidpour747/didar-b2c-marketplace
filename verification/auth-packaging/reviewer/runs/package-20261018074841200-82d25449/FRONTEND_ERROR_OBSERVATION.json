@@ -1,0 +1,13 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "observation_type": "Human-readable transcription of actual tool docker logs output; raw structured lifecycle receipt is separate",
+  "container_id": "4099bc5e1bceb0f896d5fdf3186df8b968cd89c521fcb5d14f25a2a2ba79c69d",
+  "missing_module": "styled-jsx/package.json",
+  "error_code": "MODULE_NOT_FOUND",
+  "require_stack": [
+    "/app/apps/storefront/node_modules/next/dist/server/require-hook.js",
+    "/app/apps/storefront/node_modules/next/dist/server/next.js",
+    "/app/apps/storefront/server.js"
+  ],
+  "node": "24.22.0"
+}

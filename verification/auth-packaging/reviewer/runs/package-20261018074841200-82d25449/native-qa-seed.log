@@ -1,0 +1,23 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║   Medusa collects anonymous usage analytics                            ║
+║   to help improve Medusa for all users.                                ║
+║                                                                        ║
+║   If you'd like to opt-out, you can use `medusa telemetry --disable`   ║
+║                                                                        ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+[32minfo[39m:    Executing script at ./src/scripts/native-qa-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+[32minfo[39m:    No link to load from /app/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from /app/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+[32minfo[39m:    No subscriber to load from /app/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+[32minfo[39m:    Admin URL → http://localhost:9000/dashboard
+[32minfo[39m:    Vendor URL → http://localhost:9000/seller
+[33mwarn[39m:    Codegen failed: Command failed: /usr/local/bin/node /app/node_modules/.bun/@mercurjs+cli@2.3.7+f3556924f8855ff9/node_modules/@mercurjs/cli/dist/index.js codegen
+
+Native QA fixture identities created through native services/workflows; original Didar commerce unchanged.
+[32minfo[39m:    Finished executing script.

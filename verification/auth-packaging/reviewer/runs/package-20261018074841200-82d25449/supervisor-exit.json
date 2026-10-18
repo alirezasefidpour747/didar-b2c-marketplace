@@ -1,0 +1,10 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "observer_role": "monitor",
+  "observer_pid": 46325,
+  "observed_child_pid": 46332,
+  "observed_exit_code": 1,
+  "observed_signal": null,
+  "spawn_error": null,
+  "at": "2026-10-18T07:56:13.635Z"
+}

@@ -1,0 +1,13 @@
+{
+  "label": "prepare",
+  "command": "node",
+  "args": [
+    "verification/auth-packaging/prepare.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 34285,
+  "observed_by": 34272,
+  "observed_at_utc": "2026-10-18T07:24:09.233Z"
+}

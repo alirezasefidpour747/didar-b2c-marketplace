@@ -1,0 +1,9 @@
+{
+  "run_id": "provenance-20261018081109674-2709dec2",
+  "status": "OBSERVED",
+  "actual_exit_code": 0,
+  "signal": null,
+  "source": "tools.write_stdin actual completion of exec session 64413",
+  "observed_at": "2026-10-18T08:12:18.152951+00:00",
+  "distinction": "Independent external tool observed this wrapper exit; RESULT correctly recorded not yet observed at its own write."
+}

@@ -1,0 +1,35 @@
+{
+  "run_id": "driver-20261018074421745-d14738d7",
+  "status": "PASS",
+  "stopped": [],
+  "removed": [
+    {
+      "id": "be1ad1f84cdbb99fece22e2e65d9a5872ab15e638c134d2713722de5ccccacdd",
+      "name": "didar-package-driver-20261018074421745-d14738d7-api",
+      "anonymous_volumes_removed": [],
+      "actual_close": {
+        "ExitCode": 137,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T07:46:09.513225795Z"
+      }
+    },
+    {
+      "id": "aeddfb60d7d546112769edad099409426e8b194dff14d66b43f704f561245c02",
+      "name": "didar-package-driver-20261018074421745-d14738d7-pg",
+      "anonymous_volumes_removed": [
+        "e81e331842dac99167f7861af32423979637cec12430285c7599d8102c641922"
+      ],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T07:46:14.159134696Z"
+      }
+    }
+  ],
+  "protected_preserved": 10,
+  "ephemeral_tls_files_removed": true,
+  "owned_network_removed": "95537d0a52167346c06e3f07b2b428314d8c755cb76cb99eb31a4a46d2387ba6",
+  "observed_at": "2026-10-18T07:46:14.611Z"
+}

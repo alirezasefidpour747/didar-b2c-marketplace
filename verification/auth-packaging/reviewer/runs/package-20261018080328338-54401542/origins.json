@@ -1,0 +1,10 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "RECORDED",
+  "host_api": "http://127.0.0.1:32771",
+  "host_ingress": "https://127.0.0.1:32770",
+  "private_next": "http://127.0.0.1:3001 in shared container namespace, unpublished",
+  "no_application_source_mounts": true,
+  "proxy_peer": "127.0.0.1",
+  "tls": "Ephemeral QA CA; Node verification enabled"
+}

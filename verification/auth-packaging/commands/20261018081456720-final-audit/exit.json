@@ -1,0 +1,13 @@
+{
+  "label": "final-audit",
+  "command": "node",
+  "args": [
+    "verification/auth-packaging/final-audit.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 61340,
+  "observed_by": 61331,
+  "observed_at_utc": "2026-10-18T08:14:56.809Z"
+}

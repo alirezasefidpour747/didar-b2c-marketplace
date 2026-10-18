@@ -1,0 +1,355 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "root": "/workspace/didar-b2c-marketplace",
+  "scratch": "/workspace/work/auth-packaging-review-package-20261018074841200-82d25449",
+  "baseline": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+  "candidate_head": "909fed440806f2032ebd6cd14bc3f560a28b9f41",
+  "receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+  },
+  "images": {
+    "api": {
+      "Id": "sha256:5f260813c4df50dce73134954ec1741fde3a08f2f5c9b3022543f5d8a2b16166",
+      "RepoDigests": [],
+      "Cmd": [
+        "sh",
+        "-c",
+        "cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "909fed440806f2032ebd6cd14bc3f560a28b9f41"
+    },
+    "storefront": {
+      "Id": "sha256:9c8836a8c2c0217d327cf07329f0f1f861cd4927f610678b73866c7a4fd12120",
+      "RepoDigests": [],
+      "Cmd": [
+        "node",
+        "runtime/storefront.mjs"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "909fed440806f2032ebd6cd14bc3f560a28b9f41"
+    }
+  },
+  "test_sources": [
+    {
+      "path": "tests/agency-allocation.test.ts",
+      "sha256": "e9bd42ed9748791e463f311e3ca7dc8232ee843e6c5e88c9acf2d3569a3223fd"
+    },
+    {
+      "path": "tests/auth-hardening.test.ts",
+      "sha256": "144ccc91f1837b74ab4660fcd8b0571d38b1b19bca827e397551a03f5da462ec"
+    },
+    {
+      "path": "tests/browser/acceptance.spec.ts",
+      "sha256": "6030d9d0bcb524f94008b0d168c2d5574aa99fd2cf972c568bd228bd7e1e3df4"
+    },
+    {
+      "path": "tests/browser/content.spec.ts",
+      "sha256": "15b83c2b2c361cc61e607f0893a86c180851a333e8dcc5c004f695d3a1b298ee"
+    },
+    {
+      "path": "tests/browser/expiry.spec.ts",
+      "sha256": "42a2cb8f3eee6fb14de7256b9b33207fbce01bae400adbe16b6b5d504f7055fa"
+    },
+    {
+      "path": "tests/browser/facets.spec.ts",
+      "sha256": "b358772dea56dee526850d02a52e8de12c19dda2cd7be04b2e3044c728f6f4cd"
+    },
+    {
+      "path": "tests/browser/finance.spec.ts",
+      "sha256": "87f9dcd3335fa6740addf5efeffe13c21368f523706ec26d4cd3ad53a6237094"
+    },
+    {
+      "path": "tests/browser/issue18-acceptance.spec.ts",
+      "sha256": "9422666b3328ec67829459481022bbb1cb3ea3e9b93d21430760ed7f6cc05b84"
+    },
+    {
+      "path": "tests/browser/issue18-ui-races.spec.ts",
+      "sha256": "7749a0078767fdd41f5b77016fcfa72cd9448c3f284640dcf445c7e0d1525d2d"
+    },
+    {
+      "path": "tests/browser/marketplace.spec.ts",
+      "sha256": "1adce888aea93730f62de42bb08e10c47195d75c50ad88767815252fb7b0d61f"
+    },
+    {
+      "path": "tests/browser/merchant-pricing.spec.ts",
+      "sha256": "0644a5c64bb0a18a4fb7f6057414f7d766cd00c57091584a4495c3cb44f48dbd"
+    },
+    {
+      "path": "tests/browser/native-panels.spec.ts",
+      "sha256": "571fc13ab4f9a1c81ab589701169bab0568300ad2636c07421972447061b9969"
+    },
+    {
+      "path": "tests/browser/native-policy.spec.ts",
+      "sha256": "f0c8150a6b25b951ba5cc481be4010343074587e7a7d40cb1f874600f4d57fae"
+    },
+    {
+      "path": "tests/browser/onboarding-media.spec.ts",
+      "sha256": "60e01cc8978ee1d7d6300de16489dd67994b18bcf302784d2c4fecc5ac103682"
+    },
+    {
+      "path": "tests/browser/operational.spec.ts",
+      "sha256": "e33e20e0b4b9e9be2e01eee841bbef26f50717ec027749c274bbd97394d60cf8"
+    },
+    {
+      "path": "tests/browser/phase1.spec.ts",
+      "sha256": "fb84c3653f25191a4ea94e9eb71bf3fd0144dc294bd50e902c16a4a2ae672aad"
+    },
+    {
+      "path": "tests/browser/pre-rollout-cms.spec.ts",
+      "sha256": "7d2e1d160c7f244074850f7bb22d318eb8852bb98cc5229015bee4b75cdf7ba3"
+    },
+    {
+      "path": "tests/browser/proxy.spec.ts",
+      "sha256": "b93604d9b62780fa8f44a1405011ddf09b678e720ef6a0ec6f165e2fdd2c4ff7"
+    },
+    {
+      "path": "tests/browser/recording.ts",
+      "sha256": "24a70d75885ad0dfaaa7aa8515d67515dcfe7dca5f65ae4206cffb0aca0e6bd6"
+    },
+    {
+      "path": "tests/browser/storefront.spec.ts",
+      "sha256": "efe7c4fed39d2042234a2c479dab1cad63db8208f10c3e3f0d821ed25b9f99bf"
+    },
+    {
+      "path": "tests/browser/tahesab.spec.ts",
+      "sha256": "a8b99e410cabe43646a0ed7cfe828c821b49a3f8107a2745862f630ba5bfee03"
+    },
+    {
+      "path": "tests/browser/taxonomy-labels.spec.ts",
+      "sha256": "de4202b715446cbd55950dd1115c249509260543d4a3ede52930f126abe1c1b0"
+    },
+    {
+      "path": "tests/browser/treasury.spec.ts",
+      "sha256": "6dada77760c691b81b54bac3ab85a12aeb37c82587f6ac01ec0d752228a7ccf4"
+    },
+    {
+      "path": "tests/browser/wallet.spec.ts",
+      "sha256": "b257b0f4d399cabb7488ac485724df532c1c17e57b3e41265f0f4a3b8c6478a7"
+    },
+    {
+      "path": "tests/commerce.test.ts",
+      "sha256": "9cb9bdca83af4cdc9c45d1a2564f007f6ae3bc7cc397704f01a963b330d3ba63"
+    },
+    {
+      "path": "tests/content.test.ts",
+      "sha256": "a30e34bd47ff149122a3619b28640971ccacb96337dec94bb1bdaa70714c8408"
+    },
+    {
+      "path": "tests/facets.test.ts",
+      "sha256": "0abbd252546c5d3b98c3b53cf4f53e79ea9fa9c8affb651e6df057166de66d8f"
+    },
+    {
+      "path": "tests/finance-integrated.test.ts",
+      "sha256": "0a5b8bc5b2c6da847d1b7131605d9603297438ea5422abb66892aef24d78aaf7"
+    },
+    {
+      "path": "tests/finance-ledger.test.ts",
+      "sha256": "a306b7b36102faab24027032549d863c51082dafa930bff2501daa58466a73b4"
+    },
+    {
+      "path": "tests/finance-procurement.test.ts",
+      "sha256": "cc0d797141ecbfcb5bd89a1c72602f9cd682ff6d5ec1df0e3fba11ba3592b5e6"
+    },
+    {
+      "path": "tests/finance-tahesab.test.ts",
+      "sha256": "0ddcb232e402767326784625e7cb854f38245645db91ba848055f68ffdebc81d"
+    },
+    {
+      "path": "tests/finance.test.ts",
+      "sha256": "d4e545749ef11f053653587e8ed87c6b7fbcb1cd6aa91a04deb894dd7848453e"
+    },
+    {
+      "path": "tests/financial-helpers.ts",
+      "sha256": "f3ffbe3a7384d541352cb92611a2aeb006ed7590fd9fc20f2fa72f87ccc0f565"
+    },
+    {
+      "path": "tests/inventory.test.ts",
+      "sha256": "dc3617ebfe0bb7a79040b2b2dc3357b681210abee7b34039825ece005e856686"
+    },
+    {
+      "path": "tests/issue18-acceptance.test.ts",
+      "sha256": "a46fb68f07c51ac6158c76fcc3c0e77a325cc93933baf3c56e7ba7e7b888c6f0"
+    },
+    {
+      "path": "tests/local-workflow.test.ts",
+      "sha256": "584e922c721c0be9fa4b6ff06f111fc24e75cadd4205872b515fb26882108b1d"
+    },
+    {
+      "path": "tests/merchant-pricing.test.ts",
+      "sha256": "5bcb396f5afb8bd50d10a4dde8f71072b5b18ff8e494f5ccb8e9b4e88bb2f982"
+    },
+    {
+      "path": "tests/migrations.test.ts",
+      "sha256": "8d9b2b22eb7df9dade0a2a195b929b55a4bbe3507c53968a06196c891c1b785c"
+    },
+    {
+      "path": "tests/native-panels.test.ts",
+      "sha256": "a3c2367d04519b787d87f15d66c95a38f40dcc9ad87240cf1ad8a0d81c86fc8e"
+    },
+    {
+      "path": "tests/native-policy.test.ts",
+      "sha256": "6888066f0f028545ddd2cbf4e373edbd5c6d727f0bb22954d57d8f2ca28ecb6f"
+    },
+    {
+      "path": "tests/native-product-targets.test.ts",
+      "sha256": "4d90277539ab5b80543523f587c1a3705462629d767defa46ff2c020e88d8210"
+    },
+    {
+      "path": "tests/onboarding-media.test.ts",
+      "sha256": "4df7b59fe7997567d774783d039ad1e571fd0723c925a5b9d3dafe7cf8e009b5"
+    },
+    {
+      "path": "tests/phase1.test.ts",
+      "sha256": "7b641b9694181fd3beb6adc6d52c09f72003c303466bcfa6574831cd23fab728"
+    },
+    {
+      "path": "tests/pre-rollout-authorization.test.ts",
+      "sha256": "8dcdd47d66503b99dae0efe0611c9d8b93338afb4ff1bd8af4c903ab26d56474"
+    },
+    {
+      "path": "tests/pricing.test.ts",
+      "sha256": "9c4fd5dc4a416c071add97d3371dbb55a4abeca38df0a0b132b8adb9510c8404"
+    },
+    {
+      "path": "tests/projection-durability.test.ts",
+      "sha256": "fc0541f537cce5f694a783f72f607c77872c2520f1b30a3b11dca42f74b73b5d"
+    },
+    {
+      "path": "tests/security.test.ts",
+      "sha256": "c9d95fac6d88ee6513ebfae144860bdc1fc5cb9d8a19ee9d321a2f3e76440e94"
+    },
+    {
+      "path": "tests/storefront.test.ts",
+      "sha256": "466a6f7d7bee70f129e77bfd9f2ab28ec99531b802df7dc66b924600176d871d"
+    },
+    {
+      "path": "tests/tahesab-mock.test.ts",
+      "sha256": "d8cc9b4c246b919dc05f455b45af66ec13779ecfff099b12e890f2539ac17a18"
+    },
+    {
+      "path": "tests/taxonomy-labels.test.ts",
+      "sha256": "5964a106537c80c39e1739de36c1e09591db420dcca84ebf9a9a1ab10b1cf1c1"
+    },
+    {
+      "path": "tests/uat-prepare.test.ts",
+      "sha256": "9ba20b7dfef14bd0f3819e3c1e598837ca41773009473912b2ab4491e4f82c70"
+    },
+    {
+      "path": "tests/upgraded-commerce.test.ts",
+      "sha256": "b0043bfead5bd14afdf14298bc8ae83f48173191b69ec682a46855a090f93a3e"
+    }
+  ],
+  "test_aggregate": "9775326f2a325fe527927c4fb713c921a6cbd6e71d7d9f64b64d9df54ebd57a1",
+  "reviewer_sources": [
+    {
+      "path": "browser.mjs",
+      "sha256": "21a1bd406edc2f47e101a269ea827a4a64f1fbe3cd20e603d0d352be7f0da842"
+    },
+    {
+      "path": "common.mjs",
+      "sha256": "5088040116246e783f11f6311c8f196978188b194bb401fe7358775846fe2b2d"
+    },
+    {
+      "path": "http.mjs",
+      "sha256": "0b4c0fc545d55bfd7600833fbed14958ebc6332c62626015d54d955f4e7c74d2"
+    },
+    {
+      "path": "inspect-runtime.mjs",
+      "sha256": "56b0405087d6244f0ed4c587f650bdb8fe00fa22c39465ab2909964f639169a0"
+    },
+    {
+      "path": "launch.mjs",
+      "sha256": "8c048b954e34b71b49f485063f6f951594cd89a8f441ba14d329793a01b51e8d"
+    },
+    {
+      "path": "observer.mjs",
+      "sha256": "d0a804ce092475ccff475db0d885b88399dcb63376fcb82e7e9ecbdc93cce663"
+    },
+    {
+      "path": "probe.mjs",
+      "sha256": "7f4f9e102e5531d776b661307a26d50000382f69b41d7bdbcf095d64b0e9fa59"
+    },
+    {
+      "path": "runner.mjs",
+      "sha256": "250ba44f68e9c64c99338d45ff46c9291fe064a60d6d4a4add4e36c82eebd02d"
+    }
+  ],
+  "reviewer_aggregate": "61f8532424dd6e573192468cebd6d4995f8d441ba6b383b6e2c2807072c86a9b",
+  "packaging_sources": [
+    {
+      "path": "Dockerfile",
+      "sha256": "1562abe3350e1c9a842be8dbfdd0a294d823161c84681d1b54a0145bc9155177"
+    },
+    {
+      "path": "Dockerfile.prebuilt",
+      "sha256": "df13135d64a09e3e786f5b99da8b8c369e183b1aed9613ea414e436855d34518"
+    },
+    {
+      "path": "Dockerfile.storefront",
+      "sha256": "82c38793769080cd8f1bfa870596583386eac0e5d24f681878e19be911237c97"
+    },
+    {
+      "path": "compose.yaml",
+      "sha256": "bc1240ba5c6c07f1ef3b007325486d6089ddd9f49a3186a6cd41c090457ccf6d"
+    },
+    {
+      "path": "scripts/build-prepared-images.sh",
+      "sha256": "2662d1760536e74899f24e51b9b03b06708dcba681ab305b3413f22061f917f2"
+    },
+    {
+      "path": "scripts/local/build-receipt.mjs",
+      "sha256": "d5937d4a41a4e54e9d4b2d44199fc37380639e06a4a4688e10a37a477d051443"
+    },
+    {
+      "path": "scripts/local/runtime.mjs",
+      "sha256": "5eed7eaf6157def507656e440015e13a3a41c3f94ad3ad49756cebca9f0cdb41"
+    },
+    {
+      "path": "scripts/local/browser-options.mjs",
+      "sha256": "81eacad16b113264d31b961e141b0a94aebcf7026f28a5570a6d36cc41be7309"
+    },
+    {
+      "path": "scripts/deployment/package-storefront.mjs",
+      "sha256": "1e192e7fdf43b8ea135a7e01097d0092368ce9e4c1f3b7c37bbbddb0947e2ec1"
+    },
+    {
+      "path": "scripts/deployment/storefront.mjs",
+      "sha256": "47448841d9c6507d750817317e0b05225770025ab37fe6f424b7e0bf1db584da"
+    },
+    {
+      "path": "scripts/deployment/verify-package.mjs",
+      "sha256": "468cf53a613c315e5b051709ff1111cbaa904d97b6a57d69ea21a8ab5cad7d75"
+    },
+    {
+      "path": "scripts/deployment/health.mjs",
+      "sha256": "c700a0f4c39e3925192ca1678b7fbe92830cd38212bdc71434ed49a8f2b95a6b"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256": "7c1c1da5fec9f3d8932ecd8f8196537018cec5740ca75792a66a190aaec13a6b"
+    },
+    {
+      "path": "scripts/configure.mjs",
+      "sha256": "79736e1677c2605de5b52fecdcc19f41055469c06dcba43ffe968ec0b0780bd6"
+    },
+    {
+      "path": "scripts/test-compose.mjs",
+      "sha256": "3579ada0b94c37a2bb11be1790962906ca5ae877a2fa642af0736a7763f8d684"
+    },
+    {
+      "path": "docs/AUTH_DEPLOYMENT_PACKAGING.md",
+      "sha256": "5dfd252776ec7d846e0bcaf27b0b01595796c9013968dcd48ba414896f726aca"
+    }
+  ],
+  "created_at": "2026-10-18T07:48:41.202Z",
+  "scope": "Actual self-contained packaged images only; no source/dependency binds; affected auth+PR24+native/customer browser; no deployment"
+}

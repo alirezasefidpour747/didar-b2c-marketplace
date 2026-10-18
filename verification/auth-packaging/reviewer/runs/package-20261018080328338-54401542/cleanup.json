@@ -1,0 +1,414 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "stopped": [
+    {
+      "pid": 60049,
+      "start_ticks": "1779528",
+      "pgid": 60049,
+      "live_members": 0
+    },
+    {
+      "pid": 60040,
+      "start_ticks": "1779526",
+      "pgid": 60040,
+      "live_members": 0
+    },
+    {
+      "pid": 59993,
+      "start_ticks": "1778927",
+      "pgid": 59993,
+      "live_members": 0
+    },
+    {
+      "pid": 59982,
+      "start_ticks": "1778925",
+      "pgid": 59982,
+      "live_members": 0
+    },
+    {
+      "pid": 59749,
+      "start_ticks": "1778274",
+      "pgid": 59749,
+      "live_members": 0
+    },
+    {
+      "pid": 59740,
+      "start_ticks": "1778273",
+      "pgid": 59740,
+      "live_members": 0
+    },
+    {
+      "pid": 59731,
+      "start_ticks": "1778271",
+      "pgid": 59731,
+      "live_members": 0
+    },
+    {
+      "pid": 59685,
+      "start_ticks": "1778108",
+      "pgid": 59685,
+      "live_members": 0
+    },
+    {
+      "pid": 59459,
+      "start_ticks": "1777927",
+      "pgid": 59459,
+      "live_members": 0
+    },
+    {
+      "pid": 59332,
+      "start_ticks": "1777464",
+      "pgid": 59332,
+      "live_members": 0
+    },
+    {
+      "pid": 59260,
+      "start_ticks": "1777443",
+      "pgid": 59260,
+      "live_members": 0
+    },
+    {
+      "pid": 59216,
+      "start_ticks": "1777434",
+      "pgid": 59216,
+      "live_members": 0
+    },
+    {
+      "pid": 59207,
+      "start_ticks": "1777432",
+      "pgid": 59207,
+      "live_members": 0
+    },
+    {
+      "pid": 59131,
+      "start_ticks": "1773616",
+      "pgid": 59131,
+      "live_members": 0
+    },
+    {
+      "pid": 59101,
+      "start_ticks": "1773609",
+      "pgid": 59101,
+      "live_members": 0
+    },
+    {
+      "pid": 59038,
+      "start_ticks": "1770303",
+      "pgid": 59038,
+      "live_members": 0
+    },
+    {
+      "pid": 59026,
+      "start_ticks": "1770301",
+      "pgid": 59026,
+      "live_members": 0
+    },
+    {
+      "pid": 59017,
+      "start_ticks": "1770300",
+      "pgid": 59017,
+      "live_members": 0
+    },
+    {
+      "pid": 59008,
+      "start_ticks": "1770298",
+      "pgid": 59008,
+      "live_members": 0
+    },
+    {
+      "pid": 58979,
+      "start_ticks": "1770292",
+      "pgid": 58979,
+      "live_members": 0
+    },
+    {
+      "pid": 58760,
+      "start_ticks": "1770113",
+      "pgid": 58760,
+      "live_members": 0
+    },
+    {
+      "pid": 58722,
+      "start_ticks": "1770108",
+      "pgid": 58722,
+      "live_members": 0
+    },
+    {
+      "pid": 58688,
+      "start_ticks": "1770097",
+      "pgid": 58688,
+      "live_members": 0
+    },
+    {
+      "pid": 58616,
+      "start_ticks": "1770060",
+      "pgid": 58616,
+      "live_members": 0
+    },
+    {
+      "pid": 58519,
+      "start_ticks": "1770006",
+      "pgid": 58519,
+      "live_members": 0
+    },
+    {
+      "pid": 58427,
+      "start_ticks": "1769616",
+      "pgid": 58427,
+      "live_members": 0
+    },
+    {
+      "pid": 58318,
+      "start_ticks": "1769522",
+      "pgid": 58318,
+      "live_members": 0
+    },
+    {
+      "pid": 58241,
+      "start_ticks": "1769219",
+      "pgid": 58241,
+      "live_members": 0
+    },
+    {
+      "pid": 58135,
+      "start_ticks": "1769126",
+      "pgid": 58135,
+      "live_members": 0
+    },
+    {
+      "pid": 58050,
+      "start_ticks": "1768826",
+      "pgid": 58050,
+      "live_members": 0
+    },
+    {
+      "pid": 57951,
+      "start_ticks": "1768773",
+      "pgid": 57951,
+      "live_members": 0
+    },
+    {
+      "pid": 57895,
+      "start_ticks": "1768574",
+      "pgid": 57895,
+      "live_members": 0
+    },
+    {
+      "pid": 57885,
+      "start_ticks": "1768573",
+      "pgid": 57885,
+      "live_members": 0
+    },
+    {
+      "pid": 57788,
+      "start_ticks": "1766410",
+      "pgid": 57788,
+      "live_members": 0
+    },
+    {
+      "pid": 57779,
+      "start_ticks": "1766409",
+      "pgid": 57779,
+      "live_members": 0
+    },
+    {
+      "pid": 57743,
+      "start_ticks": "1766392",
+      "pgid": 57743,
+      "live_members": 0
+    },
+    {
+      "pid": 57486,
+      "start_ticks": "1766199",
+      "pgid": 57486,
+      "live_members": 0
+    },
+    {
+      "pid": 57328,
+      "start_ticks": "1765350",
+      "pgid": 57328,
+      "live_members": 0
+    },
+    {
+      "pid": 57108,
+      "start_ticks": "1757667",
+      "pgid": 57108,
+      "live_members": 0
+    },
+    {
+      "pid": 56731,
+      "start_ticks": "1748330",
+      "pgid": 56731,
+      "live_members": 0
+    },
+    {
+      "pid": 56421,
+      "start_ticks": "1736624",
+      "pgid": 56421,
+      "live_members": 0
+    },
+    {
+      "pid": 56344,
+      "start_ticks": "1736612",
+      "pgid": 56344,
+      "live_members": 0
+    },
+    {
+      "pid": 56271,
+      "start_ticks": "1736425",
+      "pgid": 56271,
+      "live_members": 0
+    }
+  ],
+  "removed": [
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "fe52692e4f7cfbf3f72fdb9a68dbd8cb4c025e3f9d94ecde0d2ce798c1c25122",
+      "name": "didar-package-review-negative-same-private-public-port-package-20261018080328338-54401542",
+      "role": "negative-same-private-public-port",
+      "actual_close": {
+        "ExitCode": 1,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:09:05.062920128Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:09:05.449Z"
+    },
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "6da5aa612eab0983e4996e100936b097c93c193cae2572b0db8e3138a580ac64",
+      "name": "didar-package-review-negative-wrong-upstream-package-20261018080328338-54401542",
+      "role": "negative-wrong-upstream",
+      "actual_close": {
+        "ExitCode": 1,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:09:00.304364042Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:09:01.018Z"
+    },
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "b490437af4cb4987c1236343321bd65016c1ddc88639bed74216f60facb5c8ef",
+      "name": "didar-package-review-negative-missing-public-tls-package-20261018080328338-54401542",
+      "role": "negative-missing-public-tls",
+      "actual_close": {
+        "ExitCode": 1,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:08:56.310013275Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:08:57.071Z"
+    },
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "182db677d6f53a6d3321eecbe1e1a7ed795cb153070c8744e05b82d070483e28",
+      "name": "didar-package-review-negative-missing-key-package-20261018080328338-54401542",
+      "role": "negative-missing-key",
+      "actual_close": {
+        "ExitCode": 1,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:08:52.729807196Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:08:53.092Z"
+    },
+    {
+      "id": "2010d139dd54ee6a0c5e499aeee404a10e533010f5f4a8745119eadf0eb9db29",
+      "name": "didar-package-review-storefront-package-20261018080328338-54401542",
+      "anonymous_volumes_removed": [],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:10:41.26109297Z"
+      }
+    },
+    {
+      "id": "b4ed7ebfb4e6716914b632953dff8df78f0208a998ce1008f228f6eda1381586",
+      "name": "didar-package-review-api-package-20261018080328338-54401542",
+      "anonymous_volumes_removed": [],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:10:41.707820511Z"
+      }
+    },
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "ec51b7c42a7a6bcf71d7522947a480e23004513b976c7cadded562b27c89479c",
+      "name": "didar-package-review-native-seed-package-20261018080328338-54401542",
+      "role": "native-seed",
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:07:06.317880801Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:07:11.201Z"
+    },
+    {
+      "run_id": "package-20261018080328338-54401542",
+      "status": "PASS",
+      "id": "9ef38122d2c1dad58460be8196e258ba05e12fdd431e932166fb43a7945d8ab0",
+      "name": "didar-package-review-schema-package-20261018080328338-54401542",
+      "role": "schema",
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:05:50.063592765Z"
+      },
+      "anonymous_volumes_removed": [],
+      "retired_early": true,
+      "at": "2026-10-18T08:05:55.962Z"
+    },
+    {
+      "id": "9b69e9642786fc03cbcc66a790776bea4dd42a8c793c4cd79b267a7eb4e18d06",
+      "name": "didar-package-review-redis-package-20261018080328338-54401542",
+      "anonymous_volumes_removed": [
+        "c1324f5cafcc803d103107222f37ac052b2f32064ec2f96bd7a78f404a6c3f39"
+      ],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:10:46.728814969Z"
+      }
+    },
+    {
+      "id": "687c67abf2d7a3fa9403f9d2a88078508aac20bcfe3ecc19fcf77561eb68ad89",
+      "name": "didar-package-review-postgres-package-20261018080328338-54401542",
+      "anonymous_volumes_removed": [
+        "26d5ee3b247e8d79c8fa382859851bc4faf65c59315b519624c9055fd75aa87e"
+      ],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T08:10:47.157158053Z"
+      }
+    }
+  ],
+  "protected_preserved": 10,
+  "ephemeral_tls_files_removed": true,
+  "owned_network_removed": "169b55a6325f521a4a16dd8400b0f980821fb356c8ea848d7440dbf9ed5370cd",
+  "observed_at": "2026-10-18T08:10:47.683Z"
+}

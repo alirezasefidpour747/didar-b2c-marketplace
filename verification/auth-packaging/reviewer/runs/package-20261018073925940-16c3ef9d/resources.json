@@ -1,0 +1,150 @@
+{
+  "run_id": "package-20261018073925940-16c3ef9d",
+  "scratch": "/workspace/work/auth-packaging-review-package-20261018073925940-16c3ef9d",
+  "protected": [
+    {
+      "id": "583c9b911132d89992f6bd34f5189fab4b6d4bdbd5ac5be7c8ae1e4d6c168f94",
+      "name": "/didar-qa-redis-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e"
+      ]
+    },
+    {
+      "id": "68b91fee0bb9a3192cc1b30ee00d176de4156d2cab97c301f7fdbade763ca7ff",
+      "name": "/didar-qa-pg-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6"
+      ]
+    },
+    {
+      "id": "74c4b61be6e0de51b813e89ad5899f9ad37becc2511a9ce62d280f9fcd94cb5e",
+      "name": "/didar-gold-api-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_uploads"
+      ]
+    },
+    {
+      "id": "8574efd4192c67f8262ad0df55e9c35bc3b2a7926f54c380dbf16aa7144e0a11",
+      "name": "/didar-qa-redis-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb"
+      ]
+    },
+    {
+      "id": "b5377752ef2ee677c8a146ec36cefda041fd90ad4e1851f2f6ae8cd98cf5a863",
+      "name": "/didar-qa-pg-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb"
+      ]
+    },
+    {
+      "id": "b54919da06a731b478d1d22468fe114328efd625256c3b233fd655fe534d4ea2",
+      "name": "/didar-postgres",
+      "status": "exited",
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    {
+      "id": "b6a87474cd11d9c2c1d28f773c64e82693e996a42367970b884f87faa27cae01",
+      "name": "/didar-gold-redis-1",
+      "status": "exited",
+      "volumes": [
+        "44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716"
+      ]
+    },
+    {
+      "id": "cd4f9741bb955be8a0458ad958fa6a7adbf7d39a57a012ad33472ff538fb19f9",
+      "name": "/didar-gold-storefront-1",
+      "status": "exited",
+      "volumes": []
+    },
+    {
+      "id": "f3ba7ea809778d6a76d0447b421135a6aaab7cdb69d8667e7b4b823134411dff",
+      "name": "/didar-gold-postgres-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    },
+    {
+      "id": "f726ac5405f8753e55bbeb5d509079ae80de9cd2be2358807b28fd0aeff6b245",
+      "name": "/didar-redis",
+      "status": "exited",
+      "volumes": [
+        "4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "role": "postgres",
+      "name": "didar-package-review-postgres-package-20261018073925940-16c3ef9d",
+      "id": "95caf7c69d5d799839fe64c4b34aa5aee0f3786544f3b85baffbdc7b50d025b2",
+      "volumes": [
+        "e5599e821e673b7ecc9550339c70de682f9cb2aa1a213a7ab7b7598b1b0f3787"
+      ]
+    },
+    {
+      "role": "redis",
+      "name": "didar-package-review-redis-package-20261018073925940-16c3ef9d",
+      "id": "a5da5f6ad0d14e9917594f04421882e1f9366852f37bbfdfcaa9632687d2b898",
+      "volumes": [
+        "a9fa1ca4a6c1ffccd91425efa46de546f40a04b2c2b76772d439876ccef09ed9"
+      ]
+    },
+    {
+      "role": "schema",
+      "name": "didar-package-review-schema-package-20261018073925940-16c3ef9d",
+      "id": "10a6213fe42f26ec688463809104908a8d3f01a24e571ba5d903b77df3e812c0",
+      "volumes": []
+    }
+  ],
+  "processes": [
+    {
+      "pid": 43146,
+      "state": "R",
+      "ppid": 43036,
+      "pgid": 43146,
+      "start_ticks": "1592206",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "qa-tls"
+    },
+    {
+      "pid": 43218,
+      "state": "R",
+      "ppid": 43036,
+      "pgid": 43218,
+      "start_ticks": "1592425",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-postgres"
+    },
+    {
+      "pid": 43294,
+      "state": "R",
+      "ppid": 43036,
+      "pgid": 43294,
+      "start_ticks": "1592438",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-redis"
+    },
+    {
+      "pid": 43562,
+      "state": "R",
+      "ppid": 43036,
+      "pgid": 43562,
+      "start_ticks": "1599043",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "schema-and-demo-seed"
+    }
+  ],
+  "network": {
+    "name": "didar-package-review-package-20261018073925940-16c3ef9d",
+    "id": "70fcd4c4c13142a89a6bad8bef669815ad544af23e5a9b2dba87480649b6d74b"
+  }
+}

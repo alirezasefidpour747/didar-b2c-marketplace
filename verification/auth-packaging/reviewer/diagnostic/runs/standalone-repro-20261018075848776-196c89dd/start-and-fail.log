@@ -1,0 +1,32 @@
+{"stage":"package-verified","source_sha":"909fed440806f2032ebd6cd14bc3f560a28b9f41","content_sha256":"46525920af5f03e99a52074ca2ad53314f4f101fbdd62cd2971d4679e1b96689","files":8118}
+{"at":"2026-10-18T07:58:57.800Z","stage":"private-next","event":"started","pid":14}
+{"at":"2026-10-18T07:58:57.827Z","stage":"private-next","event":"closed","code":1,"signal":null}
+{"at":"2026-10-18T07:58:57.827Z","stage":"shutdown","reason":"unexpected-child-exit","failure":true}
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module 'styled-jsx/package.json'
+Require stack:
+- /app/apps/storefront/node_modules/next/dist/server/require-hook.js
+- /app/apps/storefront/node_modules/next/dist/server/next.js
+- /app/apps/storefront/server.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at resolve (node:internal/modules/helpers:175:31)
+    at Object.<anonymous> (/app/apps/storefront/node_modules/next/dist/server/require-hook.js:39:32)
+    at Module._compile (node:internal/modules/cjs/loader:1929:14)
+    at Object..js (node:internal/modules/cjs/loader:2060:10)
+    at Module.load (node:internal/modules/cjs/loader:1651:32)
+    at Module._load (node:internal/modules/cjs/loader:1443:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/app/apps/storefront/node_modules/next/dist/server/require-hook.js',
+    '/app/apps/storefront/node_modules/next/dist/server/next.js',
+    '/app/apps/storefront/server.js'
+  ]
+}
+
+Node.js v24.22.0

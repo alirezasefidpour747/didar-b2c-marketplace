@@ -1,0 +1,12 @@
+{
+  "run_id": "driver-20261018074421745-d14738d7",
+  "status": "FAIL",
+  "failure": {
+    "message": "driver-probe actual child failed",
+    "at": "2026-10-18T07:45:44.458Z"
+  },
+  "result": null,
+  "cleanup": "PASS",
+  "wrapper_exit": "NOT_YET_OBSERVED_BY_TOOL_PARENT",
+  "at": "2026-10-18T07:46:14.612Z"
+}

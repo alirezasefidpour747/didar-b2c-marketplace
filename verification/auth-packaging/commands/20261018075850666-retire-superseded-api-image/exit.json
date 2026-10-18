@@ -1,0 +1,17 @@
+{
+  "label": "retire-superseded-api-image",
+  "command": "docker",
+  "args": [
+    "--host=unix:///var/run/docker.sock",
+    "image",
+    "rm",
+    "--no-prune",
+    "sha256:5f260813c4df50dce73134954ec1741fde3a08f2f5c9b3022543f5d8a2b16166"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 52815,
+  "observed_by": 52803,
+  "observed_at_utc": "2026-10-18T07:58:50.690Z"
+}

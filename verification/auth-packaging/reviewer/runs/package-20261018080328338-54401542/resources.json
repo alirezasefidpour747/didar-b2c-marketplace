@@ -1,0 +1,543 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "scratch": "/workspace/work/auth-packaging-review-package-20261018080328338-54401542",
+  "protected": [
+    {
+      "id": "583c9b911132d89992f6bd34f5189fab4b6d4bdbd5ac5be7c8ae1e4d6c168f94",
+      "name": "/didar-qa-redis-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e"
+      ]
+    },
+    {
+      "id": "68b91fee0bb9a3192cc1b30ee00d176de4156d2cab97c301f7fdbade763ca7ff",
+      "name": "/didar-qa-pg-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6"
+      ]
+    },
+    {
+      "id": "74c4b61be6e0de51b813e89ad5899f9ad37becc2511a9ce62d280f9fcd94cb5e",
+      "name": "/didar-gold-api-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_uploads"
+      ]
+    },
+    {
+      "id": "8574efd4192c67f8262ad0df55e9c35bc3b2a7926f54c380dbf16aa7144e0a11",
+      "name": "/didar-qa-redis-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb"
+      ]
+    },
+    {
+      "id": "b5377752ef2ee677c8a146ec36cefda041fd90ad4e1851f2f6ae8cd98cf5a863",
+      "name": "/didar-qa-pg-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb"
+      ]
+    },
+    {
+      "id": "b54919da06a731b478d1d22468fe114328efd625256c3b233fd655fe534d4ea2",
+      "name": "/didar-postgres",
+      "status": "exited",
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    {
+      "id": "b6a87474cd11d9c2c1d28f773c64e82693e996a42367970b884f87faa27cae01",
+      "name": "/didar-gold-redis-1",
+      "status": "exited",
+      "volumes": [
+        "44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716"
+      ]
+    },
+    {
+      "id": "cd4f9741bb955be8a0458ad958fa6a7adbf7d39a57a012ad33472ff538fb19f9",
+      "name": "/didar-gold-storefront-1",
+      "status": "exited",
+      "volumes": []
+    },
+    {
+      "id": "f3ba7ea809778d6a76d0447b421135a6aaab7cdb69d8667e7b4b823134411dff",
+      "name": "/didar-gold-postgres-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    },
+    {
+      "id": "f726ac5405f8753e55bbeb5d509079ae80de9cd2be2358807b28fd0aeff6b245",
+      "name": "/didar-redis",
+      "status": "exited",
+      "volumes": [
+        "4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "role": "postgres",
+      "name": "didar-package-review-postgres-package-20261018080328338-54401542",
+      "id": "687c67abf2d7a3fa9403f9d2a88078508aac20bcfe3ecc19fcf77561eb68ad89",
+      "volumes": [
+        "26d5ee3b247e8d79c8fa382859851bc4faf65c59315b519624c9055fd75aa87e"
+      ]
+    },
+    {
+      "role": "redis",
+      "name": "didar-package-review-redis-package-20261018080328338-54401542",
+      "id": "9b69e9642786fc03cbcc66a790776bea4dd42a8c793c4cd79b267a7eb4e18d06",
+      "volumes": [
+        "c1324f5cafcc803d103107222f37ac052b2f32064ec2f96bd7a78f404a6c3f39"
+      ]
+    },
+    {
+      "role": "schema",
+      "name": "didar-package-review-schema-package-20261018080328338-54401542",
+      "id": "9ef38122d2c1dad58460be8196e258ba05e12fdd431e932166fb43a7945d8ab0",
+      "volumes": []
+    },
+    {
+      "role": "native-seed",
+      "name": "didar-package-review-native-seed-package-20261018080328338-54401542",
+      "id": "ec51b7c42a7a6bcf71d7522947a480e23004513b976c7cadded562b27c89479c",
+      "volumes": []
+    },
+    {
+      "role": "api",
+      "name": "didar-package-review-api-package-20261018080328338-54401542",
+      "id": "b4ed7ebfb4e6716914b632953dff8df78f0208a998ce1008f228f6eda1381586",
+      "volumes": []
+    },
+    {
+      "role": "storefront",
+      "name": "didar-package-review-storefront-package-20261018080328338-54401542",
+      "id": "2010d139dd54ee6a0c5e499aeee404a10e533010f5f4a8745119eadf0eb9db29",
+      "volumes": []
+    },
+    {
+      "role": "negative-missing-key",
+      "name": "didar-package-review-negative-missing-key-package-20261018080328338-54401542",
+      "id": "182db677d6f53a6d3321eecbe1e1a7ed795cb153070c8744e05b82d070483e28",
+      "volumes": []
+    },
+    {
+      "role": "negative-missing-public-tls",
+      "name": "didar-package-review-negative-missing-public-tls-package-20261018080328338-54401542",
+      "id": "b490437af4cb4987c1236343321bd65016c1ddc88639bed74216f60facb5c8ef",
+      "volumes": []
+    },
+    {
+      "role": "negative-wrong-upstream",
+      "name": "didar-package-review-negative-wrong-upstream-package-20261018080328338-54401542",
+      "id": "6da5aa612eab0983e4996e100936b097c93c193cae2572b0db8e3138a580ac64",
+      "volumes": []
+    },
+    {
+      "role": "negative-same-private-public-port",
+      "name": "didar-package-review-negative-same-private-public-port-package-20261018080328338-54401542",
+      "id": "fe52692e4f7cfbf3f72fdb9a68dbd8cb4c025e3f9d94ecde0d2ce798c1c25122",
+      "volumes": []
+    }
+  ],
+  "processes": [
+    {
+      "pid": 56271,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 56271,
+      "start_ticks": "1736425",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "qa-tls"
+    },
+    {
+      "pid": 56344,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 56344,
+      "start_ticks": "1736612",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-postgres"
+    },
+    {
+      "pid": 56421,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 56421,
+      "start_ticks": "1736624",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-redis"
+    },
+    {
+      "pid": 56731,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 56731,
+      "start_ticks": "1748330",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "schema-and-demo-seed"
+    },
+    {
+      "pid": 57108,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57108,
+      "start_ticks": "1757667",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "native-qa-seed"
+    },
+    {
+      "pid": 57328,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57328,
+      "start_ticks": "1765350",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-api"
+    },
+    {
+      "pid": 57486,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57486,
+      "start_ticks": "1766199",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "start-storefront"
+    },
+    {
+      "pid": 57743,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57743,
+      "start_ticks": "1766392",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "private-listener-proof"
+    },
+    {
+      "pid": 57779,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57779,
+      "start_ticks": "1766409",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-inspector-api-initial"
+    },
+    {
+      "pid": 57788,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57788,
+      "start_ticks": "1766410",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "inspect-api-initial"
+    },
+    {
+      "pid": 57885,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57885,
+      "start_ticks": "1768573",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-inspector-storefront-initial"
+    },
+    {
+      "pid": 57895,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57895,
+      "start_ticks": "1768574",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "inspect-storefront-initial"
+    },
+    {
+      "pid": 57951,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 57951,
+      "start_ticks": "1768773",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-start-missing-key"
+    },
+    {
+      "pid": 58050,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58050,
+      "start_ticks": "1768826",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-wait-missing-key"
+    },
+    {
+      "pid": 58135,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58135,
+      "start_ticks": "1769126",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-start-missing-public-tls"
+    },
+    {
+      "pid": 58241,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58241,
+      "start_ticks": "1769219",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-wait-missing-public-tls"
+    },
+    {
+      "pid": 58318,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58318,
+      "start_ticks": "1769522",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-start-wrong-upstream"
+    },
+    {
+      "pid": 58427,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58427,
+      "start_ticks": "1769616",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-wait-wrong-upstream"
+    },
+    {
+      "pid": 58519,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58519,
+      "start_ticks": "1770006",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-start-same-private-public-port"
+    },
+    {
+      "pid": 58616,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58616,
+      "start_ticks": "1770060",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "negative-wait-same-private-public-port"
+    },
+    {
+      "pid": 58688,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58688,
+      "start_ticks": "1770097",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "kill-private-next"
+    },
+    {
+      "pid": 58722,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58722,
+      "start_ticks": "1770108",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "wait-failed-storefront"
+    },
+    {
+      "pid": 58760,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58760,
+      "start_ticks": "1770113",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "restart-after-child-failure"
+    },
+    {
+      "pid": 58979,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 58979,
+      "start_ticks": "1770292",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "mkdir-probe"
+    },
+    {
+      "pid": 59008,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59008,
+      "start_ticks": "1770298",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-probe-common.mjs"
+    },
+    {
+      "pid": 59017,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59017,
+      "start_ticks": "1770300",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-probe-http.mjs"
+    },
+    {
+      "pid": 59026,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59026,
+      "start_ticks": "1770301",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-probe-probe.mjs"
+    },
+    {
+      "pid": 59038,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59038,
+      "start_ticks": "1770303",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "persistent-affected-tests"
+    },
+    {
+      "pid": 59101,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59101,
+      "start_ticks": "1773609",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "independent-operational-fixture-boundary"
+    },
+    {
+      "pid": 59131,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59131,
+      "start_ticks": "1773616",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "http-before-restart"
+    },
+    {
+      "pid": 59207,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59207,
+      "start_ticks": "1777432",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "collect-http-before-results.json"
+    },
+    {
+      "pid": 59216,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59216,
+      "start_ticks": "1777434",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "stop-storefront-before-api-restart"
+    },
+    {
+      "pid": 59260,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59260,
+      "start_ticks": "1777443",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "stop-api-before-restart"
+    },
+    {
+      "pid": 59332,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59332,
+      "start_ticks": "1777464",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "restart-api"
+    },
+    {
+      "pid": 59459,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59459,
+      "start_ticks": "1777927",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "restart-storefront"
+    },
+    {
+      "pid": 59685,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59685,
+      "start_ticks": "1778108",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "http-after-restart"
+    },
+    {
+      "pid": 59731,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59731,
+      "start_ticks": "1778271",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "collect-http-after-results.json"
+    },
+    {
+      "pid": 59740,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59740,
+      "start_ticks": "1778273",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "collect-container-browser-fixture.json"
+    },
+    {
+      "pid": 59749,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59749,
+      "start_ticks": "1778274",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "browser"
+    },
+    {
+      "pid": 59982,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59982,
+      "start_ticks": "1778925",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-inspector-api-final"
+    },
+    {
+      "pid": 59993,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 59993,
+      "start_ticks": "1778927",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "inspect-api-final"
+    },
+    {
+      "pid": 60040,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 60040,
+      "start_ticks": "1779526",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "copy-inspector-storefront-final"
+    },
+    {
+      "pid": 60049,
+      "state": "R",
+      "ppid": 56164,
+      "pgid": 60049,
+      "start_ticks": "1779528",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "inspect-storefront-final"
+    }
+  ],
+  "network": {
+    "name": "didar-package-review-package-20261018080328338-54401542",
+    "id": "169b55a6325f521a4a16dd8400b0f980821fb356c8ea848d7440dbf9ed5370cd"
+  }
+}

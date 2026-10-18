@@ -1,0 +1,11 @@
+{
+  "run_id": "package-20261018073024528-22e6459c",
+  "status": "FAIL",
+  "failure": {
+    "message": "schema-and-demo-seed failed; actual status recorded",
+    "at": "2026-10-18T07:31:28.326Z"
+  },
+  "parity": "PASS",
+  "cleanup": "PASS",
+  "exit_code": "NOT_YET_OBSERVED_BY_SUPERVISOR"
+}

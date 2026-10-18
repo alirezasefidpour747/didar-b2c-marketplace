@@ -1,0 +1,30 @@
+$ bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║   Medusa collects anonymous usage analytics                            ║
+║   to help improve Medusa for all users.                                ║
+║                                                                        ║
+║   If you'd like to opt-out, you can use `medusa telemetry --disable`   ║
+║                                                                        ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+[32minfo[39m:    No link to load from /app/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    Running migrations...
+[32minfo[39m:    Creating migrations table 'mikro_orm_migrations'...
+[32minfo[39m:    Migrations table created successfully
+[31merror[39m:   Could not connect to the database while running migrations. The connection timed out after 10 seconds, which usually indicates an incorrect database URL or an SSL configuration issue.
+
+See https://docs.medusajs.com/resources/troubleshooting/database-errors#error-while-running-migrations for troubleshooting steps.
+MedusaError: Could not connect to the database while running migrations. The connection timed out after 10 seconds, which usually indicates an incorrect database URL or an SSL configuration issue.
+
+See https://docs.medusajs.com/resources/troubleshooting/database-errors#error-while-running-migrations for troubleshooting steps.
+    at Timeout.<anonymous> (/app/node_modules/.bun/@medusajs+modules-sdk@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/modules-sdk/src/medusa-app.ts:74:9)
+    at listOnTimeout (node:internal/timers:685:17)
+    at processTimers (node:internal/timers:618:7) {
+  __isMedusaError: true,
+  type: 'database_error',
+  code: undefined,
+  date: 2026-10-18T07:40:49.467Z
+}
+error: "medusa" exited with code 1
+error: script "db:setup" exited with code 1

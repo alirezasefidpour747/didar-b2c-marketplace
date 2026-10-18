@@ -1,8 +1,10 @@
-# Package the standalone output after bun run --cwd apps/storefront build.
-# Context must be apps/storefront/.next/standalone, with static/public copied in.
+# Fresh context from scripts/deployment/package-storefront.mjs, never bare standalone.
 FROM node:24-bookworm-slim
+ARG DIDAR_SOURCE_SHA
+LABEL org.opencontainers.image.revision=$DIDAR_SOURCE_SHA
 WORKDIR /app
 COPY . .
-ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 NEXT_TELEMETRY_DISABLED=1
+RUN node runtime/verify-package.mjs
+ENV NODE_ENV=production DIDAR_AUTH_INGRESS_HOST=0.0.0.0 DIDAR_AUTH_INGRESS_PORT=3000 DIDAR_PRIVATE_NEXT_PORT=3001 NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
-CMD ["node","apps/storefront/server.js"]
+CMD ["node","runtime/storefront.mjs"]

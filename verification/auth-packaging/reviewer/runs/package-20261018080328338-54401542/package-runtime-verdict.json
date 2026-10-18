@@ -1,0 +1,40 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "images": {
+    "api": {
+      "Id": "sha256:98753972be374eede0b5daf13fcc49ceb74993bafb9393a87faba56de62e6d57",
+      "RepoDigests": [],
+      "Cmd": [
+        "sh",
+        "-c",
+        "cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0"
+    },
+    "storefront": {
+      "Id": "sha256:e9c423deab03f4a71d8b1d4f99ae44cf2ea55974ff7e955bd41733970a9b9936",
+      "RepoDigests": [],
+      "Cmd": [
+        "node",
+        "runtime/storefront.mjs"
+      ],
+      "Entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "Revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0"
+    }
+  },
+  "no_source_dependency_mounts": true,
+  "internal_dependency_closure": true,
+  "frontend_internal_symlinks": 140,
+  "frontend_external_symlinks": 0,
+  "initial_equals_final": true,
+  "api_files": 185753,
+  "frontend_files": 3660,
+  "unexpected_child_exit": 1,
+  "recovered_same_container": true
+}

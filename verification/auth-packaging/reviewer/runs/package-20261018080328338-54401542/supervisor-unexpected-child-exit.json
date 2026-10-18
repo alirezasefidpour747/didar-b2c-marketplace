@@ -1,0 +1,7 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "actual_container_exit_code": 1,
+  "signal_action": "SIGTERM only owned private Next child",
+  "sibling_no_longer_running": true
+}

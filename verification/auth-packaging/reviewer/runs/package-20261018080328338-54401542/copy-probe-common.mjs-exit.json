@@ -1,0 +1,10 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "stage": "copy-probe-common.mjs",
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "observed_at": "2026-10-18T08:09:07.493Z",
+  "observer_pid": 56164,
+  "child_pid": 59008
+}

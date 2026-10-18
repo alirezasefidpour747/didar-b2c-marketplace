@@ -1,0 +1,173 @@
+$ bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║   Medusa collects anonymous usage analytics                            ║
+║   to help improve Medusa for all users.                                ║
+║                                                                        ║
+║   If you'd like to opt-out, you can use `medusa telemetry --disable`   ║
+║                                                                        ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+[32minfo[39m:    No link to load from /app/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    Running migrations...
+[32minfo[39m:    Creating migrations table 'mikro_orm_migrations'...
+[32minfo[39m:    Migrations table created successfully
+[31merror[39m:   Could not resolve module: Auth. Error: Cannot find module '../providers/verification/token'
+Require stack:
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js
+- /app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js
+
+Error: Cannot find module '../providers/verification/token'
+Require stack:
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js
+- /app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1564:15)
+    at Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (/app/node_modules/.bun/@cspotcode+source-map-support@0.8.1/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Module._resolveFilename (/app/node_modules/.bun/tsconfig-paths@4.2.0/node_modules/tsconfig-paths/src/register.ts:115:36)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1674:12)
+    at require (node:internal/modules/helpers:157:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js',
+    '/app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js'
+  ]
+}
+[31merror[39m:   Cannot find module '../providers/verification/token'
+Require stack:
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js
+- /app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js
+Error: Cannot find module '../providers/verification/token'
+Require stack:
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js
+- /app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js
+- /app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js
+- /app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js
+- /app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1564:15)
+    at Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (/app/node_modules/.bun/@cspotcode+source-map-support@0.8.1/node_modules/@cspotcode/source-map-support/source-map-support.js:811:30)
+    at Module._resolveFilename (/app/node_modules/.bun/tsconfig-paths@4.2.0/node_modules/tsconfig-paths/src/register.ts:115:36)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+    at Module._load (node:internal/modules/cjs/loader:1341:5)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+    at Module.require (node:internal/modules/cjs/loader:1674:12)
+    at require (node:internal/modules/helpers:157:16) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/loaders/providers.js',
+    '/app/node_modules/.bun/@medusajs+auth@2.21.2+b89be59cb17eb8c6/node_modules/@medusajs/auth/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/modules/auth.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/dynamic-import.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/mikro-orm/custom-db-migrator.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dal/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/apply-searchable.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/helpers/entity-builder/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/dml/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/joiner-config-builder.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/modules-sdk/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/define-config.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/common/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/token.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/auth/index.js',
+    '/app/node_modules/.bun/@medusajs+utils@2.21.2+56032f2bd82afcd8/node_modules/@medusajs/utils/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/commands/new.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/create-cli.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/dist/index.js',
+    '/app/node_modules/.bun/@medusajs+cli@2.21.2+60f4b6c012827f84/node_modules/@medusajs/cli/cli.js'
+  ]
+}
+error: "medusa" exited with code 1
+error: script "db:setup" exited with code 1

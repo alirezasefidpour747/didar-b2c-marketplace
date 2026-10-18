@@ -1,0 +1,2 @@
+{"at":"2026-10-18T07:47:59.622Z","type":"container_closed","id":"8d1ff5a71c92a378aa6cc9e83c18bfd3d695bce037236916b9c1ab67774b7753","name":"didar-package-driver-20261018074630015-a62dbe5f-api","ExitCode":0,"OOMKilled":false,"Error":"","FinishedAt":"2026-10-18T07:47:59.529683025Z"}
+{"at":"2026-10-18T07:48:04.342Z","type":"container_closed","id":"e039c3872eab007c460254a8a020e70dbcb9bbab3522bc9a51c703bf8d12b9ec","name":"didar-package-driver-20261018074630015-a62dbe5f-pg","ExitCode":0,"OOMKilled":false,"Error":"","FinishedAt":"2026-10-18T07:48:04.253723649Z"}

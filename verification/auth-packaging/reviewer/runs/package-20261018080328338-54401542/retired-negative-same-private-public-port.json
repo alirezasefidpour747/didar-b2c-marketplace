@@ -1,0 +1,16 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "id": "fe52692e4f7cfbf3f72fdb9a68dbd8cb4c025e3f9d94ecde0d2ce798c1c25122",
+  "name": "didar-package-review-negative-same-private-public-port-package-20261018080328338-54401542",
+  "role": "negative-same-private-public-port",
+  "actual_close": {
+    "ExitCode": 1,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T08:09:05.062920128Z"
+  },
+  "anonymous_volumes_removed": [],
+  "retired_early": true,
+  "at": "2026-10-18T08:09:05.449Z"
+}

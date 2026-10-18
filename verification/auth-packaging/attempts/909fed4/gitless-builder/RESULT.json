@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "failure": null,
+  "source": "909fed440806f2032ebd6cd14bc3f560a28b9f41",
+  "stages": [
+    {
+      "name": "missing-source-sha",
+      "code": 1,
+      "signal": null,
+      "error": null,
+      "child_pid": 45692,
+      "observed_by": 45685,
+      "expected_code": 1,
+      "at": "2026-10-18T07:47:46.075Z"
+    },
+    {
+      "name": "caller-sha-build",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "child_pid": 45699,
+      "observed_by": 45685,
+      "expected_code": 0,
+      "at": "2026-10-18T07:47:48.386Z"
+    },
+    {
+      "name": "verify-produced-package",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "child_pid": 45706,
+      "observed_by": 45685,
+      "expected_code": 0,
+      "at": "2026-10-18T07:47:49.394Z"
+    }
+  ],
+  "package_content_sha256": "46525920af5f03e99a52074ca2ad53314f4f101fbdd62cd2971d4679e1b96689",
+  "files": 8118,
+  "all_snapshot_inputs_physical_copies": true,
+  "application_runtime": "NOT_STARTED_BUILDER_BRANCH_ONLY",
+  "full_source_Docker_build": "NOT_EXECUTED",
+  "scratch_removed": true,
+  "at": "2026-10-18T07:47:49.727Z"
+}

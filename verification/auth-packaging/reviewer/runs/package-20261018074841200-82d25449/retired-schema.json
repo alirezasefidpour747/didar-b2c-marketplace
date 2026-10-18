@@ -1,0 +1,16 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "status": "PASS",
+  "id": "24ca43c21233f126d7adab89d6409f6cc408cfb2edf34e9c575517aa6763d60c",
+  "name": "didar-package-review-schema-package-20261018074841200-82d25449",
+  "role": "schema",
+  "actual_close": {
+    "ExitCode": 0,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T07:50:16.120144402Z"
+  },
+  "anonymous_volumes_removed": [],
+  "retired_early": true,
+  "at": "2026-10-18T07:50:21.077Z"
+}

@@ -10,6 +10,7 @@ RUN --mount=type=secret,id=cloud_ca \
 ENV NEXT_TELEMETRY_DISABLED=1 MERCUR_DISABLE_TELEMETRY=true NODE_USE_ENV_PROXY=1
 # Public API origin is baked into the native Mercur dashboards, not a secret.
 ARG MERCUR_BACKEND_URL=http://localhost:9000
+ARG DIDAR_SOURCE_SHA
 ENV MERCUR_BACKEND_URL=$MERCUR_BACKEND_URL
 RUN --mount=type=secret,id=cloud_ca \
     if [ -f /run/secrets/cloud_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/cloud_ca; fi; \
@@ -17,19 +18,23 @@ RUN --mount=type=secret,id=cloud_ca \
 RUN node scripts/build-panels.mjs
 RUN bun run --cwd packages/api build
 RUN bun run --cwd apps/storefront build
+RUN DIDAR_PACKAGE_SOURCE_SHA=$DIDAR_SOURCE_SHA node scripts/deployment/package-storefront.mjs /tmp/didar-storefront
 # Full workspace retained so native modules resolve and migration commands remain available.
 # Run one API replica until deploying shared Redis workflow/event/locking providers.
 FROM base AS api
+ARG DIDAR_SOURCE_SHA
+LABEL org.opencontainers.image.revision=$DIDAR_SOURCE_SHA
 # Bounded local video decoding/transcoding; no remote media protocols are accepted.
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 ENV NODE_ENV=production
 EXPOSE 9000
-CMD ["sh","-c","cd packages/api/.medusa/server && node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]
+CMD ["sh","-c","cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start"]
 FROM node:24-bookworm-slim AS storefront
+ARG DIDAR_SOURCE_SHA
+LABEL org.opencontainers.image.revision=$DIDAR_SOURCE_SHA
 WORKDIR /app
-COPY --from=base /app/apps/storefront/.next/standalone ./
-COPY --from=base /app/apps/storefront/.next/static ./apps/storefront/.next/static
-COPY --from=base /app/apps/storefront/public ./apps/storefront/public
-ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000 NEXT_TELEMETRY_DISABLED=1
+COPY --from=base /tmp/didar-storefront ./
+RUN node runtime/verify-package.mjs
+ENV NODE_ENV=production DIDAR_AUTH_INGRESS_HOST=0.0.0.0 DIDAR_AUTH_INGRESS_PORT=3000 DIDAR_PRIVATE_NEXT_PORT=3001 NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
-CMD ["node","apps/storefront/server.js"]
+CMD ["node","runtime/storefront.mjs"]

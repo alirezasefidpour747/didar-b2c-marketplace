@@ -1,0 +1,11 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "browser_exit_code": 0,
+  "wrapper_exit_code": 0,
+  "supervisor_exit_code": 0,
+  "parity": "PASS",
+  "cleanup": "PASS",
+  "at": "2026-10-18T08:10:47.721Z",
+  "monitor_self_exit": "NOT_OBSERVED_OR_REQUIRED"
+}
