@@ -465,7 +465,10 @@ async function saveProduct(req: any, u: any, b: any, c: any) {
                   id: native,
                   title: old.title,
                   description: old.description,
-                  status: old.active && old.published ? "published" : "draft",
+                  status:
+                    old.active && old.published && old.approved
+                      ? "published"
+                      : "draft",
                   metadata: {
                     didar: true,
                     purity: old.purity,

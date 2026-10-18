@@ -5,7 +5,7 @@ import { bootstrapAcceptance } from './bootstrap-acceptance.mjs'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy', 'pre-rollout-authorization'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false, noDemoOnly = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
