@@ -19,15 +19,16 @@
       "status": "PASS",
       "limitation": "Open PR chain is not main; no merge order or rollout approval.",
       "reviewer": "issue18_core_review",
-      "evidence_type": "Accepted external Chief decision and inherited controlled receipt"
+      "evidence_type": "Accepted external Chief decision and inherited controlled receipt",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-02",
       "requirement": "Native reuse/canonical authority and original five-layer reconciliation",
       "code": [
         "packages/api/src/didar/native.ts",
-        "packages/api/src/didar/projection.ts",
-        "docs/adr/ADR-CORE-04-issue23-boundary-reconciliation.md"
+        "packages/api/src/didar/projection.ts"
       ],
       "exact_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
       "evidence": [
@@ -36,7 +37,9 @@
       "status": "NOT_VERIFIED",
       "limitation": "Native adapter responsibility map source-reviewed; original historical five-layer agreement unrecovered. No blanket architecture certification.",
       "reviewer": "issue18_core_review",
-      "evidence_type": "Independent source review; unchanged native behavior inherited"
+      "evidence_type": "Independent source review; unchanged native behavior inherited",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-03",
@@ -58,7 +61,9 @@
       "status": "PASS",
       "limitation": "Directly reviewed target-addressed product/options routes only; no universal import/pending-action/price-list proof, no new canonical-save/payment execution.",
       "reviewer": "issue18_core_review + issue18_independent_acceptance",
-      "evidence_type": "New changed-artifact real HTTP/PostgreSQL/browser; actual zero exits"
+      "evidence_type": "New changed-artifact real HTTP/PostgreSQL/browser; actual zero exits",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-04",
@@ -77,7 +82,9 @@
       "status": "FAIL",
       "limitation": "SEC-01/02 independently confirmed open P1; source unchanged in A. Native limiter/ingress/cookie-origin deployment controls unverified.",
       "reviewer": "issue18_independent_acceptance",
-      "evidence_type": "New independent baseline HTTP+PG reproduction; other controls source-inspected/inherited"
+      "evidence_type": "New independent baseline HTTP+PG reproduction; other controls source-inspected/inherited",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-05",
@@ -97,7 +104,9 @@
       "status": "PASS",
       "limitation": "Scope is accepted B sandbox proof, not rerun at A. Future provider/reward durability/distributed financial semantics not established.",
       "reviewer": "Prior independent Issue18 acceptance; current Core source review",
-      "evidence_type": "Inherited 192 HTTP/PG tests, nine G4 proofs and populated restore; unchanged source"
+      "evidence_type": "Inherited 192 HTTP/PG tests, nine G4 proofs and populated restore; unchanged source",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-06",
@@ -114,7 +123,9 @@
       "status": "PASS",
       "limitation": "No schema change; no migration required. New fixture populated Products/Offers, UID/order/finance empty. Populated 89-table/36UID proof inherited B.",
       "reviewer": "issue18_independent_acceptance + issue18_core_review",
-      "evidence_type": "New scoped fingerprints and unchanged-source proof; historical migration/restore inherited"
+      "evidence_type": "New scoped fingerprints and unchanged-source proof; historical migration/restore inherited",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-07",
@@ -132,14 +143,15 @@
       "status": "NOT_VERIFIED",
       "limitation": "Inspected local single-instance config; no actual target-host, distributed provider/locks, representative load, alerts, combined media restore or accepted SLO/RPO/RTO/retention.",
       "reviewer": "Root operational assessment + independent Core review",
-      "evidence_type": "Source inspection; inherited local runtime/recovery scope only"
+      "evidence_type": "Source inspection; inherited local runtime/recovery scope only",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-08",
       "requirement": "Actual dependency and limited secret scans",
       "code": [
-        "bun.lock",
-        "verification/issue23/source-scans.mjs"
+        "bun.lock"
       ],
       "exact_sha": "41d880a5dd4c2462144f52b1591576882238d125",
       "evidence": [
@@ -151,7 +163,13 @@
       "status": "NOT_VERIFIED",
       "limitation": "Audit exit1:24 advisories/16packages; applicability not fully triaged. Four signatures/843trackedfiles no match does not certify secret absence, ignored env/history not scanned.",
       "reviewer": "Root scanner execution + independent reviewers applicability review",
-      "evidence_type": "New actual read-only registry/signature scans, no dependency changes"
+      "evidence_type": "New actual read-only registry/signature scans, no dependency changes",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb",
+      "tool_source": {
+        "code": "verification/issue23/source-scans.mjs",
+        "exact_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
+      }
     },
     {
       "id": "R23-09",
@@ -160,7 +178,7 @@
         "verification/issue23/reviewer/correction-runner.mjs",
         "verification/issue23/final-check.mjs"
       ],
-      "exact_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "exact_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb",
       "evidence": [
         "verification/issue23/BUILD_RECEIPT.json",
         "verification/issue23/reviewer/runs/correction-20261018042135715/parity.json",
@@ -172,7 +190,9 @@
       "status": "PASS",
       "limitation": "Local Linux x64 backend build; unchanged panel/storefront artifacts reused, no external CI/ARM64/Mac/release parity claim. Earlier failed harness receipts retained.",
       "reviewer": "issue18_independent_acceptance; coordinator independently rechecked",
-      "evidence_type": "New actual build,1790compiledfiles/51tests/fourreviewersources,actualzeroexits,cleanup10protected"
+      "evidence_type": "New actual build,1790compiledfiles/51tests/fourreviewersources,actualzeroexits,cleanup10protected",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     },
     {
       "id": "R23-10",
@@ -182,7 +202,7 @@
         "docs/ROADMAP_B2C_MERCHANT_GROWTH_CRM_CAMPAIGNS.md",
         "docs/audits/issue23/READINESS_HANDOFF.md"
       ],
-      "exact_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "exact_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb",
       "evidence": [
         "docs/adr/ADR-CORE-04-issue23-boundary-reconciliation.md",
         "docs/audits/issue23/CORE_AUTHORITY_REVIEW.md"
@@ -190,7 +210,11 @@
       "status": "BLOCKED",
       "limitation": "S1 enabled financial vertical needs S0 economic/native contract acceptance and SEC01/02 correction or reviewed verified mitigation. S0 preparation usable after Chief review; no automatic phase start.",
       "reviewer": "Root + issue18_core_review",
-      "evidence_type": "Source/decision integration; no future-feature implementation"
+      "evidence_type": "Source/decision integration; no future-feature implementation",
+      "application_sha": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+      "evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb"
     }
-  ]
+  ],
+  "published_evidence_snapshot_sha": "6d629fbfd4ae117154478e93ded95b8c079eb9fb",
+  "trace_semantics": "exact_sha pins the listed code at its actual Git snapshot. application_sha separately pins the tested application. Evidence/documentation is published at published_evidence_snapshot_sha; execution manifests pin exact executed uncommitted-at-run reviewer sources by SHA-256. Later traceability-only correction does not change application/artifacts/tests/evidence."
 }
