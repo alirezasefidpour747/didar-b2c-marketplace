@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { mkdirSync, existsSync, readFileSync, writeFileSync, rmSync } from 'node:fs'
@@ -117,9 +118,13 @@ async function main() {
   assertNoDev()
   await freePort(9000); await freePort(3000)
   acquireLock()
-  const api = processes.start('bun', ['run', '--cwd', 'packages/api', 'dev', '--host', '127.0.0.1', '--port', '9000'], { env: { ...env, NODE_ENV: 'development' } })
-  const web = processes.start('bun', ['run', '--cwd', 'apps/storefront', 'dev', '--hostname', '127.0.0.1', '--port', '3000'], { env: { ...env, NODE_ENV: 'development' } })
-  const exited = Promise.race([api, web].map(child => new Promise((_, reject) => {
+  // Shared ephemeral local-only signing material; never rewrite the owner's env files.
+  const authEnv = {...env, DIDAR_AUTH_NETWORK_KEY: env.DIDAR_AUTH_NETWORK_KEY || randomBytes(32).toString('hex'), DIDAR_AUTH_PROXY_PEERS: env.DIDAR_AUTH_PROXY_PEERS || '127.0.0.1,::1'}
+  const privateWebPort = await freePort()
+  const api = processes.start('bun', ['run', '--cwd', 'packages/api', 'dev', '--host', '127.0.0.1', '--port', '9000'], { env: { ...authEnv, NODE_ENV: 'development' } })
+  const web = processes.start('bun', ['run', '--cwd', 'apps/storefront', 'dev', '--hostname', '127.0.0.1', '--port', String(privateWebPort)], { env: { ...authEnv, NODE_ENV: 'development' } })
+  const ingress = processes.start('node', [resolve('apps/storefront/auth-ingress.mjs')], {env: {...authEnv, DIDAR_AUTH_STOREFRONT_URL: `http://127.0.0.1:${privateWebPort}`, DIDAR_AUTH_INGRESS_HOST: '127.0.0.1', DIDAR_AUTH_INGRESS_PORT: '3000'}})
+  const exited = Promise.race([api, web, ingress].map(child => new Promise((_, reject) => {
     child.once('error', reject)
     child.once('exit', code => reject(new Error(`A local server exited (${code}); both owned servers are stopping`)))
   })))

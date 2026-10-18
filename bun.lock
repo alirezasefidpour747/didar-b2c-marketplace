@@ -65,6 +65,7 @@
       "name": "@mercurjs/storefront",
       "version": "2.3.7",
       "dependencies": {
+        "@didar/auth-network": "workspace:*",
         "@didar/ui": "workspace:*",
         "@headlessui/react": "^2.2.1",
         "@hookform/resolvers": "^3.10.0",
@@ -143,6 +144,7 @@
       "name": "@acme/api",
       "version": "2.3.7",
       "dependencies": {
+        "@didar/auth-network": "workspace:*",
         "@medusajs/admin-sdk": "2.21.2",
         "@medusajs/admin-shared": "2.21.2",
         "@medusajs/cli": "2.21.2",
@@ -172,6 +174,10 @@
         "prop-types": "^15.8.1",
         "yalc": "^1.0.0-pre.53",
       },
+    },
+    "packages/auth-network": {
+      "name": "@didar/auth-network",
+      "version": "1.0.0",
     },
     "packages/didar-ui": {
       "name": "@didar/ui",
@@ -524,6 +530,8 @@
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
     "@dabh/diagnostics": ["@dabh/diagnostics@2.0.9", "", { "dependencies": { "@so-ric/colorspace": "^1.1.6", "enabled": "2.0.x", "kuler": "^2.0.0" } }, "sha512-R6siwR65Hm+3yfgP7o8DKhNvputQAwfoz9zTc3kyDudnomj2/BcLmD+uGQQPICjuFUp8ounPBU+jmKsocwVVAg=="],
+
+    "@didar/auth-network": ["@didar/auth-network@workspace:packages/auth-network"],
 
     "@didar/ui": ["@didar/ui@workspace:packages/didar-ui"],
 

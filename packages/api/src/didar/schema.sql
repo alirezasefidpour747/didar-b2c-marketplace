@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS didar_session (
 CREATE TABLE IF NOT EXISTS didar_login_attempt (
  key text PRIMARY KEY, attempts integer NOT NULL DEFAULT 0, reset_at timestamptz NOT NULL
 );
+-- Bounded cleanup of expired operational authentication counters/nonces only.
+CREATE INDEX IF NOT EXISTS didar_login_attempt_expiry_idx ON didar_login_attempt(reset_at);
 CREATE TABLE IF NOT EXISTS didar_order (
  id text PRIMARY KEY, customer_id text NOT NULL REFERENCES didar_user, idempotency_key text NOT NULL,
  total_irr bigint NOT NULL CHECK(total_irr>0), status text NOT NULL CHECK(status IN ('pending','paid','failed','expired')),

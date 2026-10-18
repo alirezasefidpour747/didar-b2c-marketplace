@@ -12,6 +12,12 @@ import { nativeProductGuard } from "../didar/native-product-guard";
 export default defineMiddlewares({
   errorHandler: nativeErrorHandler,
   routes: [
+    ...["/didar/login", "/didar/register"].map((matcher) => ({
+      matcher,
+      method: ["POST" as const],
+      bodyParser: { sizeLimit: "1200kb", preserveRawBody: true },
+      middlewares: [],
+    })),
     { matcher: "/admin/*", middlewares: [nativePermissionBoundary] },
     { matcher: "/vendor/*", middlewares: [nativePermissionBoundary] },
     { matcher: "/vendor/*", middlewares: [nativeVendorBoundary] },
