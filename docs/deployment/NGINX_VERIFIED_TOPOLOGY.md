@@ -107,7 +107,7 @@ not silently revert to that mode when configuration is missing. The independent
 security review must accept this extension before delivery acceptance. Do not
 extend peer trust to Docker ranges, arbitrary interfaces or browser addresses.
 
-Native `/dashboard`, `/seller`, `/auth`, `/admin`, `/vendor`, `/store`, `/didar`,
+Native `/dashboard`, `/seller`, `/auth`, `/admin`, `/vendor`, `/store`, `/hooks`, `/didar`,
 `/static` and supported media paths remain same-origin through fixed relay
 routing. Cookies, native dual-proof linking, selected Seller, DIDAR identity,
 permissions, tenant isolation and existing media authorization remain unchanged.
@@ -115,11 +115,24 @@ No role header, duplicate identity or new financial authority is introduced.
 The route tests, not a broad assumed URL list, establish the implemented route
 inventory and any intentionally unsupported paths.
 
+Version-matched route inventory includes Medusa `/hooks/payment/[provider]`;
+it retains native provider verification behind the fixed API routing. No live
+provider operation is part of this verification. Auth callbacks remain below
+`/auth`; reset/invite/deep links below `/dashboard` and `/seller` keep their native
+surfaces. The internal Medusa Cloud control routes are not enabled as a new
+public staging capability. Unknown prefixes continue to Next's own routing;
+they are not arbitrary API proxy destinations.
+
 ## Compatible bundle and configuration
 
 `scripts/deployment/nginx/compose.topology.json` is a candidate composition to
 review against discovery, not a command to run on the target now. It preserves
 the accepted packaging model:
+
+The adjacent `topology.env.template` enumerates every required input. Blank
+values deliberately fail preflight. Copy it to a private mode0600 file and
+preserve the existing authoritative values; do not source it or treat it as a
+populated target configuration.
 
 - Complete existing `DATABASE_URL` and `REDIS_URL` are authoritative, including
   custom user/database, encoded password and URL options. Never reconstruct them
@@ -156,6 +169,18 @@ signer+module provenance/ABI, exact trust-mode and peer contract, secret-version
 references only, Compose configuration, protected env template/wrapper, health
 and readiness commands, backup/recovery guidance and actual verification exits.
 No replacement release is authorized by this task.
+
+After a separate acceptance/release authorization, build from its exact approved
+source checkout using the locked Node/Bun toolchain and
+`MERCUR_BACKEND_URL=same-origin`. The existing
+`scripts/build-prepared-images.sh` builds all four production applications and
+uses `package-storefront.mjs`; its clean-source and manifest checks must remain
+enabled. Bind both immutable app image identities, dependency digests, signer
+and module/config hashes and secret-version references into the same release
+manifest. Verify the resulting exported/downloaded bundle without workspace
+binds before publishing an installation kit. The isolated test's accepted API
+base plus hashed candidate-file materialization is a test fixture, **not** an
+immutable new API image or a supported owner installation procedure.
 
 ## Guided installation/update plan — blocked pending discovery and acceptance
 

@@ -115,11 +115,11 @@ test('auth input bounds and encoding fail closed; boundary-sized binary data sta
   assert.equal((await send(relay.origin, path, Buffer.from('{}'), { 'content-encoding': 'gzip' })).status, 415)
 })
 test('native/API segment routing preserves deep links and nonauth streams without forwarding caller proof', async () => {
-  for (const path of ['/dashboard/products/x?x=%2F', '/seller/settings', '/admin/didar/pages', '/vendor/didar/pages', '/auth/member/emailpass', '/store/products', '/didar/catalog', '/static/media.jpg', '/health']) {
+  for (const path of ['/dashboard/products/x?x=%2F', '/seller/settings', '/admin/didar/pages', '/vendor/didar/pages', '/auth/member/emailpass', '/auth/user/emailpass/callback?state=%2F', '/hooks/payment/test-only-unconfigured', '/store/products', '/didar/catalog', '/static/media.jpg', '/health']) {
     const r = await send(relay.origin, path, Buffer.from('stream'), { [HEADER]: 'forged' })
     assert.equal(r.data.role, 'api'); assert.equal(r.data.path, path); assert.equal(r.data.assertion, undefined)
   }
-  for (const path of ['/dashboard-other', '/sellerish', '/', '/account', '/_next/static/x', '/api/didar/image?id=x']) assert.equal((await send(relay.origin, path)).data.role, 'next')
+  for (const path of ['/dashboard-other', '/sellerish', '/hooks-other', '/', '/account', '/_next/static/x', '/api/didar/image?id=x']) assert.equal((await send(relay.origin, path)).data.role, 'next')
 })
 test('legacy socket mode still replaces forged client attribution with the original socket', async () => {
   const r = await send(socket.origin, '/api/didar/login', Buffer.from('{}'), { [HEADER]: 'forged', 'x-real-ip': '192.0.2.8' }, '127.0.0.2')

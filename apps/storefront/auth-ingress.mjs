@@ -50,7 +50,7 @@ function headers(req) {
   result['x-forwarded-proto'] = req.socket.encrypted ? 'https' : 'http'
   return result
 }
-const nativePath = path => /^\/(dashboard|seller|auth|admin|vendor|store|didar|static)(\/|$)/.test(path) || path === '/health'
+const nativePath = path => /^\/(dashboard|seller|auth|admin|vendor|store|hooks|didar|static)(\/|$)/.test(path) || path === '/health'
 const handler = async (req, res) => {
   try {
     if (!req.url?.startsWith('/') || req.url.startsWith('//')) {
