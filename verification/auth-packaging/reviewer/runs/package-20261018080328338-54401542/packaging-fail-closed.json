@@ -1,0 +1,26 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "missing-key",
+      "actual_container_exit_code": 1,
+      "oom_killed": false
+    },
+    {
+      "name": "missing-public-tls",
+      "actual_container_exit_code": 1,
+      "oom_killed": false
+    },
+    {
+      "name": "wrong-upstream",
+      "actual_container_exit_code": 1,
+      "oom_killed": false
+    },
+    {
+      "name": "same-private-public-port",
+      "actual_container_exit_code": 1,
+      "oom_killed": false
+    }
+  ]
+}

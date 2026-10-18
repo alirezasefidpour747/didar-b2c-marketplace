@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "baseline": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+  "reviewed_packaging_source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+  "images": {
+    "api": {
+      "id": "sha256:98753972be374eede0b5daf13fcc49ceb74993bafb9393a87faba56de62e6d57",
+      "os": "linux",
+      "arch": "amd64",
+      "size": 2659429815,
+      "revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+      "cmd": [
+        "sh",
+        "-c",
+        "cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "repo_digests": [],
+      "secret_environment_names_baked": []
+    },
+    "storefront": {
+      "id": "sha256:e9c423deab03f4a71d8b1d4f99ae44cf2ea55974ff7e955bd41733970a9b9936",
+      "os": "linux",
+      "arch": "amd64",
+      "size": 508906887,
+      "revision": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+      "cmd": [
+        "node",
+        "runtime/storefront.mjs"
+      ],
+      "entrypoint": [
+        "docker-entrypoint.sh"
+      ],
+      "repo_digests": [],
+      "secret_environment_names_baked": []
+    }
+  },
+  "build_material_images": [
+    {
+      "ref": "node:24-bookworm-slim",
+      "id": "sha256:a797d6440ed0b09e51fb884f30e47ec14cbf58482c5e19db681a0cb8df45b089",
+      "repo_digests": [
+        "node@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5"
+      ]
+    },
+    {
+      "ref": "oven/bun:1.4.3",
+      "id": "sha256:88fe237a77256495f2d42776dc4fa2377b1fd64e6b87bb0a942d571f56f4652e",
+      "repo_digests": [
+        "oven/bun@sha256:ec06c3b6cea04192ae6770c434f668ca41d343ad19fa6472216c7b48be39c598"
+      ]
+    }
+  ],
+  "fresh_package": {
+    "source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+    "files": 3799,
+    "content_sha256": "2163dc0d9191b65475ebf1172fc624b4613bfaca71f5dad5d305fa87f57fce18"
+  },
+  "build_input_hashes": [
+    {
+      "sha256": "0b9779142af320ec3135344fe41b07fc4532bc7675b6a8d492ca9e1366371f18",
+      "artifact": "api-context.tar.gz"
+    },
+    {
+      "sha256": "6e68135d14f899f8e0cf81fc1d8851a9ceaeb3fe11a1d1ea27eaa600b8f9d8c0",
+      "artifact": "storefront/PACKAGING.json"
+    }
+  ],
+  "build_log_sha256": "b9cac519a5fdc9de6b857ff5f9ef152756b1a75f5f37f07d28a3515e28721818",
+  "prepared_script_observed_exit": {
+    "label": "prepared-images-contained-links",
+    "command": "bash",
+    "args": [
+      "scripts/build-prepared-images.sh",
+      "--reuse-build"
+    ],
+    "code": 0,
+    "signal": null,
+    "error": null,
+    "pid": 52590,
+    "observed_by": 52581,
+    "observed_at_utc": "2026-10-18T08:02:51.690Z"
+  },
+  "registry_publication": "NOT_PERFORMED_LOCAL_REVIEW_IMAGES_ONLY",
+  "reproducibility": "Exact tested image IDs recorded; moving base tags and Debian repositories do not promise bit-for-bit future rebuild identity.",
+  "at": "2026-10-18T08:03:17.873Z"
+}

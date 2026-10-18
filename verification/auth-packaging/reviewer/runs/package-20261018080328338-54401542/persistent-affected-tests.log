@@ -1,0 +1,26 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/native-product-targets.test.ts:
+(pass) real native target setup retains DIDAR projections and ordinary native CRUD [302.60ms]
+(pass) a forged URL parent cannot delete the linked native variant [15.41ms]
+(pass) mixed native/DIDAR variant batches reject before any partial native mutation [7.50ms]
+(pass) a variant update body cannot redirect an ordinary native editor to a DIDAR target [7.13ms]
+(pass) standalone shared-option writes cannot bypass the linked Product Master editor [34.90ms]
+(pass) authentication and native reads keep their original behavior [15.44ms]
+
+tests/auth-hardening.test.ts:
+(pass) direct auth ignores spoofed forwarding and cookie rotation; normalized account quota persists [9376.26ms]
+(pass) one real proxy client cannot spend another network’s quota [9658.69ms]
+(pass) targeted account failures do not create a victim account ban [10055.93ms]
+(pass) private Next cannot downgrade missing proof; unsigned API uses actual socket [554.67ms]
+(pass) raw-byte binding, authenticated proxy peer and nonce replay are enforced [52.91ms]
+(pass) a first-hop proof stays single-use after Next re-signs it [53.16ms]
+(pass) concurrent requests cannot over-admit a client/account budget [310.61ms]
+(pass) database work admission applies independently of client IP and releases without account lock [1069.75ms]
+(pass) expired auth-only state is pruned in bounded batches; active state survives [552.63ms]
+(pass) native Admin and Vendor authentication and canonical customer sessions remain original authorities [758.40ms]
+
+ 16 pass
+ 0 fail
+ 299 expect() calls
+Ran 16 tests across 2 files. [32.98s]

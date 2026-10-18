@@ -1,0 +1,12 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "identity": {
+    "pid": 46325,
+    "state": "R",
+    "ppid": 46292,
+    "pgid": 46325,
+    "start_ticks": "1647671",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  },
+  "exit_code": "NOT_OBSERVED_BY_LAUNCHER"
+}

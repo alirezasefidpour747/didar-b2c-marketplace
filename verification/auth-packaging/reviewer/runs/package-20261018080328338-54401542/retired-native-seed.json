@@ -1,0 +1,16 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "id": "ec51b7c42a7a6bcf71d7522947a480e23004513b976c7cadded562b27c89479c",
+  "name": "didar-package-review-native-seed-package-20261018080328338-54401542",
+  "role": "native-seed",
+  "actual_close": {
+    "ExitCode": 0,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T08:07:06.317880801Z"
+  },
+  "anonymous_volumes_removed": [],
+  "retired_early": true,
+  "at": "2026-10-18T08:07:11.201Z"
+}

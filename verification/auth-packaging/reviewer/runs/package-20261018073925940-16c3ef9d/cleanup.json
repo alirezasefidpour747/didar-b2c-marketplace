@@ -1,0 +1,73 @@
+{
+  "run_id": "package-20261018073925940-16c3ef9d",
+  "status": "PASS",
+  "stopped": [
+    {
+      "pid": 43562,
+      "start_ticks": "1599043",
+      "pgid": 43562,
+      "live_members": 0
+    },
+    {
+      "pid": 43294,
+      "start_ticks": "1592438",
+      "pgid": 43294,
+      "live_members": 0
+    },
+    {
+      "pid": 43218,
+      "start_ticks": "1592425",
+      "pgid": 43218,
+      "live_members": 0
+    },
+    {
+      "pid": 43146,
+      "start_ticks": "1592206",
+      "pgid": 43146,
+      "live_members": 0
+    }
+  ],
+  "removed": [
+    {
+      "id": "10a6213fe42f26ec688463809104908a8d3f01a24e571ba5d903b77df3e812c0",
+      "name": "didar-package-review-schema-package-20261018073925940-16c3ef9d",
+      "anonymous_volumes_removed": [],
+      "actual_close": {
+        "ExitCode": 1,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T07:40:49.498265717Z"
+      }
+    },
+    {
+      "id": "a5da5f6ad0d14e9917594f04421882e1f9366852f37bbfdfcaa9632687d2b898",
+      "name": "didar-package-review-redis-package-20261018073925940-16c3ef9d",
+      "anonymous_volumes_removed": [
+        "a9fa1ca4a6c1ffccd91425efa46de546f40a04b2c2b76772d439876ccef09ed9"
+      ],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T07:40:54.856353764Z"
+      }
+    },
+    {
+      "id": "95caf7c69d5d799839fe64c4b34aa5aee0f3786544f3b85baffbdc7b50d025b2",
+      "name": "didar-package-review-postgres-package-20261018073925940-16c3ef9d",
+      "anonymous_volumes_removed": [
+        "e5599e821e673b7ecc9550339c70de682f9cb2aa1a213a7ab7b7598b1b0f3787"
+      ],
+      "actual_close": {
+        "ExitCode": 0,
+        "OOMKilled": false,
+        "Error": "",
+        "FinishedAt": "2026-10-18T07:40:55.107382156Z"
+      }
+    }
+  ],
+  "protected_preserved": 10,
+  "ephemeral_tls_files_removed": true,
+  "owned_network_removed": "70fcd4c4c13142a89a6bad8bef669815ad544af23e5a9b2dba87480649b6d74b",
+  "observed_at": "2026-10-18T07:40:55.584Z"
+}

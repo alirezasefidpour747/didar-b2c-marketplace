@@ -1,0 +1,13 @@
+{
+  "label": "source-provenance",
+  "command": "node",
+  "args": [
+    "verification/auth-packaging/source-provenance.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 34698,
+  "observed_by": 34688,
+  "observed_at_utc": "2026-10-18T07:26:14.844Z"
+}

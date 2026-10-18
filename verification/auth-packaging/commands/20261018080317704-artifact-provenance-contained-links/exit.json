@@ -1,0 +1,13 @@
+{
+  "label": "artifact-provenance-contained-links",
+  "command": "node",
+  "args": [
+    "verification/auth-packaging/artifact-provenance.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 55984,
+  "observed_by": 55974,
+  "observed_at_utc": "2026-10-18T08:03:17.878Z"
+}

@@ -1,0 +1,13 @@
+{
+  "label": "gitless-builder-contained-links",
+  "command": "node",
+  "args": [
+    "verification/auth-packaging/gitless-builder.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 56035,
+  "observed_by": 56026,
+  "observed_at_utc": "2026-10-18T08:03:21.909Z"
+}

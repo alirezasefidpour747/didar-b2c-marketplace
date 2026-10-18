@@ -1,0 +1,8 @@
+{
+  "run_id": "standalone-repro-20261018075848776-196c89dd",
+  "status": "PASS",
+  "owned_container_absent": true,
+  "no_network_created": true,
+  "no_volumes_or_mounts": true,
+  "protected_preserved": 10
+}

@@ -1,0 +1,10 @@
+{
+  "name": "caller-sha-build",
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 45699,
+  "observed_by": 45685,
+  "expected_code": 0,
+  "at": "2026-10-18T07:47:48.386Z"
+}

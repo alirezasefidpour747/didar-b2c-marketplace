@@ -1,0 +1,16 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "id": "182db677d6f53a6d3321eecbe1e1a7ed795cb153070c8744e05b82d070483e28",
+  "name": "didar-package-review-negative-missing-key-package-20261018080328338-54401542",
+  "role": "negative-missing-key",
+  "actual_close": {
+    "ExitCode": 1,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T08:08:52.729807196Z"
+  },
+  "anonymous_volumes_removed": [],
+  "retired_early": true,
+  "at": "2026-10-18T08:08:53.092Z"
+}

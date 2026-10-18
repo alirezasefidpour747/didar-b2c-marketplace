@@ -1,0 +1,14 @@
+{
+  "label": "prepared-images-corrected",
+  "command": "bash",
+  "args": [
+    "scripts/build-prepared-images.sh",
+    "--reuse-build"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 39580,
+  "observed_by": 39571,
+  "observed_at_utc": "2026-10-18T07:37:42.066Z"
+}

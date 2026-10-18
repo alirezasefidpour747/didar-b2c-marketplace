@@ -1,0 +1,14 @@
+{
+  "label": "prepared-images-contained-links",
+  "command": "bash",
+  "args": [
+    "scripts/build-prepared-images.sh",
+    "--reuse-build"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 52590,
+  "observed_by": 52581,
+  "observed_at_utc": "2026-10-18T08:02:51.690Z"
+}

@@ -1,0 +1,19 @@
+{
+  "run_id": "package-20261018073024528-22e6459c",
+  "observer": {
+    "pid": 38255,
+    "state": "R",
+    "ppid": 38248,
+    "pgid": 38255,
+    "start_ticks": "1538007",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  },
+  "child": {
+    "pid": 38262,
+    "state": "R",
+    "ppid": 38255,
+    "pgid": 38262,
+    "start_ticks": "1538011",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  }
+}

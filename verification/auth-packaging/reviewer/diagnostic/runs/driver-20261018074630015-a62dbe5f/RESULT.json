@@ -1,0 +1,25 @@
+{
+  "run_id": "driver-20261018074630015-a62dbe5f",
+  "status": "PASS",
+  "failure": null,
+  "result": {
+    "node": "24.22.0",
+    "platform": "linux",
+    "arch": "x64",
+    "native_pg_plain": 1,
+    "inferred_plain_ssl": {
+      "rejectUnauthorized": false
+    },
+    "inferred_disabled_ssl": false,
+    "inferred_ssl_native_error": "The server does not support SSL connections",
+    "sdk_plain": {
+      "kind": "BOUNDED_DIAGNOSTIC_TIMEOUT"
+    },
+    "sdk_plain_elapsed_ms": 8001,
+    "sdk_disable": 1,
+    "status": "PASS"
+  },
+  "cleanup": "PASS",
+  "wrapper_exit": "NOT_YET_OBSERVED_BY_TOOL_PARENT",
+  "at": "2026-10-18T07:48:04.691Z"
+}

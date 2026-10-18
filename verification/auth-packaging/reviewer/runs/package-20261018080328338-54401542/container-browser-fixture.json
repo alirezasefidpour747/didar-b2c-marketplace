@@ -1,0 +1,7 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "api": "http://127.0.0.1:9000",
+  "web": "https://127.0.0.1:3000",
+  "root": "/app",
+  "linked_id": "bracelet"
+}

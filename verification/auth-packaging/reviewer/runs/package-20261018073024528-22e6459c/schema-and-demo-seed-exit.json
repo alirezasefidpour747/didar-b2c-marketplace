@@ -1,0 +1,10 @@
+{
+  "run_id": "package-20261018073024528-22e6459c",
+  "stage": "schema-and-demo-seed",
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "observed_at": "2026-10-18T07:31:28.325Z",
+  "observer_pid": 38262,
+  "child_pid": 38853
+}

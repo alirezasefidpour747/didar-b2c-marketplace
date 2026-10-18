@@ -1,0 +1,7 @@
+{
+  "observed_exit_code": 1,
+  "signal": null,
+  "observer": "functions tool write_stdin",
+  "session_id": 43000,
+  "at": "2026-10-18T07:46:29.936Z"
+}

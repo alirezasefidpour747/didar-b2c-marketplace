@@ -1,0 +1,31 @@
+{
+  "run_id": "provenance-20261018081109674-2709dec2",
+  "parent_run": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "failure": null,
+  "result": {
+    "status": "PASS",
+    "actual": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "24.22.0",
+      "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+      "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37",
+      "source_files": 395
+    },
+    "expected_source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "expected_outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37",
+    "comparison": "source/output exact; runtime Node/platform recorded, not silently required to equal builder Node",
+    "container": {
+      "Id": "7cdf0d18df374ac1fd653a0b2852b773a63c1dda105754e74d682a599255311d",
+      "Image": "sha256:98753972be374eede0b5daf13fcc49ceb74993bafb9393a87faba56de62e6d57",
+      "Mounts": [],
+      "Readonly": true,
+      "NetworkMode": "none",
+      "ExitCode": 0,
+      "Running": false
+    }
+  },
+  "wrapper_exit": "NOT_YET_OBSERVED_BY_TOOL_PARENT",
+  "at": "2026-10-18T08:12:12.171Z"
+}

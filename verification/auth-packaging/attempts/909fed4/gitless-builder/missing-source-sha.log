@@ -1,0 +1,11 @@
+file:///workspace/work/auth-gitless-lh5Vp3/source/scripts/deployment/package-storefront.mjs:12
+if (!/^[a-f0-9]{40}$/.test(sourceSha || '')) throw Error('Exact DIDAR_PACKAGE_SOURCE_SHA required when Git is excluded from build context')
+                                                   ^
+
+Error: Exact DIDAR_PACKAGE_SOURCE_SHA required when Git is excluded from build context
+    at file:///workspace/work/auth-gitless-lh5Vp3/source/scripts/deployment/package-storefront.mjs:12:52
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

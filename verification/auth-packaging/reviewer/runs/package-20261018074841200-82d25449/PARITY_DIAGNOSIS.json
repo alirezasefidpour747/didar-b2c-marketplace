@@ -1,0 +1,27 @@
+{
+  "run_id": "package-20261018074841200-82d25449",
+  "status": "FAIL_RETAINED",
+  "root_test_files": {
+    "files": 52,
+    "aggregate": "9775326f2a325fe527927c4fb713c921a6cbd6e71d7d9f64b64d9df54ebd57a1"
+  },
+  "reviewer_sources_unchanged": true,
+  "changed_packaging_sources": [
+    {
+      "path": "scripts/deployment/package-storefront.mjs",
+      "initial": "1e192e7fdf43b8ea135a7e01097d0092368ce9e4c1f3b7c37bbbddb0947e2ec1",
+      "current": "c301a20457a69a5038566fd99bd2bda4f2c02ac8c367558327cb393f3f64ef81"
+    },
+    {
+      "path": "scripts/deployment/verify-package.mjs",
+      "initial": "468cf53a613c315e5b051709ff1111cbaa904d97b6a57d69ea21a8ab5cad7d75",
+      "current": "ceb1c1689d21b39e65a81b5a30d9de323db8d2c29ad389dec435fe857d6675b2"
+    },
+    {
+      "path": "docs/AUTH_DEPLOYMENT_PACKAGING.md",
+      "initial": "5dfd252776ec7d846e0bcaf27b0b01595796c9013968dcd48ba414896f726aca",
+      "current": "989ee25c7bd2cbe04d24b7a27269eb261c47516dcac4c737a11a72e4dd08358a"
+    }
+  ],
+  "coordinator_disclosure": "Implementer began next packaging correction after immutable image private-Next exit1, before bounded readiness/finally finished. No claim of continuous packaging-source freeze; images remained immutable with no workspace mounts."
+}

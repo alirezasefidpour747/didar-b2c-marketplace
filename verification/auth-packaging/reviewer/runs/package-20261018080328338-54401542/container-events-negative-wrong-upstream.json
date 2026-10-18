@@ -1,0 +1,22 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "role": "negative-wrong-upstream",
+  "container_id": "6da5aa612eab0983e4996e100936b097c93c193cae2572b0db8e3138a580ac64",
+  "actual_close": {
+    "ExitCode": 1,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T08:09:00.304364042Z"
+  },
+  "events": [
+    {
+      "stage": "package-verified",
+      "source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+      "content_sha256": "2163dc0d9191b65475ebf1172fc624b4613bfaca71f5dad5d305fa87f57fce18",
+      "files": 3799
+    }
+  ],
+  "startup_errors": [
+    "Packaged Next must be the private loopback upstream"
+  ]
+}

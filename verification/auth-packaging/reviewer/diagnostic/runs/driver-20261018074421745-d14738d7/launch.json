@@ -1,0 +1,9 @@
+{
+  "run_id": "driver-20261018074421745-d14738d7",
+  "root": "/workspace/didar-b2c-marketplace",
+  "scratch": "/workspace/work/driver-20261018074421745-d14738d7",
+  "candidate": "909fed440806f2032ebd6cd14bc3f560a28b9f41",
+  "image": "sha256:5f260813c4df50dce73134954ec1741fde3a08f2f5c9b3022543f5d8a2b16166",
+  "script_sha256": "6bcdad67bfb15a35ea386d4100d62a70e75f4c8270f17b4ccb515b4c420f8d0f",
+  "scope": "Owned read-only driver/config diagnosis; no auth or business implementation/test changes"
+}

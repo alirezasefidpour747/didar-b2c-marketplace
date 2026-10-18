@@ -1,0 +1,176 @@
+{
+  "status": "PASS",
+  "observed_stages": [
+    {
+      "stage": "prepare",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 34285
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; prepared-images wrapper completion was observed through write_stdin session77249. This records observed closes, not log-summary inference."
+    },
+    {
+      "stage": "prepared-images",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 34417
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; prepared-images wrapper completion was observed through write_stdin session77249. This records observed closes, not log-summary inference."
+    },
+    {
+      "stage": "source-provenance",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 34698
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; prepared-images wrapper completion was observed through write_stdin session77249. This records observed closes, not log-summary inference."
+    },
+    {
+      "stage": "artifact-provenance",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 37954
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; prepared-images wrapper completion was observed through write_stdin session77249. This records observed closes, not log-summary inference."
+    },
+    {
+      "stage": "prepared-images-corrected",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 39580
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "retire-failed-artifact-images",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 39761
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "retire-owned-build-cache",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 39897
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "source-provenance-corrected",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 39953
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "artifact-provenance-corrected",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 42883
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "gitless-builder",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 45685
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "prepared-images-contained-links",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 52590
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "retire-superseded-api-image",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 52815
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "source-provenance-contained-links",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 53129
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "retire-superseded-frontend-image",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 53191
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "artifact-provenance-contained-links",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 55984
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "gitless-builder-contained-links",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 56035
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0; corrected build observed through write_stdin session59249, contained-links build session20166, gitless builders sessions6973/43883. Data records parent close observations, not log-summary inference."
+    },
+    {
+      "stage": "final-audit",
+      "command_child_close": {
+        "code": 0,
+        "signal": null,
+        "child_pid": 61340
+      },
+      "wrapper_tool_observed_exit_code": 0,
+      "observation": "Actual exec tool returned exit_code0 at 2026-10-18T08:14:56Z; structured source/image/receipt/screenshot/provenance/cleanup audit, no new business test execution."
+    }
+  ],
+  "recorded_at_utc": "2026-10-18T08:15:09.016248+00:00"
+}

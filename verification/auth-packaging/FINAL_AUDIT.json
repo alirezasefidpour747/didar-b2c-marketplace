@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "baseline": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+  "reviewed_packaging_source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+  "primary_run": "verification/auth-packaging/reviewer/runs/package-20261018080328338-54401542",
+  "review": "verification/auth-packaging/reviewer/FINAL_REVIEW.json",
+  "frozen_test_files": 52,
+  "frozen_reviewer_files": 8,
+  "checked_actual_exit_receipts": true,
+  "expected_negative_exit_codes": 1,
+  "protected_containers": 10,
+  "new_business_tests_executed_by_this_audit": false,
+  "at": "2026-10-18T08:14:56.803Z"
+}

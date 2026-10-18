@@ -1,0 +1,9 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "OBSERVED",
+  "container_id": "b4ed7ebfb4e6716914b632953dff8df78f0208a998ce1008f228f6eda1381586",
+  "code": 0,
+  "oom_killed": false,
+  "error": "",
+  "finished_at": "2026-10-18T08:10:19.001349886Z"
+}

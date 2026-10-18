@@ -1,0 +1,10 @@
+{
+  "name": "missing-source-sha",
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "child_pid": 56042,
+  "observed_by": 56035,
+  "expected_code": 1,
+  "at": "2026-10-18T08:03:19.698Z"
+}

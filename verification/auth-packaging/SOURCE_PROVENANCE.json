@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "baseline": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+  "reviewed_packaging_source_sha": "9846b5042e90d06d14d00b5fefdf67ebba455ec0",
+  "unchanged_application_source": true,
+  "compiled_evidence": "INHERITED_PR25_EXACT_SOURCE_OUTPUT_RECEIPT_NEWLY_COMPARED_NOT_REBUILT",
+  "inherited_tested_application_sha": "fb9daec7a947f234e7931c63f62d70e92e273c76",
+  "compiled_receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+  },
+  "packaging_files": [
+    {
+      "path": "Dockerfile",
+      "sha256": "1562abe3350e1c9a842be8dbfdd0a294d823161c84681d1b54a0145bc9155177"
+    },
+    {
+      "path": "Dockerfile.prebuilt",
+      "sha256": "df13135d64a09e3e786f5b99da8b8c369e183b1aed9613ea414e436855d34518"
+    },
+    {
+      "path": "Dockerfile.storefront",
+      "sha256": "82c38793769080cd8f1bfa870596583386eac0e5d24f681878e19be911237c97"
+    },
+    {
+      "path": "compose.yaml",
+      "sha256": "bc1240ba5c6c07f1ef3b007325486d6089ddd9f49a3186a6cd41c090457ccf6d"
+    },
+    {
+      "path": "scripts/build-prepared-images.sh",
+      "sha256": "2662d1760536e74899f24e51b9b03b06708dcba681ab305b3413f22061f917f2"
+    },
+    {
+      "path": "scripts/configure.mjs",
+      "sha256": "79736e1677c2605de5b52fecdcc19f41055469c06dcba43ffe968ec0b0780bd6"
+    },
+    {
+      "path": "scripts/test-compose.mjs",
+      "sha256": "3579ada0b94c37a2bb11be1790962906ca5ae877a2fa642af0736a7763f8d684"
+    },
+    {
+      "path": "scripts/deployment/package-storefront.mjs",
+      "sha256": "c301a20457a69a5038566fd99bd2bda4f2c02ac8c367558327cb393f3f64ef81"
+    },
+    {
+      "path": "scripts/deployment/verify-package.mjs",
+      "sha256": "496e9628172ab68e24cb6e389a6b5fd5de400f7056e0baf5dc2613275c070a7e"
+    },
+    {
+      "path": "scripts/deployment/storefront.mjs",
+      "sha256": "47448841d9c6507d750817317e0b05225770025ab37fe6f424b7e0bf1db584da"
+    },
+    {
+      "path": "scripts/deployment/health.mjs",
+      "sha256": "c700a0f4c39e3925192ca1678b7fbe92830cd38212bdc71434ed49a8f2b95a6b"
+    },
+    {
+      "path": "tests/auth-hardening.test.ts",
+      "sha256": "144ccc91f1837b74ab4660fcd8b0571d38b1b19bca827e397551a03f5da462ec"
+    },
+    {
+      "path": "tests/native-product-targets.test.ts",
+      "sha256": "4d90277539ab5b80543523f587c1a3705462629d767defa46ff2c020e88d8210"
+    }
+  ],
+  "packaging_aggregate": "5375e792198d938789b7fe1e62796d4dd8c110018d1aa4b1ae796dc462acab28",
+  "new_functional_test_evidence": "SEPARATE_REVIEWER_RUNTIME_RECEIPTS",
+  "at": "2026-10-18T07:59:33.415Z"
+}

@@ -1,0 +1,8 @@
+{
+  "run_id": "provenance-20261018081109674-2709dec2",
+  "status": "PASS",
+  "owned_container_absent": true,
+  "no_mounts_or_volumes": true,
+  "protected_preserved": 10,
+  "original_receipt_unchanged": true
+}

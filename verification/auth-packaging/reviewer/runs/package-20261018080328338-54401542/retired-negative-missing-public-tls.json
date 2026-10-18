@@ -1,0 +1,16 @@
+{
+  "run_id": "package-20261018080328338-54401542",
+  "status": "PASS",
+  "id": "b490437af4cb4987c1236343321bd65016c1ddc88639bed74216f60facb5c8ef",
+  "name": "didar-package-review-negative-missing-public-tls-package-20261018080328338-54401542",
+  "role": "negative-missing-public-tls",
+  "actual_close": {
+    "ExitCode": 1,
+    "OOMKilled": false,
+    "Error": "",
+    "FinishedAt": "2026-10-18T08:08:56.310013275Z"
+  },
+  "anonymous_volumes_removed": [],
+  "retired_early": true,
+  "at": "2026-10-18T08:08:57.071Z"
+}

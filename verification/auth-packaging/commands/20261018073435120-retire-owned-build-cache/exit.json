@@ -1,0 +1,18 @@
+{
+  "label": "retire-owned-build-cache",
+  "command": "docker",
+  "args": [
+    "--host=unix:///var/run/docker.sock",
+    "buildx",
+    "prune",
+    "--force",
+    "--filter",
+    "id=zvt2eiuq6k8si7xqe0zjfuja1"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 39897,
+  "observed_by": 39890,
+  "observed_at_utc": "2026-10-18T07:34:35.195Z"
+}
