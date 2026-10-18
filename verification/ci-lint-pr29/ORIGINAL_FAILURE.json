@@ -1,0 +1,22 @@
+{
+  "baseline_head": "4ac8f9e8a3f95567fb83bed21e08a8b1d3673404",
+  "remote_head_verified_before_edit": true,
+  "original_run": 39116968405,
+  "original_job": 117644614806,
+  "conclusion": "failure",
+  "observed_validation_exit": 1,
+  "native_lint_errors": {
+    "vendor": 40,
+    "admin": 38,
+    "rule": "react-refresh/only-export-components"
+  },
+  "decoded_log_sha256": "fb217fb76747ec55c6f11e873d3b9b178c3cf91c6f7538c63e92dc04e6f12d7a",
+  "representation": "Decoded GitHub job log, newline-normalized; not raw download ZIP bytes",
+  "not_executed_after_original_lint_failure": [
+    "codegen",
+    "api-types",
+    "storefront-types",
+    "production-builds-backend-http-native-browser",
+    "fresh-no-demo-bootstrap"
+  ]
+}

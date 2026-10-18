@@ -1,0 +1,46 @@
+✔ admin: canonical Fast Refresh stays error-level with path-scoped options (783.997789ms)
+✔ admin: documented route config and handle coexist with the component (157.922575ms)
+✔ admin: documented widget configuration coexists with the component (18.166314ms)
+✔ admin: documented custom-fields factory may contain local components (14.785856ms)
+✔ admin: the actual SDK factory can use a named import alias (16.557441ms)
+✔ admin: route-only export names do not leak into ordinary components (10.752299ms)
+✔ admin: route helpers are not route entrypoints (17.095147ms)
+✔ admin: unexpected route exports remain errors (8.43144ms)
+✔ admin: widget handle is not an allowed config export (10.478809ms)
+✔ admin: unexpected custom-fields exports remain errors (10.811028ms)
+✔ admin: unexpected custom-fields helper functions remain errors (10.925749ms)
+✔ admin: wildcard custom-fields exports remain errors (13.136999ms)
+✔ admin: a similarly named local function is not the SDK contract (15.570452ms)
+✔ admin: a factory from another module is not the SDK contract (10.648373ms)
+✔ admin: a type-only import is not a runtime SDK wrapper (10.785448ms)
+✔ admin: an inline type-only import is not a runtime SDK wrapper (8.874454ms)
+✔ admin: an unsupported namespace call stays on the upstream path (16.088108ms)
+✔ admin: the SDK exception does not apply outside custom-fields (9.83223ms)
+✔ admin: other recommended lint rules still run inside custom-fields (10.597396ms)
+✔ vendor: canonical Fast Refresh stays error-level with path-scoped options (25.96835ms)
+✔ vendor: documented route config and handle coexist with the component (8.305721ms)
+✔ vendor: documented widget configuration coexists with the component (6.761276ms)
+✔ vendor: documented custom-fields factory may contain local components (6.84464ms)
+✔ vendor: the actual SDK factory can use a named import alias (6.180725ms)
+✔ vendor: route-only export names do not leak into ordinary components (6.32329ms)
+✔ vendor: route helpers are not route entrypoints (5.808047ms)
+✔ vendor: unexpected route exports remain errors (5.606124ms)
+✔ vendor: widget handle is not an allowed config export (13.732687ms)
+✔ vendor: unexpected custom-fields exports remain errors (7.748517ms)
+✔ vendor: unexpected custom-fields helper functions remain errors (7.387095ms)
+✔ vendor: wildcard custom-fields exports remain errors (5.910801ms)
+✔ vendor: a similarly named local function is not the SDK contract (6.595338ms)
+✔ vendor: a factory from another module is not the SDK contract (5.830611ms)
+✔ vendor: a type-only import is not a runtime SDK wrapper (6.534696ms)
+✔ vendor: an inline type-only import is not a runtime SDK wrapper (5.354858ms)
+✔ vendor: an unsupported namespace call stays on the upstream path (5.554678ms)
+✔ vendor: the SDK exception does not apply outside custom-fields (5.30312ms)
+✔ vendor: other recommended lint rules still run inside custom-fields (5.931282ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1496.533313

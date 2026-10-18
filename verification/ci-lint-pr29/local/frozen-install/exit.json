@@ -1,0 +1,14 @@
+{
+  "stage": "frozen-install",
+  "command": "bun",
+  "args": [
+    "install",
+    "--frozen-lockfile"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 70859,
+  "observer_pid": 70850,
+  "at": "2026-10-18T10:06:20.914Z"
+}

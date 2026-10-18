@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "scope": "Independent proof of original SDK-object false positives; no application/configuration edits",
+  "plugin_version": "0.4.26",
+  "upstream_rule_sha256": "ade26a616c2b15206d6a23f34228ffad12d76c371c558ede3108c623e014d972",
+  "cases": [
+    {
+      "name": "ordinary-component",
+      "expected_findings": 0,
+      "actual_findings": []
+    },
+    {
+      "name": "sdk-object-default",
+      "expected_findings": 2,
+      "actual_findings": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "line": 1,
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "line": 1,
+          "severity": 2
+        }
+      ]
+    },
+    {
+      "name": "sdk-object-is-not-supported-by-customHOCs",
+      "expected_findings": 2,
+      "actual_findings": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "line": 1,
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "line": 1,
+          "severity": 2
+        }
+      ]
+    }
+  ]
+}

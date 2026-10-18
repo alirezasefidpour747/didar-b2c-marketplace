@@ -1,0 +1,352 @@
+✖ admin: documented route config and handle coexist with the component (1262.722497ms)
+✖ admin: documented widget configuration coexists with the component (21.847683ms)
+✖ admin: documented custom-fields factory may contain local components (23.277339ms)
+✖ admin: the actual SDK factory can use a named import alias (16.091957ms)
+✔ admin: route-only export names do not leak into ordinary components (30.458534ms)
+✔ admin: route helpers are not route entrypoints (9.686418ms)
+✔ admin: unexpected route exports remain errors (7.975146ms)
+✔ admin: widget handle is not an allowed config export (7.141335ms)
+✔ admin: unexpected custom-fields exports remain errors (10.887547ms)
+✔ admin: wildcard custom-fields exports remain errors (11.31762ms)
+✔ admin: a similarly named local function is not the SDK contract (9.984405ms)
+✔ admin: a factory from another module is not the SDK contract (7.132903ms)
+✔ admin: the SDK exception does not apply outside custom-fields (7.697419ms)
+✔ admin: other recommended lint rules still run inside custom-fields (11.161017ms)
+✖ vendor: documented route config and handle coexist with the component (34.654443ms)
+✖ vendor: documented widget configuration coexists with the component (10.20828ms)
+✖ vendor: documented custom-fields factory may contain local components (11.133981ms)
+✖ vendor: the actual SDK factory can use a named import alias (8.43263ms)
+✔ vendor: route-only export names do not leak into ordinary components (6.904852ms)
+✔ vendor: route helpers are not route entrypoints (14.784729ms)
+✔ vendor: unexpected route exports remain errors (5.90189ms)
+✔ vendor: widget handle is not an allowed config export (5.481741ms)
+✔ vendor: unexpected custom-fields exports remain errors (6.277823ms)
+✔ vendor: wildcard custom-fields exports remain errors (6.235279ms)
+✔ vendor: a similarly named local function is not the SDK contract (6.613004ms)
+✔ vendor: a factory from another module is not the SDK contract (22.702203ms)
+✔ vendor: the SDK exception does not apply outside custom-fields (7.189779ms)
+✔ vendor: other recommended lint rules still run inside custom-fields (6.433446ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 20
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1845.801371
+
+✖ failing tests:
+
+test at tests/native-sdk-lint.test.mjs:17:3
+✖ admin: documented route config and handle coexist with the component (1262.722497ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 14,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 55,
+  +     endColumn: 61,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:18:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 2, column: 14, nodeType: 'Identifier', messageId: 'namedExport', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 2, column: 55, nodeType: 'Identifier', messageId: 'namedExport', endLine: 2, endColumn: 61 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:20:3
+✖ admin: documented widget configuration coexists with the component (21.847683ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 14,
+  +     endColumn: 20,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:21:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 3, column: 14, nodeType: 'Identifier', messageId: 'namedExport', endLine: 3, endColumn: 20 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:23:3
+✖ admin: documented custom-fields factory may contain local components (23.277339ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 10,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.',
+  +     messageId: 'localComponents',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 16,
+  +     endColumn: 144,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: "Fast refresh can't handle anonymous components. Add a name to your export.",
+  +     messageId: 'anonymousExport',
+  +     nodeType: 'CallExpression',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:24:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.', line: 2, column: 10, nodeType: 'Identifier', messageId: 'localComponents', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: "Fast refresh can't handle anonymous components. Add a name to your export.", line: 3, column: 16, nodeType: 'CallExpression', messageId: 'anonymousExport', endLine: 3, endColumn: 144 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:26:3
+✖ admin: the actual SDK factory can use a named import alias (16.091957ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 10,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.',
+  +     messageId: 'localComponents',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 16,
+  +     endColumn: 130,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: "Fast refresh can't handle anonymous components. Add a name to your export.",
+  +     messageId: 'anonymousExport',
+  +     nodeType: 'CallExpression',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:27:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.', line: 2, column: 10, nodeType: 'Identifier', messageId: 'localComponents', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: "Fast refresh can't handle anonymous components. Add a name to your export.", line: 3, column: 16, nodeType: 'CallExpression', messageId: 'anonymousExport', endLine: 3, endColumn: 130 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:17:3
+✖ vendor: documented route config and handle coexist with the component (34.654443ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 14,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 55,
+  +     endColumn: 61,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:18:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 2, column: 14, nodeType: 'Identifier', messageId: 'namedExport', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 2, column: 55, nodeType: 'Identifier', messageId: 'namedExport', endLine: 2, endColumn: 61 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:20:3
+✖ vendor: documented widget configuration coexists with the component (10.20828ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 14,
+  +     endColumn: 20,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.',
+  +     messageId: 'namedExport',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:21:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.', line: 3, column: 14, nodeType: 'Identifier', messageId: 'namedExport', endLine: 3, endColumn: 20 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:23:3
+✖ vendor: documented custom-fields factory may contain local components (11.133981ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 10,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.',
+  +     messageId: 'localComponents',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 16,
+  +     endColumn: 144,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: "Fast refresh can't handle anonymous components. Add a name to your export.",
+  +     messageId: 'anonymousExport',
+  +     nodeType: 'CallExpression',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:24:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.', line: 2, column: 10, nodeType: 'Identifier', messageId: 'localComponents', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: "Fast refresh can't handle anonymous components. Add a name to your export.", line: 3, column: 16, nodeType: 'CallExpression', messageId: 'anonymousExport', endLine: 3, endColumn: 144 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/native-sdk-lint.test.mjs:26:3
+✖ vendor: the actual SDK factory can use a named import alias (8.43263ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   {
+  +     column: 10,
+  +     endColumn: 20,
+  +     endLine: 2,
+  +     line: 2,
+  +     message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.',
+  +     messageId: 'localComponents',
+  +     nodeType: 'Identifier',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   },
+  +   {
+  +     column: 16,
+  +     endColumn: 130,
+  +     endLine: 3,
+  +     line: 3,
+  +     message: "Fast refresh can't handle anonymous components. Add a name to your export.",
+  +     messageId: 'anonymousExport',
+  +     nodeType: 'CallExpression',
+  +     ruleId: 'react-refresh/only-export-components',
+  +     severity: 2
+  +   }
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (file:///workspace/work/didar-pr29/tests/native-sdk-lint.test.mjs:27:12)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { ruleId: 'react-refresh/only-export-components', severity: 2, message: 'Fast refresh only works when a file only exports components. Move your component(s) to a separate file.', line: 2, column: 10, nodeType: 'Identifier', messageId: 'localComponents', endLine: 2, endColumn: 20 }, { ruleId: 'react-refresh/only-export-components', severity: 2, message: "Fast refresh can't handle anonymous components. Add a name to your export.", line: 3, column: 16, nodeType: 'CallExpression', messageId: 'anonymousExport', endLine: 3, endColumn: 130 } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

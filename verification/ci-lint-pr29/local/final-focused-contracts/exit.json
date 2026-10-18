@@ -1,0 +1,14 @@
+{
+  "stage": "final-focused-contracts",
+  "command": "node",
+  "args": [
+    "--test",
+    "tests/native-sdk-lint.test.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 71352,
+  "observer_pid": 71334,
+  "at": "2026-10-18T10:10:30.253Z"
+}

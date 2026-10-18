@@ -1,0 +1,14 @@
+{
+  "stage": "original-root-lint",
+  "command": "bun",
+  "args": [
+    "run",
+    "lint"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 71358,
+  "observer_pid": 71335,
+  "at": "2026-10-18T10:10:32.404Z"
+}

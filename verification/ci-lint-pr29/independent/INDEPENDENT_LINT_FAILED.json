@@ -1,0 +1,644 @@
+{
+  "status": "FAIL",
+  "message": "unsupported namespace remains upstream\n\n1 !== 0\n",
+  "completed_cases": 30,
+  "results": [
+    {
+      "panel": "admin",
+      "name": "ordinary component remains valid",
+      "path": "src/components/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "route config+handle allowed",
+      "path": "src/routes/independent-probe/page.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config",
+            "handle"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "route root page allowed",
+      "path": "src/routes/page.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config",
+            "handle"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "widget config allowed",
+      "path": "src/widgets/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "actual SDK direct object default allowed",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "SDK named import alias allowed",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "SDK default type assertion preserved",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "SDK object satisfies wrapper preserved",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "original Vite primitive constant allowance preserved",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "type exports remain ignored by Refresh",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "NO_DIAGNOSTICS",
+      "status": "PASS",
+      "diagnostics": [],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "ordinary metadata name config not globally exempt",
+      "path": "src/components/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "ordinary metadata name handle not globally exempt",
+      "path": "src/components/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "route helper is not page entrypoint",
+      "path": "src/routes/independent-probe/helper.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "similarly named Page.tsx not exempt",
+      "path": "src/routes/independent-probe/Page.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "route arbitrary object export rejected",
+      "path": "src/routes/independent-probe/page.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config",
+            "handle"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "route arbitrary helper rejected",
+      "path": "src/routes/independent-probe/page.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config",
+            "handle"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "widget handle not allowed",
+      "path": "src/widgets/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowExportNames": [
+            "config"
+          ]
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "widget config exemption not in components subfolder",
+      "path": "src/components/widgets/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield config not inherited from route allowlist",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield handle not inherited from route allowlist",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield state object rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield helper rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield renamed noncomponent export rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "namedExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "customfield wildcard export rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "exportAll",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "fake same-named local helper rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "wrong module helper rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "wrong imported SDK member aliased to factory rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "side effect import does not authorize local helper",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "type-only declaration import rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    },
+    {
+      "panel": "admin",
+      "name": "type-only inline import rejected",
+      "path": "src/custom-fields/independent-probe.tsx",
+      "expected": "REFRESH_ERROR",
+      "status": "PASS",
+      "diagnostics": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "localComponents",
+          "severity": 2
+        },
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "messageId": "anonymousExport",
+          "severity": 2
+        }
+      ],
+      "effective_rule": [
+        2,
+        {
+          "allowConstantExport": true,
+          "allowMercurCustomFields": true
+        }
+      ]
+    }
+  ],
+  "source": [
+    {
+      "path": "apps/admin/eslint.config.js",
+      "sha256": "c7754856e8dfe190b0e118546d504d163c976a8390d2f984e9ad1f0da567430b"
+    },
+    {
+      "path": "apps/vendor/eslint.config.js",
+      "sha256": "c7754856e8dfe190b0e118546d504d163c976a8390d2f984e9ad1f0da567430b"
+    },
+    {
+      "path": "scripts/eslint/mercur-dashboard-refresh.mjs",
+      "sha256": "71d21db11d864311dbf8cf776a57323dfa0e9c705f92fe7e1681e6ffbcba6e11"
+    },
+    {
+      "path": "tests/native-sdk-lint.test.mjs",
+      "sha256": "788fa57bc1a7bf3f617a2e9f9f5073ac9480c1ef1ee354a49e55c5f4f7baff66"
+    },
+    {
+      "path": "scripts/ci/validate.mjs",
+      "sha256": "120babc7bdd47bb2dad30add20435690572497ca8143158fcb573437a568095d"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "419fc905d6300ac7e7cc38ea6942a6e1924f0718a7897a352aad00a613ef4286"
+    }
+  ],
+  "reviewer_script_sha256": "22da812de3c9209bed480240708d7bd282fa402069f18f2d98c4d200e615d56d"
+}

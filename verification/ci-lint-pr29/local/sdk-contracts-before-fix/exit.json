@@ -1,0 +1,14 @@
+{
+  "stage": "sdk-contracts-before-fix",
+  "command": "node",
+  "args": [
+    "--test",
+    "tests/native-sdk-lint.test.mjs"
+  ],
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "child_pid": 71027,
+  "observer_pid": 71018,
+  "at": "2026-10-18T10:07:51.272Z"
+}
