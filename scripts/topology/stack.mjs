@@ -68,7 +68,10 @@ try {
     MERCUR_DISABLE_TELEMETRY: 'true', NEXT_TELEMETRY_DISABLED: '1', DIDAR_PUBLIC_ORIGIN: 'https://didar.test', DIDAR_PUBLIC_ORIGIN_VERIFIED: 'true',
     DIDAR_AUTH_INGRESS_MODE: 'verified-relay', DIDAR_AUTH_NATIVE_URL: 'http://127.0.0.1:9000', DIDAR_AUTH_INGRESS_HOST: '0.0.0.0', DIDAR_AUTH_INGRESS_PORT: '3000', DIDAR_PRIVATE_NEXT_PORT: '3001',
     DIDAR_AUTH_INGRESS_TLS_CERT_FILE: '/run/didar-tls/cert.pem', DIDAR_AUTH_INGRESS_TLS_KEY_FILE: '/run/didar-tls/key.pem', NODE_EXTRA_CA_CERTS: '/run/didar-tls/cert.pem',
-    DIDAR_AUTH_HEALTH_SERVER_NAME: 'didar.test', MEDUSA_BACKEND_URL: 'http://127.0.0.1:9000', NO_PROXY: '*',
+    DIDAR_AUTH_HEALTH_SERVER_NAME: 'didar.test', MEDUSA_BACKEND_URL: 'http://127.0.0.1:9000', NO_PROXY: '*', no_proxy: '*',
+    // The API base was built in a managed executor. Its inherited build proxy
+    // is not an isolated runtime dependency; clear both cases, not TLS checks.
+    HTTP_PROXY: '', HTTPS_PROXY: '', ALL_PROXY: '', http_proxy: '', https_proxy: '', all_proxy: '',
   }
   const saveEnv = () => writeFile(envFile, Object.entries(env).map(([name, value]) => name + '=' + value).join('\n') + '\n', { mode: 0o600 })
   await saveEnv()
