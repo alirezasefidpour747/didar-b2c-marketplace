@@ -20,12 +20,13 @@ package_dir=$(mktemp -d "$PWD/.local/prepared-images.XXXXXX")
 trap 'rm -rf "$package_dir"' EXIT
 node scripts/deployment/package-storefront.mjs "$package_dir/storefront"
 # Preserve original dependency links only INSIDE the image. No workspace bind mount.
-# Credentials, machine state and verification logs are never image inputs.
+# Credentials and machine state are excluded; root-only ./verification must
+# not remove Medusa Auth providers/verification inside installed dependencies.
 tar --exclude=.git --exclude=.env --exclude='.env.*' --exclude=.dockerignore \
   --exclude=.aws --exclude=.ssh --exclude=.oci --exclude='*.pem' --exclude='*.key' \
   --exclude='*.p12' --exclude='*.pfx' --exclude='*.dump' --exclude='*.bundle' --exclude=backups \
   --exclude=.local --exclude=coverage --exclude=test-results --exclude=playwright-report \
-  --exclude=verification --exclude=.turbo --exclude='*/.next/cache' --exclude='*/.next/standalone' \
+  --exclude=./verification --exclude=.turbo --exclude='*/.next/cache' --exclude='*/.next/standalone' \
   -czf "$package_dir/api-context.tar.gz" .
 sha256sum "$package_dir/api-context.tar.gz" "$package_dir/storefront/PACKAGING.json"
 docker build --build-arg "DIDAR_SOURCE_SHA=$source_sha" -f Dockerfile.prebuilt --target api -t "${DIDAR_API_IMAGE:-didar-gold-api:staging}" - < "$package_dir/api-context.tar.gz"
