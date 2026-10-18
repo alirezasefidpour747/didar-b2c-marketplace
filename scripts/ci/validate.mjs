@@ -21,6 +21,7 @@ try {
   run('codegen', 'bun', ['run', '--cwd', 'packages/api', 'codegen']);
   run('api-types', 'bun', ['x', 'tsc', '--noEmit', '-p', 'packages/api/tsconfig.json']);
   run('storefront-types', 'bun', ['x', 'tsc', '--noEmit', '-p', 'apps/storefront/tsconfig.json']);
+  run('focused-cms-media-ssr', 'node', ['scripts/ci/cms-media.mjs']);
   // Panel production builds already run tsc -b; no fictitious root check-types success.
   run('production-builds-backend-http-native-browser', 'bun', ['run', 'local:test']);
   run('fresh-no-demo-bootstrap', 'bun', ['run', 'local:test', '--reuse-build', '--no-demo-install-only']);

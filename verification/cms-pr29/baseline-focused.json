@@ -1,0 +1,76 @@
+{
+  "results": [
+    {
+      "name": "404 before hydration becomes accessible fallback",
+      "status": "FAIL",
+      "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.photo-placeholder')\nExpected: \"تصویر در دسترس نیست\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.photo-placeholder') with timeout 5000ms\n  - waiting for locator('.photo-placeholder')\n",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "successful SSR image and new source 404 after hydration",
+      "status": "PASS"
+    },
+    {
+      "name": "responsive srcSet failure recovers when descriptor changes",
+      "status": "FAIL",
+      "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.photo-placeholder')\nExpected: \"تصویر در دسترس نیست\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.photo-placeholder') with timeout 5000ms\n  - waiting for locator('.photo-placeholder')\n",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "CMS server markup hydrates on desktop and mobile with pre-hydration 404",
+      "status": "FAIL",
+      "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.cms-full_bleed_media .photo-placeholder')\nExpected: \"تصویر در دسترس نیست\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.cms-full_bleed_media .photo-placeholder') with timeout 5000ms\n  - waiting for locator('.cms-full_bleed_media .photo-placeholder')\n",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "private credentials isolate bytes, abort stale response and revoke object URLs",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/missing-before",
+      "authorization": null
+    },
+    {
+      "path": "/good",
+      "authorization": null
+    },
+    {
+      "path": "/missing-after",
+      "authorization": null
+    },
+    {
+      "path": "/recovered",
+      "authorization": null
+    },
+    {
+      "path": "/missing-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed"
+    },
+    {
+      "path": "/private",
+      "authorization": "denied"
+    },
+    {
+      "path": "/private",
+      "authorization": "slow"
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed-again"
+    }
+  ],
+  "failed": 3
+}
