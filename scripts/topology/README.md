@@ -87,7 +87,11 @@ all PostgreSQL/Redis/media volumes, credentials,16-table fingerprints including
 nonce/counter rows before new auth, existing session and uploaded bytes. It
 inspects the new fixed upstream IP and changes only that literal Nginx upstream
 address; exact sender allowlists and TLS CA/name/key stay unchanged. New
-container IDs and a changed namespace inode are required in this separate gate.
+container IDs, absent old containers and changed nonempty Docker SandboxID/Key
+are required, plus exact frontend network mode, shared-loopback health and
+post-recreation separate-bridge private-port denial. Observed Linux namespace
+inodes are recorded; a freed inode can be reused across time, so numeric
+inequality is not treated as a historical identity guarantee.
 A long artifact recreation is not presented as a still-fresh30-second replay;
 that property is checked by the separate fast process-restart gate.
 

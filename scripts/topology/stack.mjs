@@ -237,7 +237,17 @@ try {
     await docker('recreate-api-release-gate', ['exec', api, 'touch', '/tmp/didar-topology-start']);
     await wait('Recreated API', async () => (await command('recreated-api-health-' + Date.now(), 'docker', ['exec', api, 'node', '-e', "fetch('http://127.0.0.1:9000/health').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))"], { expected: [0, 1] })).code === 0, 180000);
     const namespace = await docker('recreated-api-namespace', ['exec', api, 'readlink', '/proc/self/ns/net']);
-    assert.notEqual(namespace, oldNamespace);
+    // A freed Linux namespace inode can be reused across time. Docker sandbox
+    // identity, removed old objects and live sharing/isolation are the oracle.
+    assert.match(originalImage.NetworkSettings.SandboxID, /^[a-f0-9]{64}$/)
+    assert.match(candidate.NetworkSettings.SandboxID, /^[a-f0-9]{64}$/)
+    assert.notEqual(candidate.NetworkSettings.SandboxID, originalImage.NetworkSettings.SandboxID)
+    assert.ok(candidate.NetworkSettings.SandboxKey && originalImage.NetworkSettings.SandboxKey)
+    assert.notEqual(candidate.NetworkSettings.SandboxKey, originalImage.NetworkSettings.SandboxKey)
+    for (const [role, id] of Object.entries(original)) {
+      const absent = await command('recreated-old-' + role + '-absent', 'docker', ['inspect', id], { expected: [1] })
+      assert.ok(absent.stderr.toString().includes('No such object: ' + id) || absent.stderr.toString().includes('No such container: ' + id))
+    }
     // Before ANY new login/admission, require exact counter/nonce rows too. Their
     // timestamps may now be older than v1 freshness: do NOT claim a fresh replay.
     assert.deepEqual(await snapshot(), before);
@@ -249,6 +259,14 @@ try {
     await wait('Recreated packaged frontend', async () => (await command('recreated-frontend-health-' + Date.now(), 'docker', ['exec', frontend, 'node', 'runtime/health.mjs'], { expected: [0, 1] })).code === 0, 180000);
     const frontNamespace = await docker('recreated-frontend-namespace', ['exec', frontend, 'readlink', '/proc/self/ns/net']);
     assert.equal(frontNamespace, namespace);
+    const joinedFront = await inspect(frontend, 'recreated-frontend-exact-network-mode')
+    assert.equal(joinedFront.HostConfig.NetworkMode, 'container:' + api)
+    assert.ok(!joinedFront.HostConfig.PortBindings || Object.keys(joinedFront.HostConfig.PortBindings).length === 0)
+    const sharedHealth = Number(await docker('recreated-frontend-loopback-api-health', ['exec', frontend, 'node', '-e', "fetch('http://127.0.0.1:9000/health').then(r=>{process.stdout.write(String(r.status));if(r.status!==200)process.exitCode=1}).catch(()=>process.exitCode=1)"])); assert.equal(sharedHealth, 200)
+    const privateAuth = JSON.parse(await docker('recreated-unsigned-private-auth', ['exec', api, 'node', '-e', "const body=JSON.stringify({email:'customer@didar.test',password:'DidarDemo2026!'});Promise.all([9000,3001].map(port=>fetch('http://127.0.0.1:'+port+(port===9000?'/didar/login':'/api/didar/login'),{method:'POST',headers:{'content-type':'application/json'},body}).then(r=>r.status))).then(x=>process.stdout.write(JSON.stringify(x)))"])); assert.deepEqual(privateAuth, [403, 403])
+    for (const port of [9000, 3001]) {
+      const denied = await command('recreated-bridge-private-port-denied-' + port, 'docker', ['exec', edge, 'curl', '--noproxy', '*', '--silent', '--show-error', '--connect-timeout', '2', '--max-time', '4', 'http://' + newIp + ':' + port + '/health'], { expected: [7] }); assert.equal(denied.code, 7)
+    }
     const packageHash = await docker('recreated-package-manifest-hash', ['exec', frontend, 'node', '-e', "process.stdout.write(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('PACKAGING.json')).digest('hex'))"]);
     assert.equal(packageHash, manifestExpected);
     const acceptedConfig = await readFile(join(config, 'nginx.conf'), 'utf8')
@@ -271,7 +289,7 @@ try {
     for (const [path, email] of [['/auth/user/emailpass', 'native-admin@didar.test'], ['/auth/member/emailpass', 'native-supplier@didar.test']]) { const login = await rootHttp(path, { body: { email, password: 'DidarNative2026!' } }); assert.equal(login.status, 200); nativeStatuses.push(login.status) }
     runtime.api = api; runtime.frontend = frontend; runtime.relay_ip = newIp;
     await writeFile(runtimeFile, JSON.stringify(runtime), { mode: 0o600 });
-    await writeFile(join(recreateOutput, 'result.json'), JSON.stringify({ status: 'PASS', source_sha: input.source_sha, run_id: runId, old_container_ids: original, new_container_ids: { api, frontend }, old_namespace: oldNamespace, new_namespace: namespace, frontend_namespace: frontNamespace, observed_frozen_api_ip: newIp, fail_closed_status_while_down: closed.status, preserved_customer_session: 200, media_sha256: staticAfter.sha256, state_before: before, state_after_before_new_auth: preservedAfter, fresh_customer_login: newCustomer.status, native_admin_vendor_logins: nativeStatuses, six_overlays_matched: true, manifest_sha256: packageHash, exact_config_delta: 'Only inspected fixed relay upstream IPv4 address', trusted_sender_allowlists_unchanged: true, old_fixed_upstream_ip: apiIp, new_fixed_upstream_ip: newIp, relay_tls_name_and_ca_unchanged: true, long_recreate_fresh_replay_claimed: false, no_schema_seed_or_auth_counter_reset: true }, null, 2) + '\n');
+    await writeFile(join(recreateOutput, 'result.json'), JSON.stringify({ status: 'PASS', source_sha: input.source_sha, run_id: runId, old_container_ids: original, new_container_ids: { api, frontend }, old_namespace_observation: oldNamespace, new_namespace_observation: namespace, frontend_namespace: frontNamespace, namespace_inode_changed: oldNamespace !== namespace, kernel_inode_distinctness_claimed: false, old_docker_sandbox_id: originalImage.NetworkSettings.SandboxID, new_docker_sandbox_id: candidate.NetworkSettings.SandboxID, old_sandbox_key: originalImage.NetworkSettings.SandboxKey, new_sandbox_key: candidate.NetworkSettings.SandboxKey, frontend_network_mode: joinedFront.HostConfig.NetworkMode, shared_loopback_health: sharedHealth, private_unsigned_statuses: privateAuth, bridge_private_denials_curl_exit: [7, 7], observed_frozen_api_ip: newIp, fail_closed_status_while_down: closed.status, preserved_customer_session: 200, media_sha256: staticAfter.sha256, state_before: before, state_after_before_new_auth: preservedAfter, fresh_customer_login: newCustomer.status, native_admin_vendor_logins: nativeStatuses, six_overlays_matched: true, manifest_sha256: packageHash, exact_config_delta: 'Only inspected fixed relay upstream IPv4 address', trusted_sender_allowlists_unchanged: true, old_fixed_upstream_ip: apiIp, new_fixed_upstream_ip: newIp, relay_tls_name_and_ca_unchanged: true, long_recreate_fresh_replay_claimed: false, no_schema_seed_or_auth_counter_reset: true }, null, 2) + '\n');
     verificationOutcomes.force_recreate = 0;
   }
   
