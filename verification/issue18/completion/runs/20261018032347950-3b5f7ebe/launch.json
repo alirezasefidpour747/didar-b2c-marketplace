@@ -1,0 +1,56 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "root": "/workspace/didar-b2c-marketplace",
+  "scratch": "/workspace/work/issue18-completion-20261018032347950-3b5f7ebe",
+  "review_anchor": "c82f1968616f8c38072d215d54403012a8c9fadc",
+  "candidate_head": "c82f1968616f8c38072d215d54403012a8c9fadc",
+  "receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "tests": {
+    "files": 50,
+    "aggregate": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a",
+    "expected": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a"
+  },
+  "harness_files": [
+    {
+      "path": "bootstrap.mjs",
+      "sha256": "5f06fce2cb4be43140fbb3ced8a229aee9f83faca137104adcf2ca737742b908"
+    },
+    {
+      "path": "common.mjs",
+      "sha256": "643b40fa62ef9f3b1fb3fba80753f772249272ea2378af3b2c72d006808e7345"
+    },
+    {
+      "path": "launch.mjs",
+      "sha256": "f177b8b28bccdb8e1221e44cee272cedfc5123c29fb972d7366c9872070f6ee8"
+    },
+    {
+      "path": "observer.mjs",
+      "sha256": "3af6d48bbec667dce0c5825643ce1172cbe263ccf6ab5b6f7089a586fabeb240"
+    },
+    {
+      "path": "recover.mjs",
+      "sha256": "8ba5380d9c5726fea30aa843a990aee5491b8fe0a3075b6b55881ac229641d41"
+    },
+    {
+      "path": "reporter.cjs",
+      "sha256": "50fe26afa9c0fbd7050e004d3703ab6ff998734d4ecb459c92a623d3b23aa5ef"
+    },
+    {
+      "path": "runner.mjs",
+      "sha256": "69dae86cc3316771587e9c1c10bc2552daebb49742965e336bb216ad896d535f"
+    },
+    {
+      "path": "status.mjs",
+      "sha256": "b5977285da0d0846e33f594367fb1790b126b15913e50f76d749da7cb4314b42"
+    }
+  ],
+  "harness_aggregate": "7f7b9e8d070fa0ca4c436b6e6d2f9b3fbbf7ee07a6c318896a49198c610cc043",
+  "created_at": "2026-10-18T03:23:47.951Z",
+  "scope": "Same32 production browsers only; no unchanged backend/tooling/Jest/G4/restore rerun; no app/existing-test changes."
+}
