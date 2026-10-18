@@ -1,5 +1,6 @@
 import { test, expect, afterAll } from "bun:test";
 import http from "node:http";
+import https from "node:https";
 import { createHmac, randomBytes } from "node:crypto";
 import { Pool } from "../packages/api/node_modules/pg";
 import { signNetwork, HEADER } from "../packages/auth-network/index.cjs";
@@ -26,7 +27,7 @@ function send(
   return new Promise<{ status: number; data: any }>((resolve, reject) => {
     const url = new URL(path, origin),
       body = raw ?? JSON.stringify({ email, password: pass });
-    const req = http.request(
+    const req = (url.protocol === "https:" ? https : http).request(
       url,
       {
         method: "POST",

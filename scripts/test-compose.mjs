@@ -25,7 +25,8 @@ function loopbackPort(container, port) {
     throw new Error('Refusing demo tests on non-loopback application ports')
   return bindings[0].HostPort
 }
-const apiPort = loopbackPort(api, 9000), webPort = loopbackPort(web, 3000)
+// The packaged storefront shares the API network namespace; API owns both bindings.
+const apiPort = loopbackPort(api, 9000), webPort = loopbackPort(web.HostConfig.NetworkMode === `container:${api.Id}` ? api : web, 3000)
 const network = Object.keys(api.NetworkSettings.Networks).find(name => postgres.NetworkSettings.Networks[name])
 if (!network || postgres.NetworkSettings.Ports?.['5432/tcp']?.length)
   throw new Error('Expected shared private Compose database with no published PostgreSQL port')
@@ -35,7 +36,7 @@ if (!['postgres', ...aliases].includes(database.hostname) || database.port && da
   throw new Error('API database must target the inspected private PostgreSQL service')
 const relay = await dockerDatabaseRelay(api.Id, database)
 database.hostname = '127.0.0.1'; database.port = String(relay.port)
-const env = { ...process.env, DATABASE_URL: database.toString(), TEST_API_URL: `http://127.0.0.1:${apiPort}`, TEST_STOREFRONT_URL: `http://127.0.0.1:${webPort}` }
+const env = { ...process.env, DATABASE_URL: database.toString(), TEST_API_URL: `http://127.0.0.1:${apiPort}`, TEST_STOREFRONT_URL: `https://127.0.0.1:${webPort}` }
 const checks = []
 if (mode !== 'browser' && mode !== 'check') checks.push(['test', ...backendFiles])
 if (mode !== 'api' && mode !== 'check') checks.push(['run', 'test:e2e'])
