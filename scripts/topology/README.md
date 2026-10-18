@@ -48,8 +48,12 @@ The stack discovers actual Docker IPs and the assigned loopback host port. It
 freezes the exact Nginx peer before auth starts. Public authority, CORS, media
 URLs and fixed proxy Host include the actual port. Nginx-to-relay TLS verifies
 the ephemeral QA CA and certificate name. Native API and Next remain loopback
-listeners in the application namespace; only Nginx receives a host-published
-loopback test port. None of these addresses are a guessed target configuration.
+listeners in the application namespace. Nginx, the owned PostgreSQL and Redis
+receive ephemeral host-loopback-only test ports. The unchanged media restart
+suite runs on the host and requires its own labelled database and a fresh
+compiled host API. Docker authority stays on the runner; the application never
+receives the Docker socket. These additional database/cache mappings are test
+fixtures only; the candidate deployment composition does not publish them. None of these addresses are a guessed target configuration.
 
 `application.mjs` can also attach to a stack owned by this runner using its
 temporary private runtime JSON. It checks real PostgreSQL counters, 201-account

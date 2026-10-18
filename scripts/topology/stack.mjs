@@ -56,8 +56,8 @@ try {
   const source = await command('candidate-source', 'git', ['-C', repo, 'rev-parse', 'HEAD']); assert.equal(source.stdout.toString().trim(), input.source_sha)
   network = await docker('create-network', ['network', 'create', '--label', labelName + '=' + runId, 'didar-' + runId])
   uploadVolume = await docker('create-disposable-upload-volume', ['volume', 'create', '--label', labelName + '=' + runId, 'didar-' + runId + '-uploads'])
-  pg = await create('postgres', input.postgres_image, ['--network', network, '--network-alias', 'pg', '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=didar_qa'], [])
-  redis = await create('redis', input.redis_image, ['--network', network, '--network-alias', 'redis'], [])
+  pg = await create('postgres', input.postgres_image, ['--network', network, '--network-alias', 'pg', '--label', 'didar.disposable-qa=true', '-p', '127.0.0.1::5432', '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=didar_qa'], [])
+  redis = await create('redis', input.redis_image, ['--network', network, '--network-alias', 'redis', '-p', '127.0.0.1::6379'], [])
   await docker('start-postgres', ['start', pg]); await docker('start-redis', ['start', redis])
   await wait('PostgreSQL', async () => (await command('pg-readiness-' + stages.length, 'docker', ['exec', pg, 'pg_isready', '-U', 'postgres', '-d', 'didar_qa'], { expected: [0, 1, 2] })).code === 0)
   const env = {
@@ -152,7 +152,19 @@ try {
   verificationOutcomes.browser = browserResult.code; await saveVerificationLog('browser', browserResult)
   const originResult = await command('actual-browser-same-origin-media-upload', process.execPath, [join(repo, 'scripts/topology/origin.mjs'), runtimeFile], { timeout: 120000, expected: [0, 1] })
   verificationOutcomes.origin = originResult.code; await saveVerificationLog('origin', originResult)
-  const mediaResult = await command('same-origin-real-media-regressions', 'docker', ['exec', '--env-file', envFile, '-e', 'TEST_API_URL=https://' + edgeIp + ':8443', '-w', '/app', api, 'bun', 'test', 'tests/content.test.ts'], { timeout: 1200000, expected: [0, 1] })
+  // This unchanged suite deliberately restarts its own labelled PostgreSQL and
+  // spawns a fresh compiled API on the test host. Keep Docker authority on the
+  // runner; never mount its socket or Docker CLI into the application.
+  const hostPorts = {}
+  for (const [role, id, port] of [['postgres', pg, '5432/tcp'], ['redis', redis, '6379/tcp']]) {
+    const state = await inspect(id, 'host-media-' + role + '-mapping')
+    assert.equal(state.Config.Labels[labelName], runId)
+    const ports = state.NetworkSettings.Ports[port]
+    assert.equal(ports.length, 1); assert.equal(ports[0].HostIp, '127.0.0.1')
+    hostPorts[role] = ports[0].HostPort
+  }
+  const mediaEnv = { ...process.env, ...env, DATABASE_URL: 'postgres://postgres@127.0.0.1:' + hostPorts.postgres + '/didar_qa?sslmode=disable', REDIS_URL: 'redis://127.0.0.1:' + hostPorts.redis, TEST_API_URL: origin, NODE_EXTRA_CA_CERTS: join(tls, 'cert.pem') }
+  const mediaResult = await command('same-origin-real-media-regressions', 'bun', ['test', join(repo, 'tests/content.test.ts')], { timeout: 1200000, expected: [0, 1], env: mediaEnv })
   verificationOutcomes.media = mediaResult.code
   await saveVerificationLog('media', mediaResult)
   const lifecycleResult = await command('real-lifecycle-compatible-bundle-recovery', process.execPath, [join(repo, 'scripts/topology/lifecycle.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
