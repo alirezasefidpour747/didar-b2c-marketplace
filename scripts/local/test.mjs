@@ -5,7 +5,7 @@ import { bootstrapAcceptance } from './bootstrap-acceptance.mjs'
 import { recordBuild, verifyBuild } from './build-receipt.mjs'
 import { capture, freePort, run, waitHTTP } from './runtime.mjs'
 
-export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy', 'pre-rollout-authorization', 'agency-allocation', 'projection-durability', 'issue18-acceptance'].map(name => `./tests/${name}.test.ts`)
+export const backendFiles = ['pricing', 'inventory', 'security', 'commerce', 'upgraded-commerce', 'phase1', 'migrations', 'finance', 'finance-procurement', 'finance-ledger', 'finance-tahesab', 'finance-integrated', 'uat-prepare', 'taxonomy-labels', 'facets', 'merchant-pricing', 'storefront', 'onboarding-media', 'content', 'native-panels', 'native-policy', 'pre-rollout-authorization', 'agency-allocation', 'projection-durability', 'issue18-acceptance', 'native-product-targets', 'auth-hardening'].map(name => `./tests/${name}.test.ts`)
 export async function testLocal(processes, { reuseBuild = false, noDemoOnly = false } = {}) {
   if (reuseBuild) verifyBuild()
   const suffix = randomBytes(8).toString('hex')
@@ -55,6 +55,7 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
       ...process.env, DIDAR_DISPOSABLE_QA: 'true', NODE_ENV: 'development', DIDAR_ENVIRONMENT: 'local', DIDAR_PAYMENT_MODE: 'sandbox', DIDAR_AGENCY_MODE: noDemoOnly ? '' : 'sandbox', DIDAR_SEED_DEMO: 'true',
       DATABASE_URL: `postgres://postgres@127.0.0.1:${pgPort}/didar_qa`, REDIS_URL: `redis://127.0.0.1:${redisPort}`,
       JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECRET: randomBytes(32).toString('hex'),
+      DIDAR_AUTH_NETWORK_KEY: randomBytes(32).toString('hex'), DIDAR_AUTH_PROXY_PEERS: '127.0.0.1,::1',
       STORE_CORS: webOrigin, ADMIN_CORS: apiOrigin, VENDOR_CORS: apiOrigin, AUTH_CORS: `${webOrigin},${apiOrigin}`,
       FILE_BACKEND_URL: `${apiOrigin}/static`, MERCUR_BACKEND_URL: 'same-origin', MEDUSA_BACKEND_URL: apiOrigin,
       // Synthetic origin attestation for disposable label tests only; never applied to owner configuration.
@@ -89,10 +90,15 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
       cwd: resolve('packages/api/.medusa/server'), env: { ...env, NODE_ENV: 'production' }, stdio: ['ignore', apiFD, apiFD],
     })
     await waitHTTP(`${apiOrigin}/health`, async r => await r.text() === 'OK')
-    // next start serves the tested production build, with runtime proxy destination supplied above.
-    processes.start('bun', ['run', '--cwd', 'apps/storefront', 'start', '--hostname', '127.0.0.1', '--port', String(webPort)], {
+    let privateWebPort
+    do {privateWebPort = await freePort()} while ([apiPort,webPort].includes(privateWebPort))
+    env.TEST_AUTH_INGRESS_URL = webOrigin
+    env.TEST_PRIVATE_STOREFRONT_URL = `http://127.0.0.1:${privateWebPort}`
+    // The production Next origin is private; all browser traffic uses the signed first hop.
+    processes.start('bun', ['run', '--cwd', 'apps/storefront', 'start', '--hostname', '127.0.0.1', '--port', String(privateWebPort)], {
       env: { ...env, NODE_ENV: 'production' }, stdio: ['ignore', webFD, webFD],
     })
+    processes.start('node', [resolve('apps/storefront/auth-ingress.mjs')], {env: {...env, DIDAR_AUTH_STOREFRONT_URL: `http://127.0.0.1:${privateWebPort}`, DIDAR_AUTH_INGRESS_HOST: '127.0.0.1', DIDAR_AUTH_INGRESS_PORT: String(webPort)}, stdio: ['ignore',webFD,webFD]})
     await waitHTTP(`${webOrigin}/api/didar/catalog`, async r => { const d = await r.json(); return Array.isArray(d.products) && !!d.rate })
     if(noDemoOnly) {
       await bootstrapAcceptance(env)

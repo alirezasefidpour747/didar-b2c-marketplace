@@ -1,6 +1,7 @@
 import {
   randomBytes,
   scryptSync,
+  scrypt,
   timingSafeEqual,
   createHash,
 } from "node:crypto";
@@ -65,4 +66,31 @@ export function demoAccountAllowed(email: string) {
     !email.toLowerCase().endsWith("@didar.test") ||
     process.env.DIDAR_ENVIRONMENT === "local"
   );
+}
+
+/** Same password format/parameters; asynchronous login work is admitted by PostgreSQL. */
+const loginDummy = hashPassword(randomBytes(32).toString("hex"));
+export async function verifyPasswordForLogin(
+  password: string,
+  stored?: string,
+) {
+  const [salt, key] = (stored || loginDummy).split(":");
+  if (!/^[a-f0-9]{32}$/.test(salt || "") || !/^[a-f0-9]{128}$/.test(key || ""))
+    return false;
+  const actual = await new Promise<Buffer>((resolve, reject) =>
+    scrypt(password, salt, 64, (error, value) =>
+      error ? reject(error) : resolve(value),
+    ),
+  );
+  return !!stored && timingSafeEqual(Buffer.from(key, "hex"), actual);
+}
+
+export async function hashPasswordForLogin(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const key = await new Promise<Buffer>((resolve, reject) =>
+    scrypt(password, salt, 64, (error, value) =>
+      error ? reject(error) : resolve(value),
+    ),
+  );
+  return `${salt}:${key.toString("hex")}`;
 }

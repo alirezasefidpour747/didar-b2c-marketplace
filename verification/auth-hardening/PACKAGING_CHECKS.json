@@ -1,0 +1,17 @@
+{
+  "observed_at_utc": "2026-10-18T06:05:27.786305+00:00",
+  "observations": [
+    {
+      "command": "git diff --cached --check",
+      "actual_exit_code": 2,
+      "cause": "Raw original Next build progress log CR/trailing whitespace and EOF blank. No raw logs modified."
+    },
+    {
+      "command": "git diff --cached --check -- . :(exclude)verification/**/*.log",
+      "actual_exit_code": 0,
+      "scope": "All staged code, docs, receipts and scripts, excluding raw log text only."
+    }
+  ],
+  "application_source_change": false,
+  "new_application_tests_executed": false
+}

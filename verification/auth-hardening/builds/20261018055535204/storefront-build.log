@@ -1,0 +1,62 @@
+$ next build
+   ▲ Next.js 15.5.24
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     · cpus: 2
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 3.3s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/24) ...
+   Generating static pages (6/24) 
+   Generating static pages (12/24) 
+   Generating static pages (18/24) 
+ ✓ Generating static pages (24/24)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    4.47 kB         127 kB
+├ ○ /_not-found                            134 B         102 kB
+├ ○ /account                               174 B         133 kB
+├ ○ /account/wallet                       1.9 kB         113 kB
+├ ƒ /api/didar/[action]                    134 B         102 kB
+├ ○ /cart                                  178 B         133 kB
+├ ƒ /categories/[slug]                     368 B         120 kB
+├ ○ /checkout                              178 B         133 kB
+├ ƒ /collections/[slug]                    368 B         120 kB
+├ ƒ /discover/[slug]                       310 B         120 kB
+├ ƒ /fa/products/[...path]                 310 B         120 kB
+├ ƒ /i/[uid]                               134 B         102 kB
+├ ○ /login                                 174 B         133 kB
+├ ƒ /m/[handle]/[[...path]]              2.89 kB         139 kB
+├ ○ /manage                                257 B         137 kB
+├ ○ /manage/acceptance                   1.87 kB         113 kB
+├ ○ /manage/admin                          257 B         137 kB
+├ ○ /manage/finance                        245 B         111 kB
+├ ○ /manage/ledger                       2.51 kB         114 kB
+├ ○ /manage/onboarding                    5.1 kB         142 kB
+├ ○ /manage/operations                   8.19 kB         116 kB
+├ ○ /manage/pages                          133 B         126 kB
+├ ƒ /manage/pages/preview/[version]        134 B         126 kB
+├ ○ /manage/pricing                      3.63 kB         132 kB
+├ ○ /manage/sharing                        251 B         120 kB
+├ ○ /manage/storefront                   2.58 kB         105 kB
+├ ○ /manage/supplier                       257 B         137 kB
+├ ○ /manage/tahesab                      2.23 kB         113 kB
+├ ○ /manage/treasury                     2.94 kB         114 kB
+├ ○ /orders                                178 B         133 kB
+├ ƒ /orders/[id]                           178 B         133 kB
+├ ƒ /orders/[id]/invoice                 2.24 kB         110 kB
+├ ○ /products                              310 B         120 kB
+└ ƒ /products/[...path]                    310 B         120 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/31-e848d59fb1e5c5d2.js        45.8 kB
+  ├ chunks/84342583-2a829a53f40f4580.js  54.2 kB
+  └ other shared chunks (total)          1.88 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

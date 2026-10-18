@@ -1,3 +1,4 @@
+import { HEADER, signNetwork, verifyNetwork } from '@didar/auth-network'
 import { NextRequest, NextResponse } from 'next/server'
 const allowed = new Set([
   'workspace',
@@ -122,7 +123,43 @@ async function proxy(
         bytes.set(chunk, offset)
         offset += chunk.byteLength
       }
-      body = new TextDecoder().decode(bytes)
+      if (['login', 'register'].includes(action)) {
+        let proof
+        try {
+          proof = verifyNetwork({
+            key: process.env.DIDAR_AUTH_NETWORK_KEY,
+            assertion: req.headers.get(HEADER),
+            method: req.method,
+            path: req.nextUrl.pathname + req.nextUrl.search,
+            body: bytes,
+          })
+        } catch (error: any) {
+          return NextResponse.json(
+            {
+              message:
+                error.message === 'AUTH_NETWORK_NOT_CONFIGURED'
+                  ? 'AUTH_NETWORK_NOT_CONFIGURED'
+                  : 'FORBIDDEN',
+            },
+            {
+              status:
+                error.message === 'AUTH_NETWORK_NOT_CONFIGURED' ? 503 : 403,
+            },
+          )
+        }
+        // Decode only after verifying the actual incoming bytes. Bind the actual
+        // upstream bytes, preserving ingress timestamp/nonce for single-use replay.
+        body = new TextDecoder().decode(bytes)
+        headers[HEADER] = signNetwork({
+          key: process.env.DIDAR_AUTH_NETWORK_KEY,
+          peer: proof.peer,
+          ts: proof.ts,
+          nonce: proof.nonce,
+          method: req.method,
+          path: `/didar/${action}`,
+          body,
+        })
+      } else body = new TextDecoder().decode(bytes)
     }
     const url = new URL(
       `/didar/${action}`,
@@ -131,11 +168,15 @@ async function proxy(
     if (action === 'invoice') {
       const ids = req.nextUrl.searchParams.getAll('order_id')
       if (
-        req.method !== 'GET' || ids.length !== 1 ||
+        req.method !== 'GET' ||
+        ids.length !== 1 ||
         !/^[A-Za-z0-9_-]{1,100}$/.test(ids[0]) ||
-        [...req.nextUrl.searchParams.keys()].some(key => key !== 'order_id')
+        [...req.nextUrl.searchParams.keys()].some((key) => key !== 'order_id')
       )
-        return NextResponse.json({ message: 'INVALID_INVOICE' }, { status: 400 })
+        return NextResponse.json(
+          { message: 'INVALID_INVOICE' },
+          { status: 400 },
+        )
       url.searchParams.set('order_id', ids[0])
     }
     if (
@@ -222,9 +263,16 @@ async function proxy(
       try {
         const p = new URL(configured || fallback || '')
         const local = ['localhost', '127.0.0.1', '[::1]'].includes(p.hostname)
-        if (!p.username && !p.password && !p.search && !p.hash && p.pathname === '/' &&
+        if (
+          !p.username &&
+          !p.password &&
+          !p.search &&
+          !p.hash &&
+          p.pathname === '/' &&
           (p.protocol === 'https:' || (local && p.protocol === 'http:')) &&
-          (configured || local)) panelOrigin = p.origin
+          (configured || local)
+        )
+          panelOrigin = p.origin
       } catch {}
       payload.panel_origin = panelOrigin
       payload.ready = !!payload.ready && !!panelOrigin
@@ -292,3 +340,5 @@ export const GET = proxy
 export const POST = proxy
 
 export const HEAD = proxy
+
+export const runtime = 'nodejs'

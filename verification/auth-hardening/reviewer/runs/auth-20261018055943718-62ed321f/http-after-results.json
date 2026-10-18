@@ -1,0 +1,64 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "cases": 4,
+  "results": [
+    {
+      "name": "API restart preserves exhausted genuine-network and account-pair budgets",
+      "status": "PASS",
+      "network": {
+        "status": 429,
+        "message": "RATE_LIMIT",
+        "authenticated": false
+      },
+      "pair": {
+        "status": 429,
+        "message": "RATE_LIMIT",
+        "authenticated": false
+      },
+      "fresh_client": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      }
+    },
+    {
+      "name": "Consumed proof remains single-use after real API restart while assertion is still fresh",
+      "status": 403,
+      "message": "FORBIDDEN",
+      "authenticated": false,
+      "assertion_age_ms": 5315,
+      "nonce_database_row_present": true,
+      "effective_attempts": 1
+    },
+    {
+      "name": "Real native Admin/Vendor authentication, existing canonical link and foreign-seller denial are preserved",
+      "status": "PASS",
+      "admin": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "vendor": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "dual_link_status": 200,
+      "foreign_seller_status": 403
+    },
+    {
+      "name": "PR24 forged-parent/body-ID/batch guards and unrelated native CRUD remain intact",
+      "status": "PASS",
+      "guard_statuses": [
+        409,
+        409,
+        409
+      ],
+      "unrelated_edit": 200,
+      "unrelated_delete": 200,
+      "protected_native_unchanged": true
+    }
+  ],
+  "business_fingerprints_unchanged": true
+}

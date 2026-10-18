@@ -1,3 +1,4 @@
+import { withAuthAdmission } from "./auth-admission";
 import { performAgency, snapshotAgency } from "./agency";
 import { curation, curationQuote } from "./curation";
 import { supplierHistory } from "./supplier-history";
@@ -24,8 +25,8 @@ import { labels } from "./labels";
 import { randomBytes, randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import {
-  hashPassword,
-  verifyPassword,
+  hashPasswordForLogin,
+  verifyPasswordForLogin,
   digest,
   requireUser,
   sessionUser,
@@ -158,78 +159,73 @@ export async function perform(action: string, req: any): Promise<any> {
     const password = text(b.password, 128);
     if (password.length < 12) throw new Error("INVALID_PASSWORD_MIN_12");
     if (!demoAccountAllowed(email)) throw new Error("UNAUTHORIZED");
-    const {
-      rows: [ipLimit],
-    } = await db.query(
-      `INSERT INTO didar_login_attempt(key,attempts,reset_at) VALUES($1,1,now()+interval '15 minutes') ON CONFLICT(key) DO UPDATE SET attempts=CASE WHEN didar_login_attempt.reset_at<now() THEN 1 ELSE didar_login_attempt.attempts+1 END,reset_at=CASE WHEN didar_login_attempt.reset_at<now() THEN now()+interval '15 minutes' ELSE didar_login_attempt.reset_at END RETURNING attempts`,
-      [digest(`ip:${req.ip}`)],
-    );
-    if (ipLimit.attempts > 200) throw new Error("RATE_LIMIT");
-    // Persistent, shared rate limit; no in-memory bypass on worker restart.
-    const key = digest(`${req.ip}:${email}`);
-    const {
-      rows: [limit],
-    } = await db.query(
-      `INSERT INTO didar_login_attempt(key,attempts,reset_at) VALUES($1,1,now()+interval '15 minutes') ON CONFLICT(key) DO UPDATE SET attempts=CASE WHEN didar_login_attempt.reset_at<now() THEN 1 ELSE didar_login_attempt.attempts+1 END,reset_at=CASE WHEN didar_login_attempt.reset_at<now() THEN now()+interval '15 minutes' ELSE didar_login_attempt.reset_at END RETURNING attempts`,
-      [key],
-    );
-    if (limit.attempts > 20) throw new Error("RATE_LIMIT");
-    if (action === "register") {
+    return withAuthAdmission(req, email, async (failed) => {
+      if (action === "register") {
+        await transaction(async (c) => {
+          const id = uid(),
+            name = text(b.name, 100);
+          if (b.role === "supplier") {
+            const supplierId = uid();
+            await c.query(
+              "INSERT INTO didar_supplier(id,name,active,status) VALUES($1,$2,false,'pending')",
+              [supplierId, text(b.supplier_name || name, 100)],
+            );
+            await c.query(
+              "INSERT INTO didar_user(id,email,name,password,role,supplier_id) VALUES($1,$2,$3,$4,'supplier',$5)",
+              [
+                id,
+                email,
+                name,
+                await hashPasswordForLogin(password),
+                supplierId,
+              ],
+            );
+            await audit(c, id, "supplier_registered", {
+              supplier_id: supplierId,
+            });
+          } else {
+            if (b.role && b.role !== "customer")
+              throw new Error("INVALID_ROLE");
+            await c.query(
+              "INSERT INTO didar_user(id,email,name,password,role) VALUES($1,$2,$3,$4,'customer')",
+              [id, email, name, await hashPasswordForLogin(password)],
+            );
+          }
+        });
+      }
+      const {
+        rows: [u],
+      } = await db.query("SELECT * FROM didar_user WHERE email=$1", [email]);
+      if (!(await verifyPasswordForLogin(password, u?.password))) {
+        await failed();
+        throw new Error("UNAUTHORIZED");
+      }
+      const token = randomBytes(32).toString("hex");
       await transaction(async (c) => {
-        const id = uid(),
-          name = text(b.name, 100);
-        if (b.role === "supplier") {
-          const supplierId = uid();
-          await c.query(
-            "INSERT INTO didar_supplier(id,name,active,status) VALUES($1,$2,false,'pending')",
-            [supplierId, text(b.supplier_name || name, 100)],
-          );
-          await c.query(
-            "INSERT INTO didar_user(id,email,name,password,role,supplier_id) VALUES($1,$2,$3,$4,'supplier',$5)",
-            [id, email, name, hashPassword(password), supplierId],
-          );
-          await audit(c, id, "supplier_registered", {
-            supplier_id: supplierId,
-          });
-        } else {
-          if (b.role && b.role !== "customer") throw new Error("INVALID_ROLE");
-          await c.query(
-            "INSERT INTO didar_user(id,email,name,password,role) VALUES($1,$2,$3,$4,'customer')",
-            [id, email, name, hashPassword(password)],
-          );
-        }
+        await c.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
+          `session:${u.id}`,
+        ]);
+        await c.query("DELETE FROM didar_session WHERE expires_at<=now()");
+        await c.query(
+          "DELETE FROM didar_session WHERE user_id=$1 AND token_hash NOT IN (SELECT token_hash FROM didar_session WHERE user_id=$1 ORDER BY expires_at DESC,token_hash LIMIT 4)",
+          [u.id],
+        );
+        await c.query(
+          "INSERT INTO didar_session VALUES($1,$2,now()+interval '12 hours')",
+          [digest(token), u.id],
+        );
       });
-    }
-    const {
-      rows: [u],
-    } = await db.query("SELECT * FROM didar_user WHERE email=$1", [email]);
-    if (!u || !verifyPassword(password, u.password))
-      throw new Error("UNAUTHORIZED");
-    const token = randomBytes(32).toString("hex");
-    await transaction(async (c) => {
-      await c.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
-        `session:${u.id}`,
-      ]);
-      await c.query("DELETE FROM didar_session WHERE expires_at<=now()");
-      await c.query(
-        "DELETE FROM didar_session WHERE user_id=$1 AND token_hash NOT IN (SELECT token_hash FROM didar_session WHERE user_id=$1 ORDER BY expires_at DESC,token_hash LIMIT 4)",
-        [u.id],
-      );
-      await c.query(
-        "INSERT INTO didar_session VALUES($1,$2,now()+interval '12 hours')",
-        [digest(token), u.id],
-      );
+      return {
+        token,
+        user: {
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role,
+          supplier_id: u.supplier_id,
+        },
+      };
     });
-    return {
-      token,
-      user: {
-        id: u.id,
-        email: u.email,
-        name: u.name,
-        role: u.role,
-        supplier_id: u.supplier_id,
-      },
-    };
   }
   if (action === "logout") {
     await db.query("DELETE FROM didar_session WHERE token_hash=$1", [
@@ -516,6 +512,7 @@ export async function handler(req: any, res: any) {
             : msg === "RATE_LIMIT"
               ? 429
               : [
+                    "AUTH_NETWORK_NOT_CONFIGURED",
                     "PAYMENTS_DISABLED",
                     "RATE_UNAVAILABLE",
                     "LIVE_GATEWAY_NOT_CONFIGURED",

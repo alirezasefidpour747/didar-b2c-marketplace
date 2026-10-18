@@ -1,0 +1,17 @@
+{
+  "stage": "storefront-build",
+  "command": "bun",
+  "args": [
+    "run",
+    "--cwd",
+    "apps/storefront",
+    "build"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 30720,
+  "observer_pid": 30655,
+  "started_at_utc": "2026-10-18T05:55:48.591Z",
+  "closed_at_utc": "2026-10-18T05:56:24.644Z"
+}

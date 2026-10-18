@@ -1,0 +1,6 @@
+{
+  "code": 1,
+  "signal": null,
+  "observation": "Actual exec tool returned exit_code 1 for initial coordinator command wrapper; parser assertion failure, no application mutation.",
+  "recorded_at_utc": "2026-10-18T06:04:50.718227+00:00"
+}

@@ -1,0 +1,14 @@
+{
+  "label": "local-workflow",
+  "command": "bun",
+  "args": [
+    "test",
+    "tests/local-workflow.test.ts"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "pid": 30917,
+  "observed_by": 30907,
+  "observed_at_utc": "2026-10-18T05:57:26.225Z"
+}

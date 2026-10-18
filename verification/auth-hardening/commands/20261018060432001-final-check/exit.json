@@ -1,0 +1,13 @@
+{
+  "label": "final-check",
+  "command": "node",
+  "args": [
+    "verification/auth-hardening/finalize.mjs"
+  ],
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "pid": 33252,
+  "observed_by": 33243,
+  "observed_at_utc": "2026-10-18T06:04:32.174Z"
+}
