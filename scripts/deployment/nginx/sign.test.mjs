@@ -146,3 +146,30 @@ test('candidate rendering requires explicit observed values and refuses injectio
     assert.throws(() => render(values, output), { code: 'EEXIST' })
   } finally { rmSync(output, { recursive: true, force: true }) }
 })
+
+test('candidate composition keeps required strict trust and existing state with one loopback relay mapping', () => {
+  const compose = JSON.parse(readFileSync(new URL('./compose.topology.json', import.meta.url), 'utf8'))
+  const { api, migrate, storefront, postgres, redis } = compose.services
+  assert.deepEqual(api.ports, ['127.0.0.1:${DIDAR_AUTH_HOST_PORT:?Set inspected loopback TLS relay host port}:3000'])
+  for (const service of [postgres, redis, storefront]) assert.equal(service.ports, undefined)
+  assert.equal(storefront.network_mode, 'service:api')
+  assert.ok(api.command.at(-1).endsWith('start --host 127.0.0.1 --port 9000'))
+  for (const service of [api, migrate]) {
+    assert.equal(service.environment.DIDAR_AUTH_PROXY_POLICY, 'require-proof')
+    assert.equal(service.environment.DIDAR_AUTH_PROXY_PEERS, '127.0.0.1')
+    assert.equal(service.environment.DIDAR_SEED_DEMO, 'false')
+    assert.equal(service.environment.DIDAR_PAYMENT_MODE, 'sandbox')
+    assert.equal(service.environment.DIDAR_ENVIRONMENT, 'staging')
+    assert.equal(service.environment.DATABASE_URL, '${DATABASE_URL:?Preserve the reviewed complete existing database URL}')
+    assert.equal(service.environment.REDIS_URL, '${REDIS_URL:?Preserve the reviewed existing Redis URL}')
+    assert.match(service.image, /DIDAR_API_IMAGE:\?/)
+  }
+  assert.equal(storefront.environment.DIDAR_AUTH_INGRESS_MODE, 'verified-relay')
+  assert.match(storefront.environment.DIDAR_AUTH_INGRESS_PEERS, /DIDAR_AUTH_INGRESS_PEERS:\?/)
+  assert.equal(storefront.environment.DIDAR_AUTH_NATIVE_URL, 'http://127.0.0.1:9000')
+  assert.equal(storefront.environment.NODE_EXTRA_CA_CERTS, '/run/didar-tls/ca.pem')
+  assert.equal(storefront.volumes[0].read_only, true)
+  assert.equal(storefront.volumes[0].bind.create_host_path, false)
+  assert.equal(compose.networks.default.external, true)
+  for (const name of ['postgres', 'redis', 'uploads']) assert.equal(compose.volumes[name].external, true)
+})
