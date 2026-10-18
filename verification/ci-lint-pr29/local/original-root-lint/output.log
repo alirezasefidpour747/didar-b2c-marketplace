@@ -1,0 +1,31 @@
+$ turbo run lint
+
+Attention:
+Turborepo now collects completely anonymous telemetry regarding usage.
+This information is used to shape the Turborepo roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://turborepo.dev/docs/telemetry
+
+
+   • turbo 2.11.8
+   • Packages in scope: @acme/admin, @acme/api, @acme/vendor, @didar/auth-network, @didar/ui, @mercurjs/storefront
+   • Running lint in 6 packages
+   • Remote caching disabled, using shared worktree cache
+
+@acme/admin:lint: cache miss, executing cdcb3457f277d73c
+@acme/vendor:lint: cache miss, executing 2c5511abea95bfa1
+@mercurjs/storefront:lint: cache miss, executing efe5e8a72f69b235
+@acme/admin:lint: $ eslint .
+@acme/vendor:lint: $ eslint .
+@mercurjs/storefront:lint: $ next lint
+@mercurjs/storefront:lint: `next lint` is deprecated and will be removed in Next.js 16.
+@mercurjs/storefront:lint: For new projects, use create-next-app to choose your preferred linter.
+@mercurjs/storefront:lint: For existing projects, migrate to the ESLint CLI:
+@mercurjs/storefront:lint: npx @next/codemod@canary next-lint-to-eslint-cli .
+@mercurjs/storefront:lint: 
+@mercurjs/storefront:lint: ✔ No ESLint warnings or errors
+
+ Tasks:    3 successful, 3 total
+Cached:    0 cached, 3 total
+  Time:    4.076s 
+

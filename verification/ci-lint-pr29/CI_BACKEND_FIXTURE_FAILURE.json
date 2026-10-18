@@ -1,0 +1,23 @@
+{
+  "source_sha": "3c58201993c7d70df22824a4d9e93629efa77da0",
+  "run_id": 39118803949,
+  "job_id": 117649986650,
+  "observed_runner_exit": 1,
+  "observed_local_test_exit": 1,
+  "observed_bun_test_exit": 1,
+  "backend_counts": {
+    "passed": 225,
+    "failed": 6,
+    "files": 28
+  },
+  "production_builds": "All four completed before backend test failure",
+  "reason": "Native product target suite assumed shared QA admin bridge survived prior suites; initial CRUD403 MISSING_PERMISSION; five dependent fixture failures",
+  "not_executed": [
+    "Jest native HTTP suite",
+    "browser-login-window",
+    "Playwright browser suite",
+    "fresh-no-demo-bootstrap"
+  ],
+  "artifact_url": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39118803949/artifacts/12133353156",
+  "artifact_zip_sha256": "f60f41764327759274ca253f12798d2b156c7a1c3c84c708c8c9d27c0423ecfc"
+}

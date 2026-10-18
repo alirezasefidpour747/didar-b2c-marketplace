@@ -1,7 +1,7 @@
 'use client'
 import { ShareActions } from './sharing'
 import { ScopedLink as Link } from './store'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   useDidar,
   PaymentMethodPicker,
@@ -47,6 +47,8 @@ export function ImageAsset({
     : ''
   // Key both the result and failure to the request, so a new source or native
   // authentication context cannot display a previous private object's bytes.
+  const publicSrcSet = privateImage ? undefined : srcSet
+  const publicSizes = privateImage ? undefined : sizes
   const request = useMemo(
     () => ({
       url: mediaURL ? mediaURL(src) : src,
@@ -54,7 +56,7 @@ export function ImageAsset({
         ? (JSON.parse(credentials) as Record<string, string>)
         : undefined,
     }),
-    [src, privateImage, mediaURL, credentials],
+    [src, privateImage, mediaURL, credentials, publicSrcSet, publicSizes],
   )
   const [image, setImage] = useState<{
     request: typeof request | null
@@ -89,8 +91,28 @@ export function ImageAsset({
   const current = image.request === request
   const failed = current && image.failed
   const url = privateImage ? (current ? image.url : '') : request.url
+  const element = useRef<HTMLImageElement>(null)
+  // An SSR image can finish (and fail) before React attaches its handlers.
+  // Reconcile the selected resource after hydration as well as on error. A
+  // superseded source that is still loading must not inherit an old failure.
+  const reconcile = useCallback(
+    (node: HTMLImageElement) => {
+      if (
+        node === element.current &&
+        node.currentSrc &&
+        node.complete &&
+        !node.naturalWidth
+      )
+        setImage({ request, url: '', failed: true })
+    },
+    [request],
+  )
+  useEffect(() => {
+    if (element.current) reconcile(element.current)
+  }, [reconcile, url])
   return url && !failed ? (
     <img
+      ref={element}
       className={className}
       src={url}
       srcSet={privateImage ? undefined : srcSet}
@@ -100,7 +122,7 @@ export function ImageAsset({
       height={height}
       loading={eager ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : undefined}
-      onError={() => setImage({ request, url: '', failed: true })}
+      onError={(event) => reconcile(event.currentTarget)}
     />
   ) : (
     <div className="photo-placeholder" role="img" aria-label={alt}>

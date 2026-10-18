@@ -1,0 +1,1309 @@
+﻿2026-10-18T09:51:20.2240540Z Current runner version: '2.337.0'
+2026-10-18T09:51:20.2273321Z ##[group]Runner Image Provisioner
+2026-10-18T09:51:20.2274399Z Hosted Compute Agent
+2026-10-18T09:51:20.2275167Z Version: 20261012.601
+2026-10-18T09:51:20.2275869Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-18T09:51:20.2276933Z Build Date: 2026-10-12T17:48:21Z
+2026-10-18T09:51:20.2277776Z Worker ID: {d4074a10-cb89-4e5d-9803-27239c7b6964}
+2026-10-18T09:51:20.2278511Z Region: centralus
+2026-10-18T09:51:20.2279484Z Cloud: Azure
+2026-10-18T09:51:20.2280279Z ##[endgroup]
+2026-10-18T09:51:20.2282203Z ##[group]Operating System
+2026-10-18T09:51:20.2283139Z Ubuntu
+2026-10-18T09:51:20.2283965Z 24.04.5
+2026-10-18T09:51:20.2284643Z LTS
+2026-10-18T09:51:20.2285156Z ##[endgroup]
+2026-10-18T09:51:20.2285745Z ##[group]Runner Image
+2026-10-18T09:51:20.2286366Z Image: ubuntu-24.04
+2026-10-18T09:51:20.2286992Z Version: 20261012.334.1
+2026-10-18T09:51:20.2288524Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-18T09:51:20.2290730Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-18T09:51:20.2291916Z ##[endgroup]
+2026-10-18T09:51:20.2293410Z ##[group]GITHUB_TOKEN Permissions
+2026-10-18T09:51:20.2295428Z Contents: read
+2026-10-18T09:51:20.2296266Z Metadata: read
+2026-10-18T09:51:20.2296953Z ##[endgroup]
+2026-10-18T09:51:20.2299620Z Secret source: Actions
+2026-10-18T09:51:20.2300922Z Cache mode: write
+2026-10-18T09:51:20.2301759Z Prepare workflow directory
+2026-10-18T09:51:20.2868324Z Prepare all required actions
+2026-10-18T09:51:20.2941360Z Getting action download info
+2026-10-18T09:51:20.5505509Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-18T09:51:20.6423066Z Download action repository 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-18T09:51:20.7404139Z Download action repository 'oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6' (SHA:0c5077e51419868618aeaa5fe8019c62421857d6)
+2026-10-18T09:51:21.0951270Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-18T09:51:21.3035417Z Complete job name: validate
+2026-10-18T09:51:21.3864445Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-18T09:51:21.3865579Z with:
+2026-10-18T09:51:21.3866043Z   persist-credentials: false
+2026-10-18T09:51:21.3866545Z   fetch-depth: 0
+2026-10-18T09:51:21.3867089Z   repository: alirezasefidpour747/didar-b2c-marketplace
+2026-10-18T09:51:21.3871308Z   token: ***
+2026-10-18T09:51:21.3871761Z   ssh-strict: true
+2026-10-18T09:51:21.3872203Z   ssh-user: git
+2026-10-18T09:51:21.3872619Z   clean: true
+2026-10-18T09:51:21.3873060Z   sparse-checkout-cone-mode: true
+2026-10-18T09:51:21.3873583Z   fetch-tags: false
+2026-10-18T09:51:21.3874052Z   show-progress: true
+2026-10-18T09:51:21.3874520Z   lfs: false
+2026-10-18T09:51:21.3874930Z   submodules: false
+2026-10-18T09:51:21.3875385Z   set-safe-directory: true
+2026-10-18T09:51:21.3875899Z   allow-unsafe-pr-checkout: false
+2026-10-18T09:51:21.3876725Z env:
+2026-10-18T09:51:21.3877160Z   CI: true
+2026-10-18T09:51:21.3877603Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:51:21.3878174Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:51:21.3878691Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:51:21.3879374Z ##[endgroup]
+2026-10-18T09:51:21.4940195Z Syncing repository: alirezasefidpour747/didar-b2c-marketplace
+2026-10-18T09:51:21.4943082Z ##[group]Getting Git version info
+2026-10-18T09:51:21.4944497Z Working directory is '/home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace'
+2026-10-18T09:51:21.4946388Z [command]/usr/bin/git version
+2026-10-18T09:51:21.5007507Z git version 2.55.0
+2026-10-18T09:51:21.5032102Z ##[endgroup]
+2026-10-18T09:51:21.5059732Z Temporarily overriding HOME='/home/runner/work/_temp/0884a4cd-db2f-4004-a68f-3ed3a9343ef4' before making global git config changes
+2026-10-18T09:51:21.5062571Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-18T09:51:21.5064918Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace
+2026-10-18T09:51:21.5124046Z Deleting the contents of '/home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace'
+2026-10-18T09:51:21.5128331Z ##[group]Initializing the repository
+2026-10-18T09:51:21.5134801Z [command]/usr/bin/git init /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace
+2026-10-18T09:51:21.5279451Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-18T09:51:21.5281711Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-18T09:51:21.5283945Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-18T09:51:21.5285787Z hint: call:
+2026-10-18T09:51:21.5287030Z hint:
+2026-10-18T09:51:21.5288399Z hint: 	git config --global init.defaultBranch <name>
+2026-10-18T09:51:21.5290271Z hint:
+2026-10-18T09:51:21.5291766Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-18T09:51:21.5293663Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-18T09:51:21.5295389Z hint:
+2026-10-18T09:51:21.5296615Z hint: 	git branch -m <name>
+2026-10-18T09:51:21.5297986Z hint:
+2026-10-18T09:51:21.5299860Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-18T09:51:21.5302307Z Initialized empty Git repository in /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/.git/
+2026-10-18T09:51:21.5306872Z [command]/usr/bin/git remote add origin https://github.com/alirezasefidpour747/didar-b2c-marketplace
+2026-10-18T09:51:21.5357176Z ##[endgroup]
+2026-10-18T09:51:21.5358523Z ##[group]Disabling automatic garbage collection
+2026-10-18T09:51:21.5362475Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-18T09:51:21.5401245Z ##[endgroup]
+2026-10-18T09:51:21.5402517Z ##[group]Setting up auth
+2026-10-18T09:51:21.5411456Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T09:51:21.5457372Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T09:51:21.5879441Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T09:51:21.5920399Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T09:51:21.6156857Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T09:51:21.6197860Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T09:51:21.6438222Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-18T09:51:21.6484066Z ##[endgroup]
+2026-10-18T09:51:21.6485425Z ##[group]Fetching the repository
+2026-10-18T09:51:21.6495215Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +625c5f5894d8a7f2fcee53502578a3694f0159b1:refs/remotes/pull/29/merge
+2026-10-18T09:51:22.9215690Z From https://github.com/alirezasefidpour747/didar-b2c-marketplace
+2026-10-18T09:51:22.9217861Z  * [new branch]      audit/core-delta-41089a7                 -> origin/audit/core-delta-41089a7
+2026-10-18T09:51:22.9220070Z  * [new branch]      audit/mercur-medusa-core-2026-10-17      -> origin/audit/mercur-medusa-core-2026-10-17
+2026-10-18T09:51:22.9222006Z  * [new branch]      audit/pre-rollout-integration-closure    -> origin/audit/pre-rollout-integration-closure
+2026-10-18T09:51:22.9224358Z  * [new branch]      audit/runtime-qa-41089a7                 -> origin/audit/runtime-qa-41089a7
+2026-10-18T09:51:22.9226310Z  * [new branch]      audit/server-deployment-status-20261017  -> origin/audit/server-deployment-status-20261017
+2026-10-18T09:51:22.9228621Z  * [new branch]      ci/github-actions-validation-and-release -> origin/ci/github-actions-validation-and-release
+2026-10-18T09:51:22.9231047Z  * [new branch]      docs/agency-sales-owner-policy           -> origin/docs/agency-sales-owner-policy
+2026-10-18T09:51:22.9233105Z  * [new branch]      docs/consolidated-main-guided-staging-handoff -> origin/docs/consolidated-main-guided-staging-handoff
+2026-10-18T09:51:22.9235643Z  * [new branch]      docs/continuous-architecture-production-readiness -> origin/docs/continuous-architecture-production-readiness
+2026-10-18T09:51:22.9237897Z  * [new branch]      docs/five-features-architecture-assessment -> origin/docs/five-features-architecture-assessment
+2026-10-18T09:51:22.9240329Z  * [new branch]      docs/phases5-9-integrated-design         -> origin/docs/phases5-9-integrated-design
+2026-10-18T09:51:22.9242072Z  * [new branch]      docs/pre-rollout-closure-execution       -> origin/docs/pre-rollout-closure-execution
+2026-10-18T09:51:22.9243686Z  * [new branch]      docs/standing-delivery-policy            -> origin/docs/standing-delivery-policy
+2026-10-18T09:51:22.9245328Z  * [new branch]      feature/auth-deployment-packaging        -> origin/feature/auth-deployment-packaging
+2026-10-18T09:51:22.9247118Z  * [new branch]      feature/issue18-bounded-agency-durability -> origin/feature/issue18-bounded-agency-durability
+2026-10-18T09:51:22.9249304Z  * [new branch]      feature/issue23-architecture-readiness   -> origin/feature/issue23-architecture-readiness
+2026-10-18T09:51:22.9251635Z  * [new branch]      feature/sec01-sec02-auth-hardening       -> origin/feature/sec01-sec02-auth-hardening
+2026-10-18T09:51:22.9253344Z  * [new branch]      main                                     -> origin/main
+2026-10-18T09:51:22.9254782Z  * [new branch]      staging/debian13-phase2-00447d3          -> origin/staging/debian13-phase2-00447d3
+2026-10-18T09:51:22.9256648Z  * [new branch]      staging/release-41089a7-domain-preview   -> origin/staging/release-41089a7-domain-preview
+2026-10-18T09:51:22.9258626Z  * [new ref]         625c5f5894d8a7f2fcee53502578a3694f0159b1 -> pull/29/merge
+2026-10-18T09:51:22.9262297Z ##[endgroup]
+2026-10-18T09:51:22.9262891Z ##[group]Determining the checkout info
+2026-10-18T09:51:22.9263491Z ##[endgroup]
+2026-10-18T09:51:22.9263826Z [command]/usr/bin/git sparse-checkout disable
+2026-10-18T09:51:22.9332543Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-18T09:51:22.9367528Z ##[group]Checking out the ref
+2026-10-18T09:51:22.9372340Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/29/merge
+2026-10-18T09:51:23.2320673Z Note: switching to 'refs/remotes/pull/29/merge'.
+2026-10-18T09:51:23.2321200Z 
+2026-10-18T09:51:23.2321515Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-18T09:51:23.2322289Z changes and commit them, and you can discard any commits you make in this
+2026-10-18T09:51:23.2323008Z state without impacting any branches by switching back to a branch.
+2026-10-18T09:51:23.2323406Z 
+2026-10-18T09:51:23.2323711Z If you want to create a new branch to retain commits you create, you may
+2026-10-18T09:51:23.2324345Z do so (now or later) by using -c with the switch command. Example:
+2026-10-18T09:51:23.2324718Z 
+2026-10-18T09:51:23.2324881Z   git switch -c <new-branch-name>
+2026-10-18T09:51:23.2325138Z 
+2026-10-18T09:51:23.2325302Z Or undo this operation with:
+2026-10-18T09:51:23.2325532Z 
+2026-10-18T09:51:23.2325675Z   git switch -
+2026-10-18T09:51:23.2325856Z 
+2026-10-18T09:51:23.2326169Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-18T09:51:23.2326592Z 
+2026-10-18T09:51:23.2327065Z HEAD is now at 625c5f5 Merge 4ac8f9e8a3f95567fb83bed21e08a8b1d3673404 into 4f41784db6ca67f7566503c508cc609f1d50c7ce
+2026-10-18T09:51:23.3270908Z ##[endgroup]
+2026-10-18T09:51:23.3745545Z [command]/usr/bin/git log -1 --format=%H
+2026-10-18T09:51:23.3790989Z 625c5f5894d8a7f2fcee53502578a3694f0159b1
+2026-10-18T09:51:23.3811781Z ##[group]Removing auth
+2026-10-18T09:51:23.3812733Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T09:51:23.3857182Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T09:51:23.4094149Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T09:51:23.4127132Z http.https://github.com/.extraheader
+2026-10-18T09:51:23.4138035Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-18T09:51:23.4178251Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T09:51:23.4417391Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T09:51:23.4455909Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T09:51:23.4690720Z ##[endgroup]
+2026-10-18T09:51:23.4975296Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+2026-10-18T09:51:23.4975802Z with:
+2026-10-18T09:51:23.4976061Z   node-version: 24.19.0
+2026-10-18T09:51:23.4976340Z   always-auth: false
+2026-10-18T09:51:23.4976618Z   check-latest: false
+2026-10-18T09:51:23.4979590Z   token: ***
+2026-10-18T09:51:23.4979854Z env:
+2026-10-18T09:51:23.4980090Z   CI: true
+2026-10-18T09:51:23.4980353Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:51:23.4980677Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:51:23.4980990Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:51:23.4981322Z ##[endgroup]
+2026-10-18T09:51:23.6462971Z Attempting to download 24.19.0...
+2026-10-18T09:51:23.6578820Z (node:2389) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T09:51:23.6580581Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T09:51:24.4097910Z Acquiring 24.19.0 - x64 from https://github.com/actions/node-versions/releases/download/24.19.0-30872449280/node-24.19.0-linux-x64.tar.gz
+2026-10-18T09:51:24.9997677Z Extracting ...
+2026-10-18T09:51:25.0134010Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/6606c287-9f8c-4c6f-9d4c-18ae454b7e5b -f /home/runner/work/_temp/65a14c25-7704-4f2a-92cb-8c0f70c74e61
+2026-10-18T09:51:26.2311768Z Adding to the cache ...
+2026-10-18T09:51:28.3950672Z ##[group]Environment details
+2026-10-18T09:51:29.1128447Z node: v24.19.0
+2026-10-18T09:51:29.1128984Z npm: 11.17.0
+2026-10-18T09:51:29.1129789Z yarn: 1.22.22
+2026-10-18T09:51:29.1130531Z ##[endgroup]
+2026-10-18T09:51:29.1340843Z ##[group]Run oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+2026-10-18T09:51:29.1341294Z with:
+2026-10-18T09:51:29.1341500Z   bun-version: 1.4.3
+2026-10-18T09:51:29.1341722Z   no-cache: false
+2026-10-18T09:51:29.1344338Z   token: ***
+2026-10-18T09:51:29.1344550Z env:
+2026-10-18T09:51:29.1344751Z   CI: true
+2026-10-18T09:51:29.1344954Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:51:29.1345219Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:51:29.1345469Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:51:29.1345709Z ##[endgroup]
+2026-10-18T09:51:29.5796389Z Downloading a new version of Bun: https://github.com/oven-sh/bun/releases/download/bun-v1.4.3/bun-linux-x64.zip
+2026-10-18T09:51:30.0427212Z [command]/usr/bin/unzip -o -q /home/runner/work/_temp/fa8710fa-968e-4ec8-be93-a689fc1a1733.zip
+2026-10-18T09:51:30.7269955Z [command]/home/runner/.bun/bin/bun --revision
+2026-10-18T09:51:30.7312653Z 1.4.3+c6da4a4d3
+2026-10-18T09:51:30.7451657Z ##[group]Run sudo apt-get update
+2026-10-18T09:51:30.7452061Z [36;1msudo apt-get update[0m
+2026-10-18T09:51:30.7452413Z [36;1msudo apt-get install -y --no-install-recommends ffmpeg[0m
+2026-10-18T09:51:30.7452793Z [36;1mbun install --frozen-lockfile[0m
+2026-10-18T09:51:30.7453132Z [36;1mbunx playwright install --with-deps chromium[0m
+2026-10-18T09:51:30.7711962Z shell: /usr/bin/bash -e {0}
+2026-10-18T09:51:30.7712320Z env:
+2026-10-18T09:51:30.7712526Z   CI: true
+2026-10-18T09:51:30.7712740Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:51:30.7713012Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:51:30.7713267Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:51:30.7713515Z ##[endgroup]
+2026-10-18T09:51:30.8575715Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-18T09:51:30.8900419Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-18T09:51:30.8916401Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-10-18T09:51:30.8981016Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-10-18T09:51:30.9000496Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-10-18T09:51:30.9083707Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-10-18T09:51:31.0409367Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1397 kB]
+2026-10-18T09:51:31.0570760Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [308 kB]
+2026-10-18T09:51:31.0582769Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1704 kB]
+2026-10-18T09:51:31.0711222Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [342 kB]
+2026-10-18T09:51:31.0720965Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1805 kB]
+2026-10-18T09:51:31.0816388Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [411 kB]
+2026-10-18T09:51:31.1502807Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1144 kB]
+2026-10-18T09:51:31.1564113Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [231 kB]
+2026-10-18T09:51:31.1601124Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1222 kB]
+2026-10-18T09:51:31.1665818Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [246 kB]
+2026-10-18T09:51:31.2059974Z Get:19 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [618 kB]
+2026-10-18T09:51:31.2112625Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1713 kB]
+2026-10-18T09:51:31.2202861Z Get:20 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [557 kB]
+2026-10-18T09:51:31.2208620Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [392 kB]
+2026-10-18T09:51:31.2261538Z Get:21 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.4 kB]
+2026-10-18T09:51:34.3456959Z Fetched 12.5 MB in 1s (9743 kB/s)
+2026-10-18T09:51:35.2674534Z Reading package lists...
+2026-10-18T09:51:35.2982508Z Reading package lists...
+2026-10-18T09:51:35.4796998Z Building dependency tree...
+2026-10-18T09:51:35.4804104Z Reading state information...
+2026-10-18T09:51:35.6142886Z The following additional packages will be installed:
+2026-10-18T09:51:35.6144163Z   libass9 libasyncns0 libavc1394-0 libavcodec60 libavdevice60 libavfilter9
+2026-10-18T09:51:35.6145512Z   libavformat60 libavutil58 libblas3 libbluray2 libbs2b0 libcaca0
+2026-10-18T09:51:35.6147063Z   libcdio-cdda2t64 libcdio-paranoia2t64 libcdio19t64 libchromaprint1 libcjson1
+2026-10-18T09:51:35.6148486Z   libcodec2-1.2 libdav1d7 libdc1394-25 libdecor-0-0 libflac12t64 libflite1
+2026-10-18T09:51:35.6150139Z   libgme0 libgsm1 libhwy1t64 libiec61883-0 libjack-jackd2-0 libjxl0.7
+2026-10-18T09:51:35.6152098Z   liblapack3 liblilv-0-0 libmbedcrypto7t64 libmp3lame0 libmpg123-0t64
+2026-10-18T09:51:35.6153769Z   libmysofa1 libopenal-data libopenal1 libopenmpt0t64 libopus0 libplacebo338
+2026-10-18T09:51:35.6155085Z   libpocketsphinx3 libpostproc57 libpulse0 librav1e0 libraw1394-11 librist4
+2026-10-18T09:51:35.6156175Z   librsvg2-2 librubberband2 libsamplerate0 libsdl2-2.0-0 libserd-0-0 libshine3
+2026-10-18T09:51:35.6157217Z   libsndfile1 libsndio7.0 libsord-0-0 libsoxr0 libspeex1 libsphinxbase3t64
+2026-10-18T09:51:35.6158181Z   libsratom-0-0 libsrt1.5-gnutls libssh-gcrypt-4 libsvtav1enc1d1
+2026-10-18T09:51:35.6158740Z   libswresample4 libswscale7 libtheora0 libtwolame0 libudfread0 libunibreak5
+2026-10-18T09:51:35.6159778Z   libva-drm2 libva-x11-2 libva2 libvdpau1 libvidstab1.1 libvorbisenc2 libvpl2
+2026-10-18T09:51:35.6160338Z   libvpx9 libx264-164 libx265-199 libxcb-shape0 libxv1 libxvidcore4 libzimg2
+2026-10-18T09:51:35.6160829Z   libzix-0-0 libzvbi-common libzvbi0t64 ocl-icd-libopencl1
+2026-10-18T09:51:35.6161199Z Suggested packages:
+2026-10-18T09:51:35.6161707Z   ffmpeg-doc libcuda1 libnvcuvid1 libnvidia-encode1 libbluray-bdj jackd2
+2026-10-18T09:51:35.6162309Z   libportaudio2 opus-tools pulseaudio libraw1394-doc librsvg2-bin serdi sndiod
+2026-10-18T09:51:35.6162721Z   sordi speex opencl-icd
+2026-10-18T09:51:35.6162972Z Recommended packages:
+2026-10-18T09:51:35.6163308Z   libaacs0 default-libdecor-0-plugin-1 | libdecor-0-plugin-1
+2026-10-18T09:51:35.6163769Z   pocketsphinx-en-us librsvg2-common va-driver-all | va-driver
+2026-10-18T09:51:35.6164162Z   vdpau-driver-all | vdpau-driver
+2026-10-18T09:51:35.6607003Z The following NEW packages will be installed:
+2026-10-18T09:51:35.6607990Z   ffmpeg libass9 libasyncns0 libavc1394-0 libavcodec60 libavdevice60
+2026-10-18T09:51:35.6609369Z   libavfilter9 libavformat60 libavutil58 libblas3 libbluray2 libbs2b0 libcaca0
+2026-10-18T09:51:35.6610530Z   libcdio-cdda2t64 libcdio-paranoia2t64 libcdio19t64 libchromaprint1 libcjson1
+2026-10-18T09:51:35.6611338Z   libcodec2-1.2 libdav1d7 libdc1394-25 libdecor-0-0 libflac12t64 libflite1
+2026-10-18T09:51:35.6612049Z   libgme0 libgsm1 libhwy1t64 libiec61883-0 libjack-jackd2-0 libjxl0.7
+2026-10-18T09:51:35.6612939Z   liblapack3 liblilv-0-0 libmbedcrypto7t64 libmp3lame0 libmpg123-0t64
+2026-10-18T09:51:35.6613679Z   libmysofa1 libopenal-data libopenal1 libopenmpt0t64 libopus0 libplacebo338
+2026-10-18T09:51:35.6614449Z   libpocketsphinx3 libpostproc57 libpulse0 librav1e0 libraw1394-11 librist4
+2026-10-18T09:51:35.6615220Z   librsvg2-2 librubberband2 libsamplerate0 libsdl2-2.0-0 libserd-0-0 libshine3
+2026-10-18T09:51:35.6615995Z   libsndfile1 libsndio7.0 libsord-0-0 libsoxr0 libspeex1 libsphinxbase3t64
+2026-10-18T09:51:35.6616657Z   libsratom-0-0 libsrt1.5-gnutls libssh-gcrypt-4 libsvtav1enc1d1
+2026-10-18T09:51:35.6617328Z   libswresample4 libswscale7 libtheora0 libtwolame0 libudfread0 libunibreak5
+2026-10-18T09:51:35.6618026Z   libva-drm2 libva-x11-2 libva2 libvdpau1 libvidstab1.1 libvorbisenc2 libvpl2
+2026-10-18T09:51:35.6618705Z   libvpx9 libx264-164 libx265-199 libxcb-shape0 libxv1 libxvidcore4 libzimg2
+2026-10-18T09:51:35.6619453Z   libzix-0-0 libzvbi-common libzvbi0t64 ocl-icd-libopencl1
+2026-10-18T09:51:35.6802810Z 0 upgraded, 87 newly installed, 0 to remove and 44 not upgraded.
+2026-10-18T09:51:35.6803593Z Need to get 62.8 MB of archives.
+2026-10-18T09:51:35.6804402Z After this operation, 173 MB of additional disk space will be used.
+2026-10-18T09:51:35.6805275Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-18T09:51:35.7252122Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libva2 amd64 2.20.0-2ubuntu0.2 [66.4 kB]
+2026-10-18T09:51:35.7588091Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libva-drm2 amd64 2.20.0-2ubuntu0.2 [7124 B]
+2026-10-18T09:51:35.7891662Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libva-x11-2 amd64 2.20.0-2ubuntu0.2 [12.0 kB]
+2026-10-18T09:51:35.8195996Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libvdpau1 amd64 1.5-2build1 [27.8 kB]
+2026-10-18T09:51:35.8507117Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libvpl2 amd64 2023.3.0-1build1 [99.8 kB]
+2026-10-18T09:51:35.8869424Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ocl-icd-libopencl1 amd64 2.3.2-1build1 [38.5 kB]
+2026-10-18T09:51:35.9176845Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libavutil58 amd64 7:6.1.1-3ubuntu5 [401 kB]
+2026-10-18T09:51:35.9676474Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libcodec2-1.2 amd64 1.2.0-2build1 [8998 kB]
+2026-10-18T09:51:36.1458229Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libdav1d7 amd64 1.4.1-1build1 [604 kB]
+2026-10-18T09:51:36.1796640Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libgsm1 amd64 1.0.22-1build1 [27.8 kB]
+2026-10-18T09:51:36.2103637Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libhwy1t64 amd64 1.0.7-8.1build1 [584 kB]
+2026-10-18T09:51:36.2441821Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libjxl0.7 amd64 0.7.0-10.2ubuntu6.1 [1001 kB]
+2026-10-18T09:51:36.2803950Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libmp3lame0 amd64 3.100-6build1 [142 kB]
+2026-10-18T09:51:36.3117129Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopus0 amd64 1.4-1build1 [208 kB]
+2026-10-18T09:51:36.3436764Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 librav1e0 amd64 0.7.1-2 [1022 kB]
+2026-10-18T09:51:36.3799336Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 librsvg2-2 amd64 2.58.0+dfsg-1ubuntu0.1 [2141 kB]
+2026-10-18T09:51:36.4220340Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libshine3 amd64 3.1.1-2build1 [23.2 kB]
+2026-10-18T09:51:36.4526299Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libspeex1 amd64 1.2.1-2ubuntu2.24.04.1 [59.6 kB]
+2026-10-18T09:51:36.5307227Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsvtav1enc1d1 amd64 1.7.0+dfsg-2build1 [2425 kB]
+2026-10-18T09:51:36.5748242Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsoxr0 amd64 0.1.3-4build3 [80.0 kB]
+2026-10-18T09:51:36.6057728Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libswresample4 amd64 7:6.1.1-3ubuntu5 [63.8 kB]
+2026-10-18T09:51:36.6365389Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libtheora0 amd64 1.1.1+dfsg.1-16.1build3 [211 kB]
+2026-10-18T09:51:36.6682976Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libtwolame0 amd64 0.4.0-2build3 [52.3 kB]
+2026-10-18T09:51:36.6991077Z Get:25 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libvorbisenc2 amd64 1.3.7-1build3 [80.8 kB]
+2026-10-18T09:51:36.7301525Z Get:26 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libvpx9 amd64 1.14.0-1ubuntu2.3 [1143 kB]
+2026-10-18T09:51:36.7666563Z Get:27 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libx264-164 amd64 2:0.164.3108+git31e19f9-1 [604 kB]
+2026-10-18T09:51:36.8053405Z Get:28 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libx265-199 amd64 3.5-2build1 [1226 kB]
+2026-10-18T09:51:36.8425288Z Get:29 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libxvidcore4 amd64 2:1.3.7-1build1 [219 kB]
+2026-10-18T09:51:36.8713200Z Get:30 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libzvbi-common all 0.2.42-2 [42.4 kB]
+2026-10-18T09:51:36.8993798Z Get:31 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libzvbi0t64 amd64 0.2.42-2 [261 kB]
+2026-10-18T09:51:36.9286163Z Get:32 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libavcodec60 amd64 7:6.1.1-3ubuntu5 [5851 kB]
+2026-10-18T09:51:37.0030291Z Get:33 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libraw1394-11 amd64 2.1.2-2build3 [26.2 kB]
+2026-10-18T09:51:37.0361684Z Get:34 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libavc1394-0 amd64 0.5.4-5build3 [15.4 kB]
+2026-10-18T09:51:37.0692871Z Get:35 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libunibreak5 amd64 5.1-2build1 [25.0 kB]
+2026-10-18T09:51:37.1026519Z Get:36 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libass9 amd64 1:0.17.1-2build1 [104 kB]
+2026-10-18T09:51:37.1363595Z Get:37 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libudfread0 amd64 1.1.2-1build1 [19.0 kB]
+2026-10-18T09:51:37.1640659Z Get:38 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libbluray2 amd64 1:1.3.4-1build1 [159 kB]
+2026-10-18T09:51:37.2419536Z Get:39 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libchromaprint1 amd64 1.5.1-5 [30.5 kB]
+2026-10-18T09:51:37.2698532Z Get:40 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libgme0 amd64 0.6.3-7build1 [134 kB]
+2026-10-18T09:51:37.2985573Z Get:41 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libmpg123-0t64 amd64 1.32.5-1ubuntu1.1 [169 kB]
+2026-10-18T09:51:37.3272983Z Get:42 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libopenmpt0t64 amd64 0.7.3-1.1build3 [647 kB]
+2026-10-18T09:51:37.3583660Z Get:43 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libcjson1 amd64 1.7.17-1 [24.8 kB]
+2026-10-18T09:51:37.3863586Z Get:44 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libmbedcrypto7t64 amd64 2.28.8-1 [209 kB]
+2026-10-18T09:51:37.4621396Z Get:45 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 librist4 amd64 0.2.10+dfsg-2 [74.9 kB]
+2026-10-18T09:51:37.4950623Z Get:46 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsrt1.5-gnutls amd64 1.5.3-1build2 [316 kB]
+2026-10-18T09:51:37.5482938Z Get:47 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libssh-gcrypt-4 amd64 0.10.6-2ubuntu0.5 [226 kB]
+2026-10-18T09:51:37.5883555Z Get:48 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libavformat60 amd64 7:6.1.1-3ubuntu5 [1153 kB]
+2026-10-18T09:51:37.6753853Z Get:49 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libbs2b0 amd64 3.1.0+dfsg-7build1 [10.6 kB]
+2026-10-18T09:51:37.7033460Z Get:50 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libflite1 amd64 2.2-6build3 [13.6 MB]
+2026-10-18T09:51:37.8783674Z Get:51 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libserd-0-0 amd64 0.32.2-1 [43.6 kB]
+2026-10-18T09:51:37.9065260Z Get:52 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libzix-0-0 amd64 0.4.2-2build1 [23.6 kB]
+2026-10-18T09:51:37.9434791Z Get:53 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsord-0-0 amd64 0.16.16-2build1 [15.8 kB]
+2026-10-18T09:51:37.9802535Z Get:54 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsratom-0-0 amd64 0.6.16-1build1 [17.3 kB]
+2026-10-18T09:51:38.0171139Z Get:55 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 liblilv-0-0 amd64 0.24.22-1build1 [41.0 kB]
+2026-10-18T09:51:38.0541836Z Get:56 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libmysofa1 amd64 1.3.2+dfsg-2ubuntu2 [1158 kB]
+2026-10-18T09:51:38.0965142Z Get:57 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libplacebo338 amd64 6.338.2-2build1 [2654 kB]
+2026-10-18T09:51:38.1797615Z Get:58 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libblas3 amd64 3.12.0-3build1.1 [238 kB]
+2026-10-18T09:51:38.2101421Z Get:59 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 liblapack3 amd64 3.12.0-3build1.1 [2646 kB]
+2026-10-18T09:51:38.2585843Z Get:60 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libasyncns0 amd64 0.8-6build4 [11.3 kB]
+2026-10-18T09:51:38.2862289Z Get:61 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libflac12t64 amd64 1.4.3+ds-2.1ubuntu2 [197 kB]
+2026-10-18T09:51:38.3198256Z Get:62 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libsndfile1 amd64 1.2.2-1ubuntu5.24.04.1 [209 kB]
+2026-10-18T09:51:38.3486364Z Get:63 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpulse0 amd64 1:16.1+dfsg1-2ubuntu10.1 [292 kB]
+2026-10-18T09:51:38.3786174Z Get:64 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsphinxbase3t64 amd64 0.8+5prealpha+1-17build2 [126 kB]
+2026-10-18T09:51:38.4074630Z Get:65 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libpocketsphinx3 amd64 0.8.0+real5prealpha+1-15ubuntu5 [133 kB]
+2026-10-18T09:51:38.4364779Z Get:66 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libpostproc57 amd64 7:6.1.1-3ubuntu5 [49.9 kB]
+2026-10-18T09:51:38.4649535Z Get:67 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libsamplerate0 amd64 0.2.2-4build1 [1344 kB]
+2026-10-18T09:51:38.5038811Z Get:68 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 librubberband2 amd64 3.3.0+dfsg-2build1 [130 kB]
+2026-10-18T09:51:38.5325051Z Get:69 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libswscale7 amd64 7:6.1.1-3ubuntu5 [193 kB]
+2026-10-18T09:51:38.5618221Z Get:70 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libvidstab1.1 amd64 1.1.0-2build1 [38.5 kB]
+2026-10-18T09:51:38.5901393Z Get:71 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libzimg2 amd64 3.0.5+ds1-1build1 [254 kB]
+2026-10-18T09:51:38.6285346Z Get:72 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libavfilter9 amd64 7:6.1.1-3ubuntu5 [4235 kB]
+2026-10-18T09:51:38.7137525Z Get:73 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcaca0 amd64 0.99.beta20-4ubuntu0.2 [209 kB]
+2026-10-18T09:51:38.7521894Z Get:74 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcdio19t64 amd64 2.1.0-4.1ubuntu1.2 [62.4 kB]
+2026-10-18T09:51:38.7807057Z Get:75 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libcdio-cdda2t64 amd64 10.2+2.0.1-1.1build2 [16.5 kB]
+2026-10-18T09:51:38.8586377Z Get:76 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libcdio-paranoia2t64 amd64 10.2+2.0.1-1.1build2 [16.6 kB]
+2026-10-18T09:51:38.8894686Z Get:77 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libdc1394-25 amd64 2.2.6-4build1 [90.1 kB]
+2026-10-18T09:51:38.9204699Z Get:78 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libiec61883-0 amd64 1.2.0-6build1 [24.5 kB]
+2026-10-18T09:51:38.9510613Z Get:79 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjack-jackd2-0 amd64 1.9.21~dfsg-3ubuntu3 [289 kB]
+2026-10-18T09:51:38.9835761Z Get:80 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libopenal-data all 1:1.23.1-4build1 [161 kB]
+2026-10-18T09:51:39.0214912Z Get:81 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libsndio7.0 amd64 1.9.0-0.3build3 [29.6 kB]
+2026-10-18T09:51:39.0599902Z Get:82 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libopenal1 amd64 1:1.23.1-4build1 [540 kB]
+2026-10-18T09:51:39.1006337Z Get:83 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libdecor-0-0 amd64 0.2.2-1build2 [16.5 kB]
+2026-10-18T09:51:39.1376442Z Get:84 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libsdl2-2.0-0 amd64 2.30.0+dfsg-1ubuntu3.1 [686 kB]
+2026-10-18T09:51:39.1811833Z Get:85 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxcb-shape0 amd64 1.15-1ubuntu2 [6100 B]
+2026-10-18T09:51:39.2366716Z Get:86 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxv1 amd64 2:1.0.11-1.1build1 [10.7 kB]
+2026-10-18T09:51:39.2647283Z Get:87 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libavdevice60 amd64 7:6.1.1-3ubuntu5 [82.3 kB]
+2026-10-18T09:51:39.3511135Z Get:88 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 ffmpeg amd64 7:6.1.1-3ubuntu5 [1879 kB]
+2026-10-18T09:51:39.7862882Z Fetched 62.8 MB in 4s (16.5 MB/s)
+2026-10-18T09:51:39.8126734Z Selecting previously unselected package libva2:amd64.
+2026-10-18T09:51:39.8411153Z (Reading database ... 
+2026-10-18T09:51:39.8411561Z (Reading database ... 5%
+2026-10-18T09:51:39.8411842Z (Reading database ... 10%
+2026-10-18T09:51:39.8412103Z (Reading database ... 15%
+2026-10-18T09:51:39.8412360Z (Reading database ... 20%
+2026-10-18T09:51:39.8412604Z (Reading database ... 25%
+2026-10-18T09:51:39.8412850Z (Reading database ... 30%
+2026-10-18T09:51:39.8413189Z (Reading database ... 35%
+2026-10-18T09:51:39.8413777Z (Reading database ... 40%
+2026-10-18T09:51:39.8414862Z (Reading database ... 45%
+2026-10-18T09:51:39.8415144Z (Reading database ... 50%
+2026-10-18T09:51:39.8449203Z (Reading database ... 55%
+2026-10-18T09:51:39.9682403Z (Reading database ... 60%
+2026-10-18T09:51:40.1764515Z (Reading database ... 65%
+2026-10-18T09:51:40.3813204Z (Reading database ... 70%
+2026-10-18T09:51:40.5274704Z (Reading database ... 75%
+2026-10-18T09:51:40.7275754Z (Reading database ... 80%
+2026-10-18T09:51:40.9332182Z (Reading database ... 85%
+2026-10-18T09:51:41.0757010Z (Reading database ... 90%
+2026-10-18T09:51:41.2890287Z (Reading database ... 95%
+2026-10-18T09:51:41.2890719Z (Reading database ... 100%
+2026-10-18T09:51:41.2891272Z (Reading database ... 203540 files and directories currently installed.)
+2026-10-18T09:51:41.2931792Z Preparing to unpack .../00-libva2_2.20.0-2ubuntu0.2_amd64.deb ...
+2026-10-18T09:51:41.2966815Z Unpacking libva2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:41.3177277Z Selecting previously unselected package libva-drm2:amd64.
+2026-10-18T09:51:41.3298773Z Preparing to unpack .../01-libva-drm2_2.20.0-2ubuntu0.2_amd64.deb ...
+2026-10-18T09:51:41.3305974Z Unpacking libva-drm2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:41.3501506Z Selecting previously unselected package libva-x11-2:amd64.
+2026-10-18T09:51:41.3622514Z Preparing to unpack .../02-libva-x11-2_2.20.0-2ubuntu0.2_amd64.deb ...
+2026-10-18T09:51:41.3630392Z Unpacking libva-x11-2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:41.3826090Z Selecting previously unselected package libvdpau1:amd64.
+2026-10-18T09:51:41.3946530Z Preparing to unpack .../03-libvdpau1_1.5-2build1_amd64.deb ...
+2026-10-18T09:51:41.3953338Z Unpacking libvdpau1:amd64 (1.5-2build1) ...
+2026-10-18T09:51:41.4152987Z Selecting previously unselected package libvpl2.
+2026-10-18T09:51:41.4274201Z Preparing to unpack .../04-libvpl2_2023.3.0-1build1_amd64.deb ...
+2026-10-18T09:51:41.4281924Z Unpacking libvpl2 (2023.3.0-1build1) ...
+2026-10-18T09:51:41.4487972Z Selecting previously unselected package ocl-icd-libopencl1:amd64.
+2026-10-18T09:51:41.4609285Z Preparing to unpack .../05-ocl-icd-libopencl1_2.3.2-1build1_amd64.deb ...
+2026-10-18T09:51:41.4615862Z Unpacking ocl-icd-libopencl1:amd64 (2.3.2-1build1) ...
+2026-10-18T09:51:41.4866154Z Selecting previously unselected package libavutil58:amd64.
+2026-10-18T09:51:41.4985222Z Preparing to unpack .../06-libavutil58_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:41.4993746Z Unpacking libavutil58:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:41.5224916Z Selecting previously unselected package libcodec2-1.2:amd64.
+2026-10-18T09:51:41.5344057Z Preparing to unpack .../07-libcodec2-1.2_1.2.0-2build1_amd64.deb ...
+2026-10-18T09:51:41.5350845Z Unpacking libcodec2-1.2:amd64 (1.2.0-2build1) ...
+2026-10-18T09:51:41.6088057Z Selecting previously unselected package libdav1d7:amd64.
+2026-10-18T09:51:41.6212605Z Preparing to unpack .../08-libdav1d7_1.4.1-1build1_amd64.deb ...
+2026-10-18T09:51:41.6219788Z Unpacking libdav1d7:amd64 (1.4.1-1build1) ...
+2026-10-18T09:51:41.6475764Z Selecting previously unselected package libgsm1:amd64.
+2026-10-18T09:51:41.6599342Z Preparing to unpack .../09-libgsm1_1.0.22-1build1_amd64.deb ...
+2026-10-18T09:51:41.6606013Z Unpacking libgsm1:amd64 (1.0.22-1build1) ...
+2026-10-18T09:51:41.6798378Z Selecting previously unselected package libhwy1t64:amd64.
+2026-10-18T09:51:41.6920954Z Preparing to unpack .../10-libhwy1t64_1.0.7-8.1build1_amd64.deb ...
+2026-10-18T09:51:41.6927304Z Unpacking libhwy1t64:amd64 (1.0.7-8.1build1) ...
+2026-10-18T09:51:41.7231204Z Selecting previously unselected package libjxl0.7:amd64.
+2026-10-18T09:51:41.7352844Z Preparing to unpack .../11-libjxl0.7_0.7.0-10.2ubuntu6.1_amd64.deb ...
+2026-10-18T09:51:41.7360096Z Unpacking libjxl0.7:amd64 (0.7.0-10.2ubuntu6.1) ...
+2026-10-18T09:51:41.7673691Z Selecting previously unselected package libmp3lame0:amd64.
+2026-10-18T09:51:41.7796082Z Preparing to unpack .../12-libmp3lame0_3.100-6build1_amd64.deb ...
+2026-10-18T09:51:41.7803073Z Unpacking libmp3lame0:amd64 (3.100-6build1) ...
+2026-10-18T09:51:41.8007223Z Selecting previously unselected package libopus0:amd64.
+2026-10-18T09:51:41.8128692Z Preparing to unpack .../13-libopus0_1.4-1build1_amd64.deb ...
+2026-10-18T09:51:41.8135720Z Unpacking libopus0:amd64 (1.4-1build1) ...
+2026-10-18T09:51:41.8347702Z Selecting previously unselected package librav1e0:amd64.
+2026-10-18T09:51:41.8469465Z Preparing to unpack .../14-librav1e0_0.7.1-2_amd64.deb ...
+2026-10-18T09:51:41.8476127Z Unpacking librav1e0:amd64 (0.7.1-2) ...
+2026-10-18T09:51:41.8793149Z Selecting previously unselected package librsvg2-2:amd64.
+2026-10-18T09:51:41.8915380Z Preparing to unpack .../15-librsvg2-2_2.58.0+dfsg-1ubuntu0.1_amd64.deb ...
+2026-10-18T09:51:41.8924790Z Unpacking librsvg2-2:amd64 (2.58.0+dfsg-1ubuntu0.1) ...
+2026-10-18T09:51:41.9373221Z Selecting previously unselected package libshine3:amd64.
+2026-10-18T09:51:41.9496485Z Preparing to unpack .../16-libshine3_3.1.1-2build1_amd64.deb ...
+2026-10-18T09:51:41.9502781Z Unpacking libshine3:amd64 (3.1.1-2build1) ...
+2026-10-18T09:51:41.9693069Z Selecting previously unselected package libspeex1:amd64.
+2026-10-18T09:51:41.9814507Z Preparing to unpack .../17-libspeex1_1.2.1-2ubuntu2.24.04.1_amd64.deb ...
+2026-10-18T09:51:41.9820756Z Unpacking libspeex1:amd64 (1.2.1-2ubuntu2.24.04.1) ...
+2026-10-18T09:51:42.0009937Z Selecting previously unselected package libsvtav1enc1d1:amd64.
+2026-10-18T09:51:42.0131124Z Preparing to unpack .../18-libsvtav1enc1d1_1.7.0+dfsg-2build1_amd64.deb ...
+2026-10-18T09:51:42.0137730Z Unpacking libsvtav1enc1d1:amd64 (1.7.0+dfsg-2build1) ...
+2026-10-18T09:51:42.0597023Z Selecting previously unselected package libsoxr0:amd64.
+2026-10-18T09:51:42.0722677Z Preparing to unpack .../19-libsoxr0_0.1.3-4build3_amd64.deb ...
+2026-10-18T09:51:42.0730196Z Unpacking libsoxr0:amd64 (0.1.3-4build3) ...
+2026-10-18T09:51:42.0942185Z Selecting previously unselected package libswresample4:amd64.
+2026-10-18T09:51:42.1065605Z Preparing to unpack .../20-libswresample4_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:42.1072907Z Unpacking libswresample4:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:42.1271525Z Selecting previously unselected package libtheora0:amd64.
+2026-10-18T09:51:42.1394410Z Preparing to unpack .../21-libtheora0_1.1.1+dfsg.1-16.1build3_amd64.deb ...
+2026-10-18T09:51:42.1401347Z Unpacking libtheora0:amd64 (1.1.1+dfsg.1-16.1build3) ...
+2026-10-18T09:51:42.1630048Z Selecting previously unselected package libtwolame0:amd64.
+2026-10-18T09:51:42.1750435Z Preparing to unpack .../22-libtwolame0_0.4.0-2build3_amd64.deb ...
+2026-10-18T09:51:42.1757100Z Unpacking libtwolame0:amd64 (0.4.0-2build3) ...
+2026-10-18T09:51:42.1952248Z Selecting previously unselected package libvorbisenc2:amd64.
+2026-10-18T09:51:42.2071670Z Preparing to unpack .../23-libvorbisenc2_1.3.7-1build3_amd64.deb ...
+2026-10-18T09:51:42.2078443Z Unpacking libvorbisenc2:amd64 (1.3.7-1build3) ...
+2026-10-18T09:51:42.2288647Z Selecting previously unselected package libvpx9:amd64.
+2026-10-18T09:51:42.2407673Z Preparing to unpack .../24-libvpx9_1.14.0-1ubuntu2.3_amd64.deb ...
+2026-10-18T09:51:42.2414264Z Unpacking libvpx9:amd64 (1.14.0-1ubuntu2.3) ...
+2026-10-18T09:51:42.2744571Z Selecting previously unselected package libx264-164:amd64.
+2026-10-18T09:51:42.2865233Z Preparing to unpack .../25-libx264-164_2%3a0.164.3108+git31e19f9-1_amd64.deb ...
+2026-10-18T09:51:42.2872331Z Unpacking libx264-164:amd64 (2:0.164.3108+git31e19f9-1) ...
+2026-10-18T09:51:42.3128455Z Selecting previously unselected package libx265-199:amd64.
+2026-10-18T09:51:42.3248364Z Preparing to unpack .../26-libx265-199_3.5-2build1_amd64.deb ...
+2026-10-18T09:51:42.3255775Z Unpacking libx265-199:amd64 (3.5-2build1) ...
+2026-10-18T09:51:42.3884906Z Selecting previously unselected package libxvidcore4:amd64.
+2026-10-18T09:51:42.4009900Z Preparing to unpack .../27-libxvidcore4_2%3a1.3.7-1build1_amd64.deb ...
+2026-10-18T09:51:42.4016474Z Unpacking libxvidcore4:amd64 (2:1.3.7-1build1) ...
+2026-10-18T09:51:42.4225948Z Selecting previously unselected package libzvbi-common.
+2026-10-18T09:51:42.4350700Z Preparing to unpack .../28-libzvbi-common_0.2.42-2_all.deb ...
+2026-10-18T09:51:42.4356920Z Unpacking libzvbi-common (0.2.42-2) ...
+2026-10-18T09:51:42.4987383Z Selecting previously unselected package libzvbi0t64:amd64.
+2026-10-18T09:51:42.5109570Z Preparing to unpack .../29-libzvbi0t64_0.2.42-2_amd64.deb ...
+2026-10-18T09:51:42.5116698Z Unpacking libzvbi0t64:amd64 (0.2.42-2) ...
+2026-10-18T09:51:42.5341278Z Selecting previously unselected package libavcodec60:amd64.
+2026-10-18T09:51:42.5462977Z Preparing to unpack .../30-libavcodec60_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:42.5469277Z Unpacking libavcodec60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:42.6282971Z Selecting previously unselected package libraw1394-11:amd64.
+2026-10-18T09:51:42.6407875Z Preparing to unpack .../31-libraw1394-11_2.1.2-2build3_amd64.deb ...
+2026-10-18T09:51:42.6414492Z Unpacking libraw1394-11:amd64 (2.1.2-2build3) ...
+2026-10-18T09:51:42.6609608Z Selecting previously unselected package libavc1394-0:amd64.
+2026-10-18T09:51:42.6733521Z Preparing to unpack .../32-libavc1394-0_0.5.4-5build3_amd64.deb ...
+2026-10-18T09:51:42.6740646Z Unpacking libavc1394-0:amd64 (0.5.4-5build3) ...
+2026-10-18T09:51:42.6933657Z Selecting previously unselected package libunibreak5:amd64.
+2026-10-18T09:51:42.7055515Z Preparing to unpack .../33-libunibreak5_5.1-2build1_amd64.deb ...
+2026-10-18T09:51:42.7064586Z Unpacking libunibreak5:amd64 (5.1-2build1) ...
+2026-10-18T09:51:42.7260484Z Selecting previously unselected package libass9:amd64.
+2026-10-18T09:51:42.7387053Z Preparing to unpack .../34-libass9_1%3a0.17.1-2build1_amd64.deb ...
+2026-10-18T09:51:42.7395343Z Unpacking libass9:amd64 (1:0.17.1-2build1) ...
+2026-10-18T09:51:42.7621125Z Selecting previously unselected package libudfread0:amd64.
+2026-10-18T09:51:42.7746684Z Preparing to unpack .../35-libudfread0_1.1.2-1build1_amd64.deb ...
+2026-10-18T09:51:42.7754299Z Unpacking libudfread0:amd64 (1.1.2-1build1) ...
+2026-10-18T09:51:42.7954840Z Selecting previously unselected package libbluray2:amd64.
+2026-10-18T09:51:42.8080566Z Preparing to unpack .../36-libbluray2_1%3a1.3.4-1build1_amd64.deb ...
+2026-10-18T09:51:42.8087489Z Unpacking libbluray2:amd64 (1:1.3.4-1build1) ...
+2026-10-18T09:51:42.8299215Z Selecting previously unselected package libchromaprint1:amd64.
+2026-10-18T09:51:42.8424796Z Preparing to unpack .../37-libchromaprint1_1.5.1-5_amd64.deb ...
+2026-10-18T09:51:42.8431604Z Unpacking libchromaprint1:amd64 (1.5.1-5) ...
+2026-10-18T09:51:42.8635372Z Selecting previously unselected package libgme0:amd64.
+2026-10-18T09:51:42.8762872Z Preparing to unpack .../38-libgme0_0.6.3-7build1_amd64.deb ...
+2026-10-18T09:51:42.8770273Z Unpacking libgme0:amd64 (0.6.3-7build1) ...
+2026-10-18T09:51:42.8988265Z Selecting previously unselected package libmpg123-0t64:amd64.
+2026-10-18T09:51:42.9113615Z Preparing to unpack .../39-libmpg123-0t64_1.32.5-1ubuntu1.1_amd64.deb ...
+2026-10-18T09:51:42.9121080Z Unpacking libmpg123-0t64:amd64 (1.32.5-1ubuntu1.1) ...
+2026-10-18T09:51:42.9348596Z Selecting previously unselected package libopenmpt0t64:amd64.
+2026-10-18T09:51:42.9474286Z Preparing to unpack .../40-libopenmpt0t64_0.7.3-1.1build3_amd64.deb ...
+2026-10-18T09:51:42.9482376Z Unpacking libopenmpt0t64:amd64 (0.7.3-1.1build3) ...
+2026-10-18T09:51:42.9746065Z Selecting previously unselected package libcjson1:amd64.
+2026-10-18T09:51:42.9871793Z Preparing to unpack .../41-libcjson1_1.7.17-1_amd64.deb ...
+2026-10-18T09:51:42.9878967Z Unpacking libcjson1:amd64 (1.7.17-1) ...
+2026-10-18T09:51:43.0237735Z Selecting previously unselected package libmbedcrypto7t64:amd64.
+2026-10-18T09:51:43.0363285Z Preparing to unpack .../42-libmbedcrypto7t64_2.28.8-1_amd64.deb ...
+2026-10-18T09:51:43.0370895Z Unpacking libmbedcrypto7t64:amd64 (2.28.8-1) ...
+2026-10-18T09:51:43.0596686Z Selecting previously unselected package librist4:amd64.
+2026-10-18T09:51:43.0727893Z Preparing to unpack .../43-librist4_0.2.10+dfsg-2_amd64.deb ...
+2026-10-18T09:51:43.0735756Z Unpacking librist4:amd64 (0.2.10+dfsg-2) ...
+2026-10-18T09:51:43.0958305Z Selecting previously unselected package libsrt1.5-gnutls:amd64.
+2026-10-18T09:51:43.1083121Z Preparing to unpack .../44-libsrt1.5-gnutls_1.5.3-1build2_amd64.deb ...
+2026-10-18T09:51:43.1089300Z Unpacking libsrt1.5-gnutls:amd64 (1.5.3-1build2) ...
+2026-10-18T09:51:43.1324056Z Selecting previously unselected package libssh-gcrypt-4:amd64.
+2026-10-18T09:51:43.1451467Z Preparing to unpack .../45-libssh-gcrypt-4_0.10.6-2ubuntu0.5_amd64.deb ...
+2026-10-18T09:51:43.1459184Z Unpacking libssh-gcrypt-4:amd64 (0.10.6-2ubuntu0.5) ...
+2026-10-18T09:51:43.1690739Z Selecting previously unselected package libavformat60:amd64.
+2026-10-18T09:51:43.1815088Z Preparing to unpack .../46-libavformat60_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:43.1821856Z Unpacking libavformat60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:43.2138940Z Selecting previously unselected package libbs2b0:amd64.
+2026-10-18T09:51:43.2268069Z Preparing to unpack .../47-libbs2b0_3.1.0+dfsg-7build1_amd64.deb ...
+2026-10-18T09:51:43.2275733Z Unpacking libbs2b0:amd64 (3.1.0+dfsg-7build1) ...
+2026-10-18T09:51:43.2513936Z Selecting previously unselected package libflite1:amd64.
+2026-10-18T09:51:43.2641998Z Preparing to unpack .../48-libflite1_2.2-6build3_amd64.deb ...
+2026-10-18T09:51:43.2649256Z Unpacking libflite1:amd64 (2.2-6build3) ...
+2026-10-18T09:51:43.3721126Z Selecting previously unselected package libserd-0-0:amd64.
+2026-10-18T09:51:43.3845510Z Preparing to unpack .../49-libserd-0-0_0.32.2-1_amd64.deb ...
+2026-10-18T09:51:43.3852621Z Unpacking libserd-0-0:amd64 (0.32.2-1) ...
+2026-10-18T09:51:43.4051545Z Selecting previously unselected package libzix-0-0:amd64.
+2026-10-18T09:51:43.4175548Z Preparing to unpack .../50-libzix-0-0_0.4.2-2build1_amd64.deb ...
+2026-10-18T09:51:43.4183196Z Unpacking libzix-0-0:amd64 (0.4.2-2build1) ...
+2026-10-18T09:51:43.4374574Z Selecting previously unselected package libsord-0-0:amd64.
+2026-10-18T09:51:43.4496108Z Preparing to unpack .../51-libsord-0-0_0.16.16-2build1_amd64.deb ...
+2026-10-18T09:51:43.4503351Z Unpacking libsord-0-0:amd64 (0.16.16-2build1) ...
+2026-10-18T09:51:43.4699710Z Selecting previously unselected package libsratom-0-0:amd64.
+2026-10-18T09:51:43.4825768Z Preparing to unpack .../52-libsratom-0-0_0.6.16-1build1_amd64.deb ...
+2026-10-18T09:51:43.4834078Z Unpacking libsratom-0-0:amd64 (0.6.16-1build1) ...
+2026-10-18T09:51:43.5043201Z Selecting previously unselected package liblilv-0-0:amd64.
+2026-10-18T09:51:43.5170401Z Preparing to unpack .../53-liblilv-0-0_0.24.22-1build1_amd64.deb ...
+2026-10-18T09:51:43.5177781Z Unpacking liblilv-0-0:amd64 (0.24.22-1build1) ...
+2026-10-18T09:51:43.5390067Z Selecting previously unselected package libmysofa1:amd64.
+2026-10-18T09:51:43.5514728Z Preparing to unpack .../54-libmysofa1_1.3.2+dfsg-2ubuntu2_amd64.deb ...
+2026-10-18T09:51:43.5521384Z Unpacking libmysofa1:amd64 (1.3.2+dfsg-2ubuntu2) ...
+2026-10-18T09:51:43.5762885Z Selecting previously unselected package libplacebo338:amd64.
+2026-10-18T09:51:43.5886560Z Preparing to unpack .../55-libplacebo338_6.338.2-2build1_amd64.deb ...
+2026-10-18T09:51:43.5894361Z Unpacking libplacebo338:amd64 (6.338.2-2build1) ...
+2026-10-18T09:51:43.6400879Z Selecting previously unselected package libblas3:amd64.
+2026-10-18T09:51:43.6524985Z Preparing to unpack .../56-libblas3_3.12.0-3build1.1_amd64.deb ...
+2026-10-18T09:51:43.6554195Z Unpacking libblas3:amd64 (3.12.0-3build1.1) ...
+2026-10-18T09:51:43.6785483Z Selecting previously unselected package liblapack3:amd64.
+2026-10-18T09:51:43.6908695Z Preparing to unpack .../57-liblapack3_3.12.0-3build1.1_amd64.deb ...
+2026-10-18T09:51:43.6937685Z Unpacking liblapack3:amd64 (3.12.0-3build1.1) ...
+2026-10-18T09:51:43.7431327Z Selecting previously unselected package libasyncns0:amd64.
+2026-10-18T09:51:43.7554203Z Preparing to unpack .../58-libasyncns0_0.8-6build4_amd64.deb ...
+2026-10-18T09:51:43.7561808Z Unpacking libasyncns0:amd64 (0.8-6build4) ...
+2026-10-18T09:51:43.7757345Z Selecting previously unselected package libflac12t64:amd64.
+2026-10-18T09:51:43.7882102Z Preparing to unpack .../59-libflac12t64_1.4.3+ds-2.1ubuntu2_amd64.deb ...
+2026-10-18T09:51:43.7889588Z Unpacking libflac12t64:amd64 (1.4.3+ds-2.1ubuntu2) ...
+2026-10-18T09:51:43.8110846Z Selecting previously unselected package libsndfile1:amd64.
+2026-10-18T09:51:43.8235081Z Preparing to unpack .../60-libsndfile1_1.2.2-1ubuntu5.24.04.1_amd64.deb ...
+2026-10-18T09:51:43.8241818Z Unpacking libsndfile1:amd64 (1.2.2-1ubuntu5.24.04.1) ...
+2026-10-18T09:51:43.8477530Z Selecting previously unselected package libpulse0:amd64.
+2026-10-18T09:51:43.8601324Z Preparing to unpack .../61-libpulse0_1%3a16.1+dfsg1-2ubuntu10.1_amd64.deb ...
+2026-10-18T09:51:43.8666915Z Unpacking libpulse0:amd64 (1:16.1+dfsg1-2ubuntu10.1) ...
+2026-10-18T09:51:43.8906935Z Selecting previously unselected package libsphinxbase3t64:amd64.
+2026-10-18T09:51:43.9033736Z Preparing to unpack .../62-libsphinxbase3t64_0.8+5prealpha+1-17build2_amd64.deb ...
+2026-10-18T09:51:43.9041185Z Unpacking libsphinxbase3t64:amd64 (0.8+5prealpha+1-17build2) ...
+2026-10-18T09:51:43.9264159Z Selecting previously unselected package libpocketsphinx3:amd64.
+2026-10-18T09:51:43.9387662Z Preparing to unpack .../63-libpocketsphinx3_0.8.0+real5prealpha+1-15ubuntu5_amd64.deb ...
+2026-10-18T09:51:43.9394765Z Unpacking libpocketsphinx3:amd64 (0.8.0+real5prealpha+1-15ubuntu5) ...
+2026-10-18T09:51:43.9598750Z Selecting previously unselected package libpostproc57:amd64.
+2026-10-18T09:51:43.9721198Z Preparing to unpack .../64-libpostproc57_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:43.9728747Z Unpacking libpostproc57:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:43.9926113Z Selecting previously unselected package libsamplerate0:amd64.
+2026-10-18T09:51:44.0048282Z Preparing to unpack .../65-libsamplerate0_0.2.2-4build1_amd64.deb ...
+2026-10-18T09:51:44.0056602Z Unpacking libsamplerate0:amd64 (0.2.2-4build1) ...
+2026-10-18T09:51:44.0306629Z Selecting previously unselected package librubberband2:amd64.
+2026-10-18T09:51:44.0430280Z Preparing to unpack .../66-librubberband2_3.3.0+dfsg-2build1_amd64.deb ...
+2026-10-18T09:51:44.0438550Z Unpacking librubberband2:amd64 (3.3.0+dfsg-2build1) ...
+2026-10-18T09:51:44.0659595Z Selecting previously unselected package libswscale7:amd64.
+2026-10-18T09:51:44.0784396Z Preparing to unpack .../67-libswscale7_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:44.0792016Z Unpacking libswscale7:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:44.1065797Z Selecting previously unselected package libvidstab1.1:amd64.
+2026-10-18T09:51:44.1191797Z Preparing to unpack .../68-libvidstab1.1_1.1.0-2build1_amd64.deb ...
+2026-10-18T09:51:44.1200770Z Unpacking libvidstab1.1:amd64 (1.1.0-2build1) ...
+2026-10-18T09:51:44.1404066Z Selecting previously unselected package libzimg2:amd64.
+2026-10-18T09:51:44.1529870Z Preparing to unpack .../69-libzimg2_3.0.5+ds1-1build1_amd64.deb ...
+2026-10-18T09:51:44.1537784Z Unpacking libzimg2:amd64 (3.0.5+ds1-1build1) ...
+2026-10-18T09:51:44.1776753Z Selecting previously unselected package libavfilter9:amd64.
+2026-10-18T09:51:44.1904533Z Preparing to unpack .../70-libavfilter9_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:44.1912313Z Unpacking libavfilter9:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:44.2623895Z Selecting previously unselected package libcaca0:amd64.
+2026-10-18T09:51:44.2754642Z Preparing to unpack .../71-libcaca0_0.99.beta20-4ubuntu0.2_amd64.deb ...
+2026-10-18T09:51:44.2764129Z Unpacking libcaca0:amd64 (0.99.beta20-4ubuntu0.2) ...
+2026-10-18T09:51:44.3020253Z Selecting previously unselected package libcdio19t64:amd64.
+2026-10-18T09:51:44.3164621Z Preparing to unpack .../72-libcdio19t64_2.1.0-4.1ubuntu1.2_amd64.deb ...
+2026-10-18T09:51:44.3172307Z Unpacking libcdio19t64:amd64 (2.1.0-4.1ubuntu1.2) ...
+2026-10-18T09:51:44.3386469Z Selecting previously unselected package libcdio-cdda2t64:amd64.
+2026-10-18T09:51:44.3512304Z Preparing to unpack .../73-libcdio-cdda2t64_10.2+2.0.1-1.1build2_amd64.deb ...
+2026-10-18T09:51:44.3520806Z Unpacking libcdio-cdda2t64:amd64 (10.2+2.0.1-1.1build2) ...
+2026-10-18T09:51:44.3735083Z Selecting previously unselected package libcdio-paranoia2t64:amd64.
+2026-10-18T09:51:44.3858852Z Preparing to unpack .../74-libcdio-paranoia2t64_10.2+2.0.1-1.1build2_amd64.deb ...
+2026-10-18T09:51:44.3868113Z Unpacking libcdio-paranoia2t64:amd64 (10.2+2.0.1-1.1build2) ...
+2026-10-18T09:51:44.4067764Z Selecting previously unselected package libdc1394-25:amd64.
+2026-10-18T09:51:44.4190424Z Preparing to unpack .../75-libdc1394-25_2.2.6-4build1_amd64.deb ...
+2026-10-18T09:51:44.4197119Z Unpacking libdc1394-25:amd64 (2.2.6-4build1) ...
+2026-10-18T09:51:44.4398276Z Selecting previously unselected package libiec61883-0:amd64.
+2026-10-18T09:51:44.4520171Z Preparing to unpack .../76-libiec61883-0_1.2.0-6build1_amd64.deb ...
+2026-10-18T09:51:44.4527271Z Unpacking libiec61883-0:amd64 (1.2.0-6build1) ...
+2026-10-18T09:51:44.4720308Z Selecting previously unselected package libjack-jackd2-0:amd64.
+2026-10-18T09:51:44.4865412Z Preparing to unpack .../77-libjack-jackd2-0_1.9.21~dfsg-3ubuntu3_amd64.deb ...
+2026-10-18T09:51:44.4868825Z Unpacking libjack-jackd2-0:amd64 (1.9.21~dfsg-3ubuntu3) ...
+2026-10-18T09:51:44.5112603Z Selecting previously unselected package libopenal-data.
+2026-10-18T09:51:44.5235531Z Preparing to unpack .../78-libopenal-data_1%3a1.23.1-4build1_all.deb ...
+2026-10-18T09:51:44.5242889Z Unpacking libopenal-data (1:1.23.1-4build1) ...
+2026-10-18T09:51:44.5484814Z Selecting previously unselected package libsndio7.0:amd64.
+2026-10-18T09:51:44.5607442Z Preparing to unpack .../79-libsndio7.0_1.9.0-0.3build3_amd64.deb ...
+2026-10-18T09:51:44.5615248Z Unpacking libsndio7.0:amd64 (1.9.0-0.3build3) ...
+2026-10-18T09:51:44.6729636Z Selecting previously unselected package libopenal1:amd64.
+2026-10-18T09:51:44.6856627Z Preparing to unpack .../80-libopenal1_1%3a1.23.1-4build1_amd64.deb ...
+2026-10-18T09:51:44.6864475Z Unpacking libopenal1:amd64 (1:1.23.1-4build1) ...
+2026-10-18T09:51:44.7125365Z Selecting previously unselected package libdecor-0-0:amd64.
+2026-10-18T09:51:44.7251318Z Preparing to unpack .../81-libdecor-0-0_0.2.2-1build2_amd64.deb ...
+2026-10-18T09:51:44.7258481Z Unpacking libdecor-0-0:amd64 (0.2.2-1build2) ...
+2026-10-18T09:51:44.7458761Z Selecting previously unselected package libsdl2-2.0-0:amd64.
+2026-10-18T09:51:44.7583081Z Preparing to unpack .../82-libsdl2-2.0-0_2.30.0+dfsg-1ubuntu3.1_amd64.deb ...
+2026-10-18T09:51:44.7589973Z Unpacking libsdl2-2.0-0:amd64 (2.30.0+dfsg-1ubuntu3.1) ...
+2026-10-18T09:51:44.8178202Z Selecting previously unselected package libxcb-shape0:amd64.
+2026-10-18T09:51:44.8305939Z Preparing to unpack .../83-libxcb-shape0_1.15-1ubuntu2_amd64.deb ...
+2026-10-18T09:51:44.8313016Z Unpacking libxcb-shape0:amd64 (1.15-1ubuntu2) ...
+2026-10-18T09:51:44.8507692Z Selecting previously unselected package libxv1:amd64.
+2026-10-18T09:51:44.8634356Z Preparing to unpack .../84-libxv1_2%3a1.0.11-1.1build1_amd64.deb ...
+2026-10-18T09:51:44.8641396Z Unpacking libxv1:amd64 (2:1.0.11-1.1build1) ...
+2026-10-18T09:51:44.8843435Z Selecting previously unselected package libavdevice60:amd64.
+2026-10-18T09:51:44.8968108Z Preparing to unpack .../85-libavdevice60_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:44.8975137Z Unpacking libavdevice60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:44.9178291Z Selecting previously unselected package ffmpeg.
+2026-10-18T09:51:44.9302949Z Preparing to unpack .../86-ffmpeg_7%3a6.1.1-3ubuntu5_amd64.deb ...
+2026-10-18T09:51:44.9308798Z Unpacking ffmpeg (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:44.9878408Z Setting up libgme0:amd64 (0.6.3-7build1) ...
+2026-10-18T09:51:44.9905802Z Setting up libchromaprint1:amd64 (1.5.1-5) ...
+2026-10-18T09:51:44.9922741Z Setting up libssh-gcrypt-4:amd64 (0.10.6-2ubuntu0.5) ...
+2026-10-18T09:51:44.9939771Z Setting up libhwy1t64:amd64 (1.0.7-8.1build1) ...
+2026-10-18T09:51:44.9958338Z Setting up libudfread0:amd64 (1.1.2-1build1) ...
+2026-10-18T09:51:44.9975601Z Setting up libraw1394-11:amd64 (2.1.2-2build3) ...
+2026-10-18T09:51:44.9996393Z Setting up libspeex1:amd64 (1.2.1-2ubuntu2.24.04.1) ...
+2026-10-18T09:51:45.0013184Z Setting up libshine3:amd64 (3.1.1-2build1) ...
+2026-10-18T09:51:45.0030318Z Setting up libcaca0:amd64 (0.99.beta20-4ubuntu0.2) ...
+2026-10-18T09:51:45.0056375Z Setting up libvpl2 (2023.3.0-1build1) ...
+2026-10-18T09:51:45.0075094Z Setting up libx264-164:amd64 (2:0.164.3108+git31e19f9-1) ...
+2026-10-18T09:51:45.0094850Z Setting up libtwolame0:amd64 (0.4.0-2build3) ...
+2026-10-18T09:51:45.0119741Z Setting up libmbedcrypto7t64:amd64 (2.28.8-1) ...
+2026-10-18T09:51:45.0136759Z Setting up libgsm1:amd64 (1.0.22-1build1) ...
+2026-10-18T09:51:45.0156217Z Setting up libsoxr0:amd64 (0.1.3-4build3) ...
+2026-10-18T09:51:45.0176116Z Setting up libzix-0-0:amd64 (0.4.2-2build1) ...
+2026-10-18T09:51:45.0215057Z Setting up libcodec2-1.2:amd64 (1.2.0-2build1) ...
+2026-10-18T09:51:45.0236655Z Setting up libmysofa1:amd64 (1.3.2+dfsg-2ubuntu2) ...
+2026-10-18T09:51:45.0256599Z Setting up libxcb-shape0:amd64 (1.15-1ubuntu2) ...
+2026-10-18T09:51:45.0276213Z Setting up libcdio19t64:amd64 (2.1.0-4.1ubuntu1.2) ...
+2026-10-18T09:51:45.0294739Z Setting up libsvtav1enc1d1:amd64 (1.7.0+dfsg-2build1) ...
+2026-10-18T09:51:45.0313583Z Setting up libmpg123-0t64:amd64 (1.32.5-1ubuntu1.1) ...
+2026-10-18T09:51:45.0332665Z Setting up libcjson1:amd64 (1.7.17-1) ...
+2026-10-18T09:51:45.0351666Z Setting up libxvidcore4:amd64 (2:1.3.7-1build1) ...
+2026-10-18T09:51:45.0371489Z Setting up librav1e0:amd64 (0.7.1-2) ...
+2026-10-18T09:51:45.0388617Z Setting up libcdio-cdda2t64:amd64 (10.2+2.0.1-1.1build2) ...
+2026-10-18T09:51:45.0406155Z Setting up librist4:amd64 (0.2.10+dfsg-2) ...
+2026-10-18T09:51:45.0425281Z Setting up librsvg2-2:amd64 (2.58.0+dfsg-1ubuntu0.1) ...
+2026-10-18T09:51:45.0443225Z Setting up libblas3:amd64 (3.12.0-3build1.1) ...
+2026-10-18T09:51:45.0506551Z update-alternatives: using /usr/lib/x86_64-linux-gnu/blas/libblas.so.3 to provide /usr/lib/x86_64-linux-gnu/libblas.so.3 (libblas.so.3-x86_64-linux-gnu) in auto mode
+2026-10-18T09:51:45.0527532Z Setting up libplacebo338:amd64 (6.338.2-2build1) ...
+2026-10-18T09:51:45.0550332Z Setting up libva2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:45.0572809Z Setting up libopus0:amd64 (1.4-1build1) ...
+2026-10-18T09:51:45.0595384Z Setting up libcdio-paranoia2t64:amd64 (10.2+2.0.1-1.1build2) ...
+2026-10-18T09:51:45.0611858Z Setting up libdc1394-25:amd64 (2.2.6-4build1) ...
+2026-10-18T09:51:45.0631953Z Setting up libxv1:amd64 (2:1.0.11-1.1build1) ...
+2026-10-18T09:51:45.0650924Z Setting up libunibreak5:amd64 (5.1-2build1) ...
+2026-10-18T09:51:45.0677212Z Setting up libjxl0.7:amd64 (0.7.0-10.2ubuntu6.1) ...
+2026-10-18T09:51:45.0698299Z Setting up libx265-199:amd64 (3.5-2build1) ...
+2026-10-18T09:51:45.0716748Z Setting up libsndio7.0:amd64 (1.9.0-0.3build3) ...
+2026-10-18T09:51:45.0735139Z Setting up libvidstab1.1:amd64 (1.1.0-2build1) ...
+2026-10-18T09:51:45.0753415Z Setting up libvpx9:amd64 (1.14.0-1ubuntu2.3) ...
+2026-10-18T09:51:45.0771484Z Setting up libsrt1.5-gnutls:amd64 (1.5.3-1build2) ...
+2026-10-18T09:51:45.0787754Z Setting up libflite1:amd64 (2.2-6build3) ...
+2026-10-18T09:51:45.0809314Z Setting up libdav1d7:amd64 (1.4.1-1build1) ...
+2026-10-18T09:51:45.0838879Z Setting up libva-drm2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:45.0859492Z Setting up ocl-icd-libopencl1:amd64 (2.3.2-1build1) ...
+2026-10-18T09:51:45.0879379Z Setting up libasyncns0:amd64 (0.8-6build4) ...
+2026-10-18T09:51:45.0898221Z Setting up libvdpau1:amd64 (1.5-2build1) ...
+2026-10-18T09:51:45.0925758Z Setting up libbs2b0:amd64 (3.1.0+dfsg-7build1) ...
+2026-10-18T09:51:45.0943709Z Setting up libtheora0:amd64 (1.1.1+dfsg.1-16.1build3) ...
+2026-10-18T09:51:45.0963718Z Setting up libdecor-0-0:amd64 (0.2.2-1build2) ...
+2026-10-18T09:51:45.0985949Z Setting up libzimg2:amd64 (3.0.5+ds1-1build1) ...
+2026-10-18T09:51:45.1006476Z Setting up libopenal-data (1:1.23.1-4build1) ...
+2026-10-18T09:51:45.1033922Z Setting up libflac12t64:amd64 (1.4.3+ds-2.1ubuntu2) ...
+2026-10-18T09:51:45.1051828Z Setting up libbluray2:amd64 (1:1.3.4-1build1) ...
+2026-10-18T09:51:45.1071844Z Setting up libsamplerate0:amd64 (0.2.2-4build1) ...
+2026-10-18T09:51:45.1088974Z Setting up libva-x11-2:amd64 (2.20.0-2ubuntu0.2) ...
+2026-10-18T09:51:45.1108752Z Setting up libopenmpt0t64:amd64 (0.7.3-1.1build3) ...
+2026-10-18T09:51:45.1126596Z Setting up libzvbi-common (0.2.42-2) ...
+2026-10-18T09:51:45.1146736Z Setting up libmp3lame0:amd64 (3.100-6build1) ...
+2026-10-18T09:51:45.1167067Z Setting up libvorbisenc2:amd64 (1.3.7-1build3) ...
+2026-10-18T09:51:45.1185961Z Setting up libiec61883-0:amd64 (1.2.0-6build1) ...
+2026-10-18T09:51:45.1205999Z Setting up libserd-0-0:amd64 (0.32.2-1) ...
+2026-10-18T09:51:45.1224984Z Setting up libavc1394-0:amd64 (0.5.4-5build3) ...
+2026-10-18T09:51:45.1243058Z Setting up liblapack3:amd64 (3.12.0-3build1.1) ...
+2026-10-18T09:51:45.1306457Z update-alternatives: using /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3 to provide /usr/lib/x86_64-linux-gnu/liblapack.so.3 (liblapack.so.3-x86_64-linux-gnu) in auto mode
+2026-10-18T09:51:45.1332783Z Setting up libzvbi0t64:amd64 (0.2.42-2) ...
+2026-10-18T09:51:45.1362428Z Setting up libavutil58:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1380284Z Setting up libopenal1:amd64 (1:1.23.1-4build1) ...
+2026-10-18T09:51:45.1398910Z Setting up libass9:amd64 (1:0.17.1-2build1) ...
+2026-10-18T09:51:45.1419173Z Setting up libswresample4:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1436602Z Setting up libavcodec60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1455830Z Setting up librubberband2:amd64 (3.3.0+dfsg-2build1) ...
+2026-10-18T09:51:45.1476656Z Setting up libjack-jackd2-0:amd64 (1.9.21~dfsg-3ubuntu3) ...
+2026-10-18T09:51:45.1494971Z Setting up libsord-0-0:amd64 (0.16.16-2build1) ...
+2026-10-18T09:51:45.1514673Z Setting up libpostproc57:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1532941Z Setting up libsratom-0-0:amd64 (0.6.16-1build1) ...
+2026-10-18T09:51:45.1552747Z Setting up libsndfile1:amd64 (1.2.2-1ubuntu5.24.04.1) ...
+2026-10-18T09:51:45.1570616Z Setting up liblilv-0-0:amd64 (0.24.22-1build1) ...
+2026-10-18T09:51:45.1589341Z Setting up libswscale7:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1610239Z Setting up libpulse0:amd64 (1:16.1+dfsg1-2ubuntu10.1) ...
+2026-10-18T09:51:45.1680341Z Setting up libavformat60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.1701762Z Setting up libsphinxbase3t64:amd64 (0.8+5prealpha+1-17build2) ...
+2026-10-18T09:51:45.1719606Z Setting up libsdl2-2.0-0:amd64 (2.30.0+dfsg-1ubuntu3.1) ...
+2026-10-18T09:51:45.1993720Z Setting up libpocketsphinx3:amd64 (0.8.0+real5prealpha+1-15ubuntu5) ...
+2026-10-18T09:51:45.2010268Z Setting up libavfilter9:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.2029310Z Setting up libavdevice60:amd64 (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.2045373Z Setting up ffmpeg (7:6.1.1-3ubuntu5) ...
+2026-10-18T09:51:45.2068754Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-18T09:51:45.2091019Z Not building database; man-db/auto-update is not 'true'.
+2026-10-18T09:51:45.2104356Z Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+2026-10-18T09:51:45.8747854Z 
+2026-10-18T09:51:45.8748957Z Running kernel seems to be up-to-date.
+2026-10-18T09:51:45.8749718Z 
+2026-10-18T09:51:45.8750000Z No services need to be restarted.
+2026-10-18T09:51:45.8750372Z 
+2026-10-18T09:51:45.8750631Z No containers need to be restarted.
+2026-10-18T09:51:45.8750954Z 
+2026-10-18T09:51:45.8751270Z No user sessions are running outdated binaries.
+2026-10-18T09:51:45.8751638Z 
+2026-10-18T09:51:45.8752124Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-18T09:51:46.7791004Z bun install v1.4.3 (c6da4a4d3)
+2026-10-18T09:51:55.0543019Z 
+2026-10-18T09:51:55.0543555Z + @eslint/js@9.39.5
+2026-10-18T09:51:55.0570678Z + @playwright/test@1.64.1
+2026-10-18T09:51:55.0600344Z + @resvg/resvg-js@2.6.2
+2026-10-18T09:51:55.0631035Z + @types/jsonwebtoken@9.0.10
+2026-10-18T09:51:55.0631551Z + @types/react@18.3.31
+2026-10-18T09:51:55.0631961Z + @types/react-dom@18.3.7
+2026-10-18T09:51:55.0632399Z + @vitejs/plugin-react@5.2.0
+2026-10-18T09:51:55.0632849Z + @zxing/library@0.21.3
+2026-10-18T09:51:55.0633235Z + esbuild@0.25.12
+2026-10-18T09:51:55.0633567Z + eslint@9.39.5
+2026-10-18T09:51:55.0634027Z + eslint-plugin-react-hooks@7.1.1
+2026-10-18T09:51:55.0635125Z + eslint-plugin-react-refresh@0.4.26
+2026-10-18T09:51:55.0635589Z + globals@16.5.0
+2026-10-18T09:51:55.0635926Z + pngjs@7.0.0
+2026-10-18T09:51:55.0636269Z + prettier@3.9.10
+2026-10-18T09:51:55.0636601Z + ts-node@10.9.2
+2026-10-18T09:51:55.0636920Z + turbo@2.11.8
+2026-10-18T09:51:55.0637279Z + typescript@5.9.3
+2026-10-18T09:51:55.0637675Z + typescript-eslint@8.71.2
+2026-10-18T09:51:55.0638064Z + vite@6.4.4
+2026-10-18T09:51:55.0638424Z + @hookform/resolvers@5.4.0
+2026-10-18T09:51:55.0638845Z + @medusajs/icons@2.21.2
+2026-10-18T09:51:55.0639509Z + @medusajs/ui@4.2.3
+2026-10-18T09:51:55.0639892Z + @mercurjs/client@2.3.7
+2026-10-18T09:51:55.0640354Z + @mercurjs/dashboard-sdk@2.3.7
+2026-10-18T09:51:55.0640866Z + @mercurjs/dashboard-shared@2.3.7
+2026-10-18T09:51:55.0641328Z + @mercurjs/docs@2.3.7
+2026-10-18T09:51:55.0641772Z + @tanstack/react-query@5.64.2
+2026-10-18T09:51:55.0642253Z + @tanstack/react-table@8.21.3
+2026-10-18T09:51:55.0642650Z + i18next@26.4.2
+2026-10-18T09:51:55.0643010Z + jsonwebtoken@9.0.2
+2026-10-18T09:51:55.0643372Z + react@18.3.1
+2026-10-18T09:51:55.0643711Z + react-dom@18.3.1
+2026-10-18T09:51:55.0644084Z + react-hook-form@7.49.1
+2026-10-18T09:51:55.0644487Z + react-i18next@17.0.8
+2026-10-18T09:51:55.0644858Z + react-jwt@2.1.1
+2026-10-18T09:51:55.0645233Z + react-router-dom@7.18.1
+2026-10-18T09:51:55.0645611Z + zod@4.4.3
+2026-10-18T09:51:55.0645788Z 
+2026-10-18T09:51:55.0646024Z 2004 packages installed [8.28s]
+2026-10-18T09:51:55.6073296Z Installing dependencies...
+2026-10-18T09:51:55.6156176Z Switching to root user to install dependencies...
+2026-10-18T09:51:55.7124098Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-18T09:51:55.7535454Z Hit:3 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease
+2026-10-18T09:51:55.8557940Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-10-18T09:51:55.8580071Z Hit:4 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+2026-10-18T09:51:55.8600112Z Hit:5 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+2026-10-18T09:51:55.8601265Z Hit:6 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+2026-10-18T09:51:57.2850759Z Reading package lists...
+2026-10-18T09:51:57.3137117Z Reading package lists...
+2026-10-18T09:51:57.5374554Z Building dependency tree...
+2026-10-18T09:51:57.5382974Z Reading state information...
+2026-10-18T09:51:57.6768188Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-10-18T09:51:57.6768959Z libasound2t64 set to manually installed.
+2026-10-18T09:51:57.6770158Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-10-18T09:51:57.6770808Z libatk-bridge2.0-0t64 set to manually installed.
+2026-10-18T09:51:57.6771412Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-10-18T09:51:57.6771951Z libatk1.0-0t64 set to manually installed.
+2026-10-18T09:51:57.6772525Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-10-18T09:51:57.6773087Z libatspi2.0-0t64 set to manually installed.
+2026-10-18T09:51:57.6773683Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-10-18T09:51:57.6774234Z libcairo2 set to manually installed.
+2026-10-18T09:51:57.6774797Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-10-18T09:51:57.6775351Z libcups2t64 set to manually installed.
+2026-10-18T09:51:57.6776154Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-10-18T09:51:57.6776824Z libdbus-1-3 set to manually installed.
+2026-10-18T09:51:57.6777406Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-10-18T09:51:57.6777958Z libdrm2 set to manually installed.
+2026-10-18T09:51:57.6778476Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-10-18T09:51:57.6778893Z libgbm1 set to manually installed.
+2026-10-18T09:51:57.6779470Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.9).
+2026-10-18T09:51:57.6779923Z libglib2.0-0t64 set to manually installed.
+2026-10-18T09:51:57.6780687Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-10-18T09:51:57.6781255Z libnspr4 set to manually installed.
+2026-10-18T09:51:57.6781678Z libnss3 is already the newest version (2:3.98-1ubuntu0.2).
+2026-10-18T09:51:57.6782079Z libnss3 set to manually installed.
+2026-10-18T09:51:57.6782520Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-10-18T09:51:57.6782983Z libpango-1.0-0 set to manually installed.
+2026-10-18T09:51:57.6783429Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+2026-10-18T09:51:57.6783834Z libx11-6 set to manually installed.
+2026-10-18T09:51:57.6784221Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-10-18T09:51:57.6784607Z libxcb1 set to manually installed.
+2026-10-18T09:51:57.6785044Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-10-18T09:51:57.6785499Z libxcomposite1 set to manually installed.
+2026-10-18T09:51:57.6785942Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-10-18T09:51:57.6786363Z libxdamage1 set to manually installed.
+2026-10-18T09:51:57.6786796Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-10-18T09:51:57.6787195Z libxext6 set to manually installed.
+2026-10-18T09:51:57.6787610Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-10-18T09:51:57.6788033Z libxfixes3 set to manually installed.
+2026-10-18T09:51:57.6788459Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-10-18T09:51:57.6788877Z libxkbcommon0 set to manually installed.
+2026-10-18T09:51:57.6789423Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-10-18T09:51:57.6789818Z libxrandr2 set to manually installed.
+2026-10-18T09:51:57.6790222Z xvfb is already the newest version (2:21.1.12-1ubuntu1.8).
+2026-10-18T09:51:57.6790767Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-10-18T09:51:57.6791320Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-10-18T09:51:57.6791732Z libfontconfig1 set to manually installed.
+2026-10-18T09:51:57.6792178Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+2026-10-18T09:51:57.6792605Z libfreetype6 set to manually installed.
+2026-10-18T09:51:57.6793012Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-10-18T09:51:57.6793428Z fonts-liberation set to manually installed.
+2026-10-18T09:51:57.6793818Z The following additional packages will be installed:
+2026-10-18T09:51:57.6794169Z   xfonts-encodings xfonts-utils
+2026-10-18T09:51:57.6794447Z Recommended packages:
+2026-10-18T09:51:57.6794722Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-10-18T09:51:57.6925614Z The following NEW packages will be installed:
+2026-10-18T09:51:57.6926461Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-10-18T09:51:57.6931253Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-10-18T09:51:57.6931673Z   xfonts-utils
+2026-10-18T09:51:57.7097107Z 0 upgraded, 9 newly installed, 0 to remove and 44 not upgraded.
+2026-10-18T09:51:57.7097631Z Need to get 21.1 MB of archives.
+2026-10-18T09:51:57.7098107Z After this operation, 79.5 MB of additional disk space will be used.
+2026-10-18T09:51:57.7098603Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-10-18T09:51:57.7529240Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-10-18T09:51:57.8116109Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-10-18T09:51:57.8895486Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-10-18T09:51:57.9182927Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-10-18T09:51:57.9722154Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-10-18T09:51:58.0673373Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-10-18T09:51:58.0998182Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-10-18T09:51:58.1285003Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-10-18T09:51:58.1593994Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-10-18T09:51:58.4092142Z Fetched 21.1 MB in 0s (45.6 MB/s)
+2026-10-18T09:51:58.4322134Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-10-18T09:51:58.4382813Z (Reading database ... 
+2026-10-18T09:51:58.4383417Z (Reading database ... 5%
+2026-10-18T09:51:58.4384510Z (Reading database ... 10%
+2026-10-18T09:51:58.4385391Z (Reading database ... 15%
+2026-10-18T09:51:58.4386418Z (Reading database ... 20%
+2026-10-18T09:51:58.4387382Z (Reading database ... 25%
+2026-10-18T09:51:58.4388257Z (Reading database ... 30%
+2026-10-18T09:51:58.4410382Z (Reading database ... 35%
+2026-10-18T09:51:58.4411167Z (Reading database ... 40%
+2026-10-18T09:51:58.4411720Z (Reading database ... 45%
+2026-10-18T09:51:58.4412271Z (Reading database ... 50%
+2026-10-18T09:51:58.4422567Z (Reading database ... 55%
+2026-10-18T09:51:58.4537086Z (Reading database ... 60%
+2026-10-18T09:51:58.4563249Z (Reading database ... 65%
+2026-10-18T09:51:58.4584931Z (Reading database ... 70%
+2026-10-18T09:51:58.4622420Z (Reading database ... 75%
+2026-10-18T09:51:58.4652080Z (Reading database ... 80%
+2026-10-18T09:51:58.4806207Z (Reading database ... 85%
+2026-10-18T09:51:58.4995740Z (Reading database ... 90%
+2026-10-18T09:51:58.5073848Z (Reading database ... 95%
+2026-10-18T09:51:58.5074198Z (Reading database ... 100%
+2026-10-18T09:51:58.5074699Z (Reading database ... 204151 files and directories currently installed.)
+2026-10-18T09:51:58.5113647Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-10-18T09:51:58.5202388Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-10-18T09:51:58.7494948Z Selecting previously unselected package fonts-freefont-ttf.
+2026-10-18T09:51:58.7619565Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-10-18T09:51:58.7625759Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-10-18T09:51:58.8430858Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-10-18T09:51:58.8556666Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-10-18T09:51:58.8565227Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-10-18T09:51:58.8764298Z Selecting previously unselected package fonts-unifont.
+2026-10-18T09:51:58.8888046Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-10-18T09:51:58.8894618Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-10-18T09:51:58.9977573Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-10-18T09:51:59.0102465Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-10-18T09:51:59.0196245Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-10-18T09:51:59.4730845Z Selecting previously unselected package xfonts-encodings.
+2026-10-18T09:51:59.4856287Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-10-18T09:51:59.4863336Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-10-18T09:51:59.5142575Z Selecting previously unselected package xfonts-utils.
+2026-10-18T09:51:59.5267130Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-10-18T09:51:59.5273885Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-10-18T09:51:59.5578478Z Selecting previously unselected package xfonts-cyrillic.
+2026-10-18T09:51:59.5702869Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-10-18T09:51:59.5709471Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-10-18T09:51:59.6044242Z Selecting previously unselected package xfonts-scalable.
+2026-10-18T09:51:59.6173872Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-10-18T09:51:59.6180403Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-10-18T09:51:59.6615612Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-10-18T09:51:59.6731119Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-10-18T09:51:59.6749249Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-10-18T09:51:59.6767015Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-10-18T09:51:59.6784091Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-10-18T09:51:59.6849631Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-10-18T09:51:59.6864511Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-10-18T09:51:59.6882901Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-10-18T09:51:59.6921999Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-10-18T09:51:59.7206668Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-10-18T09:51:59.7478289Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-10-18T09:51:59.7493317Z Not building database; man-db/auto-update is not 'true'.
+2026-10-18T09:51:59.7506441Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-10-18T09:52:00.3736241Z 
+2026-10-18T09:52:00.3736817Z Running kernel seems to be up-to-date.
+2026-10-18T09:52:00.3737114Z 
+2026-10-18T09:52:00.3737288Z No services need to be restarted.
+2026-10-18T09:52:00.3737490Z 
+2026-10-18T09:52:00.3737664Z No containers need to be restarted.
+2026-10-18T09:52:00.3737876Z 
+2026-10-18T09:52:00.3738082Z No user sessions are running outdated binaries.
+2026-10-18T09:52:00.3738332Z 
+2026-10-18T09:52:00.3738656Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-10-18T09:52:01.2301117Z Downloading Chrome for Testing 156.0.8078.4 (playwright chromium v1248) from https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-linux64.zip
+2026-10-18T09:52:01.6727693Z |                                                                                |   0% of 191.1 MiB
+2026-10-18T09:52:02.0610001Z |■■■■■■■■                                                                        |  10% of 191.1 MiB
+2026-10-18T09:52:02.1560633Z |■■■■■■■■■■■■■■■■                                                                |  20% of 191.1 MiB
+2026-10-18T09:52:02.2512993Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 191.1 MiB
+2026-10-18T09:52:02.3922363Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 191.1 MiB
+2026-10-18T09:52:02.4769634Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 191.1 MiB
+2026-10-18T09:52:02.5620013Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 191.1 MiB
+2026-10-18T09:52:02.6414751Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 191.1 MiB
+2026-10-18T09:52:02.7300452Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 191.1 MiB
+2026-10-18T09:52:02.8242597Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 191.1 MiB
+2026-10-18T09:52:02.9180955Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 191.1 MiB
+2026-10-18T09:52:06.2509668Z Chrome for Testing 156.0.8078.4 (playwright chromium v1248) downloaded to /home/runner/.cache/ms-playwright/chromium-1248
+2026-10-18T09:52:06.2513725Z Downloading FFmpeg (playwright ffmpeg v1013) from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1013/ffmpeg-linux.zip
+2026-10-18T09:52:06.7571987Z |                                                                                |   0% of 2.2 MiB
+2026-10-18T09:52:06.8156529Z |■■■■■■■■                                                                        |  10% of 2.2 MiB
+2026-10-18T09:52:06.8466903Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.2 MiB
+2026-10-18T09:52:06.8711044Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.2 MiB
+2026-10-18T09:52:06.8915296Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.2 MiB
+2026-10-18T09:52:06.9001990Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.2 MiB
+2026-10-18T09:52:06.9175658Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.2 MiB
+2026-10-18T09:52:06.9234155Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.2 MiB
+2026-10-18T09:52:06.9362700Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.2 MiB
+2026-10-18T09:52:06.9446253Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.2 MiB
+2026-10-18T09:52:06.9485326Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.2 MiB
+2026-10-18T09:52:07.0103750Z FFmpeg (playwright ffmpeg v1013) downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1013
+2026-10-18T09:52:07.0107245Z Downloading Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) from https://cdn.playwright.dev/builds/cft/156.0.8078.4/linux64/chrome-headless-shell-linux64.zip
+2026-10-18T09:52:07.4630704Z |                                                                                |   0% of 120 MiB
+2026-10-18T09:52:07.8046216Z |■■■■■■■■                                                                        |  10% of 120 MiB
+2026-10-18T09:52:07.8857488Z |■■■■■■■■■■■■■■■■                                                                |  20% of 120 MiB
+2026-10-18T09:52:07.9466101Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 120 MiB
+2026-10-18T09:52:08.0194453Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 120 MiB
+2026-10-18T09:52:08.0651914Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 120 MiB
+2026-10-18T09:52:08.1169006Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 120 MiB
+2026-10-18T09:52:08.1796626Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 120 MiB
+2026-10-18T09:52:08.2200635Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 120 MiB
+2026-10-18T09:52:08.2716804Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 120 MiB
+2026-10-18T09:52:08.3314933Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 120 MiB
+2026-10-18T09:52:10.6683082Z Chrome Headless Shell 156.0.8078.4 (playwright chromium-headless-shell v1248) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1248
+2026-10-18T09:52:10.7810806Z ##[group]Run node scripts/ci/validate.mjs
+2026-10-18T09:52:10.7811291Z [36;1mnode scripts/ci/validate.mjs[0m
+2026-10-18T09:52:10.7879143Z shell: /usr/bin/bash -e {0}
+2026-10-18T09:52:10.7879624Z env:
+2026-10-18T09:52:10.7879810Z   CI: true
+2026-10-18T09:52:10.7880011Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:52:10.7880278Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:52:10.7880532Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:52:10.7880769Z ##[endgroup]
+2026-10-18T09:52:10.9449706Z ✔ release source accepts only exact lowercase commit identities, never refs or shell text (1.767486ms)
+2026-10-18T09:52:10.9451781Z ✔ registry manifest digest cannot be replaced by a mutable tag (0.425363ms)
+2026-10-18T09:52:10.9500546Z ✔ manifest binds source, both images, platform and actual revision labels (2.371051ms)
+2026-10-18T09:52:10.9501461Z ✔ archive path traversal and unverified builds are rejected (0.575684ms)
+2026-10-18T09:52:10.9534856Z ✔ archive checksums cover actual bytes (12.038126ms)
+2026-10-18T09:52:10.9564239Z ✔ tampered release archive fails before any Docker load can occur (2.886873ms)
+2026-10-18T09:52:10.9640984Z ℹ tests 6
+2026-10-18T09:52:10.9641427Z ℹ suites 0
+2026-10-18T09:52:10.9650155Z ℹ pass 6
+2026-10-18T09:52:10.9669300Z ℹ fail 0
+2026-10-18T09:52:10.9670050Z ℹ cancelled 0
+2026-10-18T09:52:10.9670610Z ℹ skipped 0
+2026-10-18T09:52:10.9671271Z ℹ todo 0
+2026-10-18T09:52:10.9671739Z ℹ duration_ms 80.48971
+2026-10-18T09:52:10.9711635Z bun test v1.4.3 (c6da4a4d3)
+2026-10-18T09:52:10.9736103Z 
+2026-10-18T09:52:10.9736914Z ##[group]tests/local-workflow.test.ts:
+2026-10-18T09:52:10.9923443Z (pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [2.49ms]
+2026-10-18T09:52:10.9935007Z (pass) only a demonstrated local legacy sandbox can gain the missing environment flag [1.21ms]
+2026-10-18T09:52:10.9936321Z (pass) local tooling rejects staging environment [0.11ms]
+2026-10-18T09:52:10.9937488Z (pass) local tooling rejects production environment
+2026-10-18T09:52:10.9938461Z (pass) local tooling rejects missing environment
+2026-10-18T09:52:10.9939869Z (pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.06ms]
+2026-10-18T09:52:10.9941393Z (pass) local boundary rejects unsafe REDIS_URL without disclosing the value [0.01ms]
+2026-10-18T09:52:10.9942801Z (pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.02ms]
+2026-10-18T09:52:10.9944197Z (pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+2026-10-18T09:52:10.9945557Z (pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+2026-10-18T09:52:10.9946932Z (pass) local boundary rejects unsafe JWT_SECRET without disclosing the value [0.04ms]
+2026-10-18T09:52:10.9948467Z (pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.98ms]
+2026-10-18T09:52:10.9957905Z (pass) injected staging/remote credentials fail the guard even when the local file is safe [0.98ms]
+2026-10-18T09:52:10.9960153Z (pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.13ms]
+2026-10-18T09:52:10.9995515Z (pass) preflight refuses an occupied port without terminating its owner [3.63ms]
+2026-10-18T09:52:11.0885856Z (pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [88.70ms]
+2026-10-18T09:52:11.0887366Z (pass) remote Docker TCP/SSH targets are refused before any daemon access [0.24ms]
+2026-10-18T09:52:11.1116953Z (pass) failed child verification preserves the nonzero result [23.20ms]
+2026-10-18T09:52:11.1126745Z (pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.98ms]
+2026-10-18T09:52:11.1133719Z (pass) an explicitly blank environment flag is preserved and never relabeled local [0.70ms]
+2026-10-18T09:52:11.1135491Z (pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.17ms]
+2026-10-18T09:52:11.1165780Z (pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [2.98ms]
+2026-10-18T09:52:11.2967914Z (pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [180.16ms]
+2026-10-18T09:52:11.2968539Z 
+2026-10-18T09:52:11.2968932Z ##[endgroup]
+2026-10-18T09:52:11.2969296Z 
+2026-10-18T09:52:11.2969452Z  23 pass
+2026-10-18T09:52:11.2969657Z  0 fail
+2026-10-18T09:52:11.2969868Z  67 expect() calls
+2026-10-18T09:52:11.2970159Z Ran 23 tests across 1 file. [325.00ms]
+2026-10-18T09:52:11.3020357Z $ turbo run lint
+2026-10-18T09:52:11.3373999Z 
+2026-10-18T09:52:11.3374224Z Attention:
+2026-10-18T09:52:11.3374837Z Turborepo now collects completely anonymous telemetry regarding usage.
+2026-10-18T09:52:11.3375929Z This information is used to shape the Turborepo roadmap and prioritize features.
+2026-10-18T09:52:11.3377514Z You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+2026-10-18T09:52:11.3378670Z https://turborepo.dev/docs/telemetry
+2026-10-18T09:52:11.3950196Z 
+2026-10-18T09:52:11.3950246Z 
+2026-10-18T09:52:11.3951900Z    • Packages in scope: @acme/admin, @acme/api, @acme/vendor, @didar/auth-network, @didar/ui, @mercurjs/storefront
+2026-10-18T09:52:11.3953338Z    • Running lint in 6 packages
+2026-10-18T09:52:11.3953903Z    • Remote caching disabled
+2026-10-18T09:52:11.3954186Z 
+2026-10-18T09:52:14.3830067Z [;31m@acme/vendor:lint[;0m
+2026-10-18T09:52:14.3835365Z cache miss, executing 8291b63a1a034063
+2026-10-18T09:52:14.3836377Z $ eslint .
+2026-10-18T09:52:14.3836762Z 
+2026-10-18T09:52:14.3838112Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/custom-fields/product.tsx
+2026-10-18T09:52:14.3892598Z ##[error]   5:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+2026-10-18T09:52:14.3908366Z ##[error]  12:16  error  Fast refresh can't handle anonymous components. Add a name to your export                               react-refresh/only-export-components
+2026-10-18T09:52:14.3911044Z 
+2026-10-18T09:52:14.3912175Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/acceptance/page.tsx
+2026-10-18T09:52:14.3916309Z ##[error]  4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3921483Z ##[error]  9:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3924126Z 
+2026-10-18T09:52:14.3925074Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/agency/page.tsx
+2026-10-18T09:52:14.3929014Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3934330Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3937156Z 
+2026-10-18T09:52:14.3938255Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/connect/page.tsx
+2026-10-18T09:52:14.3942149Z ##[error]  3:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3947451Z ##[error]  8:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3950243Z 
+2026-10-18T09:52:14.3951749Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/finance/page.tsx
+2026-10-18T09:52:14.3955349Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3960691Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3963119Z 
+2026-10-18T09:52:14.3964255Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/history/page.tsx
+2026-10-18T09:52:14.3967850Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3973145Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3975487Z 
+2026-10-18T09:52:14.3976372Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/invoices/page.tsx
+2026-10-18T09:52:14.3980090Z ##[error]   5:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3984695Z ##[error]  11:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3986859Z 
+2026-10-18T09:52:14.3987814Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/ledger/page.tsx
+2026-10-18T09:52:14.3991363Z ##[error]  4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3995706Z ##[error]  9:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.3997904Z 
+2026-10-18T09:52:14.3998876Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/onboarding/page.tsx
+2026-10-18T09:52:14.4004705Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4010836Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4013989Z 
+2026-10-18T09:52:14.4015502Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/operations/page.tsx
+2026-10-18T09:52:14.4020408Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4027021Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4030401Z 
+2026-10-18T09:52:14.4031878Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/orders/page.tsx
+2026-10-18T09:52:14.4036277Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4042882Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4045902Z 
+2026-10-18T09:52:14.4047004Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/page.tsx
+2026-10-18T09:52:14.4051290Z ##[error]   5:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4057159Z ##[error]  14:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4060151Z 
+2026-10-18T09:52:14.4061328Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/pages/page.tsx
+2026-10-18T09:52:14.4065337Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4070911Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4073778Z 
+2026-10-18T09:52:14.4074965Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/pricing/page.tsx
+2026-10-18T09:52:14.4079773Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4085608Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4088515Z 
+2026-10-18T09:52:14.4089740Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/sharing/page.tsx
+2026-10-18T09:52:14.4094280Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4100680Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4103544Z 
+2026-10-18T09:52:14.4104797Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/storefront/page.tsx
+2026-10-18T09:52:14.4108916Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4115409Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4118394Z 
+2026-10-18T09:52:14.4119967Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/tahesab/page.tsx
+2026-10-18T09:52:14.4124108Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4130906Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4133782Z 
+2026-10-18T09:52:14.4135071Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/treasury/page.tsx
+2026-10-18T09:52:14.4139893Z ##[error]  4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4146178Z ##[error]  9:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4149485Z 
+2026-10-18T09:52:14.4150850Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/didar/wallet/page.tsx
+2026-10-18T09:52:14.4154387Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4158279Z ##[error]  18:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4160248Z 
+2026-10-18T09:52:14.4160885Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/routes/handoff/page.tsx
+2026-10-18T09:52:14.4164300Z ##[error]  2:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4166639Z 
+2026-10-18T09:52:14.4167623Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor/src/widgets/didar-product.tsx
+2026-10-18T09:52:14.4171186Z ##[error]  6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.4173645Z 
+2026-10-18T09:52:14.4174245Z ✖ 40 problems (40 errors, 0 warnings)
+2026-10-18T09:52:14.4174604Z 
+2026-10-18T09:52:14.4174909Z error: script "lint" exited with code 1
+2026-10-18T09:52:14.5747989Z ##[group]@mercurjs/storefront:lint
+2026-10-18T09:52:14.5748904Z cache miss, executing efe5e8a72f69b235
+2026-10-18T09:52:14.5749853Z $ next lint
+2026-10-18T09:52:14.5750364Z `next lint` is deprecated and will be removed in Next.js 16.
+2026-10-18T09:52:14.5751159Z For new projects, use create-next-app to choose your preferred linter.
+2026-10-18T09:52:14.5751843Z For existing projects, migrate to the ESLint CLI:
+2026-10-18T09:52:14.5752426Z npx @next/codemod@canary next-lint-to-eslint-cli .
+2026-10-18T09:52:14.5752765Z 
+2026-10-18T09:52:14.5753115Z ##[endgroup]
+2026-10-18T09:52:14.5768582Z ##[group]@acme/admin:lint
+2026-10-18T09:52:14.5769434Z cache miss, executing 04649a68a147124a
+2026-10-18T09:52:14.5769950Z $ eslint .
+2026-10-18T09:52:14.5770089Z 
+2026-10-18T09:52:14.5770989Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/custom-fields/product.tsx
+2026-10-18T09:52:14.5774435Z ##[error]   5:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+2026-10-18T09:52:14.5777445Z ##[error]  12:16  error  Fast refresh can't handle anonymous components. Add a name to your export                               react-refresh/only-export-components
+2026-10-18T09:52:14.5778612Z 
+2026-10-18T09:52:14.5779632Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/acceptance/page.tsx
+2026-10-18T09:52:14.5782841Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5786616Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5787903Z 
+2026-10-18T09:52:14.5788490Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/agency/page.tsx
+2026-10-18T09:52:14.5790679Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5793243Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5794360Z 
+2026-10-18T09:52:14.5794821Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/connect/page.tsx
+2026-10-18T09:52:14.5796450Z ##[error]  3:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5798613Z ##[error]  8:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5800110Z 
+2026-10-18T09:52:14.5800590Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/connections/page.tsx
+2026-10-18T09:52:14.5802298Z ##[error]   7:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5804468Z ##[error]  13:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5805532Z 
+2026-10-18T09:52:14.5805983Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/finance/page.tsx
+2026-10-18T09:52:14.5808232Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5813562Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5816143Z 
+2026-10-18T09:52:14.5817504Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/ledger/page.tsx
+2026-10-18T09:52:14.5821987Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5826208Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5827348Z 
+2026-10-18T09:52:14.5827824Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/onboarding/page.tsx
+2026-10-18T09:52:14.5829774Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5832113Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5833221Z 
+2026-10-18T09:52:14.5833693Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/operations/page.tsx
+2026-10-18T09:52:14.5835675Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5837894Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5838971Z 
+2026-10-18T09:52:14.5839845Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/orders/page.tsx
+2026-10-18T09:52:14.5841713Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5843965Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5845049Z 
+2026-10-18T09:52:14.5845457Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/page.tsx
+2026-10-18T09:52:14.5846948Z ##[error]   5:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5849329Z ##[error]  14:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5850446Z 
+2026-10-18T09:52:14.5850898Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/pages/page.tsx
+2026-10-18T09:52:14.5853258Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5860659Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5861832Z 
+2026-10-18T09:52:14.5862296Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/pricing/page.tsx
+2026-10-18T09:52:14.5864773Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5868634Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5870664Z 
+2026-10-18T09:52:14.5871478Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/sharing/page.tsx
+2026-10-18T09:52:14.5874411Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5878404Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5880404Z 
+2026-10-18T09:52:14.5881036Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/storefront/page.tsx
+2026-10-18T09:52:14.5882876Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5885097Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5887289Z 
+2026-10-18T09:52:14.5888094Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/tahesab/page.tsx
+2026-10-18T09:52:14.5892019Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5896529Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5898506Z 
+2026-10-18T09:52:14.5899681Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/treasury/page.tsx
+2026-10-18T09:52:14.5903065Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5907523Z ##[error]  10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5909942Z 
+2026-10-18T09:52:14.5910841Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/didar/wallet/page.tsx
+2026-10-18T09:52:14.5914105Z ##[error]   4:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5917695Z ##[error]  18:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5918847Z 
+2026-10-18T09:52:14.5921085Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/routes/handoff/page.tsx
+2026-10-18T09:52:14.5924101Z ##[error]  2:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5926143Z 
+2026-10-18T09:52:14.5926891Z /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/admin/src/widgets/didar-product.tsx
+2026-10-18T09:52:14.5929817Z ##[error]  6:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+2026-10-18T09:52:14.5931269Z 
+2026-10-18T09:52:14.5931685Z ✖ 38 problems (38 errors, 0 warnings)
+2026-10-18T09:52:14.5931888Z 
+2026-10-18T09:52:14.5932158Z ##[endgroup]
+2026-10-18T09:52:14.5942416Z ##[error]command (/home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor) /home/runner/.bun/bin/bun run lint exited (1)
+2026-10-18T09:52:14.5944228Z @acme/vendor#lint:  ERROR  command (/home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/apps/vendor) /home/runner/.bun/bin/bun run lint exited (1)
+2026-10-18T09:52:14.5944988Z  ERROR  run failed: command  exited (1)
+2026-10-18T09:52:14.5945507Z error: script "lint" exited with code 1
+2026-10-18T09:52:14.5946110Z file:///home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/scripts/ci/validate.mjs:12
+2026-10-18T09:52:14.5946981Z   if (child.status !== 0 || child.signal || child.error) throw Error(`${name} failed; observed exit ${child.status}, signal ${child.signal}`);
+2026-10-18T09:52:14.5947658Z                                                                ^
+2026-10-18T09:52:14.5947879Z 
+2026-10-18T09:52:14.5948132Z Error: lint failed; observed exit 1, signal null
+2026-10-18T09:52:14.5949699Z     at run (file:///home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/scripts/ci/validate.mjs:12:64)
+2026-10-18T09:52:14.5950888Z     at file:///home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace/scripts/ci/validate.mjs:19:3
+2026-10-18T09:52:14.5951510Z     at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+2026-10-18T09:52:14.5952139Z     at async node:internal/modules/esm/loader:643:26
+2026-10-18T09:52:14.5952652Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-10-18T09:52:14.5952989Z 
+2026-10-18T09:52:14.5953085Z Node.js v24.19.0
+2026-10-18T09:52:14.5953219Z 
+2026-10-18T09:52:14.5953351Z  Tasks:    0 successful, 3 total
+2026-10-18T09:52:14.5953637Z Cached:    0 cached, 3 total
+2026-10-18T09:52:14.5953894Z   Time:    3.239s 
+2026-10-18T09:52:14.5954142Z Failed:    @acme/vendor#lint
+2026-10-18T09:52:14.5954294Z 
+2026-10-18T09:52:14.5956038Z ##[error]Process completed with exit code 1.
+2026-10-18T09:52:14.6040912Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-18T09:52:14.6041351Z with:
+2026-10-18T09:52:14.6041571Z   name: ci-results-39116968405-1
+2026-10-18T09:52:14.6041844Z   path: .local/ci-evidence/validation.json
+2026-10-18T09:52:14.6042133Z   include-hidden-files: true
+2026-10-18T09:52:14.6042383Z   if-no-files-found: error
+2026-10-18T09:52:14.6042616Z   retention-days: 14
+2026-10-18T09:52:14.6042826Z   compression-level: 6
+2026-10-18T09:52:14.6043034Z   overwrite: false
+2026-10-18T09:52:14.6043223Z env:
+2026-10-18T09:52:14.6043394Z   CI: true
+2026-10-18T09:52:14.6043588Z   MERCUR_BACKEND_URL: same-origin
+2026-10-18T09:52:14.6043852Z   NEXT_TELEMETRY_DISABLED: 1
+2026-10-18T09:52:14.6044089Z   MERCUR_DISABLE_TELEMETRY: true
+2026-10-18T09:52:14.6044318Z ##[endgroup]
+2026-10-18T09:52:14.7714416Z (node:4435) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-18T09:52:14.7715321Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T09:52:14.7762049Z With the provided path, there will be 1 file uploaded
+2026-10-18T09:52:14.7768019Z Artifact name is valid!
+2026-10-18T09:52:14.7769554Z Root directory input is valid!
+2026-10-18T09:52:15.0265761Z Beginning upload of artifact content to blob storage
+2026-10-18T09:52:15.0455883Z (node:4435) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-18T09:52:15.1591440Z Uploaded bytes 475
+2026-10-18T09:52:15.1965286Z Finished uploading artifact content to blob storage!
+2026-10-18T09:52:15.1966404Z SHA256 digest of uploaded artifact zip is 3fc1b2f172c2a94f2b813218c795c34f317260cb8688153f910bc2855375020b
+2026-10-18T09:52:15.1967434Z Finalizing artifact upload
+2026-10-18T09:52:15.4414280Z Artifact ci-results-39116968405-1.zip successfully finalized. Artifact ID 12132427268
+2026-10-18T09:52:15.4415758Z Artifact ci-results-39116968405-1 has been successfully uploaded! Final size is 475 bytes. Artifact ID is 12132427268
+2026-10-18T09:52:15.4421855Z Artifact download URL: https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39116968405/artifacts/12132427268
+2026-10-18T09:52:15.4608053Z Post job cleanup.
+2026-10-18T09:52:15.5460006Z [command]/usr/bin/git version
+2026-10-18T09:52:15.5504564Z git version 2.55.0
+2026-10-18T09:52:15.5550412Z Temporarily overriding HOME='/home/runner/work/_temp/2bde7e66-3c0a-4786-ba26-61070fad2470' before making global git config changes
+2026-10-18T09:52:15.5551612Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-18T09:52:15.5556862Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/didar-b2c-marketplace/didar-b2c-marketplace
+2026-10-18T09:52:15.5597554Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-18T09:52:15.5632180Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-18T09:52:15.5891442Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-18T09:52:15.5927329Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-18T09:52:15.6180743Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-18T09:52:15.6224072Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-18T09:52:15.6675152Z Cleaning up orphan processes
+2026-10-18T09:52:15.6998964Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

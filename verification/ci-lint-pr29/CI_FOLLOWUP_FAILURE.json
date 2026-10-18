@@ -1,0 +1,16 @@
+{
+  "source_sha": "df7aac383de00bfd382e48331b1f8ec29668ca86",
+  "run_id": 39118562439,
+  "job_id": 117649274726,
+  "observed_runner_exit": 1,
+  "observed_api_types_exit": 2,
+  "lint": "PASS (all three tasks freshly executed, no Turbo cache)",
+  "reason": "Existing disposable-only native-qa-seed.ts sellerModule inferred unknown, TS18046",
+  "not_executed": [
+    "storefront-types",
+    "production-builds-backend-http-native-browser",
+    "fresh-no-demo-bootstrap"
+  ],
+  "artifact_url": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39118562439/artifacts/12133710623",
+  "artifact_zip_sha256": "bb062bf4be13f999971358882bfaf1f7129273266f909a7de9da07de18814e65"
+}

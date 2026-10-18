@@ -7,6 +7,7 @@ import {
   updateSellerPaymentDetailsWorkflow,
 } from "@mercurjs/core/workflows";
 import { MercurModules, SellerRole } from "@mercurjs/types";
+import type { CreateMemberDTO, MemberDTO } from "@mercurjs/types";
 import { hashPassword } from "../didar/auth";
 import { db } from "../didar/db";
 // Creates ONLY disposable integration fixtures. Never invoked in db:setup or production.
@@ -75,7 +76,11 @@ export default async function seed({ container }: ExecArgs) {
     // The first vendor deliberately remains unbound: browser must prove/link the existing Didar account.
   }
   const staffEmail = "native-staff@didar.test";
-  const sellerModule = container.resolve(MercurModules.SELLER);
+  const sellerModule = container.resolve<{
+    upsertMembers(
+      input: (CreateMemberDTO & Pick<MemberDTO, "first_name" | "last_name">)[],
+    ): Promise<MemberDTO[]>;
+  }>(MercurModules.SELLER);
   const [staff] = await sellerModule.upsertMembers([
     { email: staffEmail, first_name: "همکار", last_name: "محتوا" },
   ]);

@@ -24,6 +24,13 @@ async function ok(path: string, method = "GET", body?: any) {
 }
 afterAll(async () => {
   if (parent) await request("/admin/products/" + parent.id, "DELETE");
+  // Return the shared disposable fixture to the unconnected state used by the
+  // following real browser dual-proof journey; touch only this QA actor/link.
+  await db.query(
+    `DELETE FROM didar_native_actor WHERE actor_type='user' AND user_id='demo-admin'
+     AND actor_id IN (SELECT id FROM "user" WHERE email=$1 AND deleted_at IS NULL)`,
+    ["native-admin@didar.test"],
+  );
   await db.end();
 });
 test("real native target setup retains DIDAR projections and ordinary native CRUD", async () => {
@@ -38,6 +45,15 @@ test("real native target setup retains DIDAR projections and ordinary native CRU
   );
   expect(r.status).toBe(200);
   token = (await r.json()).token;
+  // Other suites deliberately remove this bridge. Establish this suite's own
+  // authorization through the existing dual-proof API, never by bypassing RBAC.
+  const proof = await ok("/didar/login", "POST", {
+    email: "admin@didar.test",
+    password: "DidarDemo2026!",
+  });
+  await ok("/admin/didar/connect", "POST", { didar_token: proof.token });
+  const me = await ok("/admin/users/me?fields=+permissions");
+  expect(["edit", "manage"]).toContain(me.user.permissions.products);
   parent = (
     await ok("/admin/products", "POST", {
       title: "QA native target regression",

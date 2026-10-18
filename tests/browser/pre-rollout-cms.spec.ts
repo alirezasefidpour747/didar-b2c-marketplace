@@ -2,7 +2,13 @@ import { test, expect, type Page } from "@playwright/test";
 import { Pool } from "../../packages/api/node_modules/pg";
 import sharp from "../../packages/api/node_modules/sharp";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, mkdirSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  mkdirSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -144,8 +150,29 @@ test("native CMS publishes eleven live blocks, schedules immutable versions, rol
   test.setTimeout(240000);
   mkdirSync(evidence, { recursive: true });
   const errors: string[] = [];
+  const diagnostics: {
+    surface: string;
+    path: string;
+    message: string;
+    stack?: string;
+  }[] = [];
+  const observeErrors = (observed: Page, surface: string) =>
+    observed.on("pageerror", (e) => {
+      errors.push(e.message);
+      diagnostics.push({
+        surface,
+        path: new URL(observed.url()).pathname,
+        message: e.message,
+        stack: e.stack,
+      });
+      writeFileSync(
+        evidence + "/cms-page-errors.json",
+        JSON.stringify(diagnostics, null, 2),
+      );
+    });
+  writeFileSync(evidence + "/cms-page-errors.json", "[]\n");
   await page.setViewportSize({ width: 1440, height: 1000 });
-  page.on("pageerror", (e) => errors.push(e.message));
+  observeErrors(page, "native-admin");
   const admin = await nativeToken(
     "admin",
     "native-admin@didar.test",
@@ -405,7 +432,7 @@ test("native CMS publishes eleven live blocks, schedules immutable versions, rol
     baseURL: process.env.TEST_STOREFRONT_URL,
     viewport: { width: 1440, height: 1000 },
   });
-  shopper.on("pageerror", (e) => errors.push(e.message));
+  observeErrors(shopper, "customer");
   await shopper.goto("/");
   await expect(shopper.locator(".cms-page")).toHaveAttribute(
     "data-version-id",
@@ -620,7 +647,7 @@ test("native CMS publishes eleven live blocks, schedules immutable versions, rol
   const vendorPage = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
   });
-  vendorPage.on("pageerror", (e) => errors.push(e.message));
+  observeErrors(vendorPage, "native-vendor");
   await login(vendorPage, "seller", "native-supplier@didar.test");
   await vendorPage
     .locator(".cms-editor-list button")

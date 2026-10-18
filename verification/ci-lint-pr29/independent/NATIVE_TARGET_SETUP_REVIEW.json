@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "review_type": "Independent source review; not a fresh runtime test",
+  "base_commit": "3c58201993c7d70df22824a4d9e93629efa77da0",
+  "path": "tests/native-product-targets.test.ts",
+  "source_sha256": "29e76844d5488cdc085a27cdca8c5582f4a5ea2549a94d051f65ef56925a58dc",
+  "original_sha256": "4d90277539ab5b80543523f587c1a3705462629d767defa46ff2c020e88d8210",
+  "checks": {
+    "only_added_setup_and_scoped_cleanup": true,
+    "original_crud_and_all_five_protection_tests_byte_preserved": true,
+    "canonical_password_proof_via_public_login": true,
+    "native_token_plus_canonical_token_via_original_connect_api": true,
+    "actual_resolved_products_right_asserted_before_crud": true,
+    "no_application_code_or_sql_privilege_grant": true,
+    "cleanup_only_exact_shared_qa_native_user_and_demo_admin_link": true
+  },
+  "observed_existing_full_validation": {
+    "source_sha": "3c58201993c7d70df22824a4d9e93629efa77da0",
+    "runner_exit": 1,
+    "backend_pass": 225,
+    "backend_fail": 6,
+    "first_failure": "products:edit missing after earlier suite deletes demo-admin bridge",
+    "remaining_five_failures": "undefined dependent fixture cascade"
+  },
+  "limits": [
+    "Source review only; fresh entire-suite proof still required because original order-sensitive failure arose in combined execution.",
+    "Shared native identity fixture continues existing serial suite behavior; this correction does not certify parallel isolation."
+  ],
+  "reviewer_note": "Earlier source-invariance check exited1 because coordinator added required cleanup while initial setup-only review was being written; latest final two-block diff verified. Not an application/test execution failure."
+}

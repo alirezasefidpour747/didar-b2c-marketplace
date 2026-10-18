@@ -1,0 +1,17 @@
+{
+  "stage": "qa-seed-api-types",
+  "command": "bun",
+  "args": [
+    "x",
+    "tsc",
+    "--noEmit",
+    "-p",
+    "packages/api/tsconfig.json"
+  ],
+  "code": 2,
+  "signal": null,
+  "error": null,
+  "child_pid": 72515,
+  "observer_pid": 72505,
+  "at": "2026-10-18T10:17:21.630Z"
+}

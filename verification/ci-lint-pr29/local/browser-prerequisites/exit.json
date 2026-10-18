@@ -1,0 +1,16 @@
+{
+  "stage": "browser-prerequisites",
+  "command": "bun",
+  "args": [
+    "x",
+    "playwright",
+    "install",
+    "chromium"
+  ],
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "child_pid": 72664,
+  "observer_pid": 72647,
+  "at": "2026-10-18T10:18:14.991Z"
+}

@@ -1,0 +1,215 @@
+name: DIDAR authorized release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact accepted main commit (40 lowercase hex characters)
+        required: true
+        type: string
+      authorization:
+        description: 'Type RELEASE followed by a space and the same source SHA'
+        required: true
+        type: string
+      publish_ghcr:
+        description: Attempt GHCR publication after independent verification
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: didar-release
+  cancel-in-progress: false
+
+jobs:
+  authorize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    # Configure required reviewers and main-only branch rules on this environment.
+    environment: didar-release
+    outputs:
+      source_sha: ${{ steps.accept.outputs.source_sha }}
+      ci_run: ${{ steps.accept.outputs.ci_run }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require explicit authorization and successful exact-SHA CI
+        id: accept
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_SHA: ${{ inputs.source_sha }}
+          AUTHORIZATION: ${{ inputs.authorization }}
+          RELEASE_ENABLED: ${{ vars.DIDAR_RELEASE_ENABLED }}
+          DISPATCH_REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          test "$DISPATCH_REF" = refs/heads/main
+          test "$RELEASE_ENABLED" = true
+          [[ "$REQUESTED_SHA" =~ ^[a-f0-9]{40}$ ]]
+          test "$AUTHORIZATION" = "RELEASE $REQUESTED_SHA"
+          git cat-file -e "$REQUESTED_SHA^{commit}"
+          git merge-base --is-ancestor "$REQUESTED_SHA" HEAD
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/didar-ci.yml/runs?head_sha=$REQUESTED_SHA&event=push&per_page=100" > "$RUNNER_TEMP/didar-ci-runs.json"
+          node --input-type=module <<'NODE'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const runs = JSON.parse(readFileSync(process.env.RUNNER_TEMP + '/didar-ci-runs.json')).workflow_runs;
+          const run = runs.find(r => r.head_sha === process.env.REQUESTED_SHA && r.event === 'push' && r.head_branch === 'main');
+          if (!run || run.status !== 'completed' || run.conclusion !== 'success') throw Error('Latest exact-main-SHA push CI must have succeeded');
+          appendFileSync(process.env.GITHUB_OUTPUT, `source_sha=${run.head_sha}\nci_run=${run.html_url}\n`);
+          NODE
+
+  build:
+    needs: authorize
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CI: 'true'
+      MERCUR_BACKEND_URL: same-origin
+      NEXT_TELEMETRY_DISABLED: '1'
+      MERCUR_DISABLE_TELEMETRY: 'true'
+      DIDAR_RELEASE_SOURCE: ${{ needs.authorize.outputs.source_sha }}
+      DIDAR_RELEASE_CI_RUN: ${{ needs.authorize.outputs.ci_run }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+      - name: Fresh verification and original production builds
+        run: node scripts/ci/validate.mjs
+      - name: Build and export complete release using existing packaging
+        run: node scripts/ci/release.mjs build .local/ci-release
+      - name: Upload candidate archives (not yet accepted for installation)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-release/
+          include-hidden-files: true
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload sanitized build verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-build-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-evidence/validation.json
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
+  verify:
+    needs: [authorize, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      DIDAR_RELEASE_SOURCE: ${{ needs.authorize.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-release
+      - name: Install browser client only
+        run: |
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+      - name: Independently load and execute the delivered images
+        run: node scripts/ci/verify-images.mjs .local/ci-release
+      - name: Upload sanitized independent verification receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: image-verification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .local/ci-evidence/image-verification.json
+            .local/ci-evidence/http-before-results.json
+            .local/ci-evidence/http-after-results.json
+            .local/ci-evidence/browser-verdict.json
+            .local/ci-evidence/screenshots/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload verified downloadable release (available without GHCR)
+        id: release
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: didar-release-${{ needs.authorize.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-release/
+          include-hidden-files: true
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 30
+      - name: Release download location
+        env:
+          ARTIFACT_URL: ${{ steps.release.outputs.artifact-url }}
+          ARTIFACT_DIGEST: ${{ steps.release.outputs.artifact-digest }}
+        run: |
+          printf 'Verified release: %s\nArtifact ZIP SHA256: %s\n' "$ARTIFACT_URL" "$ARTIFACT_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    if: inputs.publish_ghcr
+    needs: [authorize, verify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      packages: write
+    env:
+      DIDAR_RELEASE_SOURCE: ${{ needs.authorize.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.authorize.outputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: didar-release-${{ needs.authorize.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .local/ci-release
+      - name: Publish verified images and probe anonymous digest access
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+        run: node scripts/ci/release.mjs publish .local/ci-release
+      - name: Preserve publication status even when registry is unavailable
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: registry-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .local/ci-release/registry-result.json
+            .local/ci-release/registry-manifest.json
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30

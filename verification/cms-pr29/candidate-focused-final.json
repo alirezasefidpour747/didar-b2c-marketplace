@@ -1,0 +1,96 @@
+{
+  "results": [
+    {
+      "name": "404 before hydration becomes accessible fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "successful SSR image and new source 404 after hydration",
+      "status": "PASS"
+    },
+    {
+      "name": "responsive srcSet failure recovers when descriptor changes",
+      "status": "PASS"
+    },
+    {
+      "name": "CMS server markup hydrates on desktop and mobile with pre-hydration 404",
+      "status": "PASS"
+    },
+    {
+      "name": "private credentials isolate bytes, abort stale response and revoke object URLs",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/missing-before",
+      "authorization": null
+    },
+    {
+      "path": "/good",
+      "authorization": null
+    },
+    {
+      "path": "/missing-after",
+      "authorization": null
+    },
+    {
+      "path": "/recovered",
+      "authorization": null
+    },
+    {
+      "path": "/good-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/missing-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/recovered-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed"
+    },
+    {
+      "path": "/private",
+      "authorization": "denied"
+    },
+    {
+      "path": "/private",
+      "authorization": "slow"
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed-again"
+    }
+  ],
+  "node": "24.19.0",
+  "browser": "156.0.8078.4",
+  "react_mode": "production",
+  "source_sha": null,
+  "baseline_source_override": null,
+  "source_hashes": {
+    "packages/didar-ui/src/catalog.tsx": "e5df6b264531f43b5ad01463d1971ad47efc86c79670f613e9029b0a39e84c11",
+    "packages/didar-ui/src/content-page.tsx": "1c7e2f7209a85f76e9f02e71ce036f34b1f31e0ba5dcdec8fec0054b5420d927"
+  },
+  "failed": 0
+}
