@@ -1,0 +1,81 @@
+{
+  "source_sha": "df7aac383de00bfd382e48331b1f8ec29668ca86",
+  "status": "FAIL",
+  "fresh": [
+    {
+      "name": "automation-contracts",
+      "command": "node",
+      "args": [
+        "--test",
+        "tests/ci-release.test.mjs"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "native-sdk-lint-contracts",
+      "command": "node",
+      "args": [
+        "--test",
+        "tests/native-sdk-lint.test.mjs"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "tooling",
+      "command": "bun",
+      "args": [
+        "test",
+        "./tests/local-workflow.test.ts"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "lint",
+      "command": "bun",
+      "args": [
+        "run",
+        "lint"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "codegen",
+      "command": "bun",
+      "args": [
+        "run",
+        "--cwd",
+        "packages/api",
+        "codegen"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "api-types",
+      "command": "bun",
+      "args": [
+        "x",
+        "tsc",
+        "--noEmit",
+        "-p",
+        "packages/api/tsconfig.json"
+      ],
+      "code": 2,
+      "signal": null,
+      "spawn_error": null
+    }
+  ],
+  "inherited": [],
+  "limits": [
+    "Isolated Linux CI, not owner staging, public TLS or production readiness"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "source": [
+    {
+      "path": "packages/api/src/scripts/native-qa-seed.ts",
+      "sha256": "7f759921ae19765b8849a1673f0bb5623aec36b79db5a794ca28d40db93ee55c"
+    },
+    {
+      "path": "packages/api/node_modules/@mercurjs/types/dist/seller/common.d.ts",
+      "sha256": "a4036d7157d966803346239a2326f891b47a8d2c9794a4caa08bf7fa6834e769"
+    },
+    {
+      "path": "packages/api/node_modules/@mercurjs/core/.medusa/server/src/modules/seller/service.d.ts",
+      "sha256": "09bef0e099724389dedb0f3789825a6a222a7d422a3cf727f8a08207768102b3"
+    },
+    {
+      "path": "packages/api/node_modules/@mercurjs/core/.medusa/server/src/modules/seller/service.js",
+      "sha256": "b753131b416af80d51ea57b9494aa299d7223bf14cbd977d64282af4bff9c38b"
+    },
+    {
+      "path": "packages/api/node_modules/@mercurjs/core/.medusa/server/src/modules/seller/models/member.js",
+      "sha256": "5af86813ca58ee187c23e80d1f6f1c9fcbbccd361377fed58949e13936b57450"
+    }
+  ],
+  "checks": {
+    "emitted_javascript_byte_identical": true,
+    "emitted_javascript_sha256": "ae6a19e3dc108833cd672af512bbcc14f3548e803f23152a661d4f3072752587",
+    "official_service_assignable_to_narrow_adapter": true,
+    "compiler_diagnostics": 0,
+    "disposable_runtime_executed": false
+  },
+  "limits": [
+    "Static source/type and transpilation check, no fresh native seeding/database run claimed.",
+    "Full project API tsc result is separate coordinator evidence."
+  ],
+  "observed_execution": {
+    "session_id": 74992,
+    "exit_code": 0,
+    "command": "node /workspace/work/pr29-independent-review/qa-type-review.mjs"
+  },
+  "reviewer_script_sha256": "cc008eb1275e6c0c7a65116455b05aec9476202b31f0095af1730c79cad9a4ed"
+}

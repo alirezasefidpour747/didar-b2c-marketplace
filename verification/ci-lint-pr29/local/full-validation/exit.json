@@ -1,0 +1,13 @@
+{
+  "stage": "full-validation",
+  "command": "node",
+  "args": [
+    "scripts/ci/validate.mjs"
+  ],
+  "code": 1,
+  "signal": null,
+  "error": null,
+  "child_pid": 72128,
+  "observer_pid": 72118,
+  "at": "2026-10-18T10:16:02.190Z"
+}

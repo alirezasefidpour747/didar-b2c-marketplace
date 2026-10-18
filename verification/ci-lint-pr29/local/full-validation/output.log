@@ -1,0 +1,131 @@
+✔ release source accepts only exact lowercase commit identities, never refs or shell text (1.960149ms)
+✔ registry manifest digest cannot be replaced by a mutable tag (0.463154ms)
+✔ manifest binds source, both images, platform and actual revision labels (1.989032ms)
+✔ archive path traversal and unverified builds are rejected (0.475072ms)
+✔ archive checksums cover actual bytes (8.090058ms)
+✔ tampered release archive fails before any Docker load can occur (2.91437ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.273989
+✔ admin: canonical Fast Refresh stays error-level with path-scoped options (721.863566ms)
+✔ admin: documented route config and handle coexist with the component (151.484534ms)
+✔ admin: documented widget configuration coexists with the component (18.971091ms)
+✔ admin: documented custom-fields factory may contain local components (17.089881ms)
+✔ admin: the actual SDK factory can use a named import alias (16.579265ms)
+✔ admin: route-only export names do not leak into ordinary components (14.581681ms)
+✔ admin: route helpers are not route entrypoints (20.028115ms)
+✔ admin: unexpected route exports remain errors (9.878499ms)
+✔ admin: widget handle is not an allowed config export (8.397039ms)
+✔ admin: unexpected custom-fields exports remain errors (10.688654ms)
+✔ admin: unexpected custom-fields helper functions remain errors (9.916166ms)
+✔ admin: wildcard custom-fields exports remain errors (7.391972ms)
+✔ admin: a similarly named local function is not the SDK contract (8.95111ms)
+✔ admin: a factory from another module is not the SDK contract (8.545592ms)
+✔ admin: a type-only import is not a runtime SDK wrapper (6.871562ms)
+✔ admin: an inline type-only import is not a runtime SDK wrapper (7.014517ms)
+✔ admin: an unsupported namespace call stays on the upstream path (7.255768ms)
+✔ admin: the SDK exception does not apply outside custom-fields (13.866849ms)
+✔ admin: other recommended lint rules still run inside custom-fields (10.494763ms)
+✔ vendor: canonical Fast Refresh stays error-level with path-scoped options (21.90495ms)
+✔ vendor: documented route config and handle coexist with the component (7.296369ms)
+✔ vendor: documented widget configuration coexists with the component (5.911642ms)
+✔ vendor: documented custom-fields factory may contain local components (6.864742ms)
+✔ vendor: the actual SDK factory can use a named import alias (5.630031ms)
+✔ vendor: route-only export names do not leak into ordinary components (5.512344ms)
+✔ vendor: route helpers are not route entrypoints (5.077512ms)
+✔ vendor: unexpected route exports remain errors (4.814397ms)
+✔ vendor: widget handle is not an allowed config export (5.16239ms)
+✔ vendor: unexpected custom-fields exports remain errors (13.356694ms)
+✔ vendor: unexpected custom-fields helper functions remain errors (7.084521ms)
+✔ vendor: wildcard custom-fields exports remain errors (5.944492ms)
+✔ vendor: a similarly named local function is not the SDK contract (6.170971ms)
+✔ vendor: a factory from another module is not the SDK contract (5.672624ms)
+✔ vendor: a type-only import is not a runtime SDK wrapper (6.115598ms)
+✔ vendor: an inline type-only import is not a runtime SDK wrapper (5.966736ms)
+✔ vendor: an unsupported namespace call stays on the upstream path (5.844472ms)
+✔ vendor: the SDK exception does not apply outside custom-fields (5.343632ms)
+✔ vendor: other recommended lint rules still run inside custom-fields (5.565043ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1393.481531
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [1.24ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.39ms]
+(pass) local tooling rejects staging environment [0.09ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.05ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.24ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.16ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.05ms]
+(pass) preflight refuses an occupied port without terminating its owner [2.19ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [36.12ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.17ms]
+(pass) failed child verification preserves the nonzero result [21.36ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.67ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.26ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.15ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [1.58ms]
+(pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [10.07ms]
+
+ 23 pass
+ 0 fail
+ 67 expect() calls
+Ran 23 tests across 1 file. [92.00ms]
+$ turbo run lint
+
+   • Packages in scope: @acme/admin, @acme/api, @acme/vendor, @didar/auth-network, @didar/ui, @mercurjs/storefront
+   • Running lint in 6 packages
+   • Remote caching disabled, using shared worktree cache
+
+@acme/admin:lint: cache hit, replaying logs cdcb3457f277d73c
+@acme/vendor:lint: cache hit, replaying logs 2c5511abea95bfa1
+@acme/admin:lint: $ eslint .
+@acme/vendor:lint: $ eslint .
+@mercurjs/storefront:lint: cache hit, replaying logs efe5e8a72f69b235
+@mercurjs/storefront:lint: $ next lint
+@mercurjs/storefront:lint: `next lint` is deprecated and will be removed in Next.js 16.
+@mercurjs/storefront:lint: For new projects, use create-next-app to choose your preferred linter.
+@mercurjs/storefront:lint: For existing projects, migrate to the ESLint CLI:
+@mercurjs/storefront:lint: npx @next/codemod@canary next-lint-to-eslint-cli .
+@mercurjs/storefront:lint: 
+@mercurjs/storefront:lint: ✔ No ESLint warnings or errors
+
+ Tasks:    3 successful, 3 total
+Cached:    3 cached, 3 total
+  Time:    38ms >>> FULL TURBO
+
+$ node ../../scripts/prepare-codegen-cache.mjs && mercurjs codegen
+Official Mercur 2.3.7 codegen fallback cache prepared.
+✔ Route types generated successfully.
+
+packages/api/src/scripts/native-qa-seed.ts(79,25): error TS18046: 'sellerModule' is of type 'unknown'.
+file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:12
+  if (child.status !== 0 || child.signal || child.error) throw Error(`${name} failed; observed exit ${child.status}, signal ${child.signal}`);
+                                                               ^
+
+Error: api-types failed; observed exit 2, signal null
+    at run (file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:12:64)
+    at file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:22:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0
