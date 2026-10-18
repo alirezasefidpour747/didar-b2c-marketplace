@@ -1,0 +1,52 @@
+{
+  "application_head": "fed0d23da18d401454f7af4ddbd33b0485b9a9e6",
+  "run": 39124354475,
+  "job": 117666243608,
+  "url": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39124354475",
+  "conclusion": "success",
+  "fresh": {
+    "automation": 6,
+    "sdk_lint": 38,
+    "tooling": 23,
+    "focused_cms": 5,
+    "regressions": 231,
+    "assertions": 3953,
+    "native_http": 1,
+    "browser": 32,
+    "no_demo": "PASS_IN_GITHUB"
+  },
+  "observed_log_lines": [
+    "2026-10-18T11:43:02.7848715Z HEAD is now at 8bf8127 Merge fed0d23da18d401454f7af4ddbd33b0485b9a9e6 into 4f41784db6ca67f7566503c508cc609f1d50c7ce",
+    "2026-10-18T11:43:57.8816394Z  23 pass",
+    "2026-10-18T11:48:36.7804305Z  231 pass",
+    "2026-10-18T11:48:36.7804957Z  3953 expect() calls",
+    "2026-10-18T11:48:38.2164323Z Tests:       1 passed, 1 total",
+    "2026-10-18T11:52:53.2500574Z   32 passed (4.2m)",
+    "2026-10-18T11:53:36.7961802Z C09_FIRST_ADMIN_HTTP_BROWSER_DUAL_PROOF_PASS",
+    "2026-10-18T11:53:36.8850245Z C09_REPEAT_MIGRATION_NO_DEMO_VERIFIED {\"admins\":1,\"bridges\":1,\"products\":0,\"orders\":0,\"demo\":0}"
+  ],
+  "artifact": {
+    "id": 12135566808,
+    "name": "ci-results-39124354475-1",
+    "size_in_bytes": 1669,
+    "url": "https://api.github.com/repos/alirezasefidpour747/didar-b2c-marketplace/actions/artifacts/12135566808",
+    "archive_download_url": "https://api.github.com/repos/alirezasefidpour747/didar-b2c-marketplace/actions/artifacts/12135566808/zip",
+    "expired": false,
+    "created_at": "2026-10-18T11:53:38Z",
+    "expires_at": "2026-11-01T11:53:37Z",
+    "updated_at": "2026-10-18T11:53:38Z",
+    "digest": "sha256:3686f75181e33ab9e45363613296915f90f5542047693ea7dc9f1047e76a51f3",
+    "workflow_run": {
+      "id": 39124354475,
+      "repository_id": 1421140817,
+      "head_repository_id": 1421140817,
+      "head_branch": "ci/github-actions-validation-and-release",
+      "head_sha": "fed0d23da18d401454f7af4ddbd33b0485b9a9e6"
+    }
+  },
+  "limits": [
+    "Artifact metadata/digest reported by GitHub; archive bytes not independently downloaded by this executor.",
+    "Historical local #418 was not reproduced; no causal fix claimed.",
+    "Strengthened focused test/reporting changes pending final full CI."
+  ]
+}

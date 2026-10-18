@@ -27,5 +27,8 @@ try {
   run('fresh-no-demo-bootstrap', 'bun', ['run', 'local:test', '--reuse-build', '--no-demo-install-only']);
   status = 'PASS';
 } finally {
-  writeFileSync(resolve(evidence, 'validation.json'), JSON.stringify({ source_sha: process.env.DIDAR_RELEASE_SOURCE || process.env.GITHUB_SHA || null, status, fresh: stages, inherited: [], limits: ['Isolated Linux CI, not owner staging, public TLS or production readiness'] }, null, 2) + '\n');
+  const result = { source_sha: process.env.DIDAR_RELEASE_SOURCE || process.env.GITHUB_SHA || null, status, fresh: stages, inherited: [], limits: ['Isolated Linux CI, not owner staging, public TLS or production readiness'] };
+  writeFileSync(resolve(evidence, 'validation.json'), JSON.stringify(result, null, 2) + '\n');
+  // Keep the same actual child exits independently readable in durable job logs.
+  console.log('DIDAR_CI_OBSERVED_RESULTS ' + JSON.stringify(result));
 }

@@ -1,0 +1,89 @@
+{
+  "results": [
+    {
+      "name": "404 before hydration becomes accessible fallback",
+      "status": "FAIL",
+      "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.photo-placeholder')\nExpected: \"تصویر در دسترس نیست\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.photo-placeholder') with timeout 5000ms\n  - waiting for locator('.photo-placeholder')\n",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "successful SSR image and new source 404 after hydration",
+      "status": "PASS"
+    },
+    {
+      "name": "responsive srcSet failure recovers when descriptor changes",
+      "status": "FAIL",
+      "error": "Error: Timeout 5000ms exceeded while waiting on the predicate",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "CMS server markup hydrates on desktop and mobile with pre-hydration 404",
+      "status": "FAIL",
+      "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: locator('.cms-full_bleed_media .photo-placeholder')\nExpected: \"تصویر در دسترس نیست\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveText\" locator('.cms-full_bleed_media .photo-placeholder') with timeout 5000ms\n  - waiting for locator('.cms-full_bleed_media .photo-placeholder')\n",
+      "page_errors": [],
+      "recoverable_errors": []
+    },
+    {
+      "name": "private credentials isolate bytes, abort stale response and revoke object URLs",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/missing-before",
+      "authorization": null
+    },
+    {
+      "path": "/good",
+      "authorization": null
+    },
+    {
+      "path": "/missing-after",
+      "authorization": null
+    },
+    {
+      "path": "/recovered",
+      "authorization": null
+    },
+    {
+      "path": "/good-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/missing-responsive",
+      "authorization": null
+    },
+    {
+      "path": "/missing-cms",
+      "authorization": null
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed"
+    },
+    {
+      "path": "/private",
+      "authorization": "denied"
+    },
+    {
+      "path": "/private",
+      "authorization": "slow"
+    },
+    {
+      "path": "/private",
+      "authorization": "allowed-again"
+    }
+  ],
+  "node": "24.19.0",
+  "browser": "156.0.8078.4",
+  "react_mode": "production",
+  "source_sha": null,
+  "baseline_source_override": "b9c1daea959cfc4c942206e6cc6aa6bd5302e566",
+  "source_hashes": {
+    "packages/didar-ui/src/catalog.tsx": "f2907e503af00aeab3a6fb37834bb4deef3f576514120c80887b7b09894e4bb3",
+    "packages/didar-ui/src/content-page.tsx": "1c7e2f7209a85f76e9f02e71ce036f34b1f31e0ba5dcdec8fec0054b5420d927"
+  },
+  "failed": 3
+}

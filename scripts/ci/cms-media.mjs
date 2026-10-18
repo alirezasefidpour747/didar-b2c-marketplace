@@ -7,9 +7,13 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createRequire } from "node:module";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { browserLaunchOptions } from "../local/browser-options.mjs";
 const directory = resolve(".local/ci-evidence/cms-media");
 mkdirSync(directory, { recursive: true });
+const baseline = process.argv.includes('--baseline') ? 'b9c1daea959cfc4c942206e6cc6aa6bd5302e566' : null;
+const catalogPath = 'packages/didar-ui/src/catalog.tsx';
+const catalogSource = baseline ? execFileSync('git', ['show', baseline + ':' + catalogPath], { encoding: 'utf8' }) : readFileSync(catalogPath, 'utf8');
 const requireStorefront = createRequire(
   resolve("apps/storefront/package.json"),
 );
@@ -30,6 +34,9 @@ const common = {
   loader: { ".css": "empty" },
   logLevel: "warning",
   define: { 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production') },
+  plugins: [{ name: 'catalog-under-test', setup(build) {
+    build.onLoad({ filter: /packages\/didar-ui\/src\/catalog\.tsx$/ }, () => ({ contents: catalogSource, loader: 'tsx', resolveDir: resolve('packages/didar-ui/src') }));
+  } }],
 };
 await build({
   ...common,
@@ -158,7 +165,9 @@ try {
   await check(
     "responsive srcSet failure recovers when descriptor changes",
     async (page) => {
-      await open(page, { src: "/good", srcSet: "/missing-responsive 1x" });
+      await open(page, { src: '/good', srcSet: '/good-responsive 1x' });
+      await expect.poll(() => page.locator('img').evaluate(img => img.naturalWidth)).toBe(40);
+      await page.evaluate(() => window.updateMedia({ src: '/good', srcSet: '/missing-responsive 1x' }));
       await expect(page.locator(".photo-placeholder")).toHaveText(
         "تصویر در دسترس نیست",
       );
@@ -244,7 +253,8 @@ try {
         browser: browser?.version(),
         react_mode: process.env.NODE_ENV || 'production',
         source_sha: process.env.GITHUB_SHA || null,
-        source_hashes: Object.fromEntries(['packages/didar-ui/src/catalog.tsx', 'packages/didar-ui/src/content-page.tsx'].map(path => [path, createHash('sha256').update(readFileSync(path)).digest('hex')])),
+        baseline_source_override: baseline,
+        source_hashes: Object.fromEntries(['packages/didar-ui/src/catalog.tsx', 'packages/didar-ui/src/content-page.tsx'].map(path => [path, createHash('sha256').update(path === catalogPath ? catalogSource : readFileSync(path)).digest('hex')])),
         failed: results.filter((r) => r.status === "FAIL").length,
       },
       null,

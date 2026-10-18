@@ -8,8 +8,14 @@
 
 اجرای تازهٔ متمرکز با React production و Chromium 156: پنج موفقیت، خروج واقعی 0؛ جزئیات و هش source در `candidate-focused.json`. بازبینی مستقل در `REVIEW.md` ثبت شده است.
 
+آزمون responsive تقویت شد: منبع موفق، تغییر فقط srcSet به 404، سپس تغییر فقط srcSet به منبع سالم؛ src ثابت است. اجرای baseline با `node scripts/ci/cms-media.mjs --baseline` سه شکست/دو موفقیت و خروج1؛ نامزد پنج موفقیت و خروج0 داشت. `baseline-focused-final.json` و `candidate-focused-final.json` هویت source واقعی کامپایل‌شده را ثبت می‌کنند.
+
+بازتولید جداگانه با Next تولیدی واقعی و API ساختگی فقط‌خواندنی انجام شد. build مبنا و نامزد هر دو خروج0 داشتند. در Chromium154، تأخیر کنترل‌شدهٔ فایل‌های JavaScript تا تکمیل تصویر404، همان assertion تعداد img را روی مبنا شکست داد: انتظار0/واقعی1، خروج1. نامزد همین مسیر را در دسکتاپ و موبایل، همراه با تصویر سالم، بازیابی منبع و توقف انتشار، با خروج0 می‌گذراند؛ بازبین مستقل تکرار کرد. `next-probe-*.json` و `probe-exits.json` ماندگارند. اجرای عادی نامزد در Chromium154 و156 و اجرای عادی مبنا در154 نیز بدون خطای صفحه بودند. این ابزار تشخیصی جایگزین backend/native journey نیست.
+
+خطای #418 تاریخی در هیچ‌یک از این بازتولیدها دیده نشد، حتی در مبنای قدیمی. stack/trace اجرای محلی تاریخی در فایل‌های منتشرشده موجود نبود؛ گزارش محلی تاریخی صرفاً شواهد به‌ارث‌رسیده است. وضعیت دقیق: `NOT_REPRODUCED_WITH_DIAGNOSTIC_FIXTURE`؛ ادعای اثبات علت یا اصلاح قطعی آن، یا flaky بودن مرورگر نمی‌شود.
+
 خطای تاریخی محلی React #418 جداگانه است و علت آن هنوز اثبات نشده است. تست اصلی همچنان هر pageerror را شکست می‌داند؛ گزارش تشخیصی surface/path/stack افزوده شد. GitHub artifact شامل نتیجهٔ مراحل، تست متمرکز و خطاهای CMS خواهد بود. شواهد قبلی `verification/ci-lint-pr29` و Run 39119261621 حفظ شده‌اند.
 
-CI کامل نامزد: PENDING. lint، types، چهار build، regressions، HTTP، هر 32 مرورگر و no-demo باید با خروج واقعی موفق شوند. نبود Docker در executor محلی با نتیجهٔ موفق معرفی نمی‌شود؛ اجرای کامل در GitHub انجام می‌شود. گزارش قطعی SHA/run/result در PR ثبت خواهد شد.
+CI کامل نامزد اول `fed0d23da18d401454f7af4ddbd33b0485b9a9e6` در [Run 39124354475](https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39124354475) موفق شد: lint، types، هر چهار build، 231 regression/3953 assertion، یک HTTP، هر32 مرورگر و no-demo داخل GitHub. `first-full-ci.json` رسیدها و provenance را ثبت می‌کند. Checkout از synthetic PR merge با main دست‌نخورده بود؛ merge واقعی انجام نشده است. بازبینی نهایی پس از تقویت آزمون و تکمیل شواهد، یک CI کامل تازه خواهد داشت؛ نتیجهٔ آن در PR ثبت می‌شود. نبود Docker در executor محلی با نتیجهٔ موفق محلی معرفی نمی‌شود.
 
 هیچ merge، انتشار release، deployment، حذف branch، دسترسی به سرور مالک یا شروع فاز جدید انجام نشده است.

@@ -1,0 +1,19 @@
+{
+  "baseline_sha": "b9c1daea959cfc4c942206e6cc6aa6bd5302e566",
+  "candidate_application_sha": "fed0d23da18d401454f7af4ddbd33b0485b9a9e6",
+  "next_build_baseline": 0,
+  "next_build_candidate": 0,
+  "baseline_154_normal_probe": 0,
+  "baseline_154_delayed_hydration_probe": 1,
+  "baseline_delayed_failure": "FULL_BLEED_MEDIA img expected0 actual1 after completed 404 and delayed JS hydration",
+  "candidate_154_normal_probe": 0,
+  "candidate_156_normal_probe": 0,
+  "candidate_154_delayed_hydration_probe": 0,
+  "original_418": "NOT_REPRODUCED; no causal fix claimed",
+  "diagnostic_tool_corrections": [
+    "Initial component fixture omitted UTF-8 charset and generated its own mismatch; fixed then reran baseline before applying UI fix.",
+    "First production Next probe asserted naturalWidth=40 despite width-descriptor srcSet density scaling; changed only this new diagnostic probe to require successful decode (>0), then reran. Original acceptance assertions unchanged.",
+    "Ad-hoc root eslint invocation exit2 because this repository has workspace lint configs; canonical CI lint remains the acceptance gate."
+  ],
+  "scope": "Read-only synthetic HTTP API plus production Next; not DB-backed native CMS acceptance or release artifact verification. Next server cleanly stopped after each probe."
+}
