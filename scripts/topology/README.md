@@ -17,10 +17,10 @@ node scripts/topology/nginx-pilot.mjs /absolute/new/evidence-directory
 
 `stack.mjs` provisions a separate bridge and freshly owned PostgreSQL/Redis,
 candidate API and packaged frontend, actual Nginx TLS, and real client containers.
-This private disposable runtime clears inherited build-proxy variables for its
-owned local application/DB requests; build and public-network commands retain
-the executor's managed proxy. CA and hostname verification stay enabled. This
-fixture setting is not an owner-server proxy policy or an external-egress bypass.
+This private disposable runtime sets both `NO_PROXY` and `no_proxy` to its exact
+observed local destinations. It preserves the executor's managed proxy for
+public-network commands. CA and hostname verification stay enabled. This fixture
+setting is not an owner-server proxy policy or an external-egress bypass.
 It copies self-contained runtime files into the containers; application source
 or dependency binds are not used. The accepted API base image's OCI label is
 retained and distinguished from explicitly hashed candidate source/compiled
