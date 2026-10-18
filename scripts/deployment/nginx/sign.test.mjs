@@ -142,9 +142,17 @@ test('candidate rendering requires explicit observed values and refuses injectio
     const config = readFileSync(join(output, 'nginx.conf'), 'utf8')
     assert.doesNotMatch(config, /__[A-Z_]+__/)
     assert.match(config, /upstream didar_relay \{ server 192\.0\.2\.12:3000; \}/)
+    const headers = readFileSync(join(output, 'proxy-headers.conf'), 'utf8')
+    assert.match(headers, /proxy_set_header Host didar\.example\.test:8443;/)
+    assert.match(headers, /proxy_set_header X-Forwarded-Host didar\.example\.test:8443;/)
     assert.equal(statSync(join(output, 'nginx.conf')).mode & 0o777, 0o600)
     assert.throws(() => render(values, output), { code: 'EEXIST' })
   } finally { rmSync(output, { recursive: true, force: true }) }
+  const defaultPort = mkdtempSync(join(tmpdir(), 'didar-nginx-default-port-'))
+  try {
+    render({ ...values, PUBLIC_PORT: '443' }, defaultPort)
+    assert.match(readFileSync(join(defaultPort, 'proxy-headers.conf'), 'utf8'), /proxy_set_header Host didar\.example\.test;/)
+  } finally { rmSync(defaultPort, { recursive: true, force: true }) }
 })
 
 test('candidate composition keeps required strict trust and existing state with one loopback relay mapping', () => {

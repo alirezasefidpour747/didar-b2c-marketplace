@@ -28,7 +28,8 @@ export function render(values, output) {
   validate(values)
   const directory = resolve(output)
   if (!/^\/[A-Za-z0-9_./-]+$/.test(directory)) throw Error('INVALID_OUTPUT_PATH')
-  const settings = { ...values, PROXY_HEADERS_FILE: directory + '/proxy-headers.conf' }
+  const settings = { ...values, PROXY_HEADERS_FILE: directory + '/proxy-headers.conf',
+    PUBLIC_AUTHORITY: values.PUBLIC_HOST + (Number(values.PUBLIC_PORT) === 443 ? '' : ':' + Number(values.PUBLIC_PORT)) }
   const replace = source => source.replace(/__([A-Z_]+)__/g, (_, name) => {
     if (!(name in settings)) throw Error('UNRESOLVED_TEMPLATE_FIELD:' + name)
     return settings[name]
