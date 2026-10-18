@@ -1,0 +1,18 @@
+{
+  "api": "http://127.0.0.1:42031",
+  "web": "http://127.0.0.1:39445",
+  "runId": "correction-20261018042135715",
+  "root": "/workspace/didar-b2c-marketplace",
+  "linked": [
+    {
+      "id": "bracelet",
+      "native_id": "prod_01M56KXDN2H2948FTCFQDHMC3Y",
+      "variant_id": "variant_01M56KXDPC3HA8FF620ZHXTFTJ"
+    },
+    {
+      "id": "earring",
+      "native_id": "prod_01M56KXDQYD72Y9WFJANPJAE76",
+      "variant_id": "variant_01M56KXDS7G1FQMSC1FXTE8A78"
+    }
+  ]
+}

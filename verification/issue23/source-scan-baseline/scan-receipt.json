@@ -1,0 +1,16 @@
+{
+  "base": "41d880a5dd4c2462144f52b1591576882238d125",
+  "command": "bun audit --json",
+  "exit": 1,
+  "signal": null,
+  "error_code": null,
+  "packages": 16,
+  "advisories": 24,
+  "severity": {
+    "high": 12,
+    "moderate": 10,
+    "low": 2
+  },
+  "status": "ADVISORIES_REQUIRE_APPLICABILITY_REVIEW",
+  "limitation": "Lockfile registry audit; severity does not establish exploitability in enabled paths; no dependency mutation."
+}

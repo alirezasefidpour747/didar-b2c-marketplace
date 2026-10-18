@@ -1,0 +1,48 @@
+{
+  "run_id": "correction-20261018042015145",
+  "status": "PASS",
+  "affected_test_provenance": {
+    "files": 51,
+    "aggregate": "d5388273d68cf0670ed5c05c84b6d357f270add476eed790feb6120102ca4596",
+    "reviewer_sources": {
+      "common.mjs": "12d90072372b109f0bb522a31cd3298e4b846d6eeccaff266225af6ca42309c9",
+      "correction-runner.mjs": "2a36d31bd2c891130b6d305218ddcaddeafd15f04941191502deb28e0fa339e5",
+      "correction-probe.mjs": "e3f31f544c54dbb57a157bd9ae9fa836edb19d92d24e7e2cbe1b184978a60889",
+      "browser-smoke.mjs": "a714c751ed474de2cfcfe4794aba7374113bc1503aa47833daba22e3e4b30f84"
+    }
+  },
+  "initial": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "cb75fd84eee02112c1ed08963102247c9b2a4ce565595df8b35c57a6de6cf140",
+    "outputs": "518792fe0780c430b55c78ef4cfc3fb194c15ca98ebc4922a903300f2634ba34"
+  },
+  "final": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "cb75fd84eee02112c1ed08963102247c9b2a4ce565595df8b35c57a6de6cf140",
+    "outputs": "518792fe0780c430b55c78ef4cfc3fb194c15ca98ebc4922a903300f2634ba34"
+  },
+  "original_initial_equals_final": true,
+  "tests": {
+    "files": 50,
+    "aggregate": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a",
+    "expected": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a"
+  },
+  "copy_tests": {
+    "files": 50,
+    "aggregate": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a",
+    "expected": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a"
+  },
+  "copied": {
+    "status": "PASS",
+    "initial_files_unchanged": 1790,
+    "initial_manifest_sha256": "1f366f1b7fda45ecec70f0c9ba6e298694dbe917477394eb05c95b9df0b1fbe7",
+    "final_initial_file_manifest_sha256": "1f366f1b7fda45ecec70f0c9ba6e298694dbe917477394eb05c95b9df0b1fbe7",
+    "source": "cb75fd84eee02112c1ed08963102247c9b2a4ce565595df8b35c57a6de6cf140",
+    "complete_outputs_after_runtime": "518792fe0780c430b55c78ef4cfc3fb194c15ca98ebc4922a903300f2634ba34",
+    "runtime_upload_additions": []
+  }
+}

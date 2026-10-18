@@ -1,0 +1,142 @@
+{
+  "run_id": "native-baseline-20261018041342338",
+  "scratch": "/workspace/work/issue23-security-native-baseline-20261018041342338",
+  "protected": [
+    {
+      "id": "583c9b911132d89992f6bd34f5189fab4b6d4bdbd5ac5be7c8ae1e4d6c168f94",
+      "name": "/didar-qa-redis-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e"
+      ]
+    },
+    {
+      "id": "68b91fee0bb9a3192cc1b30ee00d176de4156d2cab97c301f7fdbade763ca7ff",
+      "name": "/didar-qa-pg-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6"
+      ]
+    },
+    {
+      "id": "74c4b61be6e0de51b813e89ad5899f9ad37becc2511a9ce62d280f9fcd94cb5e",
+      "name": "/didar-gold-api-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_uploads"
+      ]
+    },
+    {
+      "id": "8574efd4192c67f8262ad0df55e9c35bc3b2a7926f54c380dbf16aa7144e0a11",
+      "name": "/didar-qa-redis-2c21ab5d56f495b5",
+      "status": "exited",
+      "volumes": [
+        "dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb"
+      ]
+    },
+    {
+      "id": "b5377752ef2ee677c8a146ec36cefda041fd90ad4e1851f2f6ae8cd98cf5a863",
+      "name": "/didar-qa-pg-37de28ef09b521a2",
+      "status": "exited",
+      "volumes": [
+        "e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb"
+      ]
+    },
+    {
+      "id": "b54919da06a731b478d1d22468fe114328efd625256c3b233fd655fe534d4ea2",
+      "name": "/didar-postgres",
+      "status": "exited",
+      "volumes": [
+        "c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4"
+      ]
+    },
+    {
+      "id": "b6a87474cd11d9c2c1d28f773c64e82693e996a42367970b884f87faa27cae01",
+      "name": "/didar-gold-redis-1",
+      "status": "exited",
+      "volumes": [
+        "44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716"
+      ]
+    },
+    {
+      "id": "cd4f9741bb955be8a0458ad958fa6a7adbf7d39a57a012ad33472ff538fb19f9",
+      "name": "/didar-gold-storefront-1",
+      "status": "exited",
+      "volumes": []
+    },
+    {
+      "id": "f3ba7ea809778d6a76d0447b421135a6aaab7cdb69d8667e7b4b823134411dff",
+      "name": "/didar-gold-postgres-1",
+      "status": "exited",
+      "volumes": [
+        "didar-gold_postgres"
+      ]
+    },
+    {
+      "id": "f726ac5405f8753e55bbeb5d509079ae80de9cd2be2358807b28fd0aeff6b245",
+      "name": "/didar-redis",
+      "status": "exited",
+      "volumes": [
+        "4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "name": "didar-i23-security-pg-native-baseline-20261018041342338",
+      "id": "5e022d597efef60026a62b32fbd7b85e99d130872b297a9dfd1e85eb9490e4fe",
+      "port": 42597,
+      "internal": 5432,
+      "volumes": [
+        "592a5f37cccee04aec9488e69067cdc4bd304753816e7d190f0ab7325219805f"
+      ]
+    },
+    {
+      "name": "didar-i23-security-redis-native-baseline-20261018041342338",
+      "id": "ae474972f254f8f866b7dc994cd852d01d7087444ec910fb0db622a8ed8433b2",
+      "port": 46507,
+      "internal": 6379,
+      "volumes": [
+        "320d387697f812aea4c12ffb1105738414594e5240562338ed7c727142b229ac"
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "pid": 11294,
+      "state": "R",
+      "ppid": 10820,
+      "pgid": 11294,
+      "start_ticks": "358152",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "schema-and-demo-seed"
+    },
+    {
+      "pid": 11566,
+      "state": "R",
+      "ppid": 10820,
+      "pgid": 11566,
+      "start_ticks": "360209",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "native-qa-seed"
+    },
+    {
+      "pid": 11610,
+      "state": "R",
+      "ppid": 10820,
+      "pgid": 11610,
+      "start_ticks": "360689",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "api"
+    },
+    {
+      "pid": 11678,
+      "state": "R",
+      "ppid": 10820,
+      "pgid": 11678,
+      "start_ticks": "361148",
+      "boot_id": "83209921-f859-431b-91d9-39a388a74ed4",
+      "stage": "web"
+    }
+  ]
+}

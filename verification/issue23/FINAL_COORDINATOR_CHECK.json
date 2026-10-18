@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "baseline": "41d880a5dd4c2462144f52b1591576882238d125",
+  "reviewed_application_commit": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+  "run_id": "correction-20261018042135715",
+  "actual_runner_exit": 0,
+  "actual_browser_exit": 0,
+  "signal": null,
+  "persistent_tests": 6,
+  "persistent_assertions": 23,
+  "independent_http_cases": 23,
+  "browser_journeys": 3,
+  "page_errors": 0,
+  "screenshots": [
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/native-admin-product-authority-1440.png",
+      "sha256": "c70a9f8c152eeb4f2fad46ce4d9e55c1728012eb01dad3131fa0281c8b6cf7cd"
+    },
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/native-admin-product-authority-390.png",
+      "sha256": "6c783277e0da19c061ff799b6af6d5619e8edf9c81593c2bce659ca3c6585841"
+    },
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/native-vendor-own-catalog-1440.png",
+      "sha256": "f86ccbec8aafc508d94da3c4684b518cce09239d4285e45f3b8218c91731667b"
+    },
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/native-vendor-own-catalog-390.png",
+      "sha256": "8a63a8c50a69ded93d0507a0b92dd9c25c88bbfaf2da8737d2ddc84e3016abc9"
+    },
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/customer-pdp-authority-1440.png",
+      "sha256": "2f2f875c9dc00d0b8300ee8784143f4ee0000f654e41ce04e95ae7fe4f5b59e4"
+    },
+    {
+      "path": "reviewer/runs/correction-20261018042135715/screenshots/customer-pdp-authority-390.png",
+      "sha256": "b308cb9d6fad9c3a388aee1144d763c5ac16bbea2f0b210369b1a6615fc44131"
+    }
+  ],
+  "source": "cb75fd84eee02112c1ed08963102247c9b2a4ce565595df8b35c57a6de6cf140",
+  "outputs": "518792fe0780c430b55c78ef4cfc3fb194c15ca98ebc4922a903300f2634ba34",
+  "affected_test_manifest": {
+    "files": 51,
+    "aggregate": "d5388273d68cf0670ed5c05c84b6d357f270add476eed790feb6120102ca4596",
+    "reviewer_sources": {
+      "common.mjs": "12d90072372b109f0bb522a31cd3298e4b846d6eeccaff266225af6ca42309c9",
+      "correction-runner.mjs": "688db78d715a3ae6c3e87b6a6809abf4ff6b2f11aff4821a41a20f2611b8662e",
+      "correction-probe.mjs": "880afc0270914d3fbb1815c941043bf8a7e6a829d11e4dc90220880b035413e2",
+      "browser-smoke.mjs": "9051071855287e8039bb1a9817ddc68c0a9276ab8f6c5fe649f16f4287de5078"
+    }
+  },
+  "inherited_50_tests_unchanged": true,
+  "original_issue18_evidence_unchanged": true,
+  "compiled_files_unchanged": 1790,
+  "owned_groups_absent": 6,
+  "owned_containers_and_volumes_absent": 2,
+  "preexisting_containers_unchanged": 10,
+  "limitation": "Six canonical QA table fingerprints match; UID/order/finance tables are empty in this new fixture. Populated preservation and unchanged full suites are inherited from accepted baseline, not rerun.",
+  "next_enabled_vertical": "BLOCKED",
+  "open_p1": [
+    "SEC-01",
+    "SEC-02"
+  ],
+  "production_ready": false,
+  "checked_at_utc": "2026-10-18T04:24:18.930Z"
+}

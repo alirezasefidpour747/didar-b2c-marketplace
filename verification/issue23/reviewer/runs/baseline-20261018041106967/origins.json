@@ -1,0 +1,6 @@
+{
+  "run_id": "baseline-20261018041106967",
+  "api": "http://127.0.0.1:33777",
+  "web": "http://127.0.0.1:40731",
+  "loopback_only": true
+}

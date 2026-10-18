@@ -1,0 +1,166 @@
+{
+  "run_id": "correction-20261018042015145",
+  "status": "PASS",
+  "cases": 23,
+  "results": [
+    {
+      "name": "existing canonical URL parent rejects mutation",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "forged unrelated parent direct variant delete rejected",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "forged unrelated parent batch variant delete rejected",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "mixed batch is rejected before mutating unrelated native member",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "linked target after25 unlinked variants cannot hide behind default list limit",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "single variant body id cannot override native URL selector",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "standalone shared DIDAR option update rejected for every owner",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "standalone protected option delete rejected",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "standalone option-value forged option parent rejected",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "product option association cannot adopt protected shared option",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "product option batch cannot remove protected shared option",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "product option batch cannot borrow protected value",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "forged parent actual protected variant inventory link rejected",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "mixed inventory-link batch rejects protected actual variant",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "protected image URL target cannot link unrelated variant",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "unrelated image URL cannot link protected actual variant",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "unrelated variant URL cannot adopt protected image",
+      "status": "PASS",
+      "http_status": 409,
+      "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+    },
+    {
+      "name": "unauthenticated actual-target mutation remains unauthorized",
+      "status": "PASS",
+      "http_status": 401
+    },
+    {
+      "name": "native read-only policy cannot invoke native mutation",
+      "status": "PASS",
+      "http_status": 403
+    },
+    {
+      "name": "Vendor real selected-seller context cannot invoke central Admin mutation",
+      "status": "PASS",
+      "admin_http": 401,
+      "foreign_selected_seller_http": 403
+    },
+    {
+      "name": "unrelated native Product and variant update remain available",
+      "status": "PASS",
+      "http_status": 200
+    },
+    {
+      "name": "unrelated native inventory linking remains available",
+      "status": "PASS",
+      "http_status": 200
+    },
+    {
+      "name": "unrelated native variant deletion remains available",
+      "status": "PASS",
+      "http_status": 200
+    }
+  ],
+  "canonical_fingerprints_before": {
+    "didar_product": "4ec5f29e517325772ce88ab4f6b56d5e",
+    "didar_offer": "47234b9bdae58c9651fda4f7100852b6",
+    "didar_inventory_item": "d751713988987e9331980363e24189ce",
+    "didar_order": "d751713988987e9331980363e24189ce",
+    "didar_fin_event": "d751713988987e9331980363e24189ce",
+    "didar_fin_posting": "d751713988987e9331980363e24189ce"
+  },
+  "canonical_fingerprints_after": {
+    "didar_product": "4ec5f29e517325772ce88ab4f6b56d5e",
+    "didar_offer": "47234b9bdae58c9651fda4f7100852b6",
+    "didar_inventory_item": "d751713988987e9331980363e24189ce",
+    "didar_order": "d751713988987e9331980363e24189ce",
+    "didar_fin_event": "d751713988987e9331980363e24189ce",
+    "didar_fin_posting": "d751713988987e9331980363e24189ce"
+  },
+  "protected_native_records_unchanged": true,
+  "shared_option_fixture_owners": [
+    {
+      "product_id": "prod_01M56KTYDZBV3X4JVNKJE506FX"
+    },
+    {
+      "product_id": "prod_01M56KV9QDWDNK03V66WSQWVZ4"
+    }
+  ],
+  "notes": "Synthetic native image/shared-option references prepared by SQL only inside owned disposable database; all mutation attempts tested through actual authenticated native HTTP."
+}

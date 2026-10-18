@@ -1,0 +1,11 @@
+{
+  "run_id": "native-baseline-20261018041251171",
+  "status": "FAIL",
+  "failure": {
+    "message": "{\"type\":\"invalid_data\",\"message\":\"Invalid request: Unrecognized fields: 'manage_inventory'\"}\n\n400 !== 200\n",
+    "at": "2026-10-18T04:13:24.981Z"
+  },
+  "parity": "PASS",
+  "cleanup": "PASS",
+  "exit_code": "NOT_YET_OBSERVED_BY_PARENT"
+}

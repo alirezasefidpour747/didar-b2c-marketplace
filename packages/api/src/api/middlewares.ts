@@ -27,7 +27,7 @@ export default defineMiddlewares({
       ],
     },
     {
-      matcher: /^\/admin\/products\/.+/,
+      matcher: /^\/admin\/(products|product-options)(?:\/.*)?$/,
       middlewares: [
         authenticate("user", ["session", "bearer"]),
         nativeProductGuard,

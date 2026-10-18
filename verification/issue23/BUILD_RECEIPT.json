@@ -1,0 +1,11 @@
+{
+  "platform": "linux",
+  "arch": "x64",
+  "node": "24.19.0",
+  "source": "cb75fd84eee02112c1ed08963102247c9b2a4ce565595df8b35c57a6de6cf140",
+  "outputs": "518792fe0780c430b55c78ef4cfc3fb194c15ca98ebc4922a903300f2634ba34",
+  "command": "bun run --cwd packages/api build",
+  "observed_exit": 0,
+  "signal": null,
+  "scope": "Backend rebuilt from changed source; original Admin/Vendor/Storefront production outputs retained unchanged. No schema or UI source changes."
+}

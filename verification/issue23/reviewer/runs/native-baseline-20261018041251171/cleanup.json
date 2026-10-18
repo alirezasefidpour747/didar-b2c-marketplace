@@ -1,0 +1,48 @@
+{
+  "run_id": "native-baseline-20261018041251171",
+  "status": "PASS",
+  "stopped": [
+    {
+      "pid": 10374,
+      "start_ticks": "355938",
+      "pgid": 10374,
+      "live_members": 0
+    },
+    {
+      "pid": 10311,
+      "start_ticks": "355480",
+      "pgid": 10311,
+      "live_members": 0
+    },
+    {
+      "pid": 10217,
+      "start_ticks": "354967",
+      "pgid": 10217,
+      "live_members": 0
+    },
+    {
+      "pid": 9913,
+      "start_ticks": "353024",
+      "pgid": 9913,
+      "live_members": 0
+    }
+  ],
+  "removed": [
+    {
+      "id": "3dc8894663dfe8a0b9f62700611a7699a28129a88c136789f56807dc84171a72",
+      "name": "didar-i23-security-redis-native-baseline-20261018041251171",
+      "anonymous_volumes_removed": [
+        "43b5fe71744b153765542ff301d24eac856a80f13db571777f726ac965f063ca"
+      ]
+    },
+    {
+      "id": "7c409ba0bef930cd61f2cad4b87dfaa66436f8f19889cf17c064e2f8ee04eb44",
+      "name": "didar-i23-security-pg-native-baseline-20261018041251171",
+      "anonymous_volumes_removed": [
+        "02f3bd45c000433a00512217b4285c4f75c5bdd806056778b2a2634e69ba2ea1"
+      ]
+    }
+  ],
+  "protected_preserved": 10,
+  "observed_at": "2026-10-18T04:13:26.237Z"
+}

@@ -1,0 +1,6 @@
+{
+  "run_id": "native-baseline-20261018041342338",
+  "api": "http://127.0.0.1:34719",
+  "web": "http://127.0.0.1:45827",
+  "loopback_only": true
+}
