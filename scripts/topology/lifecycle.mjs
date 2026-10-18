@@ -67,7 +67,8 @@ try {
     assert.equal((await request('/api/didar/login', { body: rawCredential })).status, 200)
     return { original_supervisor_container_exit: 1, relay_child_signal: 'SIGKILL', public_status_while_down: closed.status, recovered_login: 200 }
   })
-  await check('Actual API network namespace recreation preserves proof nonces, sessions, media and business state', async () => {
+  await check('Actual API process restart validates current shared namespace, fresh replay, sessions and business state', async () => {
+    const beforeApiProcess = await inspect(config.api, 'api-process-before-restart')
     const namespace = await docker('namespace-before', ['exec', config.api, 'readlink', '/proc/self/ns/net'])
     const raw = Buffer.from(JSON.stringify({ email: 'lifecycle-replay@example.invalid', password: 'DisposableWrong2026!' })), ts = Date.now(), nonce = randomBytes(16).toString('hex')
     const proof = signNetwork({ key, peer: '198.51.100.199', method: 'POST', path: '/api/didar/login', body: raw, ts, nonce })
@@ -79,7 +80,8 @@ try {
     const closed = await request('/api/didar/login', { body: rawCredential }); assert.ok([502, 503, 504].includes(closed.status))
     await docker('start-same-api-new-namespace', ['start', config.api])
     await wait('API recovery', async () => (await command('api-recovery-health-' + Date.now(), 'docker', ['exec', config.api, 'node', '-e', "fetch('http://127.0.0.1:9000/health').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))"], { expected: [0, 1] })).code === 0)
-    const newNamespace = await docker('namespace-after', ['exec', config.api, 'readlink', '/proc/self/ns/net']); assert.notEqual(newNamespace, namespace)
+    const newNamespace = await docker('namespace-after', ['exec', config.api, 'readlink', '/proc/self/ns/net'])
+    const afterApiProcess = await inspect(config.api, 'api-process-after-restart'); assert.notEqual(afterApiProcess.State.Pid, beforeApiProcess.State.Pid); assert.notEqual(afterApiProcess.State.StartedAt, beforeApiProcess.State.StartedAt)
     const state = await inspect(config.api, 'api-peer-after-namespace-recreate'), actualIp = state.NetworkSettings.Networks[Object.keys(state.NetworkSettings.Networks)[0]].IPAddress
     assert.equal(actualIp, config.relay_ip, 'Frozen relay peer address must be reconciled, never silently broadened')
     await docker('start-frontend-in-current-api-namespace', ['start', config.frontend]); await wait('Frontend current namespace', frontendReady)
@@ -90,7 +92,7 @@ try {
     const recoveredMedia = await request('/static/topology-recovery.txt'); assert.equal(recoveredMedia.status, 200); assert.equal(recoveredMedia.sha256, sha(media))
     assert.deepEqual(await fingerprints(), baseline)
     assert.deepEqual(await runtimeVersions(), secretVersions)
-    return { same_api_container_id: config.api, namespace_before: namespace, namespace_after: newNamespace, frontend_namespace_after: frontendNamespace, namespace_inode_changed: true, container_recreation_claimed: false, frozen_relay_peer_preserved: true, replay_age_ms: age, replay_status: 403, existing_session: 200, uploaded_media: 200, business_fingerprints_unchanged: true, runtime_secret_versions_unchanged: true, graceful_frontend_exit: stoppedFront.State.ExitCode, graceful_api_exit: stoppedApi.State.ExitCode }
+    return { same_api_container_id: config.api, namespace_before: namespace, namespace_after: newNamespace, frontend_namespace_after: frontendNamespace, namespace_inode_changed: namespace !== newNamespace, api_pid_before: beforeApiProcess.State.Pid, api_pid_after: afterApiProcess.State.Pid, process_restarted: true, container_recreation_claimed: false, frozen_relay_peer_preserved: true, replay_age_ms: age, replay_status: 403, existing_session: 200, uploaded_media: 200, business_fingerprints_unchanged: true, runtime_secret_versions_unchanged: true, graceful_frontend_exit: stoppedFront.State.ExitCode, graceful_api_exit: stoppedApi.State.ExitCode }
   })
   await check('Mismatched signing bundle fails closed and recovery restores exact accepted config and key version', async () => {
     const wrong = originalConfig.toString().replace('env DIDAR_AUTH_NETWORK_KEY;', 'env DIDAR_AUTH_NETWORK_KEY=' + 'public-test-only-wrong-key-00000000' + ';')

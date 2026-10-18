@@ -6,6 +6,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { mkdir, mkdtemp, readFile, writeFile, rm, access } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import { tmpdir } from 'node:os'
+import { createServer, isIP } from 'node:net'
 import { observer } from './process.mjs'
 import { render } from '../deployment/nginx/render.mjs'
 
@@ -51,13 +52,23 @@ async function wait(name, probe, maximum = 180000) {
   }
   throw Error(name + ' readiness timed out: ' + last)
 }
+async function loopbackPort() {
+  const server = createServer()
+  await new Promise((done, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', done) })
+  const port = server.address().port
+  await new Promise((done, reject) => server.close(error => error ? reject(error) : done()))
+  return port
+}
 async function copy(name, from, id, destination) { await docker('copy-' + name, ['cp', from, id + ':' + destination]) }
 try {
   const source = await command('candidate-source', 'git', ['-C', repo, 'rev-parse', 'HEAD']); assert.equal(source.stdout.toString().trim(), input.source_sha)
   network = await docker('create-network', ['network', 'create', '--label', labelName + '=' + runId, 'didar-' + runId])
   uploadVolume = await docker('create-disposable-upload-volume', ['volume', 'create', '--label', labelName + '=' + runId, 'didar-' + runId + '-uploads'])
-  pg = await create('postgres', input.postgres_image, ['--network', network, '--network-alias', 'pg', '--label', 'didar.disposable-qa=true', '-p', '127.0.0.1::5432', '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=didar_qa'], [])
-  redis = await create('redis', input.redis_image, ['--network', network, '--network-alias', 'redis', '-p', '127.0.0.1::6379'], [])
+  // Docker may reassign an ephemeral published port after restart. Pin the
+  // runner's explicitly reserved loopback ports for the unchanged restart test.
+  const pgHostPort = await loopbackPort(), redisHostPort = await loopbackPort()
+  pg = await create('postgres', input.postgres_image, ['--network', network, '--network-alias', 'pg', '--label', 'didar.disposable-qa=true', '-p', '127.0.0.1:' + pgHostPort + ':5432', '-e', 'POSTGRES_HOST_AUTH_METHOD=trust', '-e', 'POSTGRES_DB=didar_qa'], [])
+  redis = await create('redis', input.redis_image, ['--network', network, '--network-alias', 'redis', '-p', '127.0.0.1:' + redisHostPort + ':6379'], [])
   await docker('start-postgres', ['start', pg]); await docker('start-redis', ['start', redis])
   await wait('PostgreSQL', async () => (await command('pg-readiness-' + stages.length, 'docker', ['exec', pg, 'pg_isready', '-U', 'postgres', '-d', 'didar_qa'], { expected: [0, 1, 2] })).code === 0)
   const env = {
@@ -169,6 +180,101 @@ try {
   await saveVerificationLog('media', mediaResult)
   const lifecycleResult = await command('real-lifecycle-compatible-bundle-recovery', process.execPath, [join(repo, 'scripts/topology/lifecycle.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
   verificationOutcomes.lifecycle = lifecycleResult.code; await saveVerificationLog('lifecycle', lifecycleResult)
+  {
+    assert.equal(verificationOutcomes.lifecycle, 0, 'Force recreation requires completed lifecycle invariants')
+    verificationOutcomes.force_recreate = 1
+    const recreateOutput = join(output, 'force-recreate');
+    await mkdir(recreateOutput, { recursive: true });
+    const original = { api, frontend };
+    const originalImage = await inspect(api, 'recreate-original-api-image');
+    const oldNamespace = await docker('recreate-namespace-before', ['exec', api, 'readlink', '/proc/self/ns/net']);
+    const manifestExpected = hash(await readFile(join(input.portable_frontend, 'PACKAGING.json')));
+    const mediaPath = '/static/topology-recovery.txt'; // lifecycle created this in owned uploadVolume
+    const rootHttp = async (path, { body, headers = {} } = {}) => {
+      const script = String.raw`const https=require('node:https'),fs=require('node:fs');let raw='';process.stdin.on('data',x=>raw+=x);process.stdin.on('end',()=>{const x=JSON.parse(raw),req=https.request(x.url,{ca:fs.readFileSync(x.ca),method:x.body?'POST':'GET',headers:{...(x.body?{'content-type':'application/json','content-length':Buffer.byteLength(x.body)}:{}),...x.headers}},res=>{const chunks=[];res.on('data',b=>chunks.push(b));res.on('end',()=>{const b=Buffer.concat(chunks);let json;try{json=JSON.parse(b)}catch{}process.stdout.write(JSON.stringify({status:res.statusCode,json,sha256:require('node:crypto').createHash('sha256').update(b).digest('hex')}))})});req.on('error',e=>{console.error(e.code||'REQUEST_ERROR');process.exitCode=1});req.end(x.body)})`;
+      const result = await command('recreate-https-' + Date.now(), process.execPath, ['-e', script], { input: JSON.stringify({ url: origin + path, ca: join(tls, 'cert.pem'), ...(body ? { body: JSON.stringify(body) } : {}), headers }) });
+      return JSON.parse(result.stdout);
+    };
+    // Response tokens stay only in memory. Never persist the rootHttp return value.
+    const customer = await rootHttp('/api/didar/login', { body: { email: 'customer@didar.test', password: 'DidarDemo2026!' } });
+    assert.equal(customer.status, 200);
+    const preservedSession = customer.json.token;
+    const staticBefore = await rootHttp(mediaPath); assert.equal(staticBefore.status, 200);
+    const snapshot = async () => {
+      const script = String.raw`const{Pool}=require('/app/packages/api/node_modules/pg'),c=require('node:crypto'),fs=require('node:fs');const p=new Pool({connectionString:process.env.DATABASE_URL});(async()=>{if(process.env.DIDAR_DISPOSABLE_QA!=='true')throw Error('Disposable required');const names=['didar_product','didar_offer','didar_inventory_item','didar_order','didar_fin_event','didar_fin_posting','didar_user','didar_native_actor','didar_native_seller','didar_media_asset','didar_media_variant','didar_media_video','didar_content_page','didar_content_version','didar_content_publication','didar_login_attempt'];const tables={};for(const name of names){tables[name]=(await p.query("SELECT count(*)::int n,md5(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text)::text,'[]')) h FROM "+name+' t')).rows[0]}const secrets={};for(const name of ['JWT_SECRET','COOKIE_SECRET','DIDAR_AUTH_NETWORK_KEY'])secrets[name]=c.createHash('sha256').update(process.env[name]).digest('hex');process.stdout.write(JSON.stringify({tables,secrets,media:c.createHash('sha256').update(fs.readFileSync('/app/packages/api/.medusa/server/static/topology-recovery.txt')).digest('hex')}))})().finally(()=>p.end())`;
+      return JSON.parse(await docker('recreate-state-snapshot-' + Date.now(), ['exec', api, 'node', '-e', script]));
+    };
+    const before = await snapshot(); // includes nonce/counter rows AFTER the initial login
+    const gracefulOldExits = []
+    const removeOwned = async (id, role) => {
+      const entry = owned.find(item => item.id === id && item.role === role && item.removed !== true);
+      assert.ok(entry, 'Only an existing owned registry entry may be removed');
+      const state = await inspect(id, 'recreate-guard-' + role);
+      assert.equal(state.Name, '/' + entry.name); assert.equal(state.Config.Labels[labelName], runId);
+      if (state.State.Running) await docker('recreate-stop-' + role, ['stop', '--time', '25', id]);
+      const stopped = await inspect(id, 'recreate-stopped-' + role);
+      gracefulOldExits.push({ role, id, exit: stopped.State.ExitCode, oom: stopped.State.OOMKilled }); await writeFile(join(recreateOutput, 'original-process-exits.json'), JSON.stringify(gracefulOldExits, null, 2) + '\n')
+      assert.equal(stopped.State.ExitCode, 0); assert.equal(stopped.State.OOMKilled, false);
+      await docker('recreate-remove-' + role, ['rm', id]); // never -v; preserve named uploads
+      entry.removed = true; // exactly AFTER successful guarded rm
+    };
+    // Removing the namespace consumer first releases its retained sandbox handle.
+    await removeOwned(frontend, 'frontend');
+    await removeOwned(api, 'api');
+    const closed = await rootHttp('/api/didar/login', { body: { email: 'customer@didar.test', password: 'DidarDemo2026!' } });
+    assert.ok([502, 503, 504].includes(closed.status));
+    // Inspect the new fixed upstream address; exact trusted sender peers remain
+    // Nginx at the relay and127 at the API. No CIDR or trust expansion is used.
+    api = await create('api', input.api_image, ['--network', network, '--env-file', envFile, '--mount', 'type=volume,source=' + uploadVolume + ',target=/app/packages/api/.medusa/server/static', '-w', '/app/packages/api/.medusa/server'], ['/bin/sh', '-c', 'trap "exit 0" TERM INT; while [ ! -f /tmp/didar-topology-start ]; do sleep 1 & wait $!; done; exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start --host 127.0.0.1 --port 9000']);
+    assert.notEqual(api, original.api);
+    await docker('recreate-start-api-gate', ['start', api]);
+    const candidate = await inspect(api, 'recreate-observed-exact-peer');
+    const newIp = candidate.NetworkSettings.Networks[Object.keys(candidate.NetworkSettings.Networks)[0]].IPAddress;
+    assert.equal(isIP(newIp), 4); assert.equal(candidate.Image, originalImage.Image);
+    for (const path of patchFiles) await copy('recreate-api-' + path.replaceAll('/', '-'), join(repo, path), api, '/app/' + path);
+    await docker('recreate-api-tls-directory', ['exec', api, 'mkdir', '-p', '/run/didar-tls']);
+    await copy('recreate-api-tls', tls + '/.', api, '/run/didar-tls/');
+    await docker('recreate-api-release-gate', ['exec', api, 'touch', '/tmp/didar-topology-start']);
+    await wait('Recreated API', async () => (await command('recreated-api-health-' + Date.now(), 'docker', ['exec', api, 'node', '-e', "fetch('http://127.0.0.1:9000/health').then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))"], { expected: [0, 1] })).code === 0, 180000);
+    const namespace = await docker('recreated-api-namespace', ['exec', api, 'readlink', '/proc/self/ns/net']);
+    assert.notEqual(namespace, oldNamespace);
+    // Before ANY new login/admission, require exact counter/nonce rows too. Their
+    // timestamps may now be older than v1 freshness: do NOT claim a fresh replay.
+    assert.deepEqual(await snapshot(), before);
+    frontend = await create('frontend', input.frontend_base_image, ['--network', 'container:' + api, '--env-file', envFile, '-w', '/app'], ['node', 'runtime/storefront.mjs']);
+    assert.notEqual(frontend, original.frontend);
+    await copy('recreate-whole-portable-frontend', resolve(input.portable_frontend) + '/.', frontend, '/app/');
+    await copy('recreate-frontend-tls', tls, frontend, '/run/didar-tls');
+    await docker('recreate-start-original-supervisor', ['start', frontend]);
+    await wait('Recreated packaged frontend', async () => (await command('recreated-frontend-health-' + Date.now(), 'docker', ['exec', frontend, 'node', 'runtime/health.mjs'], { expected: [0, 1] })).code === 0, 180000);
+    const frontNamespace = await docker('recreated-frontend-namespace', ['exec', frontend, 'readlink', '/proc/self/ns/net']);
+    assert.equal(frontNamespace, namespace);
+    const packageHash = await docker('recreated-package-manifest-hash', ['exec', frontend, 'node', '-e', "process.stdout.write(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('PACKAGING.json')).digest('hex'))"]);
+    assert.equal(packageHash, manifestExpected);
+    const acceptedConfig = await readFile(join(config, 'nginx.conf'), 'utf8')
+    const oldUpstream = 'upstream didar_relay { server ' + apiIp + ':3000; }'
+    assert.equal(acceptedConfig.split(oldUpstream).length, 2)
+    const updatedConfig = acceptedConfig.replace(oldUpstream, 'upstream didar_relay { server ' + newIp + ':3000; }')
+    await writeFile(join(config, 'nginx.conf'), updatedConfig, { mode: 0o600 })
+    await copy('recreated-observed-fixed-upstream', join(config, 'nginx.conf'), edge, join(config, 'nginx.conf'))
+    await docker('recreated-nginx-config-check', ['exec', edge, 'nginx', '-t', '-c', join(config, 'nginx.conf')])
+    await docker('recreated-nginx-explicit-upstream-reload', ['exec', edge, 'nginx', '-c', join(config, 'nginx.conf'), '-s', 'reload'])
+    await wait('Recreated current fixed upstream', async () => (await rootHttp('/health')).status === 200)
+    const me = await rootHttp('/api/didar/me', { headers: { authorization: 'Bearer ' + preservedSession } });
+    assert.equal(me.status, 200); assert.equal(me.json.user.id, 'demo-customer');
+    const staticAfter = await rootHttp(mediaPath); assert.equal(staticAfter.status, 200); assert.equal(staticAfter.sha256, staticBefore.sha256);
+    const preservedAfter = await snapshot(); assert.deepEqual(preservedAfter, before); // GET me/media must not prune auth buckets
+    const overlayReadbackScript = "const fs=require('node:fs'),c=require('node:crypto');let raw='';process.stdin.on('data',b=>raw+=b);process.stdin.on('end',()=>process.stdout.write(JSON.stringify(JSON.parse(raw).map(path=>({path,sha256:c.createHash('sha256').update(fs.readFileSync('/app/'+path)).digest('hex')})))))"
+    const copied = JSON.parse(await docker('recreated-six-overlay-readback', ['exec', '-i', api, 'node', '-e', overlayReadbackScript], { input: JSON.stringify(patchFiles) })); assert.deepEqual(copied, overlay)
+    const newCustomer = await rootHttp('/api/didar/login', { body: { email: 'customer@didar.test', password: 'DidarDemo2026!' } }); assert.equal(newCustomer.status, 200)
+    const nativeStatuses = []
+    for (const [path, email] of [['/auth/user/emailpass', 'native-admin@didar.test'], ['/auth/member/emailpass', 'native-supplier@didar.test']]) { const login = await rootHttp(path, { body: { email, password: 'DidarNative2026!' } }); assert.equal(login.status, 200); nativeStatuses.push(login.status) }
+    runtime.api = api; runtime.frontend = frontend; runtime.relay_ip = newIp;
+    await writeFile(runtimeFile, JSON.stringify(runtime), { mode: 0o600 });
+    await writeFile(join(recreateOutput, 'result.json'), JSON.stringify({ status: 'PASS', source_sha: input.source_sha, run_id: runId, old_container_ids: original, new_container_ids: { api, frontend }, old_namespace: oldNamespace, new_namespace: namespace, frontend_namespace: frontNamespace, observed_frozen_api_ip: newIp, fail_closed_status_while_down: closed.status, preserved_customer_session: 200, media_sha256: staticAfter.sha256, state_before: before, state_after_before_new_auth: preservedAfter, fresh_customer_login: newCustomer.status, native_admin_vendor_logins: nativeStatuses, six_overlays_matched: true, manifest_sha256: packageHash, exact_config_delta: 'Only inspected fixed relay upstream IPv4 address', trusted_sender_allowlists_unchanged: true, old_fixed_upstream_ip: apiIp, new_fixed_upstream_ip: newIp, relay_tls_name_and_ca_unchanged: true, long_recreate_fresh_replay_claimed: false, no_schema_seed_or_auth_counter_reset: true }, null, 2) + '\n');
+    verificationOutcomes.force_recreate = 0;
+  }
+  
   await docker('nginx-real-reload', ['exec', edge, 'nginx', '-c', join(config, 'nginx.conf'), '-s', 'reload'])
   await docker('frontend-real-stop', ['stop', '--time', '25', frontend]); await docker('frontend-real-restart', ['start', frontend])
   await wait('frontend restart', async () => (await command('frontend-restart-health-' + stages.length, 'docker', ['exec', frontend, 'node', 'runtime/health.mjs'], { expected: [0, 1] })).code === 0)
@@ -181,6 +287,7 @@ try {
   throw error
 } finally {
   for (const item of owned.reverse()) {
+    if (item.removed === true) continue // Set only after exact guarded removal in force recreation.
     try {
       const state = await inspect(item.id, 'cleanup-inspect-' + item.role)
       assert.equal(state.Name, '/' + item.name); assert.equal(state.Config.Labels[labelName], runId)
@@ -201,7 +308,7 @@ try {
   const remaining = (await docker('protected-after', ['ps', '-aq', '--no-trunc'])).split('\n')
   if (!protectedIds.every(id => remaining.includes(id))) cleanup = false
   await rm(root, { recursive: true, force: true })
-  await writeFile(join(output, 'result.json'), JSON.stringify({ status: success && cleanup ? 'PASS_SCOPED_APPLICATION_TOPOLOGY' : 'FAIL', run_id: runId, source_sha: input.source_sha, cleanup: cleanup ? 'PASS' : 'FAIL', protected_containers: protectedIds.length, verification_outcomes: verificationOutcomes, actual_child_exits: stages, not_executed: ['Owner target discovery and Internet TLS', 'Host reboot', 'Forced API container replacement with a different container ID', 'Rollback to a different published release', 'Complete CI; separate runner evidence required'] }, null, 2) + '\n')
+  await writeFile(join(output, 'result.json'), JSON.stringify({ status: success && cleanup ? 'PASS_SCOPED_APPLICATION_TOPOLOGY' : 'FAIL', run_id: runId, source_sha: input.source_sha, cleanup: cleanup ? 'PASS' : 'FAIL', protected_containers: protectedIds.length, verification_outcomes: verificationOutcomes, actual_child_exits: stages, not_executed: ['Owner target discovery and Internet TLS', 'Host reboot', 'Rollback to a different published release', 'Complete CI; separate runner evidence required'] }, null, 2) + '\n')
   if (!cleanup) throw Error('Owned topology cleanup or protected-resource preservation failed')
 }
 if (!success) throw Error('Topology contains failed verification stages; see verification_outcomes and actual child exits')

@@ -72,13 +72,24 @@ all32 browser cases, backend/native regressions, or actual GitHub no-demo.
 `lifecycle.mjs` runs before owned-stack cleanup. It deliberately crashes the
 original relay child and observes its original PID1 supervisor exit1, then
 recovers the same untouched package. It stops the frontend before restarting
-the API, requires a changed actual network-namespace inode and rejoins the
-frontend to that namespace. It checks a still-fresh consumed proof, existing
+the same API container, requires changed process PID/start time and confirms
+the frontend shares the current API namespace. It records the actual namespace
+inode; a retained inode is not falsely reported as namespace recreation. It checks a still-fresh consumed proof, existing
 session, owned upload-volume bytes and database fingerprints after recovery.
 A mismatched test-only signer key is applied only to the owned generated Nginx
 config; auth must fail closed. Exact original config bytes and stable key
-version are restored and verified. It neither rotates production secrets nor
-claims forced replacement by a different API container ID or host reboot.
+version are restored and verified. It never rotates production secrets or claims host reboot.
+
+After these fast process-restart gates, the parent runner separately stops and
+removes only its exact owned frontend/API containers, then creates new IDs from
+the same artifact bytes and rejoins a new actual shared namespace. It preserves
+all PostgreSQL/Redis/media volumes, credentials,16-table fingerprints including
+nonce/counter rows before new auth, existing session and uploaded bytes. It
+inspects the new fixed upstream IP and changes only that literal Nginx upstream
+address; exact sender allowlists and TLS CA/name/key stay unchanged. New
+container IDs and a changed namespace inode are required in this separate gate.
+A long artifact recreation is not presented as a still-fresh30-second replay;
+that property is checked by the separate fast process-restart gate.
 
 For managed cloud Chromium, use the existing supported environment overrides:
 
