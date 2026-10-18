@@ -1,3 +1,7 @@
+> **Owner-directed governing addendum — 2026-10-18:** Architecture compliance and Production Readiness are continuous, independent workstreams. Feature test success does not certify either. Read [Continuous Architecture and Production Readiness](CONTINUOUS_ARCHITECTURE_AND_PRODUCTION_READINESS.md) before executing this historical plan. Any wording below that postpones technical architecture/security/reliability work until all features are finished is superseded. Consolidated owner Mac UAT remains preserved.
+>
+> **Immediate order:** freeze new feature scope → close the outstanding bounded Issue #18 receipt; start a read-only baseline now → implement confirmed relevant P0/P1 corrections on the accepted integration candidate → resume one existing feature packet with continuous readiness checks → separately accept staging/production release gates. No automatic merge, rollout or owner-server mutation. Maximum two active implementation lanes: one feature packet and one bounded hardening packet. New ideas enter backlog rather than expanding the current packet.
+
 # DIDAR B2C — Merchant Commerce, CRM, Growth, Campaigns & Affiliates
 ## Master implementation roadmap for Codex Cloud; owner Mac acceptance AFTER feature completion
 
