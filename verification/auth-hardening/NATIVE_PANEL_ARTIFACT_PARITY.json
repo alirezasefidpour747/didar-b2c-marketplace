@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "baseline": "2c634ffdb77d4683271b5b218ca0a606af74004a",
+  "candidate": "fb9daec7a947f234e7931c63f62d70e92e273c76",
+  "roots": [
+    "apps/admin/dist",
+    "apps/vendor/dist"
+  ],
+  "files": 669,
+  "manifest_sha256": "dfc6e081f9a76dec52fd03ee1048df909329b9ca6d86533366ca7369dba40910",
+  "limitation": "Native Admin/Vendor compiled files compared byte-for-byte against accepted PR24 independent copy. Backend and Next intentionally rebuilt."
+}

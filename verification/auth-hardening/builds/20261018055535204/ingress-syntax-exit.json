@@ -1,0 +1,15 @@
+{
+  "stage": "ingress-syntax",
+  "command": "node",
+  "args": [
+    "--check",
+    "apps/storefront/auth-ingress.mjs"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 30674,
+  "observer_pid": 30655,
+  "started_at_utc": "2026-10-18T05:55:35.277Z",
+  "closed_at_utc": "2026-10-18T05:55:35.303Z"
+}

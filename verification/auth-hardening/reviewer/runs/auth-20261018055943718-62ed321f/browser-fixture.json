@@ -1,0 +1,7 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "api": "http://127.0.0.1:42061",
+  "web": "http://127.0.0.1:41253",
+  "root": "/workspace/didar-b2c-marketplace",
+  "linked_id": "bracelet"
+}

@@ -1,0 +1,17 @@
+{
+  "stage": "backend-build",
+  "command": "bun",
+  "args": [
+    "run",
+    "--cwd",
+    "packages/api",
+    "build"
+  ],
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "child_pid": 30681,
+  "observer_pid": 30655,
+  "started_at_utc": "2026-10-18T05:55:35.303Z",
+  "closed_at_utc": "2026-10-18T05:55:48.591Z"
+}

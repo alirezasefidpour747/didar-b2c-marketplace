@@ -1,0 +1,11 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "browser_exit_code": 0,
+  "wrapper_exit_code": 0,
+  "supervisor_exit_code": 0,
+  "parity": "PASS",
+  "cleanup": "PASS",
+  "at": "2026-10-18T06:01:44.369Z",
+  "monitor_self_exit": "NOT_OBSERVED_OR_REQUIRED"
+}

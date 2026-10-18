@@ -1,0 +1,31 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [1.82ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.49ms]
+(pass) local tooling rejects staging environment [0.31ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.07ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value [0.02ms]
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.42ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.18ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.07ms]
+(pass) preflight refuses an occupied port without terminating its owner [2.49ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [48.77ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.23ms]
+(pass) failed child verification preserves the nonzero result [27.60ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.74ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.29ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.24ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [1.81ms]
+(pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [18.71ms]
+
+ 23 pass
+ 0 fail
+ 67 expect() calls
+Ran 23 tests across 1 file. [125.00ms]

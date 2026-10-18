@@ -1,0 +1,84 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "stopped": [
+    {
+      "pid": 32441,
+      "start_ticks": "1005217",
+      "pgid": 32441,
+      "live_members": 0
+    },
+    {
+      "pid": 32415,
+      "start_ticks": "1005082",
+      "pgid": 32415,
+      "live_members": 0
+    },
+    {
+      "pid": 32368,
+      "start_ticks": "1004628",
+      "pgid": 32368,
+      "live_members": 0
+    },
+    {
+      "pid": 32310,
+      "start_ticks": "1000824",
+      "pgid": 32310,
+      "live_members": 0
+    },
+    {
+      "pid": 32211,
+      "start_ticks": "997481",
+      "pgid": 32211,
+      "live_members": 0
+    },
+    {
+      "pid": 32203,
+      "start_ticks": "997423",
+      "pgid": 32203,
+      "live_members": 0
+    },
+    {
+      "pid": 32185,
+      "start_ticks": "997344",
+      "pgid": 32185,
+      "live_members": 0
+    },
+    {
+      "pid": 32131,
+      "start_ticks": "996836",
+      "pgid": 32131,
+      "live_members": 0
+    },
+    {
+      "pid": 32087,
+      "start_ticks": "996349",
+      "pgid": 32087,
+      "live_members": 0
+    },
+    {
+      "pid": 31827,
+      "start_ticks": "994252",
+      "pgid": 31827,
+      "live_members": 0
+    }
+  ],
+  "removed": [
+    {
+      "id": "62f76669cddd9c95fde26f461b8cb589f68ad0bcff15475dc40a9a3d9840aa27",
+      "name": "didar-auth-review-redis-auth-20261018055943718-62ed321f",
+      "anonymous_volumes_removed": [
+        "c08765afe42aedc49bc087152a2a4e2526b58ee906a67997fdd16c63e18f85fa"
+      ]
+    },
+    {
+      "id": "1679c28023c7883bdf896d484d3c5d183aa9d859051aaf21c0dc327ee2b91b6e",
+      "name": "didar-auth-review-pg-auth-20261018055943718-62ed321f",
+      "anonymous_volumes_removed": [
+        "7bc9e88fe3af8d78b4ad159a8593a9c69efc4dc03fec4d51557e7b34d195dba1"
+      ]
+    }
+  ],
+  "protected_preserved": 10,
+  "observed_at": "2026-10-18T06:01:44.350Z"
+}

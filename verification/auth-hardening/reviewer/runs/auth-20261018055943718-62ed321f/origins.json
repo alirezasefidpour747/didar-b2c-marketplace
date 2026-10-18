@@ -1,0 +1,12 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "RECORDED",
+  "api": "http://127.0.0.1:42061",
+  "private_next": "http://127.0.0.1:38731",
+  "signed_ingress": "http://127.0.0.1:41253",
+  "loopback_only": true,
+  "proxy_peer_allowlist": [
+    "127.0.0.1"
+  ],
+  "network_key": "EPHEMERAL_RUNTIME_ONLY_NOT_RECORDED"
+}

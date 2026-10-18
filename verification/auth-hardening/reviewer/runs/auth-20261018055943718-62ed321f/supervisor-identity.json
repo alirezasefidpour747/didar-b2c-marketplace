@@ -1,0 +1,19 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "observer": {
+    "pid": 31349,
+    "state": "R",
+    "ppid": 31342,
+    "pgid": 31349,
+    "start_ticks": "993926",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  },
+  "child": {
+    "pid": 31356,
+    "state": "R",
+    "ppid": 31349,
+    "pgid": 31356,
+    "start_ticks": "993929",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  }
+}

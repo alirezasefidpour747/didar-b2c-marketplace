@@ -1,0 +1,90 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "candidate_head": "fb9daec7a947f234e7931c63f62d70e92e273c76",
+  "source_output_initial_equals_current": true,
+  "root_copy_tests": {
+    "files": 52,
+    "aggregate": "8a4511339cb3102058e34a26a0fdc1f43d981c78d4ec96a0e63537dffd40f71d"
+  },
+  "reviewer_sources": {
+    "files": 7,
+    "aggregate": "af6c8cb3869d59a882bc8cd0cc7f6749340980b883f618bdf35d6f6e0abf7fe5"
+  },
+  "dependency_hashes": "ROOT_AND_COPY_EXACT",
+  "independent_http_cases": 23,
+  "case_status_encoding": "Some raw case status fields are numeric HTTP response codes because safe(response) detail overlays the PASS label. Every case returned after its assertions; top-level phase PASS and actual phase exit0 are authoritative. Raw receipts preserved unchanged.",
+  "actual_stage_exits": [
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "schema-and-demo-seed",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:00:07.983Z",
+      "observer_pid": 31356,
+      "child_pid": 31827
+    },
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "native-qa-seed",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:00:12.849Z",
+      "observer_pid": 31356,
+      "child_pid": 32087
+    },
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "persistent-affected-tests",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:00:52.667Z",
+      "observer_pid": 31356,
+      "child_pid": 32211
+    },
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "http-before-restart",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:01:30.740Z",
+      "observer_pid": 31356,
+      "child_pid": 32310
+    },
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "http-after-restart",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:01:36.667Z",
+      "observer_pid": 31356,
+      "child_pid": 32415
+    },
+    {
+      "run_id": "auth-20261018055943718-62ed321f",
+      "stage": "browser",
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "observed_at": "2026-10-18T06:01:43.139Z",
+      "observer_pid": 31356,
+      "child_pid": 32441
+    }
+  ],
+  "actual_browser_exit": 0,
+  "actual_wrapper_exit": 0,
+  "actual_supervisor_exit": 0,
+  "protected_containers": 10,
+  "owned_containers_absent": 2,
+  "owned_volumes_absent": 2,
+  "owned_live_process_groups": 0,
+  "screenshots": 6,
+  "diagnostic_failures": 0,
+  "source_config_review": "PASS_WITH_DOCUMENTED_TOPOLOGY_AND_LIMITS; no bounded must-fix defect identified",
+  "at": "2026-10-18T06:02:58.417Z"
+}

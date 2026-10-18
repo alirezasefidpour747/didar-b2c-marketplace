@@ -1,0 +1,6 @@
+{
+  "code": 0,
+  "signal": null,
+  "observation": "Actual exec tool returned exit_code 0 for corrected coordinator command wrapper. Actual child close receipt is exit.json.",
+  "recorded_at_utc": "2026-10-18T06:05:02.036854+00:00"
+}

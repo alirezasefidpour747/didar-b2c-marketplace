@@ -1,0 +1,314 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "cases": 19,
+  "results": [
+    {
+      "name": "Policy A unsigned direct request uses genuine TCP peer and ignores all forwarding claims",
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false,
+      "genuine_peer_count": 1,
+      "claimed_peer_count": 0
+    },
+    {
+      "name": "Direct peer cannot rotate forwarding headers to reset account/network admission",
+      "status": "PASS",
+      "statuses": [
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        429
+      ],
+      "actual_pair_attempts": 21
+    },
+    {
+      "name": "Real ingress overwrites attacker proof/forwarded headers and cookie resets do not reset source quota",
+      "status": "PASS",
+      "statuses": [
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        401,
+        429
+      ],
+      "source_pair_attempts": 21
+    },
+    {
+      "name": "Targeted wrong-password pressure cannot globally lock the victim account on a distinct actual client",
+      "status": 200,
+      "message": null,
+      "authenticated": true,
+      "existing_identity": "demo-customer",
+      "target_pressure_is_delay_only": true
+    },
+    {
+      "name": "One client 201-account spray does not exhaust the shared Next transport for another client",
+      "status": "PASS",
+      "attacker": {
+        "unauthorized": 200,
+        "rate_limited": 1,
+        "genuine_peer": "127.0.0.54"
+      },
+      "unrelated_client": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "one_shared_next_transport": true
+    },
+    {
+      "name": "Fresh distinct client can register through the same ingress after another network is exhausted",
+      "status": "PASS",
+      "registration": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "subsequent_login": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "one_canonical_user": true
+    },
+    {
+      "name": "Distinct client supplier registration remains pending without privileged role escalation",
+      "status": "PASS",
+      "registration": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "pending_business": {
+        "role": "supplier",
+        "active": false,
+        "status": "pending"
+      },
+      "privileged_route_status": 403
+    },
+    {
+      "name": "Missing and malformed private-Next proof fail before consuming backend quota",
+      "status": "PASS",
+      "missing": {
+        "status": 403,
+        "message": "FORBIDDEN",
+        "authenticated": false
+      },
+      "malformed": {
+        "status": 403,
+        "message": "FORBIDDEN",
+        "authenticated": false
+      },
+      "backend_quota_unchanged": true
+    },
+    {
+      "name": "Signed proof rejects stale/future/path/body/method tampering at private Next",
+      "status": "PASS",
+      "statuses": [
+        403,
+        403,
+        403,
+        403,
+        403
+      ],
+      "backend_network_budget": 0
+    },
+    {
+      "name": "Untrusted socket peer cannot assert an original client even with a QA-valid signature",
+      "status": 403,
+      "message": "FORBIDDEN",
+      "authenticated": false,
+      "signature_not_sufficient_without_actual_peer_allowlist": true
+    },
+    {
+      "name": "Invalid present backend proof never downgrades to unsigned direct mode",
+      "status": 403,
+      "message": "FORBIDDEN",
+      "authenticated": false,
+      "no_fallback_counter_increment": true
+    },
+    {
+      "name": "Allowlisted peer may still use explicit unsigned direct true-peer policy",
+      "status": 200,
+      "message": null,
+      "authenticated": true,
+      "true_peer_budget_increment": 1
+    },
+    {
+      "name": "Backend consumes proof nonce despite credential401 and rejects replay without extra attempts",
+      "status": "PASS",
+      "first": {
+        "status": 401,
+        "message": "UNAUTHORIZED",
+        "authenticated": false
+      },
+      "replay": {
+        "status": 403,
+        "message": "FORBIDDEN",
+        "authenticated": false
+      },
+      "effective_attempts": 1
+    },
+    {
+      "name": "Replaying first-hop proof at Next cannot obtain fresh backend nonces",
+      "status": "PASS",
+      "first": {
+        "status": 401,
+        "message": "UNAUTHORIZED",
+        "authenticated": false
+      },
+      "replay": {
+        "status": 403,
+        "message": "FORBIDDEN",
+        "authenticated": false
+      },
+      "effective_attempts": 1
+    },
+    {
+      "name": "32 concurrent attempts atomically exhaust one genuine source/account pair",
+      "status": "PASS",
+      "statuses": [
+        401,
+        401,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429,
+        429
+      ],
+      "pair_attempts": 32,
+      "valid_same_network": {
+        "status": 429,
+        "message": "RATE_LIMIT",
+        "authenticated": false
+      },
+      "valid_distinct_network": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      }
+    },
+    {
+      "name": "Actual PostgreSQL global work saturation rejects work and releases without victim account ban",
+      "status": "PASS",
+      "saturated_status": 429,
+      "after_release": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "real_database_locks": true
+    },
+    {
+      "name": "Actual per-network work lock prevents parallel KDF work without lasting account ban",
+      "status": "PASS",
+      "saturated_status": 429,
+      "after_release": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      }
+    },
+    {
+      "name": "Real concurrent distinct networks stay within four observed PostgreSQL work slots",
+      "status": "PASS",
+      "statuses": [
+        401,
+        429,
+        429,
+        429,
+        429,
+        429,
+        401,
+        401,
+        401,
+        429,
+        429,
+        429
+      ],
+      "samples": 219,
+      "maximum_observed_global_work_slots": 4,
+      "not_a_capacity_certification": true
+    },
+    {
+      "name": "New canonical session preserves identity, user-read and explicit logout invalidation",
+      "status": "PASS",
+      "login": {
+        "status": 200,
+        "message": null,
+        "authenticated": true
+      },
+      "canonical_identity": "demo-customer",
+      "logout_status": 200,
+      "old_session_invalidated": true
+    }
+  ],
+  "business_fingerprints": {
+    "didar_product": "6fec9867fcf7d06511e663d1c8b72682",
+    "didar_offer": "47234b9bdae58c9651fda4f7100852b6",
+    "didar_inventory_item": "d751713988987e9331980363e24189ce",
+    "didar_order": "d751713988987e9331980363e24189ce",
+    "didar_fin_event": "d751713988987e9331980363e24189ce",
+    "didar_fin_posting": "d751713988987e9331980363e24189ce"
+  },
+  "restart_ready": true
+}

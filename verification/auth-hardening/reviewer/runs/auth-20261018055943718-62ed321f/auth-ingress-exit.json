@@ -1,0 +1,10 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "stage": "auth-ingress",
+  "code": null,
+  "signal": "SIGTERM",
+  "error": null,
+  "observed_at": "2026-10-18T06:01:43.597Z",
+  "observer_pid": 31356,
+  "child_pid": 32203
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "OBSERVED",
+  "prior_api": {
+    "run_id": "auth-20261018055943718-62ed321f",
+    "stage": "api",
+    "code": 0,
+    "signal": null,
+    "error": null,
+    "observed_at": "2026-10-18T06:01:30.770Z",
+    "observer_pid": 31356,
+    "child_pid": 32131
+  },
+  "reason": "Verify durable rate/proof state and release of actual database work locks"
+}

@@ -1,0 +1,12 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "identity": {
+    "pid": 31342,
+    "state": "R",
+    "ppid": 31279,
+    "pgid": 31342,
+    "start_ticks": "993922",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  },
+  "exit_code": "NOT_OBSERVED_BY_LAUNCHER"
+}

@@ -1,0 +1,8 @@
+{
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "runner_pid": 30655,
+  "observation": "Actual functions.write_stdin session98948 reported exit_code0 after awaited build-runner completion; individual child close receipts are separate.",
+  "observed_at_utc": "2026-10-18T05:58:19.296Z"
+}

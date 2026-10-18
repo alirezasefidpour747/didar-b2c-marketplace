@@ -1,0 +1,34 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "journeys": 3,
+  "results": [
+    {
+      "workspace": "native Admin",
+      "status": "PASS",
+      "route": "/dashboard/didar",
+      "behavior": "Actual native sign-in, original shell navigation and canonical DIDAR Product workspace render"
+    },
+    {
+      "workspace": "native Vendor",
+      "status": "PASS",
+      "route": "/seller/didar",
+      "behavior": "Actual native member sign-in, selected own seller and own canonical Product workspace render"
+    },
+    {
+      "workspace": "B2C Customer",
+      "status": "PASS",
+      "route": "/fa/products/jewelry/bracelets/bracelet/bracelet-992df610cee4510846565426fcde40a8",
+      "behavior": "Customer sign-in/account then actual public canonical PDP remains available"
+    }
+  ],
+  "page_errors": [],
+  "screenshots": [
+    "native-admin-auth-1440.png",
+    "native-admin-auth-390.png",
+    "native-vendor-auth-1440.png",
+    "native-vendor-auth-390.png",
+    "customer-signed-ingress-auth-1440.png",
+    "customer-signed-ingress-auth-390.png"
+  ]
+}

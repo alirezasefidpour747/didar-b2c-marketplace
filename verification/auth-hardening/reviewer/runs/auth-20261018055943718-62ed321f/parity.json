@@ -1,0 +1,73 @@
+{
+  "run_id": "auth-20261018055943718-62ed321f",
+  "status": "PASS",
+  "execution_dependencies": [
+    {
+      "path": "scripts/local/runtime.mjs",
+      "sha256": "5eed7eaf6157def507656e440015e13a3a41c3f94ad3ad49756cebca9f0cdb41",
+      "role": "Runtime execution dependency"
+    },
+    {
+      "path": "scripts/local/browser-options.mjs",
+      "sha256": "81eacad16b113264d31b961e141b0a94aebcf7026f28a5570a6d36cc41be7309",
+      "role": "Runtime execution dependency"
+    },
+    {
+      "path": "scripts/local/build-receipt.mjs",
+      "sha256": "d5937d4a41a4e54e9d4b2d44199fc37380639e06a4a4688e10a37a477d051443",
+      "role": "Runtime execution dependency"
+    },
+    {
+      "path": "scripts/local.mjs",
+      "sha256": "68a9c98aeac880a4eb4a946814a64e4c80251aa47def2710c3cbff33fe56f88b",
+      "role": "Source-reviewed transport wiring; not invoked by this reviewer runtime"
+    },
+    {
+      "path": "scripts/local/test.mjs",
+      "sha256": "8e3965843aa3616cf3604f8b8217d78b043003b725eaa5b38a7854e7660ae7be",
+      "role": "Source-reviewed transport wiring; not invoked by this reviewer runtime"
+    }
+  ],
+  "shared_auth_module": {
+    "root": "bf566fa44d8e9e8f421d7031f9e8a3a0cb67b7f885098c67a25811fff678db18",
+    "copy": "bf566fa44d8e9e8f421d7031f9e8a3a0cb67b7f885098c67a25811fff678db18",
+    "resolution": "Workspace dependencies symlinked; root and copy source receipts both held frozen"
+  },
+  "initial": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+  },
+  "final": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+    "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+  },
+  "initial_equals_final": true,
+  "root_tests": {
+    "files": 52,
+    "aggregate": "8a4511339cb3102058e34a26a0fdc1f43d981c78d4ec96a0e63537dffd40f71d"
+  },
+  "reviewer_sources": {
+    "files": 7,
+    "aggregate": "af6c8cb3869d59a882bc8cd0cc7f6749340980b883f618bdf35d6f6e0abf7fe5"
+  },
+  "copied": {
+    "status": "PASS",
+    "initial_compiled_files": 1791,
+    "initial_manifest": "e94c8890e8206592c496afd8f9670f57fd5f78459912d762d1fedeae4ba5257d",
+    "final_initial_manifest": "e94c8890e8206592c496afd8f9670f57fd5f78459912d762d1fedeae4ba5257d",
+    "receipt": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "24.19.0",
+      "source": "ea2239fcacbbbc80b2495388267d82d90f8edc33e2424b68fb692eef5186de05",
+      "outputs": "ea1943ce90637868e9fceffd03477f5e4840834cf63beb747520659602547d37"
+    },
+    "runtime_upload_additions": []
+  }
+}
