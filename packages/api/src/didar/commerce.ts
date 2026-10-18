@@ -1,6 +1,8 @@
+import { assertCurationPayment } from "./curation";
 import { storeScope } from "./storefront";
-import { publicOrder } from "./merchant-profiles";
-import { recognizePayment } from "./finance";
+import { pricingLock, publicOrder } from "./merchant-profiles";
+import { recognizePayment, finLock } from "./finance";
+import { assertAgencyPayment, issueAgencyInvoices } from "./agency";
 import { randomUUID } from "node:crypto";
 import { db, transaction } from "./db";
 import { requireUser } from "./auth";
@@ -48,6 +50,9 @@ async function payment(req: any) {
       [id, u.id],
     );
     if (!o) throw new Error("NOT_FOUND");
+    // Freeze effective pricing versions through verified collection/recognition.
+    // Lock order matches checkout: order -> pricing -> offer/items -> finance.
+    await pricingLock(c);
     const scope = await storeScope(req, c);
     if (scope && o.origin_supplier_id !== scope.supplier_id)
       throw new Error("NOT_FOUND");
@@ -66,6 +71,8 @@ async function payment(req: any) {
       throw new Error("INVALID_PAYMENT_ATTEMPT");
     if (o.status !== "pending")
       return { order: publicOrder(o), payment: publicPayment(attempt) };
+    await assertAgencyPayment(c, o);
+    await assertCurationPayment(c, o);
     // Payment is a new economic action even when a pre-suspension reservation exists.
     const commercial = await c.query(
       "SELECT 1 FROM didar_order_line l JOIN didar_supplier s ON s.id=l.supplier_id WHERE l.order_id=$1 AND (NOT s.active OR s.status<>'approved' OR NOT didar_native_saleable_supplier(s.id)) LIMIT 1",
@@ -127,6 +134,13 @@ async function payment(req: any) {
       status = outcome === "success" ? "paid" : "failed";
     }
     await finalizeItems(c, id, status === "paid");
+    // Preserve existing order -> offer/items -> financial lock order. A second
+    // fresh check under that lock serializes approval/revocation with recognition.
+    await finLock(c);
+    if (status === "paid") {
+      await assertAgencyPayment(c, o);
+      await assertCurationPayment(c, o);
+    }
     const {
       rows: [order],
     } = await c.query(
@@ -140,7 +154,10 @@ async function payment(req: any) {
         "UPDATE didar_payment_attempt SET status=$1,reference=$2,confirmed_at=now() WHERE id=$3 RETURNING *",
         [outcome, reference || null, attempt.id],
       ));
-    if (status === "paid") await recognizePayment(c, order, u.id);
+    if (status === "paid") {
+      await recognizePayment(c, order, u.id);
+      await issueAgencyInvoices(c, order);
+    }
     await audit(c, u.id, "sandbox_payment", {
       order_id: id,
       payment_id: attempt?.id,

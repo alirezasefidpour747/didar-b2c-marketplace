@@ -16,7 +16,11 @@ export async function allowedNativeProducts(req: any) {
     throw new MedusaError(MedusaError.Types.NOT_ALLOWED, "FORBIDDEN");
   return (
     await db.query(
-      `SELECT p.native_id FROM didar_product p WHERE p.native_id IS NOT NULL AND (
+      `SELECT p.native_id FROM didar_product p
+    LEFT JOIN didar_product_projection ps ON ps.product_id=p.id
+    LEFT JOIN product np ON np.id=p.native_id
+    WHERE p.native_id IS NOT NULL AND (ps.product_id IS NULL OR
+      (ps.projected_revision=ps.source_revision AND np.metadata->>'didar_projection_revision'=ps.source_revision::text)) AND (
     EXISTS(SELECT 1 FROM didar_offer o WHERE o.product_id=p.id AND o.supplier_id=$1)
     OR EXISTS(SELECT 1 FROM didar_intake_line l JOIN didar_intake_batch b ON b.id=l.batch_id WHERE l.product_id=p.id AND b.supplier_id=$1)
     OR COALESCE((p.active AND p.approved AND p.published AND didar_public_taxonomy(p.id,p.category_id) AND didar_visible_product(p.id,NULL)),false))`,

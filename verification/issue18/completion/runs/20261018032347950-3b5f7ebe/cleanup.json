@@ -1,0 +1,60 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "status": "PASS",
+  "stopped": [
+    {
+      "pid": 2922,
+      "start_ticks": "61702",
+      "pgid": 2922,
+      "live_members": 0
+    },
+    {
+      "pid": 2907,
+      "start_ticks": "61593",
+      "pgid": 2907,
+      "live_members": 0
+    },
+    {
+      "pid": 2885,
+      "start_ticks": "61498",
+      "pgid": 2885,
+      "live_members": 0
+    },
+    {
+      "pid": 2836,
+      "start_ticks": "61040",
+      "pgid": 2836,
+      "live_members": 0
+    },
+    {
+      "pid": 2787,
+      "start_ticks": "60570",
+      "pgid": 2787,
+      "live_members": 0
+    },
+    {
+      "pid": 2537,
+      "start_ticks": "58689",
+      "pgid": 2537,
+      "live_members": 0
+    }
+  ],
+  "removed": [
+    {
+      "id": "9b0367a1c8b3e8f97829bb469c9f18f24ffa128a1af54bf9980f4d1c3e6a3854",
+      "name": "didar-i18-completion-redis-20261018032347950-3b5f7ebe",
+      "anonymous_volumes_removed": [
+        "d39e129f3538404c9ddab23888204ea5175ebe85e573f65546b30ded579f06be"
+      ]
+    },
+    {
+      "id": "b1ec931ecee5ea2c6ecefa1d9fb202180071218dd26bb743e95d449f5629ee64",
+      "name": "didar-i18-completion-pg-20261018032347950-3b5f7ebe",
+      "anonymous_volumes_removed": [
+        "b13b2c21ab2b22a958d1e6836b0c9831d2ceaadf12f31b37d2c95c52741758e4"
+      ]
+    }
+  ],
+  "protected_preserved": 10,
+  "observed_at": "2026-10-18T03:27:49.441Z"
+}

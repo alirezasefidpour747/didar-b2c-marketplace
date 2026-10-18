@@ -127,6 +127,9 @@ export default async function seed({ container }: ExecArgs) {
       "utf8",
     ),
   );
+  // Additive CORE-03 adapters follow all legacy function definitions on every replay.
+  for (const file of ["agency-schema.sql", "curation-schema.sql", "projection-schema.sql"])
+    await db.query(fs.readFileSync(path.join(process.cwd(), "src/didar", file), "utf8"));
   const seedDemo =
     process.env.DIDAR_SEED_DEMO === "true" &&
     process.env.DIDAR_ENVIRONMENT === "local" &&

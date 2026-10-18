@@ -1,0 +1,12 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "identity": {
+    "pid": 2010,
+    "state": "R",
+    "ppid": 1997,
+    "pgid": 2010,
+    "start_ticks": "58346",
+    "boot_id": "83209921-f859-431b-91d9-39a388a74ed4"
+  },
+  "exit_code": "NOT_OBSERVED_BY_LAUNCHER"
+}

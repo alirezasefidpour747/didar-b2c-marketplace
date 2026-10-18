@@ -1,0 +1,10 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "status": "PASS",
+  "tests": 32,
+  "actual_exit_code": 0,
+  "actual_signal": null,
+  "all_passed": true,
+  "retries": 0,
+  "skipped": 0
+}

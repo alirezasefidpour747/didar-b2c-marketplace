@@ -1,0 +1,199 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "status": "PASS",
+  "exact_prior32": true,
+  "tests": [
+    {
+      "id": "6bf654160f377cf56a60-26990a052b961d35358e",
+      "title": "acceptance.spec.ts › Gate 5 Persian reconciliation screen records DB-derived checks without claiming Mac or live financial acceptance",
+      "file": "acceptance.spec.ts",
+      "line": 2
+    },
+    {
+      "id": "d74cd27346db6aa64657-5d78ea43e825a46b02de",
+      "title": "content.spec.ts › Persian page builder publishes the six core blocks, real video/slider/mosaic, responsive preview and live quote without a parallel cart",
+      "file": "content.spec.ts",
+      "line": 42
+    },
+    {
+      "id": "9c12f706d7ccaf47276a-23c322f21868d65ed1a8",
+      "title": "expiry.spec.ts › expired reservation is shown to the customer and restores available pieces",
+      "file": "expiry.spec.ts",
+      "line": 50
+    },
+    {
+      "id": "b33b7460a4482db15dec-533a2ab3d776d50c5508",
+      "title": "facets.spec.ts › Persian product classification, F11 membership and server discovery persist into the same mobile and desktop PDP",
+      "file": "facets.spec.ts",
+      "line": 40
+    },
+    {
+      "id": "b33b7460a4482db15dec-e81e8c1f201c48516d5d",
+      "title": "facets.spec.ts › supplier proposes own controlled classification and DIDAR reviews it through Persian UI",
+      "file": "facets.spec.ts",
+      "line": 155
+    },
+    {
+      "id": "b33b7460a4482db15dec-cb2776ae9bd5d118cf39",
+      "title": "facets.spec.ts › DIDAR vocabulary drafts/reviews, retirement, timed merchandising and curated pages use persisted Persian controls",
+      "file": "facets.spec.ts",
+      "line": 266
+    },
+    {
+      "id": "1d1b0b311adfe43979fc-14201987cda07dbb2cca",
+      "title": "finance.spec.ts › Gate 1 Persian finance: admin contract request/review and supplier isolation",
+      "file": "finance.spec.ts",
+      "line": 2
+    },
+    {
+      "id": "8ff29d127af359edcf9f-f428724e20b569f01e5b",
+      "title": "issue18-acceptance.spec.ts › I18 independent native Admin mandate form, managed agency checkout/invoice, and original merchant Vendor read",
+      "file": "issue18-acceptance.spec.ts",
+      "line": 67
+    },
+    {
+      "id": "e44ece3a17d76ce6cc3a-97dfa43e7a4d32902a69",
+      "title": "issue18-ui-races.spec.ts › I18 independent real Vendor CMS keeps pending operations disabled and previews the saved current version",
+      "file": "issue18-ui-races.spec.ts",
+      "line": 71
+    },
+    {
+      "id": "e44ece3a17d76ce6cc3a-9325fa156a5853dc4e27",
+      "title": "issue18-ui-races.spec.ts › I18 independent native Admin sharing ignores a late real response from the previously selected merchant",
+      "file": "issue18-ui-races.spec.ts",
+      "line": 152
+    },
+    {
+      "id": "170e8a9d719db4caeb1d-42173f66ef0b913cc1b5",
+      "title": "marketplace.spec.ts › RTL catalog, supplier comparison, login, checkout and payment",
+      "file": "marketplace.spec.ts",
+      "line": 2
+    },
+    {
+      "id": "170e8a9d719db4caeb1d-13d44b41977d2c25db26",
+      "title": "marketplace.spec.ts › supplier interface displays only owned stock",
+      "file": "marketplace.spec.ts",
+      "line": 54
+    },
+    {
+      "id": "170e8a9d719db4caeb1d-65f96ec20e9b76b80cfa",
+      "title": "marketplace.spec.ts › admin interface manages gold rate and catalog",
+      "file": "marketplace.spec.ts",
+      "line": 76
+    },
+    {
+      "id": "170e8a9d719db4caeb1d-d66f3db78693012fb34d",
+      "title": "marketplace.spec.ts › mobile RTL catalog and product detail fit the viewport",
+      "file": "marketplace.spec.ts",
+      "line": 100
+    },
+    {
+      "id": "1e05e7f49dfc48407ec3-88714d330f2e167b3ab0",
+      "title": "merchant-pricing.spec.ts › Persian admin creates and approves tax/profile versions, assigns two merchant types and customer pays the exact merchant-specific cash prices",
+      "file": "merchant-pricing.spec.ts",
+      "line": 49
+    },
+    {
+      "id": "1e05e7f49dfc48407ec3-bdb8b5053c9ba5a72a96",
+      "title": "merchant-pricing.spec.ts › merchant sees only own terms; customer switches cash/credit rules and freezes the selected method in checkout",
+      "file": "merchant-pricing.spec.ts",
+      "line": 331
+    },
+    {
+      "id": "673657d7171fdaacc542-a2cfcbff35486fb3c2d2",
+      "title": "native-panels.spec.ts › real native Admin and Vendor shells navigate connected Didar products, pricing, UID, CMS and storefront; customer remains B2C",
+      "file": "native-panels.spec.ts",
+      "line": 32
+    },
+    {
+      "id": "673657d7171fdaacc542-af1d5f5a2fee0623eeea",
+      "title": "native-panels.spec.ts › native Admin publishes a classified master, prints real permanent UID labels and the customer resolves the current PDP",
+      "file": "native-panels.spec.ts",
+      "line": 262
+    },
+    {
+      "id": "673657d7171fdaacc542-27c81a291bb139397b52",
+      "title": "native-panels.spec.ts › native staff and global editor see only authorized sidebar routes and persist scoped CMS drafts without becoming administrators",
+      "file": "native-panels.spec.ts",
+      "line": 407
+    },
+    {
+      "id": "673657d7171fdaacc542-08ac5dba38744f4f564e",
+      "title": "native-panels.spec.ts › protected legacy deep links resume through actual native login and seller selection without exposing credentials",
+      "file": "native-panels.spec.ts",
+      "line": 506
+    },
+    {
+      "id": "75d17761244ddea863e6-25035085a950ae96c8cf",
+      "title": "native-policy.spec.ts › C01/C06/C07 real native Admin managed launch without Vendor login, Customer purchase, and suspended Vendor history",
+      "file": "native-policy.spec.ts",
+      "line": 56
+    },
+    {
+      "id": "d37935d7cf8d3286e6bd-7dfaceefa0a325732e39",
+      "title": "onboarding-media.spec.ts › Persian assisted wizard registers a merchant, proposes one shared master, processes a large camera file, approves real WebP media and preserves private store access",
+      "file": "onboarding-media.spec.ts",
+      "line": 38
+    },
+    {
+      "id": "c84f0f239c9e4e8ada82-521ad9900fd8d1a0ff39",
+      "title": "operational.spec.ts › admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered",
+      "file": "operational.spec.ts",
+      "line": 74
+    },
+    {
+      "id": "c331d53f43701d168858-676a14984a8a264871e6",
+      "title": "phase1.spec.ts › admin UI creates supplier/product, weighs and tags units, posts stock; supplier read-only; real UID sale and RFID variance",
+      "file": "phase1.spec.ts",
+      "line": 43
+    },
+    {
+      "id": "7904866dc04383c9f260-22f831decd28966cbbcf",
+      "title": "pre-rollout-cms.spec.ts › native CMS publishes eleven live blocks, schedules immutable versions, rolls back, and degrades safely on desktop/mobile",
+      "file": "pre-rollout-cms.spec.ts",
+      "line": 139
+    },
+    {
+      "id": "fa8610ca4b4f3785ac1e-3875f9b93b1b847073f1",
+      "title": "proxy.spec.ts › storefront proxy rejects oversized chunked JSON before forwarding to the API",
+      "file": "proxy.spec.ts",
+      "line": 4
+    },
+    {
+      "id": "fa8610ca4b4f3785ac1e-b1287b644ab83c4ae851",
+      "title": "proxy.spec.ts › an interrupted customer session bootstrap preserves the credential and a real retry restores the account",
+      "file": "proxy.spec.ts",
+      "line": 31
+    },
+    {
+      "id": "972707a4d1c1162f8b74-343a9fd3a2daccb0ca01",
+      "title": "storefront.spec.ts › Merchant A entry survives central registration, PDP, quote and sandbox purchase; Merchant B stays inaccessible",
+      "file": "storefront.spec.ts",
+      "line": 28
+    },
+    {
+      "id": "61a20175b285e7456722-6df6ad6ab737363b5ed3",
+      "title": "tahesab.spec.ts › Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempotent, vendor mapping remains blocked",
+      "file": "tahesab.spec.ts",
+      "line": 2
+    },
+    {
+      "id": "355d1b128a2eebe4842c-3a789984e2b08d0124d8",
+      "title": "taxonomy-labels.spec.ts › Persian draft publication, optional-RFID bulk labels, print sizing, canonical breadcrumbs and QR continuity",
+      "file": "taxonomy-labels.spec.ts",
+      "line": 16
+    },
+    {
+      "id": "0167656417a858b4daed-d56ee616461e2e084803",
+      "title": "treasury.spec.ts › Gate 2 treasury UI records and approves a synthetic purchase through real APIs",
+      "file": "treasury.spec.ts",
+      "line": 2
+    },
+    {
+      "id": "27e87c8ff6887d69f80e-ae01efed4dd21c53c8c4",
+      "title": "wallet.spec.ts › Gate 3 Persian wallet UI funds/releases synthetic money and customer reserves without admin funding privileges",
+      "file": "wallet.spec.ts",
+      "line": 11
+    }
+  ]
+}

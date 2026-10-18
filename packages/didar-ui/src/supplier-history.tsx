@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDidar } from "./store";
+import { Link, useDidar } from "./store";
 export function SupplierHistory() {
   const { api } = useDidar();
   const [data, setData] = useState<any>(null);
@@ -42,7 +42,15 @@ export function SupplierHistory() {
             <tbody>
               {data.orders.map((o: any) => (
                 <tr key={o.line_id}>
-                  <td>{o.id}</td>
+                  <td>
+                    <Link
+                      href={
+                        "/manage/invoices?order_id=" + encodeURIComponent(o.id)
+                      }
+                    >
+                      {o.id} · اسناد مجاز
+                    </Link>
+                  </td>
                   <td>{o.title}</td>
                   <td>{o.items?.map((i: any) => i.uid).join("، ") || "—"}</td>
                   <td>{o.fulfillment_status}</td>

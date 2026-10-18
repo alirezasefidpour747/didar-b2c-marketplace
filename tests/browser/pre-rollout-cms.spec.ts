@@ -358,7 +358,24 @@ test("native CMS publishes eleven live blocks, schedules immutable versions, rol
   });
   await page.unroute("**/admin/didar/image?**");
   await page.getByRole("button", { name: "تأیید نسخه", exact: true }).click();
-  await page.getByRole("button", { name: "انتشار صفحه", exact: true }).click();
+  // A click dispatches the asynchronous publication. Observe its real committed
+  // response before asserting the public read, which may legitimately be 404
+  // while the first publication is still pending.
+  const [publication] = await Promise.all([
+    page.waitForResponse((response) => {
+      const request = response.request();
+      if (
+        new URL(response.url()).pathname !== "/admin/didar/pages" ||
+        request.method() !== "POST"
+      )
+        return false;
+      const body = request.postDataJSON();
+      return body.operation === "publish" && body.version_id === first;
+    }),
+    page.getByRole("button", { name: "انتشار صفحه", exact: true }).click(),
+  ]);
+  expect(publication.status()).toBe(200);
+  expect(await publication.finished()).toBe(null);
   await expect
     .poll(async () => (await http("/didar/pages?kind=DIDAR_HOME")).version.id)
     .toBe(first);

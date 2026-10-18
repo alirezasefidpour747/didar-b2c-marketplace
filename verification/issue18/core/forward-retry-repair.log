@@ -1,0 +1,16 @@
+Couldn't find tsconfig.json. tsconfig-paths will be skipped
+{"level":"info","message":"Executing script at /workspace/work/didar-issue18-core-rt2WIr/worker.js...","timestamp":"2026-10-17 17:16:53"}
+{"level":"info","message":"No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.","timestamp":"2026-10-17 17:16:53"}
+{"level":"info","message":"No link to load from /workspace/work/didar-issue18-core-rt2WIr/api/src/links. skipped.","timestamp":"2026-10-17 17:16:53"}
+{"level":"warn","message":"Local Event Bus installed. This is not recommended for production.","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"Locking module: Using \"in-memory\" as default.","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"No workflow to load from /workspace/work/didar-issue18-core-rt2WIr/api/src/workflows. skipped.","timestamp":"2026-10-17 17:16:54"}
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+{"level":"info","message":"No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"Admin URL → http://localhost:9000/dashboard","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"Vendor URL → http://localhost:9000/seller","timestamp":"2026-10-17 17:16:54"}
+{"level":"info","message":"Processing product.updated which has 1 subscribers","timestamp":"2026-10-17 17:16:54"}
+G4_WORKER_COMPLETE normal
+{"level":"info","message":"Finished executing script.","timestamp":"2026-10-17 17:16:54"}

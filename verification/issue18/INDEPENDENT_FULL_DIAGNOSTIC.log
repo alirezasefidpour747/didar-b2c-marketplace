@@ -1,0 +1,1122 @@
+INDEPENDENT_COPIED_PRODUCTION_RECEIPT {"platform":"linux","arch":"x64","node":"24.19.0","source":"5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc","outputs":"63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"}
+INDEPENDENT_SCOPE FULL original + all new backend suites, all browser scenarios, native HTTP Jest;23 tooling checks separately; shared runtime untouched
+Disposable local QA database/services created. Persistent UAT volumes and configuration are not used.
+$ bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    Running migrations...
+info:    Creating migrations table 'mikro_orm_migrations'...
+info:    Migrations table created successfully
+info:    
+info:    
+info:    MODULE: admin_ui
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: codegen
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: commission
+info:      ● Migrating Migration20260130132817
+info:      ✔ Migrated Migration20260130132817
+info:      ● Migrating Migration20260615120000
+info:      ✔ Migrated Migration20260615120000
+info:      ● Migrating Migration20260910000000
+info:      ✔ Migrated Migration20260910000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: custom_fields
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: media
+info:      ● Migrating Migration20260616000000
+info:      ✔ Migrated Migration20260616000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: offer
+info:      ● Migrating Migration20260520104835
+info:      ✔ Migrated Migration20260520104835
+info:      ● Migrating Migration20260526000000
+info:      ✔ Migrated Migration20260526000000
+info:      ● Migrating Migration20260622000000
+info:      ✔ Migrated Migration20260622000000
+info:      ● Migrating Migration20260804000000
+info:      ✔ Migrated Migration20260804000000
+info:      ● Migrating Migration20260908000000
+info:      ✔ Migrated Migration20260908000000
+info:      ● Migrating Migration20261007000000
+info:      ✔ Migrated Migration20261007000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: payout
+info:      ● Migrating Migration20260130132816
+info:      ✔ Migrated Migration20260130132816
+info:      ● Migrating Migration20260216152209
+info:      ✔ Migrated Migration20260216152209
+info:      ● Migrating Migration20260317000000
+info:      ✔ Migrated Migration20260317000000
+info:      ● Migrating Migration20260323170925
+info:      ✔ Migrated Migration20260323170925
+info:      ● Migrating Migration20260928120000
+info:      ✔ Migrated Migration20260928120000
+info:      ● Migrating Migration20261006120000
+info:      ✔ Migrated Migration20261006120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product_attribute
+info:      ● Migrating Migration20260601000000
+info:      ✔ Migrated Migration20260601000000
+info:      ● Migrating Migration20260601000001
+info:      ✔ Migrated Migration20260601000001
+info:      ● Migrating Migration20260601000002
+info:      ✔ Migrated Migration20260601000002
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product_edit
+info:      ● Migrating Migration20260601130000
+info:      ✔ Migrated Migration20260601130000
+info:      ● Migrating Migration20260828120000
+info:      ✔ Migrated Migration20260828120000
+info:      ● Migrating Migration20260901120000
+info:      ✔ Migrated Migration20260901120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: promotion_cost
+info:      ● Migrating Migration20260722120000
+info:      ✔ Migrated Migration20260722120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: review
+info:      ● Migrating Migration20260729120000
+info:      ✔ Migrated Migration20260729120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: seller
+info:      ● Migrating Migration20260324104737
+info:      ✔ Migrated Migration20260324104737
+info:      ● Migrating Migration20260330093053
+info:      ✔ Migrated Migration20260330093053
+info:      ● Migrating Migration20260331113435
+info:      ✔ Migrated Migration20260331113435
+info:      ● Migrating Migration20260401093720
+info:      ✔ Migrated Migration20260401093720
+info:      ● Migrating Migration20260410120000
+info:      ✔ Migrated Migration20260410120000
+info:      ● Migrating Migration20260414123048
+info:      ✔ Migrated Migration20260414123048
+info:      ● Migrating Migration20260421102419
+info:      ✔ Migrated Migration20260421102419
+info:      ● Migrating Migration20260422130000
+info:      ✔ Migrated Migration20260422130000
+info:      ● Migrating Migration20260422140000
+info:      ✔ Migrated Migration20260422140000
+info:      ● Migrating Migration20260427100000
+info:      ✔ Migrated Migration20260427100000
+info:      ● Migrating Migration20260616120000
+info:      ✔ Migrated Migration20260616120000
+info:      ● Migrating Migration20260908010000
+info:      ✔ Migrated Migration20260908010000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: vendor_ui
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: stock_location
+info:      ● Migrating Migration20240307161216
+info:      ✔ Migrated Migration20240307161216
+info:      ● Migrating Migration20241210073813
+info:      ✔ Migrated Migration20241210073813
+info:      ● Migrating Migration20250106142624
+info:      ✔ Migrated Migration20250106142624
+info:      ● Migrating Migration20250120110820
+info:      ✔ Migrated Migration20250120110820
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: inventory
+info:      ● Migrating Migration20240307132720
+info:      ✔ Migrated Migration20240307132720
+info:      ● Migrating Migration20240719123015
+info:      ✔ Migrated Migration20240719123015
+info:      ● Migrating Migration20241213063611
+info:      ✔ Migrated Migration20241213063611
+info:      ● Migrating Migration20251010131115
+info:      ✔ Migrated Migration20251010131115
+info:      ● Migrating Migration20260815185216
+info:      ✔ Migrated Migration20260815185216
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: product
+info:      ● Migrating InitialSetup20240401153642
+info:      ✔ Migrated InitialSetup20240401153642
+info:      ● Migrating Migration20240601111544
+info:      ✔ Migrated Migration20240601111544
+info:      ● Migrating Migration202408271511
+info:      ✔ Migrated Migration202408271511
+info:      ● Migrating Migration20241122120331
+info:      ✔ Migrated Migration20241122120331
+info:      ● Migrating Migration20241125090957
+info:      ✔ Migrated Migration20241125090957
+info:      ● Migrating Migration20250411073236
+info:      ✔ Migrated Migration20250411073236
+info:      ● Migrating Migration20250516081326
+info:      ✔ Migrated Migration20250516081326
+info:      ● Migrating Migration20250910154539
+info:      ✔ Migrated Migration20250910154539
+info:      ● Migrating Migration20250911092221
+info:      ✔ Migrated Migration20250911092221
+info:      ● Migrating Migration20250929204438
+info:      ✔ Migrated Migration20250929204438
+info:      ● Migrating Migration20251008132218
+info:      ✔ Migrated Migration20251008132218
+info:      ● Migrating Migration20251011090511
+info:      ✔ Migrated Migration20251011090511
+info:      ● Migrating Migration20251022153442
+info:      ✔ Migrated Migration20251022153442
+info:      ● Migrating Migration20251029150809
+info:      ✔ Migrated Migration20251029150809
+info:      ● Migrating Migration20251110180907
+info:      ✔ Migrated Migration20251110180907
+info:      ● Migrating Migration20251113183352
+info:      ✔ Migrated Migration20251113183352
+info:      ● Migrating Migration20260224120000
+info:      ✔ Migrated Migration20260224120000
+info:      ● Migrating Migration20260301002050
+info:      ✔ Migrated Migration20260301002050
+info:      ● Migrating Migration20260306120000
+info:      ✔ Migrated Migration20260306120000
+info:      ● Migrating Migration20260623180000
+info:      ✔ Migrated Migration20260623180000
+info:      ● Migrating Migration20260730104846
+info:      ✔ Migrated Migration20260730104846
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: pricing
+info:      ● Migrating Migration20230929122253
+info:      ✔ Migrated Migration20230929122253
+info:      ● Migrating Migration20240322094407
+info:      ✔ Migrated Migration20240322094407
+info:      ● Migrating Migration20240322113359
+info:      ✔ Migrated Migration20240322113359
+info:      ● Migrating Migration20240322120125
+info:      ✔ Migrated Migration20240322120125
+info:      ● Migrating Migration20240626133555
+info:      ✔ Migrated Migration20240626133555
+info:      ● Migrating Migration20240704094505
+info:      ✔ Migrated Migration20240704094505
+info:      ● Migrating Migration20241127114534
+info:      ✔ Migrated Migration20241127114534
+info:      ● Migrating Migration20241127223829
+info:      ✔ Migrated Migration20241127223829
+info:      ● Migrating Migration20241128055359
+info:      ✔ Migrated Migration20241128055359
+info:      ● Migrating Migration20241212190401
+info:      ✔ Migrated Migration20241212190401
+info:      ● Migrating Migration20250408145122
+info:      ✔ Migrated Migration20250408145122
+info:      ● Migrating Migration20250409122219
+info:      ✔ Migrated Migration20250409122219
+info:      ● Migrating Migration20251009110625
+info:      ✔ Migrated Migration20251009110625
+info:      ● Migrating Migration20251112192723
+info:      ✔ Migrated Migration20251112192723
+info:      ● Migrating Migration20260429163502
+info:      ✔ Migrated Migration20260429163502
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: promotion
+info:      ● Migrating Migration20240227120221
+info:      ✔ Migrated Migration20240227120221
+info:      ● Migrating Migration20240617102917
+info:      ✔ Migrated Migration20240617102917
+info:      ● Migrating Migration20240624153824
+info:      ✔ Migrated Migration20240624153824
+info:      ● Migrating Migration20241211061114
+info:      ✔ Migrated Migration20241211061114
+info:      ● Migrating Migration20250113094144
+info:      ✔ Migrated Migration20250113094144
+info:      ● Migrating Migration20250120110700
+info:      ✔ Migrated Migration20250120110700
+info:      ● Migrating Migration20250226130616
+info:      ✔ Migrated Migration20250226130616
+info:      ● Migrating Migration20250508081510
+info:      ✔ Migrated Migration20250508081510
+info:      ● Migrating Migration20250828075407
+info:      ✔ Migrated Migration20250828075407
+info:      ● Migrating Migration20250909083125
+info:      ✔ Migrated Migration20250909083125
+info:      ● Migrating Migration20250916120552
+info:      ✔ Migrated Migration20250916120552
+info:      ● Migrating Migration20250917143818
+info:      ✔ Migrated Migration20250917143818
+info:      ● Migrating Migration20250919122137
+info:      ✔ Migrated Migration20250919122137
+info:      ● Migrating Migration20251006000000
+info:      ✔ Migrated Migration20251006000000
+info:      ● Migrating Migration20251015113934
+info:      ✔ Migrated Migration20251015113934
+info:      ● Migrating Migration20251107050148
+info:      ✔ Migrated Migration20251107050148
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: customer
+info:      ● Migrating Migration20240124154000
+info:      ✔ Migrated Migration20240124154000
+info:      ● Migrating Migration20240524123112
+info:      ✔ Migrated Migration20240524123112
+info:      ● Migrating Migration20240602110946
+info:      ✔ Migrated Migration20240602110946
+info:      ● Migrating Migration20241211074630
+info:      ✔ Migrated Migration20241211074630
+info:      ● Migrating Migration20251010130829
+info:      ✔ Migrated Migration20251010130829
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: sales_channel
+info:      ● Migrating Migration20240115152146
+info:      ✔ Migrated Migration20240115152146
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: cart
+info:      ● Migrating Migration20240222170223
+info:      ✔ Migrated Migration20240222170223
+info:      ● Migrating Migration20240831125857
+info:      ✔ Migrated Migration20240831125857
+info:      ● Migrating Migration20241106085918
+info:      ✔ Migrated Migration20241106085918
+info:      ● Migrating Migration20241205095237
+info:      ✔ Migrated Migration20241205095237
+info:      ● Migrating Migration20241216183049
+info:      ✔ Migrated Migration20241216183049
+info:      ● Migrating Migration20241218091938
+info:      ✔ Migrated Migration20241218091938
+info:      ● Migrating Migration20250120115059
+info:      ✔ Migrated Migration20250120115059
+info:      ● Migrating Migration20250212131240
+info:      ✔ Migrated Migration20250212131240
+info:      ● Migrating Migration20250326151602
+info:      ✔ Migrated Migration20250326151602
+info:      ● Migrating Migration20250508081553
+info:      ✔ Migrated Migration20250508081553
+info:      ● Migrating Migration20251017153909
+info:      ✔ Migrated Migration20251017153909
+info:      ● Migrating Migration20251208130704
+info:      ✔ Migrated Migration20251208130704
+info:      ● Migrating Migration20260626000000
+info:      ✔ Migrated Migration20260626000000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: region
+info:      ● Migrating Migration20240205173216
+info:      ✔ Migrated Migration20240205173216
+info:      ● Migrating Migration20240624200006
+info:      ✔ Migrated Migration20240624200006
+info:      ● Migrating Migration20250120110744
+info:      ✔ Migrated Migration20250120110744
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: api_key
+info:      ● Migrating InitialSetup20240221144943
+info:      ✔ Migrated InitialSetup20240221144943
+info:      ● Migrating Migration20240604080145
+info:      ✔ Migrated Migration20240604080145
+info:      ● Migrating Migration20241205122700
+info:      ✔ Migrated Migration20241205122700
+info:      ● Migrating Migration20251015123842
+info:      ✔ Migrated Migration20251015123842
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: store
+info:      ● Migrating InitialSetup20240227075933
+info:      ✔ Migrated InitialSetup20240227075933
+info:      ● Migrating Migration20240621145944
+info:      ✔ Migrated Migration20240621145944
+info:      ● Migrating Migration20241206083313
+info:      ✔ Migrated Migration20241206083313
+info:      ● Migrating Migration20251202184737
+info:      ✔ Migrated Migration20251202184737
+info:      ● Migrating Migration20251212161429
+info:      ✔ Migrated Migration20251212161429
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: tax
+info:      ● Migrating Migration20240227090331
+info:      ✔ Migrated Migration20240227090331
+info:      ● Migrating Migration20240710135844
+info:      ✔ Migrated Migration20240710135844
+info:      ● Migrating Migration20240924114005
+info:      ✔ Migrated Migration20240924114005
+info:      ● Migrating Migration20241212052837
+info:      ✔ Migrated Migration20241212052837
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: currency
+info:      ● Migrating InitialSetup20240228133303
+info:      ✔ Migrated InitialSetup20240228133303
+info:      ● Migrating Migration20240624082354
+info:      ✔ Migrated Migration20240624082354
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: payment
+info:      ● Migrating Migration20240225134525
+info:      ✔ Migrated Migration20240225134525
+info:      ● Migrating Migration20240806072619
+info:      ✔ Migrated Migration20240806072619
+info:      ● Migrating Migration20241211151053
+info:      ✔ Migrated Migration20241211151053
+info:      ● Migrating Migration20250115160517
+info:      ✔ Migrated Migration20250115160517
+info:      ● Migrating Migration20250120110552
+info:      ✔ Migrated Migration20250120110552
+info:      ● Migrating Migration20250123122334
+info:      ✔ Migrated Migration20250123122334
+info:      ● Migrating Migration20250206105639
+info:      ✔ Migrated Migration20250206105639
+info:      ● Migrating Migration20250207132723
+info:      ✔ Migrated Migration20250207132723
+info:      ● Migrating Migration20250625084134
+info:      ✔ Migrated Migration20250625084134
+info:      ● Migrating Migration20250924135437
+info:      ✔ Migrated Migration20250924135437
+info:      ● Migrating Migration20250929124701
+info:      ✔ Migrated Migration20250929124701
+info:      ● Migrating Migration20260411223700
+info:      ✔ Migrated Migration20260411223700
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: order
+info:      ● Migrating Migration20240219102530
+info:      ✔ Migrated Migration20240219102530
+info:      ● Migrating Migration20240604100512
+info:      ✔ Migrated Migration20240604100512
+info:      ● Migrating Migration20240715102100
+info:      ✔ Migrated Migration20240715102100
+info:      ● Migrating Migration20240715174100
+info:      ✔ Migrated Migration20240715174100
+info:      ● Migrating Migration20240716081800
+info:      ✔ Migrated Migration20240716081800
+info:      ● Migrating Migration20240801085921
+info:      ✔ Migrated Migration20240801085921
+info:      ● Migrating Migration20240821164505
+info:      ✔ Migrated Migration20240821164505
+info:      ● Migrating Migration20240821170920
+info:      ✔ Migrated Migration20240821170920
+info:      ● Migrating Migration20240827133639
+info:      ✔ Migrated Migration20240827133639
+info:      ● Migrating Migration20240902195921
+info:      ✔ Migrated Migration20240902195921
+info:      ● Migrating Migration20240913092514
+info:      ✔ Migrated Migration20240913092514
+info:      ● Migrating Migration20240930122627
+info:      ✔ Migrated Migration20240930122627
+info:      ● Migrating Migration20241014142943
+info:      ✔ Migrated Migration20241014142943
+info:      ● Migrating Migration20241106085223
+info:      ✔ Migrated Migration20241106085223
+info:      ● Migrating Migration20241129124827
+info:      ✔ Migrated Migration20241129124827
+info:      ● Migrating Migration20241217162224
+info:      ✔ Migrated Migration20241217162224
+info:      ● Migrating Migration20250326151554
+info:      ✔ Migrated Migration20250326151554
+info:      ● Migrating Migration20250522181137
+info:      ✔ Migrated Migration20250522181137
+info:      ● Migrating Migration20250702095353
+info:      ✔ Migrated Migration20250702095353
+info:      ● Migrating Migration20250704120229
+info:      ✔ Migrated Migration20250704120229
+info:      ● Migrating Migration20250910130000
+info:      ✔ Migrated Migration20250910130000
+info:      ● Migrating Migration20251016160403
+info:      ✔ Migrated Migration20251016160403
+info:      ● Migrating Migration20251016182939
+info:      ✔ Migrated Migration20251016182939
+info:      ● Migrating Migration20251017155709
+info:      ✔ Migrated Migration20251017155709
+info:      ● Migrating Migration20251114100559
+info:      ✔ Migrated Migration20251114100559
+info:      ● Migrating Migration20251125164002
+info:      ✔ Migrated Migration20251125164002
+info:      ● Migrating Migration20251210112909
+info:      ✔ Migrated Migration20251210112909
+info:      ● Migrating Migration20251210112924
+info:      ✔ Migrated Migration20251210112924
+info:      ● Migrating Migration20251225120947
+info:      ✔ Migrated Migration20251225120947
+info:      ● Migrating Migration20260106185528
+info:      ✔ Migrated Migration20260106185528
+info:      ● Migrating Migration20260625000000
+info:      ✔ Migrated Migration20260625000000
+info:      ● Migrating Migration20260729154253
+info:      ✔ Migrated Migration20260729154253
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: settings
+info:      ● Migrating Migration20250717162007
+info:      ✔ Migrated Migration20250717162007
+info:      ● Migrating Migration20260127081758
+info:      ✔ Migrated Migration20260127081758
+info:      ● Migrating Migration20260615151246
+info:      ✔ Migrated Migration20260615151246
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: auth
+info:      ● Migrating Migration20240205025928
+info:      ✔ Migrated Migration20240205025928
+info:      ● Migrating Migration20240529080336
+info:      ✔ Migrated Migration20240529080336
+info:      ● Migrating Migration20241202100304
+info:      ✔ Migrated Migration20241202100304
+info:      ● Migrating Migration20260514083900
+info:      ✔ Migrated Migration20260514083900
+info:      ● Migrating Migration20260525090000
+info:      ✔ Migrated Migration20260525090000
+info:      ● Migrating Migration20260604120000
+info:      ✔ Migrated Migration20260604120000
+info:      ● Migrating Migration20260616075929
+info:      ✔ Migrated Migration20260616075929
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: auth
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: auth
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: user
+info:      ● Migrating Migration20240214033943
+info:      ✔ Migrated Migration20240214033943
+info:      ● Migrating Migration20240703095850
+Note: If the index "IDX_user_email" fails to create, then delete any existing users with duplicate emails before retrying the migration.
+info:      ✔ Migrated Migration20240703095850
+info:      ● Migrating Migration20241202103352
+info:      ✔ Migrated Migration20241202103352
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: fulfillment
+info:      ● Migrating Migration20240311145700_InitialSetupMigration
+info:      ✔ Migrated Migration20240311145700_InitialSetupMigration
+info:      ● Migrating Migration20240821170957
+info:      ✔ Migrated Migration20240821170957
+info:      ● Migrating Migration20240917161003
+info:      ✔ Migrated Migration20240917161003
+info:      ● Migrating Migration20241217110416
+info:      ✔ Migrated Migration20241217110416
+info:      ● Migrating Migration20250113122235
+info:      ✔ Migrated Migration20250113122235
+info:      ● Migrating Migration20250120115002
+info:      ✔ Migrated Migration20250120115002
+info:      ● Migrating Migration20250822130931
+info:      ✔ Migrated Migration20250822130931
+info:      ● Migrating Migration20250825132614
+info:      ✔ Migrated Migration20250825132614
+info:      ● Migrating Migration20251114133146
+info:      ✔ Migrated Migration20251114133146
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: fulfillment
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: fulfillment
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: notification
+info:      ● Migrating Migration20240509083918_InitialSetupMigration
+info:      ✔ Migrated Migration20240509083918_InitialSetupMigration
+info:      ● Migrating Migration20240628075401
+info:      ✔ Migrated Migration20240628075401
+info:      ● Migrating Migration20240830094712
+info:      ✔ Migrated Migration20240830094712
+info:      ● Migrating Migration20250120110514
+info:      ✔ Migrated Migration20250120110514
+info:      ● Migrating Migration20251028172715
+info:      ✔ Migrated Migration20251028172715
+info:      ● Migrating Migration20251121123942
+info:      ✔ Migrated Migration20251121123942
+info:      ● Migrating Migration20251121150408
+info:      ✔ Migrated Migration20251121150408
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: notification
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: notification
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: search
+info:      ● Migrating Migration20260805085626
+info:      ✔ Migrated Migration20260805085626
+info:      ● Migrating Migration20260903085616
+info:      ✔ Migrated Migration20260903085616
+info:      ● Migrating Migration20260911115931
+info:      ✔ Migrated Migration20260911115931
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: search
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: search
+info:      ● Migrating Migration20260807120000
+info:      ✔ Migrated Migration20260807120000
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: cache
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: event_bus
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: workflows
+info:      ● Migrating Migration20231228143900
+info:      ✔ Migrated Migration20231228143900
+info:      ● Migrating Migration20241206101446
+info:      ✔ Migrated Migration20241206101446
+info:      ● Migrating Migration20250128174331
+info:      ✔ Migrated Migration20250128174331
+info:      ● Migrating Migration20250505092459
+info:      ✔ Migrated Migration20250505092459
+info:      ● Migrating Migration20250819104213
+info:      ✔ Migrated Migration20250819104213
+info:      ● Migrating Migration20250819110924
+info:      ✔ Migrated Migration20250819110924
+info:      ● Migrating Migration20250908080305
+info:      ✔ Migrated Migration20250908080305
+info:    Completed successfully
+info:    
+info:    
+info:    MODULE: locking
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: file
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    
+info:    MODULE: permissions
+info:    Skipped. Database is up-to-date for module.
+info:    
+info:    Migrations completed
+info:    
+info:    Syncing links...
+info:    ┌──────────────────────────────────────────────────────────────────────────────┐│                                                                              ││   Created following links tables                                             ││   - cart.cart <> payment.payment_collection (cart_payment_collection)        ││   - cart.cart <> promotion.promotions (cart_promotion)                       ││   - customer.customer <> payment.account_holder (customer_account_holder)    ││   - stock_location.location <> fulfillment.fulfillment_provider              ││   (location_fulfillment_provider)                                            ││   - stock_location.location <> fulfillment.fulfillment_set                   ││   (location_fulfillment_set)                                                 ││   - user.invite <> rbac.rbac_role (invite_rbac_role)                         ││   - order.order <> cart.cart (order_cart)                                    ││   - order.order <> fulfillment.fulfillments (order_fulfillment)              ││   - order.order <> payment.payment_collection (order_payment_collection)     ││   - order.order <> promotion.promotions (order_promotion)                    ││   - order.return <> fulfillment.fulfillments (return_fulfillment)            ││   - product.product <> sales_channel.sales_channel (product_sales_channel)   ││   - product.product <> fulfillment.shipping_profile                          ││   (product_shipping_profile)                                                 ││   - product.variant <> inventory.inventory                                   ││   (product_variant_inventory_item)                                           ││   - product.variant <> pricing.price_set (product_variant_price_set)         ││   - api_key.api_key <> sales_channel.sales_channel                           ││   (publishable_api_key_sales_channel)                                        ││   - region.region <> payment.payment_provider (region_payment_provider)      ││   - sales_channel.sales_channel <> stock_location.location                   ││   (sales_channel_stock_location)                                             ││   - fulfillment.shipping_option <> pricing.price_set                         ││   (shipping_option_price_set)                                                ││   - user.user <> rbac.rbac_role (user_rbac_role)                             ││   - promotion.campaign <> seller.seller (promotion_campaign_seller_seller)   ││   - cart.line_item <> offer.offer (cart_line_item_offer_offer)               ││   - product.product_category <> seller.seller                                ││   (product_product_category_seller_seller)                                   ││   - customer.customer <> review.review (customer_customer_review_review)     ││   - seller.seller <> fulfillment.fulfillment_set                             ││   (seller_seller_fulfillment_fulfillment_set)                                ││   - inventory.inventory_item <> seller.seller                                ││   (inventory_inventory_item_seller_seller)                                   ││   - product.product_category <> media.media_image                            ││   (product_product_category_media_media_image)                               ││   - product.product_collection <> media.media_image                          ││   (product_product_collection_media_media_image)                             ││   - offer.offer <> inventory.inventory_item (offer_inventory_item)           ││   - offer.offer <> pricing.price (offer_offer_pricing_price)                 ││   - seller.order_group <> order.order (order_group_order)                    ││   - order.order_line_item <> offer.offer                                     ││   (order_order_line_item_offer_offer)                                        ││   - order.order <> payout.payout (order_order_payout_payout)                 ││   - order.order <> review.review (order_order_review_review)                 ││   - order.order <> seller.seller (order_order_seller_seller)                 ││   - payout.payout <> seller.seller (payout_payout_seller_seller)             ││   - pricing.price_list <> seller.seller (pricing_price_list_seller_seller)   ││   - product_attribute.product_attribute <> product.categories                ││   (product_category_attribute)                                               ││   - product.product <> product_attribute.product_attribute_value             ││   (product_attribute_value_link)                                             ││   - product.product <> review.review (product_product_review_review)         ││   - product.product <> seller.seller (product_seller)                        ││   - promotion.promotion <> seller.seller                                     ││   (promotion_promotion_seller_seller)                                        ││   - customer.customer_group <> seller.seller                                 ││   (customer_customer_group_seller_seller)                                    ││   - seller.seller <> customer.customer (seller_seller_customer_customer)     ││   - seller.seller <> payout.payout_account                                   ││   (seller_seller_payout_payout_account)                                      ││   - seller.seller <> review.review (seller_seller_review_review)             ││   - seller.seller <> fulfillment.service_zone                                ││   (seller_seller_fulfillment_service_zone)                                   ││   - fulfillment.shipping_option <> seller.seller                             ││   (fulfillment_shipping_option_seller_seller)                                ││   - stock_location.stock_location <> seller.seller                           ││   (stock_location_stock_location_seller_seller)                              ││                                                                              │└──────────────────────────────────────────────────────────────────────────────┘
+info:    Links sync completed
+info:    
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    No custom fields configured. Skipping.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    Migrating search indexes...
+info:    Search indexes already up-to-date
+info:    
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+info:    No custom fields configured. Skipping.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    Creating migrations table 'script_migrations'...
+info:    Migrations table created successfully
+info:    
+info:    Pending migration scripts to execute
+info:    /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/create-super-admin-role.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+/workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+info:    
+info:    Running migration scripts...
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+info:    Starting migration to normalize currency codes...
+info:    Finished migration to normalize currency codes.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js completed (0.05s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+info:    Starting migration of product option link ids...
+info:    No ids to rewrite in product_product_option. Skipping.
+info:    No ids to rewrite in product_product_option_value. Skipping.
+info:    Finished migration of product option link ids.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js completed (0.01s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+info:    Assigning products to shipping profile
+info:    Products assigned to shipping profile
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js completed (0.02s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+info:    Assigning tax system provider to tax regions
+info:    System provider assigned to tax regions
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js completed (0.01s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+info:    Starting reconciliation of inventory_level.reserved_quantity against active reservation_item rows...
+info:    Finished reconciliation of inventory_level.reserved_quantity.
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js completed (0.01s)
+info:    Running migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+info:    Migration script /workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js completed (0.01s)
+info:    
+info:    Migration scripts completed
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+(node:243430) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Didar schema and shared gold catalog seeded (idempotent).
+info:    Finished executing script.
+info:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Didar additive migrations applied; existing catalog preserved, demo seed disabled.
+info:    Finished executing script.
+info:    Executing script at ./src/scripts/native-qa-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+info:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+warn:    Local Event Bus installed. This is not recommended for production.
+info:    Locking module: Using "in-memory" as default.
+info:    No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+info:    No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+info:    Admin URL → http://localhost:9000/dashboard
+info:    Vendor URL → http://localhost:9000/seller
+Native QA fixture identities created through native services/workflows; original Didar commerce unchanged.
+info:    Finished executing script.
+Reusing production build: source, complete output and platform receipt verified.
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [2.05ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.65ms]
+(pass) local tooling rejects staging environment [0.14ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.06ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.43ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.28ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.66ms]
+(pass) preflight refuses an occupied port without terminating its owner [3.35ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [60.84ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.19ms]
+(pass) failed child verification preserves the nonzero result [26.64ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.64ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.26ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.14ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [1.58ms]
+(pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [10.69ms]
+
+ 23 pass
+ 0 fail
+ 67 expect() calls
+Ran 23 tests across 1 file. [139.00ms]
+bun test v1.4.3 (c6da4a4d3)
+
+tests/pricing.test.ts:
+(pass) gold-first legacy making compatibility uses additive base margin and IRR tax [0.96ms]
+(pass) fractional gram uses integer upward rial rounding [0.06ms]
+(pass) tax excludes gold principal [0.10ms]
+(pass) invalid quantities and rates cannot enter arithmetic [0.28ms]
+(pass) percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts [0.05ms]
+(pass) default margin is configurable while an explicit zero margin stays zero [0.11ms]
+(pass) invalid commercial policy cannot silently influence customer totals [0.06ms]
+
+tests/inventory.test.ts:
+(pass) exact grouped stock permits the last piece but never an oversell [0.04ms]
+(pass) fractional, unsafe and invalid stock requests cannot be reserved [0.20ms]
+(pass) only pending reservations expire, including the exact expiry boundary [0.19ms]
+
+tests/security.test.ts:
+(pass) public demo identities require explicit local runtime, independent of build mode [0.06ms]
+(pass) payment selection fails closed for production, missing environment and live modes [0.22ms]
+(pass) live Iranian gateway boundary never initiates an unconfigured charge [0.12ms]
+(pass) sandbox authority has no money movement and rejects invalid money [0.23ms]
+(pass) password verification handles corrupt records without crashing and uses unique salted hashes [133.41ms]
+
+tests/commerce.test.ts:
+(pass) anonymous and customer users cannot change stock or rate [19.77ms]
+(pass) supplier cannot update or read another supplier inventory [54.03ms]
+(pass) supplier creates exact-weight offer only under own identity [26.83ms]
+(pass) stock reserve is idempotent and failed payment restores exactly once [41.50ms]
+(pass) stale prices, fractional quantities and duplicate lines rejected [16.96ms]
+(pass) two concurrent purchases cannot oversell and paid stock remains deducted [59.57ms]
+(pass) one checkout spans suppliers with isolated order views [55.54ms]
+(pass) expired reservation is released, cannot become paid [27.14ms]
+
+tests/upgraded-commerce.test.ts:
+(pass) supplier registration requires admin approval and cannot self-approve [143.44ms]
+(pass) admin category and product edits persist publication controls [448.76ms]
+(pass) subcategory hierarchy rejects cycles and collection membership is editable [264.92ms]
+(pass) product images require admin authorization and matching image bytes [134.66ms]
+(pass) supplier manages multiple weights, deactivates an offer, and cannot alter another supplier [140.28ms]
+(pass) supplier product requests remain pending until admin review [79.83ms]
+(pass) approved supplier product request becomes one shared native-linked product [187.45ms]
+(pass) stock edits during a reservation count available pieces and release exactly once [143.23ms]
+(pass) payment initialization and concurrent callbacks are idempotent and owner scoped [222.66ms]
+(pass) expired initialized payment releases stock and cannot confirm successfully [169.07ms]
+(pass) paid allocation progresses through valid fulfillment and protects customer privacy [196.59ms]
+(pass) product purity edits invalidate old offers without changing paid pricing snapshots [232.89ms]
+(pass) profile updates are private, validated and logout revokes the session [21.96ms]
+
+tests/phase1.test.ts:
+(pass) mandatory 100g Gold-First 12+3+7, IRR VAT and fixed equivalent making are additive [1.39ms]
+(pass) all eight supplier mutations default denied; grants revoke immediately; reads isolated [468.83ms]
+(pass) 19 separately measured items reconcile 5/135g, 2/127g, 12/117g; mismatch and unverified stock blocked [422.71ms]
+(pass) EPC normalization, global uniqueness, audited replacement and independent pairing grant [144.64ms]
+(pass) count snapshot deduplicates five EPCs and UID aliases, flags missing/unknown, never changes stock [114.00ms]
+(pass) failed, cancelled and expired payments release the identical UID exactly once [419.26ms]
+(pass) concurrent checkout reserves/sells one exact UID; immutable pricing and supplier fulfillment permission [269.84ms]
+(pass) physical return quarantines then restocks once; old callback never re-sells returned UID [173.25ms]
+(pass) physical identity and posted source are database protected, legacy stock remains unserialized [36.05ms]
+(pass) UID and active EPC uniqueness spans suppliers, with no competitor disclosure [65.51ms]
+(pass) expiry sweep releases item UID exactly once and stock correction is independently authorized/audited [360.99ms]
+(pass) explicit tolerance is versioned, admin-only, reason required, quantity exceptions still forbidden [92.20ms]
+(pass) equal-weight physical units share a derived offer and reserve/release an exact set for quantity two [244.09ms]
+(pass) voided physical UID remains permanent; authorized unpair releases its tag without recreating stock [60.98ms]
+(pass) supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it [55.58ms]
+
+tests/migrations.test.ts:
+(pass) clean and repeat additive migrations preserve legacy stock and paid snapshots without invented units [236.40ms]
+
+tests/finance.test.ts:
+(pass) Gate 1: contract-independent supplier entitlement uses exact fine gold, not customer margin/VAT [0.34ms]
+(pass) Gate 1: requests scoped, approval admin-only, future contracts not silently activated [78.99ms]
+(pass) Gate 1: intake creates no debt, verified payment is exactly once and checkout terms survive amendments [204.64ms]
+(pass) Gate 1: statements scoped and append-only; return-gated refund reverses without deleting history [70.30ms]
+(pass) Gate 1: effective rial contract and Didar-owned inventory never generate fictional external gold payable [395.09ms]
+(pass) Gate 1: additive migration replay preserves existing UID and price snapshots and creates no historical exposure [11.33ms]
+
+tests/finance-procurement.test.ts:
+(pass) Gate 2: paid requests, two purchases/multiple allocations, separate title/custody and partial mixed settlement [1221.29ms]
+(pass) Gate 2: concurrent over-allocation rejected, unexecuted facts reverse append-only and refunded request cannot be allocated [586.92ms]
+(pass) Gate 2: rial-only contracts remain actionable without a gold procurement request; migrations preserve facts [658.78ms]
+
+tests/finance-ledger.test.ts:
+(pass) Gate 3: payable-to-wallet is one liability; pending/available/reserved/pledged and concurrent spending are enforced [575.98ms]
+(pass) Gate 3: database rejects unbalanced journals, wallet overdraft, posting edits and replayed projections [513.78ms]
+(pass) Gate 3: documented Didar-owned jewelry cost, sale COGS and full refund reconcile without fictitious supplier debt [529.64ms]
+
+tests/finance-tahesab.test.ts:
+(pass) Gate 4 standalone local mock enforces its own envelope, retries idempotently and persists across restart [138.48ms]
+(pass) Gate 4: merchant aggregate ties to journal, separate event types, no buyer/UID/EPC; stable close and retry intent [638.78ms]
+(pass) Gate 4: strict versioned envelope, Jalali dates, spec blocker and replay-safe migrations [30.92ms]
+
+tests/finance-integrated.test.ts:
+(pass) Gate 5: one integrated 5/135g + 2/127g + 12/117g +100g UID/RFID sale, mixed finance, wallet, mock close and refund [1296.06ms]
+(pass) Gate 5: disposable PostgreSQL restart preserves all physical, historical and financial rows and reconnects the API [1139.63ms]
+
+tests/uat-prepare.test.ts:
+(pass) Gate 5 Mac UAT preparation creates an isolated exact 20-UID dataset and repeat keeps business records unchanged [1250.16ms]
+(pass) Gate 5 Persian integer formatting preserves IRR beyond JavaScript safe-number precision [2.28ms]
+
+tests/taxonomy-labels.test.ts:
+(pass) customer label origin requires explicit verification and rejects local, sandbox, credentials and unsafe URL origins [1.07ms]
+(pass) uncategorized drafts and photo uploads work; API and database deny incomplete publication [263.53ms]
+(pass) leaf and ancestor guards prevent taxonomy corruption and preserve a shared multi-offer master [251.63ms]
+(pass) supplier proposals cannot bypass publication and admin approval requires taxonomy [138.61ms]
+(pass) admin single and batch printing uses permanent UIDs with optional EPC, gates customer visibility and forbids all other roles [431.15ms]
+(pass) public QR and legacy bookmarks redirect to canonical path without disclosing private item fields [157.92ms]
+(pass) category and product slug rename and reclassification keep old PDP URLs and every printed QR continuous [114.05ms]
+(pass) sold UID resolves a public master but exact-item stock and immutable financial sale history remain authoritative [230.77ms]
+(pass) unpublished, inactive, unknown and draft UID paths fail safely; publication restoration preserves labels [272.60ms]
+(pass) repeat migration preserves exact UIDs, offers and immutable paid financial rows [27.82ms]
+(pass) deeper canonical hierarchy uses every ancestor and product identity cannot be rewritten [117.60ms]
+(pass) UID-only HID counts deduplicate the same untagged piece and never alter stock [36.18ms]
+(pass) long UID barcodes retain exact identity; draft/void pieces never resolve or generate a customer QR [121.98ms]
+(pass) rank, active ancestry and stable machine codes are enforced in API and PostgreSQL [101.28ms]
+
+tests/facets.test.ts:
+(pass) seeds all twelve independent dimensions once, no fabricated Arabic/French labels or product assignments [177.23ms]
+(pass) AND across dimensions, OR within a dimension, distinct products/counts and stable bounded pages [199.61ms]
+(pass) offer weight, purity, stock, authoritative price filters combine on the same offer before paging [149.78ms]
+(pass) strict filters reject unknown dimensions/codes, injection, malformed or unsafe pagination [35.88ms]
+(pass) server prevents competing market tiers even with concurrent owner approvals and rejects F11 product tags [34.63ms]
+(pass) subjective heritage/luxury and best seller require evidence; suppliers cannot self-approve or merchandise [33.29ms]
+(pass) supplier default-deny, own suggestions, DIDAR review, concurrency, cross supplier denial and immediate revocation [124.01ms]
+(pass) timed merchandising, retired values and hidden dimensions immediately disappear from public filters and PDP [166.56ms]
+(pass) extend existing collections with F11, owner approval, translated label and memberships without cloning products [108.22ms]
+(pass) curated discovery composes immutable page constraints with customer filters and the same master PDP [82.62ms]
+(pass) draft translations are validated, reviewed by DIDAR and never expose raw labels or activate storefront locales [159.37ms]
+(pass) migration replays preserve old collections, product identities, exact inventory and immutable financial snapshots [783.58ms]
+(pass) reviewed best-seller badge requires paid sales, while UID checkout and balanced accounting keep the same classified master [802.57ms]
+(pass) all ten product dimensions combine with public F11 and F12 without duplicating a master [128.43ms]
+
+tests/merchant-pricing.test.ts:
+(pass) one Gold-First engine reproduces manufacturer and retailer additive 750-base examples without legacy double margins [1.48ms]
+(pass) C application modes and explicit alternative/fixed calculation bases never compound other Didar additions [0.85ms]
+(pass) same public master has two authoritative merchant-specific prices and CASH always includes the approved C [82.55ms]
+(pass) profiled mixed UID checkout snapshots rates, conditions, versions and charges; supplier entitlement remains gold-first and journals balance [88.31ms]
+(pass) reassigning approved versions affects future quotes only, detects stale carts and preserves already accepted payment snapshots [116.30ms]
+(pass) effective assignment intervals, incompatible types, immutable versions and concurrent overlapping assignments are database enforced [46.52ms]
+(pass) new merchant types and reusable profiles use the same formula and legacy merchants are not auto-assigned [301.10ms]
+(pass) suppliers can read and simulate only their own assignments; shared percentages, taxes and competitor settings are denied [28.23ms]
+(pass) mixed-merchant order services are charged once, allocated exactly, and internal/merchant costs are not added to customer VAT or gold entitlement [133.79ms]
+(pass) profile/tax retirement fails closed for future quotes and repeat migrations preserve exact UIDs, paid rows and journals [320.92ms]
+(pass) checkout and an administrator profile switch serialize: acceptance freezes the observed quote or returns a conflict [34.15ms]
+(pass) returning a profiled exact UID reverses only its allocated services, VAT, receivable and provisional costs once [29.95ms]
+(pass) PostgreSQL rejects JSON-null rule modes, missing shared service keys and re-keying approved components [22.54ms]
+
+tests/storefront.test.ts:
+(pass) merchant context filters global/scoped catalogs, facets, private offers, PDP/UID and rejects direct quote smuggling [231.05ms]
+(pass) a shared public Master never exposes its unlisted/invite-only rival Offers in global or merchant context [223.55ms]
+(pass) invite-only requires central customer identity, bound grant and immediate revocation [146.81ms]
+(pass) cross-tenant management and stable handle guard, optimistic revisions and default-deny staff [49.30ms]
+(pass) explicit membership grants one capability without global supplier or finance access, and revokes immediately [30.99ms]
+(pass) sandbox checkout preserves exact UID, supplier origin, frozen pricing, balanced journals and idempotent replay [73.22ms]
+(pass) curated sharing references ten own masters, rejects rival products, freezes valid attribution and scopes metrics [10435.33ms]
+(pass) migration replay preserves populated commerce and origin history [21.17ms]
+
+tests/onboarding-media.test.ts:
+(pass) bounded real decoding rejects disguised, oversized, corrupt and extreme-dimension images [10.78ms]
+(pass) orientation, color, transparency and private metadata normalize to proportional decoded WebP variants [394.91ms]
+(pass) merchant draft/join requests are idempotent and preserve actual creator/assistant identities with default-deny governance [70.88ms]
+(pass) private merchant new-master approval remains hidden before its first eligible public Offer [245.14ms]
+(pass) central image size, quality and byte-budget policy is admin-only, validated and revision-checked [30.10ms]
+(pass) photo receipts and variants persist privately, upload replay does not duplicate, pending product requires approval [431.23ms]
+(pass) shared Master media remains merchant-owned across scoped/public image URLs and catalog projections [480.14ms]
+(pass) twenty real authorized image operations are decoded and persisted; quotas and revocation are enforced [4788.21ms]
+(pass) media migration replay and disposable database restart preserve source IDs, variants and commerce history [995.37ms]
+
+tests/content.test.ts:
+(pass) typed blocks reject scripts, unsafe paths, tenant dot escapes and unbounded layout; starter is structural only [0.85ms]
+(pass) editorial media is real decoded, approved but private until publication, and video is normalized silent with immutable bytes [53.56ms]
+(pass) all block types persist, draft/preview isolation, approval/publish uses live public product truth, range is bounded [313.18ms]
+(pass) immutable versions, concurrent revisions, scheduled cutover, idempotency, pause and rollback preserve URL and audit [1547.22ms]
+(pass) merchant A media/pages cannot leak to B, global or anonymous invite readers; fresh grant revocation and unsafe CTA rejected [265.84ms]
+(pass) additive media/content migration replays retain bytes, immutable UID stock, paid snapshots and publications [55.35ms]
+(pass) published CMS survives a real disposable PostgreSQL restart and a fresh compiled API process [5939.08ms]
+(pass) central content capability, sanitized immutable presets and future campaign adapters cannot widen merchant authority [134.96ms]
+(pass) CMS upgrades the exact existing share slug and preserves original visit attribution without cloning masters [1259.67ms]
+
+tests/native-panels.test.ts:
+(pass) native identity migration is additive and repeatable; connections do not clone commercial records [11.87ms]
+(pass) native admin and member authentication, dual proof, immediate revocation and seller isolation [797.67ms]
+(pass) native RBAC adds a restriction to Didar admin authority and cannot be bypassed through manage mutation kinds [117.90ms]
+(pass) generic native product mutations cannot diverge or delete an existing linked gold master [114.99ms]
+(pass) native Vendor generic product mutations reveal no private product existence and cannot create a competing master [134.60ms]
+(pass) real Mercur permission resolver restricts native staff to the selected merchant and never promotes the customer identity [484.48ms]
+(pass) native global content operator and explicit readonly admin policy cannot read commerce or financial data [502.07ms]
+(pass) native access changes are audited, revocable and cannot disable the last usable central administrator [238.95ms]
+(pass) a linked pending supplier gets a native approval status without accessing stock or finance [234.31ms]
+(pass) unconnected native users have no customer/product privileges before proving an approved existing Didar role [135.32ms]
+(pass) native seller suspension gates new global/scoped sales while preserving paid history and legacy unmapped suppliers [222.10ms]
+(pass) workspace handoff status requires the existing session and exposes no native credentials [93.58ms]
+(pass) native handoff accepts bounded feature references and rejects redirects, credentials and path escapes [0.47ms]
+
+tests/native-policy.test.ts:
+(pass) C01 managed native Admin launch: real scoped UID purchase with no owner bridge and true actor audit [628.94ms]
+(pass) C02 native owner without bridge has safe selection/status but no generic commerce rights [112.91ms]
+(pass) C03 approved linked supplier is read-only for generic commerce; explicit gold grant cannot enable second native writer [174.82ms]
+(pass) C03 generic native catalog hides rival private masters in list/count/detail/variant/preview while owner keeps read [369.95ms]
+(pass) C03 explicit intake grant works through native and legacy canonical workflows and revokes immediately [53.18ms]
+(pass) C04 managed to assisted to delegated publishing keeps identical store/offer/UID/order records [735.33ms]
+(pass) C06 native ACL is surface scoped; disabling editor does not suspend managed public commerce [161.15ms]
+(pass) C07 suspension/state matrix: generic + native DIDAR + legacy denies, own history stays read-only and immutable [1161.91ms]
+(pass) C08 native and legacy staff grant revocation on identical merchant records; no role promotion [156.21ms]
+
+tests/pre-rollout-authorization.test.ts:
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"canonical-private","products_count":0,"variants_count":0,"returned_product_ids":[]}
+(pass) separate Vendor variant list/count must preserve product visibility: canonical-private [239.62ms]
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"native-unmapped","products_count":0,"variants_count":0,"returned_product_ids":[]}
+(pass) separate Vendor variant list/count must preserve product visibility: native-unmapped [200.89ms]
+INDEPENDENT_DEACTIVATED_MEMBER [{"path":"/vendor/products","status":403},{"path":"/vendor/offers","status":403},{"path":"/vendor/orders","status":403},{"path":"/vendor/didar/manage","status":403},{"path":"/vendor/didar/history","status":403}]
+(pass) deactivated native Member cannot retain generic or DIDAR commerce through an existing bearer [165.28ms]
+INDEPENDENT_PUBLIC_MIRROR [{"path":"/store/products?id=prod_didar_3cf562645765352b3a5e182308642271&limit=1","status":200,"count":0,"product_ids":[]},{"path":"/store/products/prod_didar_3cf562645765352b3a5e182308642271","status":404}]
+(pass) public native Store API cannot disclose a DIDAR-private master through its published mirror [60.14ms]
+INDEPENDENT_COMPENSATION {"edit_status":500,"before_native_status":"draft","after_native_status":"draft","canonical_unchanged":true}
+(pass) failed canonical edit must compensate an unapproved native mirror back to draft [146.33ms]
+(pass) authorized public native variants retain original list/count/pagination behavior [70.73ms]
+(pass) native Store keeps eligible public and untagged native-only products visible while tagged orphans stay hidden [401.56ms]
+
+tests/agency-allocation.test.ts:
+(pass) CORE-03 governed allocation without a second financial writer > MIXED preserves separate gold quantity/book value and rial [0.36ms]
+(pass) CORE-03 governed allocation without a second financial writer > gold-only and rial-only preserve their contractual instruments [0.07ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct sale has own revenue and no agency principal payable [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > a signed conversion delta must derive from the original metal/making price [0.08ms]
+(pass) CORE-03 governed allocation without a second financial writer > negative unexplained allocations fail closed [0.04ms]
+(pass) CORE-03 governed allocation without a second financial writer > approved CASH/CREDIT profile beneficiaries remain explicit [0.20ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct mode never charges an uncontracted physical supplier as merchant [0.11ms]
+(pass) CORE-03 governed allocation without a second financial writer > profile unknown recipient/component never becomes a generic residual [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > new mode is only enabled through all three explicit sandbox flags [0.07ms]
+
+tests/projection-durability.test.ts:
+(pass) projection source revision and job roll back on final canonical COMMIT failure; afterCommit never runs [27.27ms]
+(pass) latest revision wins reordered deliveries and source-row lock serializes concurrent writers [55.66ms]
+(pass) forward projection has bounded retry, observable terminal failure and explicit latest-only reconciliation [35.67ms]
+(pass) first relevant edit links an untouched historical NULL native id without bulk backfill [11.39ms]
+DIDAR_AFTER_COMMIT_RETRY_REQUIRED
+(pass) post-commit optimization failure preserves committed source and durable pending work [7.41ms]
+
+tests/issue18-acceptance.test.ts:
+(pass) I18 independent RETAILER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [961.50ms]
+(pass) I18 independent MANUFACTURER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [1254.52ms]
+(pass) I18 independent DIRECT_DIDAR has no external principal obligation or duplicated agency journal [788.88ms]
+(pass) I18 independent partial GOLD/IRR settlement then return/refund keeps original allocation and explicit recoverable [1260.13ms]
+(pass) I18 independent accepted-order mandate replacement and commercial suspension block payment without consuming UID [574.23ms]
+(pass) I18 independent curation gates catalog/count/PDP/media and invoice; two shops race the same physical UID [2488.56ms]
+(pass) I18 independent unknown beneficiary fails before collection; approved beneficiary is separately frozen once [864.72ms]
+(pass) I18 independent changed approved profile/tax before payment requires requote and never collects old terms [773.22ms]
+(pass) I18 independent mandate governance denies unauthenticated/customer/supplier approval and unapproved sales [581.62ms]
+(pass) I18 independent revocation and expiry invalidate new economics without rewriting contract history [434.22ms]
+
+ 191 pass
+ 0 fail
+ 3254 expect() calls
+Ran 191 tests across 25 files. [76.93s]
+$ TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit
+PASS integration-tests/http/health.spec.ts
+  Medusa health (real process)
+    ✓ responds successfully from the running API (22 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        0.34 s
+Ran all test suites.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+Disposable browser authentication window prepared; production rate limits unchanged.
+$ playwright test
+
+Running 32 tests using 1 worker
+
+(node:255744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/browser/acceptance.spec.ts:2:5 › Gate 5 Persian reconciliation screen records DB-derived checks without claiming Mac or live financial acceptance (1.7s)
+  ✓   2 tests/browser/content.spec.ts:42:5 › Persian page builder publishes the six core blocks, real video/slider/mosaic, responsive preview and live quote without a parallel cart (20.0s)
+  ✓   3 tests/browser/expiry.spec.ts:50:5 › expired reservation is shown to the customer and restores available pieces (3.3s)
+  ✓   4 tests/browser/facets.spec.ts:40:5 › Persian product classification, F11 membership and server discovery persist into the same mobile and desktop PDP (8.7s)
+  ✓   5 tests/browser/facets.spec.ts:155:5 › supplier proposes own controlled classification and DIDAR reviews it through Persian UI (6.5s)
+  ✓   6 tests/browser/facets.spec.ts:266:5 › DIDAR vocabulary drafts/reviews, retirement, timed merchandising and curated pages use persisted Persian controls (6.7s)
+  ✓   7 tests/browser/finance.spec.ts:2:5 › Gate 1 Persian finance: admin contract request/review and supplier isolation (4.0s)
+  ✓   8 tests/browser/issue18-acceptance.spec.ts:67:5 › I18 independent native Admin mandate form, managed agency checkout/invoice, and original merchant Vendor read (13.9s)
+  ✘   9 tests/browser/issue18-ui-races.spec.ts:64:5 › I18 independent real Vendor CMS keeps pending operations disabled and previews the saved current version (561ms)
+(node:260576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 tests/browser/issue18-ui-races.spec.ts:131:5 › I18 independent native Admin sharing ignores a late real response from the previously selected merchant (4.7s)
+  ✓  11 tests/browser/marketplace.spec.ts:2:5 › RTL catalog, supplier comparison, login, checkout and payment (2.0s)
+  ✓  12 tests/browser/marketplace.spec.ts:54:5 › supplier interface displays only owned stock (1.8s)
+  ✓  13 tests/browser/marketplace.spec.ts:76:5 › admin interface manages gold rate and catalog (2.7s)
+  ✓  14 tests/browser/marketplace.spec.ts:100:5 › mobile RTL catalog and product detail fit the viewport (1.0s)
+  ✓  15 tests/browser/merchant-pricing.spec.ts:49:5 › Persian admin creates and approves tax/profile versions, assigns two merchant types and customer pays the exact merchant-specific cash prices (15.4s)
+  ✓  16 tests/browser/merchant-pricing.spec.ts:331:5 › merchant sees only own terms; customer switches cash/credit rules and freezes the selected method in checkout (6.0s)
+  ✓  17 tests/browser/native-panels.spec.ts:32:5 › real native Admin and Vendor shells navigate connected Didar products, pricing, UID, CMS and storefront; customer remains B2C (16.4s)
+  ✓  18 tests/browser/native-panels.spec.ts:262:5 › native Admin publishes a classified master, prints real permanent UID labels and the customer resolves the current PDP (12.2s)
+  ✓  19 tests/browser/native-panels.spec.ts:407:5 › native staff and global editor see only authorized sidebar routes and persist scoped CMS drafts without becoming administrators (5.0s)
+  ✓  20 tests/browser/native-panels.spec.ts:506:5 › protected legacy deep links resume through actual native login and seller selection without exposing credentials (14.1s)
+  ✓  21 tests/browser/native-policy.spec.ts:56:5 › C01/C06/C07 real native Admin managed launch without Vendor login, Customer purchase, and suspended Vendor history (9.1s)
+  ✓  22 tests/browser/onboarding-media.spec.ts:38:5 › Persian assisted wizard registers a merchant, proposes one shared master, processes a large camera file, approves real WebP media and preserves private store access (14.4s)
+  ✓  23 tests/browser/operational.spec.ts:74:5 › admin approves supplier, publishes imaged product; exact-weight purchase is paid once, allocated and delivered (20.1s)
+  ✓  24 tests/browser/phase1.spec.ts:43:5 › admin UI creates supplier/product, weighs and tags units, posts stock; supplier read-only; real UID sale and RFID variance (20.8s)
+  ✓  25 tests/browser/pre-rollout-cms.spec.ts:139:5 › native CMS publishes eleven live blocks, schedules immutable versions, rolls back, and degrades safely on desktop/mobile (24.5s)
+  ✓  26 tests/browser/proxy.spec.ts:4:5 › storefront proxy rejects oversized chunked JSON before forwarding to the API (11ms)
+  ✓  27 tests/browser/proxy.spec.ts:31:5 › an interrupted customer session bootstrap preserves the credential and a real retry restores the account (1.7s)
+  ✓  28 tests/browser/storefront.spec.ts:28:5 › Merchant A entry survives central registration, PDP, quote and sandbox purchase; Merchant B stays inaccessible (22.4s)
+  ✓  29 tests/browser/tahesab.spec.ts:2:5 › Gate 4 Persian aggregate close is dry-run, mock acknowledgement is idempotent, vendor mapping remains blocked (4.7s)
+  ✓  30 tests/browser/taxonomy-labels.spec.ts:16:5 › Persian draft publication, optional-RFID bulk labels, print sizing, canonical breadcrumbs and QR continuity (10.0s)
+  ✓  31 tests/browser/treasury.spec.ts:2:5 › Gate 2 treasury UI records and approves a synthetic purchase through real APIs (5.3s)
+  ✓  32 tests/browser/wallet.spec.ts:11:5 › Gate 3 Persian wallet UI funds/releases synthetic money and customer reserves without admin funding privileges (3.9s)
+
+
+  1) tests/browser/issue18-ui-races.spec.ts:64:5 › I18 independent real Vendor CMS keeps pending operations disabled and previews the saved current version 
+
+    Error: /vendor/didar/pages {"message":"CONFLICT_CONTENT_STOREFRONT"}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 409
+
+      24 |   });
+      25 |   const data = await r.json();
+    > 26 |   expect(r.status, path + " " + JSON.stringify(data)).toBe(200);
+         |                                                       ^
+      27 |   return data;
+      28 | }
+      29 | async function native(surface: "admin" | "vendor") {
+        at request (/workspace/work/issue18-independent-1792258948522-242640/tests/browser/issue18-ui-races.spec.ts:26:55)
+        at /workspace/work/issue18-independent-1792258948522-242640/tests/browser/issue18-ui-races.spec.ts:72:17
+
+    Error Context: test-results/issue18-ui-races-I18-indep-b576d-s-the-saved-current-version/error-context.md
+
+    Error Context: test-results/issue18-ui-races-I18-indep-b576d-s-the-saved-current-version/error-context.md
+
+  1 failed
+    tests/browser/issue18-ui-races.spec.ts:64:5 › I18 independent real Vendor CMS keeps pending operations disabled and previews the saved current version 
+  31 passed (4.8m)
+error: script "test:e2e" exited with code 1
+file:///workspace/work/issue18-independent-1792258948522-242640/scripts/local/runtime.mjs:87
+      child.once('exit', code => code === 0 ? resolve() : reject(new Error(`${cmd} ${args.join(' ')} exited ${code}`)))
+                                                                 ^
+
+Error: bun run test:e2e exited 1
+    at ChildProcess.<anonymous> (file:///workspace/work/issue18-independent-1792258948522-242640/scripts/local/runtime.mjs:87:66)
+    at Object.onceWrapper (node:events:631:26)
+    at ChildProcess.emit (node:events:509:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:295:12)
+
+Node.js v24.19.0

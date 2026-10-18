@@ -42,7 +42,11 @@ export async function requireUser(req: any, roles: string[]) {
       .split("?")[0]
       .split("/")
       .pop();
-    if (!["history", "profile"].includes(action || "")) {
+    if (!(
+      ["history", "profile"].includes(action || "") ||
+      (req.method === "GET" &&
+        ["invoice", "agency", "curation"].includes(action || ""))
+    )) {
       const business = (
         await db.query(
           "SELECT active AND status='approved' AND didar_native_saleable_supplier(id) ok FROM didar_supplier WHERE id=$1",

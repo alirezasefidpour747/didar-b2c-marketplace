@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "review_anchor": "c82f1968616f8c38072d215d54403012a8c9fadc",
+  "run_id": "20261018032347950-3b5f7ebe",
+  "observed_browser_exit": 0,
+  "observed_wrapper_exit": 0,
+  "observed_supervisor_exit": 0,
+  "actual_cases": 32,
+  "retries": 0,
+  "skipped": 0,
+  "tests": {
+    "files": 50,
+    "aggregate": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a",
+    "expected": "ced148cd5776a6d6394f40c60a42f1eeff7c232ad3abb7044a2933deeec98d3a"
+  },
+  "harness_aggregate": "7f7b9e8d070fa0ca4c436b6e6d2f9b3fbbf7ee07a6c318896a49198c610cc043",
+  "compiled_files_unchanged": 1789,
+  "owned_process_groups_absent": 6,
+  "owned_containers_and_anonymous_volumes_absent": 2,
+  "preexisting_containers_unchanged": 10,
+  "existing_tracked_files_changed": 0,
+  "old_unknown_exit_receipt_preserved": true,
+  "checked_at": "2026-10-18T03:28:41.616Z"
+}

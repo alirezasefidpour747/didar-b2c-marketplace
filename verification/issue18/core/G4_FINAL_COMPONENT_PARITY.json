@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "explanation": "Original nine independent G4 fault experiments remain valid for these unchanged source components and identical compiled projector. This is component parity against the final candidate, not a claim of rerunning original full artifact. Later invoice/finance, migration and UI fixes require their separate complete release acceptance evidence.",
+  "checked_at": "2026-10-17T18:14:29.490Z",
+  "source_hashes": {
+    "projection.ts": "77dc0f9d744887b225106e5b788431a739a3d8171ebfa43fe1a1c3da1efd1f27",
+    "projection-schema.sql": "28e143bddb8f56c0eb4919d25e8f59c7d8da14e1d601ba284e38b8ea858769c9",
+    "db.ts": "78130ac6edd28e700a91f4f851dcdbfb70e2379ffdcca4e8233146b8a9856f28",
+    "catalog.ts": "adbb4b68ac56f19c21c7be1095b0aa6655aa136127a870e9fb16f1823a52d457",
+    "native-store-product-visibility.ts": "b3971b0915f443dbbc94150107eb3b45c93bcdb3e91a02006b544bbbb1201f1a",
+    "native-product-visibility.ts": "32d0de4ec76c56d94615ca56e36ca78da7574ff6d99714e691903a103019fda3"
+  },
+  "compiled_projection_sha256": "9d9e1a694121fc4ede52ad075bb25846e4ef6c87135c01f7858761020d9ff14a",
+  "current_build_receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "current_candidate_commit": "010c66a5d55554e6e3fffd834851827630958b1d",
+  "application_source_commit": "7b31849bb61255d5dc009c7e24a51051f12154b2"
+}

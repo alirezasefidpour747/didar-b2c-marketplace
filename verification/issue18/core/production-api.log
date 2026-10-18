@@ -1,0 +1,23 @@
+Couldn't find tsconfig.json. tsconfig-paths will be skipped
+{"activity_id":"01M55DWHKGE73H9ZK83VVRY97E","config":{},"level":"info","message":"Creating server","timestamp":"2026-10-17 17:17:23"}
+{"level":"info","message":"Skipping instrumentation registration. No register function found.","timestamp":"2026-10-17 17:17:23"}
+{"level":"info","message":"No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.","timestamp":"2026-10-17 17:17:23"}
+{"level":"info","message":"No link to load from /workspace/work/didar-issue18-core-rt2WIr/api/src/links. skipped.","timestamp":"2026-10-17 17:17:23"}
+{"level":"warn","message":"Local Event Bus installed. This is not recommended for production.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"Locking module: Using \"in-memory\" as default.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"No workflow to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"No workflow to load from /workspace/work/didar-issue18-core-rt2WIr/api/src/workflows. skipped.","timestamp":"2026-10-17 17:17:24"}
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+{"level":"info","message":"No subscriber to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"No job to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/jobs. skipped.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"No job to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/jobs. skipped.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"No job to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/jobs. skipped.","timestamp":"2026-10-17 17:17:24"}
+{"level":"info","message":"Admin URL → http://localhost:9000/dashboard","timestamp":"2026-10-17 17:17:25"}
+{"level":"info","message":"Vendor URL → http://localhost:9000/seller","timestamp":"2026-10-17 17:17:25"}
+{"activity_id":"01M55DWHKGE73H9ZK83VVRY97E","duration":2267,"level":"info","message":"Server is ready on port: 40827","timestamp":"2026-10-17 17:17:25"}
+{"level":"http","client_ip":"127.0.0.1","request_id":"457d1771-48ee-4dfe-8ae0-500be5372a25","http_version":"1.1","method":"GET","path":"/store/products?id=prod_didar_7d304e0004597bbe72c729c6c82f8cda&limit=1&fields=id,title","status":200,"response_size":"143","request_size":0,"duration":37.794,"referrer":"-","user_agent":"node","timestamp":"2026-10-17T17:17:25.821Z"}
+{"level":"http","client_ip":"127.0.0.1","request_id":"c9edb637-e635-4bf3-a344-85f6c1e0dc1f","http_version":"1.1","method":"GET","path":"/store/products/prod_didar_7d304e0004597bbe72c729c6c82f8cda?fields=id,title","status":200,"response_size":"109","request_size":0,"duration":12.832,"referrer":"-","user_agent":"node","timestamp":"2026-10-17T17:17:25.835Z"}
+{"level":"http","client_ip":"127.0.0.1","request_id":"067e380b-e9d5-4cdd-8f7f-3527f313d07e","http_version":"1.1","method":"GET","path":"/store/products?id=prod_didar_7d304e0004597bbe72c729c6c82f8cda&limit=1&fields=id,title","status":200,"response_size":"46","request_size":0,"duration":11.19,"referrer":"-","user_agent":"node","timestamp":"2026-10-17T17:17:25.859Z"}
+{"level":"http","client_ip":"127.0.0.1","request_id":"cf29e5d7-87a6-4dab-89b0-5037189949e3","http_version":"1.1","method":"GET","path":"/store/products/prod_didar_7d304e0004597bbe72c729c6c82f8cda?fields=id,title","status":404,"response_size":"42","request_size":0,"duration":10.79,"referrer":"-","user_agent":"node","timestamp":"2026-10-17T17:17:25.874Z"}
+{"level":"info","message":"Gracefully shutting down server","timestamp":"2026-10-17 17:17:25"}

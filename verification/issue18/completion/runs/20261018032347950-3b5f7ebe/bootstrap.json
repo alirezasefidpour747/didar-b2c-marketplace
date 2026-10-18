@@ -1,0 +1,72 @@
+{
+  "run_id": "20261018032347950-3b5f7ebe",
+  "status": "PASS",
+  "removed_only_synthetic_actor_links": [
+    {
+      "user_id": "demo-admin",
+      "actor_type": "user",
+      "actor_id": "user_01M56GKPX8ZKMQ495A9WQXN1SK"
+    }
+  ],
+  "preserved_actor_links": [
+    {
+      "user_id": "native-content-canonical",
+      "actor_type": "user",
+      "actor_id": "user_01M56GKQFSWT3X5QS13QSJPY18"
+    }
+  ],
+  "counts": {
+    "acls": 0,
+    "products": 4,
+    "offers": 8,
+    "orders": 0,
+    "events": 0,
+    "mandates": 0,
+    "s1_stores": 0,
+    "s1_homes": 0
+  },
+  "stock": [
+    {
+      "id": "bracelet-s1",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "bracelet-s2",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "earring-s1",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "earring-s2",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "necklace-s1",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "necklace-s2",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "ring-s1",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    },
+    {
+      "id": "ring-s2",
+      "quantity": 10,
+      "stock_mode": "legacy"
+    }
+  ],
+  "changes": "Only original exact-three QA link cleanup and synthetic login-window reset. No native ACL, inventory, financial, approval, order or mandate facts added.",
+  "backend_tooling_jest_g4_restore_executed": false
+}

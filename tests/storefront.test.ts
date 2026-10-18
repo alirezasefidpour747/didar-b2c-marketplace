@@ -613,7 +613,9 @@ test("curated sharing references ten own masters, rejects rival products, freeze
       order.id,
     ]),
   ).rejects.toThrow("CONFLICT_IMMUTABLE_ATTRIBUTION");
-});
+// This journey performs ten real native Product projections, image/catalog and
+// payment requests. Keep a bounded integration budget under concurrent QA load.
+}, 30000);
 test("migration replay preserves populated commerce and origin history", async () => {
   const sql = readFileSync(
     "packages/api/src/didar/storefront-schema.sql",
