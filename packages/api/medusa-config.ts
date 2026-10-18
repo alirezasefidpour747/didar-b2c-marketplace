@@ -2,8 +2,11 @@ import { loadEnv } from "@medusajs/framework/utils";
 import { withMercur } from "@mercurjs/core";
 import fs from "fs";
 import path from "path";
+import { apiNetworkPolicy } from "@didar/auth-network";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
+// Reject an incomplete or misspelled strict proxy contract before serving auth.
+apiNetworkPolicy();
 
 const secret = (name: string) => {
   const value = process.env[name];

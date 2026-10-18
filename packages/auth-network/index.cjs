@@ -28,6 +28,32 @@ function requireKey(key) {
     throw Error("AUTH_NETWORK_NOT_CONFIGURED");
   return key;
 }
+// Exact socket peers only. This is configuration, never a forwarding-header parser.
+function exactPeers(value, required = false) {
+  if (value === undefined || value === "") {
+    if (required) throw Error("AUTH_NETWORK_NOT_CONFIGURED");
+    return [];
+  }
+  if (typeof value !== "string") throw Error("AUTH_NETWORK_NOT_CONFIGURED");
+  try {
+    const peers = value.split(",").map((p) => {
+      if (!p.trim()) throw Error();
+      return normalizePeer(p.trim());
+    });
+    if (new Set(peers).size !== peers.length) throw Error();
+    return peers;
+  } catch {
+    throw Error("AUTH_NETWORK_NOT_CONFIGURED");
+  }
+}
+function apiNetworkPolicy(env = process.env) {
+  const mode = env.DIDAR_AUTH_PROXY_POLICY ?? "direct";
+  if (!["direct", "require-proof"].includes(mode))
+    throw Error("AUTH_NETWORK_NOT_CONFIGURED");
+  const peers = exactPeers(env.DIDAR_AUTH_PROXY_PEERS, mode === "require-proof");
+  if (mode === "require-proof") requireKey(env.DIDAR_AUTH_NETWORK_KEY);
+  return { mode, peers };
+}
 function mac(key, payload, method, path, body) {
   return createHmac("sha256", requireKey(key))
     .update(
@@ -104,6 +130,8 @@ module.exports = {
   MAX_AGE_MS,
   normalizePeer,
   requireKey,
+  exactPeers,
+  apiNetworkPolicy,
   signNetwork,
   verifyNetwork,
 };

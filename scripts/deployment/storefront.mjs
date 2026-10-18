@@ -4,15 +4,18 @@ import { spawn } from 'node:child_process'
 import { resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
 import { setTimeout as delay } from 'node:timers/promises'
-import { requireKey } from '@didar/auth-network'
+import { requireKey, exactPeers } from '@didar/auth-network'
 const root = resolve(import.meta.dirname, '..')
 requireKey(process.env.DIDAR_AUTH_NETWORK_KEY)
 const privatePort = Number(process.env.DIDAR_PRIVATE_NEXT_PORT || 3001)
 const publicPort = Number(process.env.DIDAR_AUTH_INGRESS_PORT || 3000)
 if (![privatePort, publicPort].every(p => Number.isInteger(p) && p > 0 && p < 65536) || privatePort === publicPort) throw Error('Invalid public/private ports')
 const ingressHost = process.env.DIDAR_AUTH_INGRESS_HOST || '127.0.0.1'
+const ingressMode = process.env.DIDAR_AUTH_INGRESS_MODE ?? 'socket'
+if (!['socket', 'verified-relay'].includes(ingressMode)) throw Error('INVALID_AUTH_INGRESS_MODE')
+exactPeers(process.env.DIDAR_AUTH_INGRESS_PEERS, ingressMode === 'verified-relay')
 const cert = process.env.DIDAR_AUTH_INGRESS_TLS_CERT_FILE, key = process.env.DIDAR_AUTH_INGRESS_TLS_KEY_FILE
-if (!!cert !== !!key || (!['127.0.0.1', '::1', 'localhost'].includes(ingressHost) && !cert)) throw Error('TLS_REQUIRED_FOR_PUBLIC_AUTH_INGRESS')
+if (!!cert !== !!key || (ingressMode === 'verified-relay' && !cert) || (!['127.0.0.1', '::1', 'localhost'].includes(ingressHost) && !cert)) throw Error('TLS_REQUIRED_FOR_PUBLIC_AUTH_INGRESS')
 if (cert) { readFileSync(cert); readFileSync(key) }
 const upstream = `http://127.0.0.1:${privatePort}`
 if (process.env.DIDAR_AUTH_STOREFRONT_URL && process.env.DIDAR_AUTH_STOREFRONT_URL !== upstream) throw Error('Packaged Next must be the private loopback upstream')

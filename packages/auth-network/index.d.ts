@@ -2,6 +2,11 @@ export const HEADER: string;
 export const MAX_AGE_MS: number;
 export function normalizePeer(value: string): string;
 export function requireKey(key: unknown): string;
+export function exactPeers(value: string | undefined, required?: boolean): string[];
+export function apiNetworkPolicy(env?: Record<string, string | undefined>): {
+  mode: "direct" | "require-proof";
+  peers: string[];
+};
 export type NetworkProof = { v: 1; peer: string; ts: number; nonce: string };
 export type NetworkInput = {
   key: string | undefined;
