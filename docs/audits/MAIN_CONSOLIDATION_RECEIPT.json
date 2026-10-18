@@ -1,0 +1,221 @@
+{
+  "status": "MAIN_CONSOLIDATED_TRANSFERABLE_RELEASE_PENDING",
+  "integration_main": "0c4cae89b133902887b33ca17d1902bf4247624d",
+  "accepted_packaging_delivery": "f83163fb5501aa841bec87e38b57fa359f9c27c9",
+  "runtime_blob_and_mode_changes": [],
+  "documentation_changes": [
+    "AGENTS.md",
+    "docs/OPERATING_GUIDANCE.md",
+    "docs/PHASES_5_9_DELIVERY_PACKETS.md",
+    "docs/PHASES_5_9_INTEGRATED_DESIGN.md",
+    "docs/adr/ADR-CORE-03-ADDENDUM-PROPOSED-five-features.md",
+    "docs/audits/DIDAR_RUNTIME_QA_41089A7.md",
+    "docs/audits/FIVE_FEATURES_ARCHITECTURE_AND_SEQUENCE_FA.md"
+  ],
+  "merges": [
+    {
+      "pr": 15,
+      "sha": "8a6bd5e661c0aa69ec5310108990459fc67d8e55"
+    },
+    {
+      "pr": 20,
+      "sha": "872f8873cc4408ba817028a89205246db7b4883e"
+    },
+    {
+      "pr": 24,
+      "sha": "3eb45b3e478be1f93fccd0aaa6a54da7f5472af6"
+    },
+    {
+      "pr": 25,
+      "sha": "433e86e47f8e6c3615b02bf7953f05da1760c61a"
+    },
+    {
+      "pr": 27,
+      "sha": "5aae5f98496c6209a3f6d46913736c829541ea1d"
+    },
+    {
+      "pr": 16,
+      "sha": "6bd6aa784f199283a681691089eb8969d1f6a02c"
+    },
+    {
+      "pr": 17,
+      "sha": "1b8b0dc382a8b590f4687a1dd294f059af44a553"
+    },
+    {
+      "pr": 11,
+      "sha": "e9502ab26868b59a4c3ad377549c95b3b9169a49"
+    },
+    {
+      "pr": 19,
+      "sha": "5bb4a08463305bc783e5eb6178182f8032178762"
+    },
+    {
+      "pr": 21,
+      "sha": "0c4cae89b133902887b33ca17d1902bf4247624d"
+    }
+  ],
+  "superseded": [
+    {
+      "pr": 22,
+      "reason": "identical new document and verbatim prefixes already preserved"
+    }
+  ],
+  "verification": "Git leaf blob/mode comparison and published evidence review only; no fresh runtime execution here",
+  "branches": [
+    {
+      "branch": "audit/core-delta-41089a7",
+      "head": "d83be9a6a19992d42a45fae155ddd08d20838efb",
+      "status": "diverged",
+      "ahead": 45,
+      "behind": 2,
+      "ancestryPreserved": false,
+      "disposition": "KEEP_PENDING_UNIQUE_CONTENT_REVIEW"
+    },
+    {
+      "branch": "audit/mercur-medusa-core-2026-10-17",
+      "head": "0d2fafb2cfecdad773065b64552007183bd8417c",
+      "status": "diverged",
+      "ahead": 48,
+      "behind": 2,
+      "ancestryPreserved": false,
+      "disposition": "KEEP_PENDING_UNIQUE_CONTENT_REVIEW"
+    },
+    {
+      "branch": "audit/pre-rollout-integration-closure",
+      "head": "efbdfcdf8a2ab7f3e397f2d67672328ebcf36254",
+      "status": "ahead",
+      "ahead": 38,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "audit/runtime-qa-41089a7",
+      "head": "91f02c95d6cc16fc0a66810e4475b84b6ab4f7cf",
+      "status": "ahead",
+      "ahead": 43,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "audit/server-deployment-status-20261017",
+      "head": "0f74941cfc0f2a8406efa16f20e7051c3a444e3d",
+      "status": "diverged",
+      "ahead": 46,
+      "behind": 1,
+      "ancestryPreserved": false,
+      "disposition": "KEEP_PENDING_UNIQUE_CONTENT_REVIEW"
+    },
+    {
+      "branch": "docs/agency-sales-owner-policy",
+      "head": "88d1b004c38efe57fb46f86ba2f99a6a87b4201b",
+      "status": "ahead",
+      "ahead": 39,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "docs/continuous-architecture-production-readiness",
+      "head": "cf2fc25692ea6fe0d2e5c3a6c364f3e901195802",
+      "status": "diverged",
+      "ahead": 40,
+      "behind": 3,
+      "ancestryPreserved": false,
+      "disposition": "CONTENT_SUPERSEDED_VERIFIED_ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "docs/five-features-architecture-assessment",
+      "head": "d869b1df86123682cba896c03ebf3533ff23b13a",
+      "status": "ahead",
+      "ahead": 38,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "docs/phases5-9-integrated-design",
+      "head": "5a8688acc8018faf3d6c8a333653c3a1d590315d",
+      "status": "ahead",
+      "ahead": 38,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "docs/pre-rollout-closure-execution",
+      "head": "aaedd0d81806a20317f2505678a79e7b9a2ba1a2",
+      "status": "ahead",
+      "ahead": 38,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "docs/standing-delivery-policy",
+      "head": "064ebf83d623123cc605ab09a30e50db5a2911a2",
+      "status": "ahead",
+      "ahead": 38,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "feature/auth-deployment-packaging",
+      "head": "f83163fb5501aa841bec87e38b57fa359f9c27c9",
+      "status": "ahead",
+      "ahead": 21,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "feature/issue18-bounded-agency-durability",
+      "head": "41d880a5dd4c2462144f52b1591576882238d125",
+      "status": "ahead",
+      "ahead": 30,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "feature/issue23-architecture-readiness",
+      "head": "2c634ffdb77d4683271b5b218ca0a606af74004a",
+      "status": "ahead",
+      "ahead": 27,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "feature/sec01-sec02-auth-hardening",
+      "head": "d9b55b3856d6e52ba86db517430572c2d46761e0",
+      "status": "ahead",
+      "ahead": 25,
+      "behind": 0,
+      "ancestryPreserved": true,
+      "disposition": "ELIGIBLE_AFTER_HEAD_RECHECK"
+    },
+    {
+      "branch": "staging/debian13-phase2-00447d3",
+      "head": "ddbd31b1550390510b1356fda2582bf11890c4fe",
+      "status": "diverged",
+      "ahead": 54,
+      "behind": 1,
+      "ancestryPreserved": false,
+      "disposition": "KEEP_PENDING_UNIQUE_CONTENT_REVIEW"
+    },
+    {
+      "branch": "staging/release-41089a7-domain-preview",
+      "head": "8fc47e5a0ce02f8398cfe804f3a26317d8c76259",
+      "status": "diverged",
+      "ahead": 45,
+      "behind": 1,
+      "ancestryPreserved": false,
+      "disposition": "KEEP_PENDING_UNIQUE_CONTENT_REVIEW"
+    }
+  ],
+  "branch_deletions_performed": false,
+  "staging_deployed": false
+}
