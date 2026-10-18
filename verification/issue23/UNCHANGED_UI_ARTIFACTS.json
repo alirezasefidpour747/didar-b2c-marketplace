@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "baseline": "41d880a5dd4c2462144f52b1591576882238d125",
+  "candidate": "fa03ac3e5a91ec393d57bae0ac7ee2a0aff05782",
+  "roots": [
+    "apps/admin/dist",
+    "apps/vendor/dist",
+    "apps/storefront/.next"
+  ],
+  "files": 984,
+  "limitation": "Backend is intentionally rebuilt; native panels and customer compiled output compared byte for byte against independent accepted-baseline copy."
+}

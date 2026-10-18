@@ -1,0 +1,14 @@
+bun test v1.4.3 (c6da4a4d3)
+
+tests/native-product-targets.test.ts:
+(pass) real native target setup retains DIDAR projections and ordinary native CRUD [371.27ms]
+(pass) a forged URL parent cannot delete the linked native variant [20.73ms]
+(pass) mixed native/DIDAR variant batches reject before any partial native mutation [14.33ms]
+(pass) a variant update body cannot redirect an ordinary native editor to a DIDAR target [14.97ms]
+(pass) standalone shared-option writes cannot bypass the linked Product Master editor [46.77ms]
+(pass) authentication and native reads keep their original behavior [19.71ms]
+
+ 6 pass
+ 0 fail
+ 23 expect() calls
+Ran 6 tests across 1 file. [660.00ms]

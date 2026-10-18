@@ -1,0 +1,12 @@
+{
+  "run_id": "native-baseline-20261018041342338",
+  "scratch": "/workspace/work/issue23-security-native-baseline-20261018041342338",
+  "receipt": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "24.19.0",
+    "source": "5b6693e7fa0d079a4f8aca9097e0783361ee361e548d0f9d190ab65ff6bb10bc",
+    "outputs": "63639704924cb668d955b6b09ec7b17da048950c0b0d03f6ff78174315704e0b"
+  },
+  "source_baseline": "41d880a5dd4c2462144f52b1591576882238d125"
+}

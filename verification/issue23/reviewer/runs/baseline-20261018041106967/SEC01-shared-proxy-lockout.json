@@ -1,0 +1,20 @@
+{
+  "run_id": "baseline-20261018041106967",
+  "status": "REPRODUCED",
+  "valid_customer_before": 200,
+  "anonymous_distinct_accounts": 200,
+  "anonymous_status_counts": {
+    "401": 200
+  },
+  "valid_customer_after": {
+    "status": 429,
+    "message": "RATE_LIMIT",
+    "authenticated": false
+  },
+  "distinct_browser_forwarded_header_after": {
+    "status": 429,
+    "message": "RATE_LIMIT",
+    "authenticated": false
+  },
+  "meaning": "200 anonymous failures via Next exhaust a shared transport-IP bucket, denying a separately valid seeded customer; caller header cannot isolate client."
+}

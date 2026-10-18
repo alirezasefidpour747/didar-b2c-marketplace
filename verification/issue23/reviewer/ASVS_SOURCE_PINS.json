@@ -1,0 +1,11 @@
+{
+  "standard": "OWASP ASVS",
+  "version": "5.0.0",
+  "retrieval": "GitHub connected read-only fetch_file at immutable release tag v5.0.0; scoped applicable chapters, not whole-ASVS certification",
+  "sources": [
+    {"path":"5.0/en/0x15-V6-Authentication.md","github_blob_sha":"d9fa0025ad5bc804447aa95d1985bacc7ed1970e","url":"https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x15-V6-Authentication.md"},
+    {"path":"5.0/en/0x16-V7-Session-Management.md","github_blob_sha":"0124d000ac2a51f3e49cce2a8e89293fffefd36c","url":"https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x16-V7-Session-Management.md"},
+    {"path":"5.0/en/0x17-V8-Authorization.md","github_blob_sha":"eef42095545b35a10c83b4dc2d20833c89daf618","url":"https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x17-V8-Authorization.md"},
+    {"path":"5.0/en/0x14-V5-File-Handling.md","github_blob_sha":"e8d601cefe4f7ae194e69f32afec6c47f8b231c5","url":"https://github.com/OWASP/ASVS/blob/v5.0.0/5.0/en/0x14-V5-File-Handling.md"}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "run_id": "native-baseline-20261018041432786",
+  "stage": "schema-and-demo-seed",
+  "code": 0,
+  "signal": null,
+  "error": null,
+  "observed_at": "2026-10-18T04:14:55.941Z",
+  "observer_pid": 12051,
+  "child_pid": 12557
+}

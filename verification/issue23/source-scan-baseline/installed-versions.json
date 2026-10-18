@@ -1,0 +1,150 @@
+{
+  "@graphql-tools/utils": [
+    {
+      "version": "10.11.0",
+      "store_entry": "@graphql-tools+utils@10.11.0+58eb7c2115f4b47a"
+    },
+    {
+      "version": "12.1.0",
+      "store_entry": "@graphql-tools+utils@12.1.0+58eb7c2115f4b47a"
+    }
+  ],
+  "@opentelemetry/instrumentation-pg": [
+    {
+      "version": "0.52.0",
+      "store_entry": "@opentelemetry+instrumentation-pg@0.52.0+4294d048f15f6cd7"
+    }
+  ],
+  "ajv": [
+    {
+      "version": "6.15.0",
+      "store_entry": "ajv@6.15.0"
+    },
+    {
+      "version": "8.13.0",
+      "store_entry": "ajv@8.13.0"
+    },
+    {
+      "version": "8.20.0",
+      "store_entry": "ajv@8.20.0"
+    }
+  ],
+  "braces": [
+    {
+      "version": "3.0.3",
+      "store_entry": "braces@3.0.3"
+    }
+  ],
+  "elliptic": [
+    {
+      "version": "6.6.1",
+      "store_entry": "elliptic@6.6.1"
+    }
+  ],
+  "i18next-http-backend": [
+    {
+      "version": "3.0.5",
+      "store_entry": "i18next-http-backend@3.0.5"
+    }
+  ],
+  "image-size": [
+    {
+      "version": "1.2.1",
+      "store_entry": "image-size@1.2.1"
+    }
+  ],
+  "lodash": [
+    {
+      "version": "4.17.23",
+      "store_entry": "lodash@4.17.23"
+    },
+    {
+      "version": "4.18.1",
+      "store_entry": "lodash@4.18.1"
+    }
+  ],
+  "next": [
+    {
+      "version": "15.5.24",
+      "store_entry": "next@15.5.24+a3893f4ebc184146"
+    },
+    {
+      "version": "15.5.24",
+      "store_entry": "next@15.5.24+af30fd88399d0825"
+    }
+  ],
+  "postcss": [
+    {
+      "version": "8.4.31",
+      "store_entry": "postcss@8.4.31"
+    },
+    {
+      "version": "8.5.30",
+      "store_entry": "postcss@8.5.30"
+    }
+  ],
+  "postcss-selector-parser": [
+    {
+      "version": "6.1.4",
+      "store_entry": "postcss-selector-parser@6.1.4"
+    },
+    {
+      "version": "7.1.6",
+      "store_entry": "postcss-selector-parser@7.1.6"
+    }
+  ],
+  "react-router": [
+    {
+      "version": "7.18.1",
+      "store_entry": "react-router@7.18.1+6dbf9a050bc9aadb"
+    },
+    {
+      "version": "7.18.1",
+      "store_entry": "react-router@7.18.1+ab9c01e4ccdf52df"
+    },
+    {
+      "version": "7.18.2",
+      "store_entry": "react-router@7.18.2+6dbf9a050bc9aadb"
+    }
+  ],
+  "sharp": [
+    {
+      "version": "0.33.5",
+      "store_entry": "sharp@0.33.5"
+    },
+    {
+      "version": "0.35.5",
+      "store_entry": "sharp@0.35.5+178e511e62867ab4"
+    },
+    {
+      "version": "0.35.5",
+      "store_entry": "sharp@0.35.5+54bb80aa5fe8cac3"
+    }
+  ],
+  "sprintf-js": [
+    {
+      "version": "1.0.3",
+      "store_entry": "sprintf-js@1.0.3"
+    }
+  ],
+  "uuid": [
+    {
+      "version": "11.1.1",
+      "store_entry": "uuid@11.1.1"
+    },
+    {
+      "version": "9.0.1",
+      "store_entry": "uuid@9.0.1"
+    }
+  ],
+  "webpack-dev-middleware": [
+    {
+      "version": "6.1.3",
+      "store_entry": "webpack-dev-middleware@6.1.3+9523b04bed5926a1"
+    },
+    {
+      "version": "6.1.3",
+      "store_entry": "webpack-dev-middleware@6.1.3+eeb8461022fa3f56"
+    }
+  ]
+}

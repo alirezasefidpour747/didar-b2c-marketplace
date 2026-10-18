@@ -1,0 +1,68 @@
+{
+  "run_id": "native-baseline-20261018041432786",
+  "status": "REPRODUCED",
+  "ordinary_linked_parent_delete": {
+    "status": 409,
+    "message": "CONFLICT_USE_DIDAR_PRODUCT_EDITOR"
+  },
+  "unrelated_parent": "prod_01M56KGVVPJPWM7112527W64BY",
+  "linked_targets": [
+    {
+      "id": "bracelet",
+      "native_id": "prod_01M56KGH4H45FRS90DQ89Q6FVS",
+      "variant_id": "variant_01M56KGH5YACZ6XYYPMFMEHF7N"
+    },
+    {
+      "id": "earring",
+      "native_id": "prod_01M56KGH7A7H5XDWFG3J3T9X92",
+      "variant_id": "variant_01M56KGH8HYJ6761SD630KR711"
+    }
+  ],
+  "forged_parent_single_delete": {
+    "status": 200,
+    "deleted": true,
+    "actual_variant": [
+      {
+        "id": "variant_01M56KGH5YACZ6XYYPMFMEHF7N",
+        "product_id": "prod_01M56KGH4H45FRS90DQ89Q6FVS",
+        "deleted_at": "2026-10-18T04:15:06.846+00:00"
+      }
+    ]
+  },
+  "forged_parent_batch_delete": {
+    "status": 200,
+    "deleted": {
+      "ids": [
+        "variant_01M56KGH8HYJ6761SD630KR711"
+      ],
+      "object": "variant",
+      "deleted": true
+    },
+    "actual_variant": [
+      {
+        "id": "variant_01M56KGH8HYJ6761SD630KR711",
+        "product_id": "prod_01M56KGH7A7H5XDWFG3J3T9X92",
+        "deleted_at": "2026-10-18T04:15:06.985+00:00"
+      }
+    ]
+  },
+  "canonical_authorities_before": [
+    {
+      "products": 4,
+      "offers": 8,
+      "uids": 0,
+      "orders": 0,
+      "events": 0
+    }
+  ],
+  "canonical_authorities_after": [
+    {
+      "products": 4,
+      "offers": 8,
+      "uids": 0,
+      "orders": 0,
+      "events": 0
+    }
+  ],
+  "meaning": "Authenticated native Admin bypasses canonical projection guard via unrelated parent; native variants deleted while canonical Product/Offer/UID/order/financial authorities unchanged."
+}

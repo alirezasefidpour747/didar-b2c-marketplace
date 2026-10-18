@@ -1,0 +1,34 @@
+{
+  "run_id": "correction-20261018042135715",
+  "status": "PASS",
+  "journeys": 3,
+  "results": [
+    {
+      "workspace": "native Admin",
+      "status": "PASS",
+      "route": "/dashboard/didar",
+      "behavior": "Actual native sign-in, original shell navigation and canonical DIDAR Product workspace render"
+    },
+    {
+      "workspace": "native Vendor",
+      "status": "PASS",
+      "route": "/seller/didar",
+      "behavior": "Actual native member sign-in, selected own seller and own canonical Product workspace render"
+    },
+    {
+      "workspace": "B2C Customer",
+      "status": "PASS",
+      "route": "/fa/products/jewelry/bracelets/bracelet/bracelet-992df610cee4510846565426fcde40a8",
+      "behavior": "Customer sign-in/account then actual public canonical PDP remains available"
+    }
+  ],
+  "page_errors": [],
+  "screenshots": [
+    "native-admin-product-authority-1440.png",
+    "native-admin-product-authority-390.png",
+    "native-vendor-own-catalog-1440.png",
+    "native-vendor-own-catalog-390.png",
+    "customer-pdp-authority-1440.png",
+    "customer-pdp-authority-390.png"
+  ]
+}

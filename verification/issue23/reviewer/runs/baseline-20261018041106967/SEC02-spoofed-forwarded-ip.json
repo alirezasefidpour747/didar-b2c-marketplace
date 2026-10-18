@@ -1,0 +1,120 @@
+{
+  "run_id": "baseline-20261018041106967",
+  "status": "REPRODUCED",
+  "baseline": 200,
+  "rotating_addresses": 21,
+  "rotating_responses": [
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    },
+    {
+      "status": 401,
+      "message": "UNAUTHORIZED",
+      "authenticated": false
+    }
+  ],
+  "rotating_bucket_rows": 42,
+  "fixed_address_attempt21": {
+    "status": 429,
+    "message": "RATE_LIMIT",
+    "authenticated": false
+  },
+  "meaning": "Direct API trusts unsigned forwarded IP; rotating it bypasses account attempt ceiling."
+}

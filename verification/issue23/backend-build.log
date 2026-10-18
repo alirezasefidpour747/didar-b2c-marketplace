@@ -1,0 +1,13 @@
+$ medusa build && node ./scripts/bundle-dashboards.mjs && node ./scripts/bundle-didar-schema.mjs
+[32minfo[39m:    Generating types...
+[32minfo[39m:    No link to load from /workspace/didar-b2c-marketplace/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    Types generated successfully
+[32minfo[39m:    Starting build...
+[32minfo[39m:    Compiling backend source...
+[32minfo[39m:    Removing existing ".medusa/server" folder
+[32minfo[39m:    Skipping admin build, since its disabled inside the medusa-config file
+[32minfo[39m:    Backend build completed successfully (7.90s)
+[bundle-dashboards] admin: apps/admin/dist -> .medusa/server/dashboards/admin/dist
+[bundle-dashboards] vendor: apps/vendor/dist -> .medusa/server/dashboards/vendor/dist
+[bundle-dashboards] done — the artifact serves 2 panel(s) at their configured paths.
+[bundle-didar-schema] bundled 22 additive SQL/vocabulary resources for artifact-only deployments.
