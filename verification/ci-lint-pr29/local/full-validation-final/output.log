@@ -1,0 +1,2013 @@
+✔ release source accepts only exact lowercase commit identities, never refs or shell text (1.616674ms)
+✔ registry manifest digest cannot be replaced by a mutable tag (0.34679ms)
+✔ manifest binds source, both images, platform and actual revision labels (1.849183ms)
+✔ archive path traversal and unverified builds are rejected (0.565037ms)
+✔ archive checksums cover actual bytes (10.263159ms)
+✔ tampered release archive fails before any Docker load can occur (2.45423ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 80.945292
+✔ admin: canonical Fast Refresh stays error-level with path-scoped options (794.56828ms)
+✔ admin: documented route config and handle coexist with the component (151.56767ms)
+✔ admin: documented widget configuration coexists with the component (21.247506ms)
+✔ admin: documented custom-fields factory may contain local components (18.65214ms)
+✔ admin: the actual SDK factory can use a named import alias (16.721264ms)
+✔ admin: route-only export names do not leak into ordinary components (15.536538ms)
+✔ admin: route helpers are not route entrypoints (21.690576ms)
+✔ admin: unexpected route exports remain errors (9.610641ms)
+✔ admin: widget handle is not an allowed config export (8.921718ms)
+✔ admin: unexpected custom-fields exports remain errors (12.962017ms)
+✔ admin: unexpected custom-fields helper functions remain errors (10.795558ms)
+✔ admin: wildcard custom-fields exports remain errors (8.665314ms)
+✔ admin: a similarly named local function is not the SDK contract (9.943021ms)
+✔ admin: a factory from another module is not the SDK contract (8.141718ms)
+✔ admin: a type-only import is not a runtime SDK wrapper (6.904433ms)
+✔ admin: an inline type-only import is not a runtime SDK wrapper (7.136351ms)
+✔ admin: an unsupported namespace call stays on the upstream path (15.446212ms)
+✔ admin: the SDK exception does not apply outside custom-fields (9.528969ms)
+✔ admin: other recommended lint rules still run inside custom-fields (8.699055ms)
+✔ vendor: canonical Fast Refresh stays error-level with path-scoped options (23.40074ms)
+✔ vendor: documented route config and handle coexist with the component (8.037402ms)
+✔ vendor: documented widget configuration coexists with the component (6.832226ms)
+✔ vendor: documented custom-fields factory may contain local components (6.703833ms)
+✔ vendor: the actual SDK factory can use a named import alias (7.869521ms)
+✔ vendor: route-only export names do not leak into ordinary components (8.420546ms)
+✔ vendor: route helpers are not route entrypoints (6.230122ms)
+✔ vendor: unexpected route exports remain errors (5.720869ms)
+✔ vendor: widget handle is not an allowed config export (17.848725ms)
+✔ vendor: unexpected custom-fields exports remain errors (8.070853ms)
+✔ vendor: unexpected custom-fields helper functions remain errors (8.40901ms)
+✔ vendor: wildcard custom-fields exports remain errors (7.092415ms)
+✔ vendor: a similarly named local function is not the SDK contract (7.493757ms)
+✔ vendor: a factory from another module is not the SDK contract (6.60871ms)
+✔ vendor: a type-only import is not a runtime SDK wrapper (6.220307ms)
+✔ vendor: an inline type-only import is not a runtime SDK wrapper (7.113907ms)
+✔ vendor: an unsupported namespace call stays on the upstream path (6.838905ms)
+✔ vendor: the SDK exception does not apply outside custom-fields (5.623413ms)
+✔ vendor: other recommended lint rules still run inside custom-fields (5.812305ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1512.29704
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [1.07ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.49ms]
+(pass) local tooling rejects staging environment [0.08ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.04ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.50ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.56ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.06ms]
+(pass) preflight refuses an occupied port without terminating its owner [2.35ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [37.93ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.16ms]
+(pass) failed child verification preserves the nonzero result [23.25ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.71ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.39ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.15ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [2.00ms]
+(pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [11.16ms]
+
+ 23 pass
+ 0 fail
+ 67 expect() calls
+Ran 23 tests across 1 file. [98.00ms]
+$ turbo run lint
+
+   • Packages in scope: @acme/admin, @acme/api, @acme/vendor, @didar/auth-network, @didar/ui, @mercurjs/storefront
+   • Running lint in 6 packages
+   • Remote caching disabled, using shared worktree cache
+
+@acme/admin:lint: cache hit, replaying logs cdcb3457f277d73c
+@acme/admin:lint: $ eslint .
+@mercurjs/storefront:lint: cache hit, replaying logs efe5e8a72f69b235
+@mercurjs/storefront:lint: $ next lint
+@mercurjs/storefront:lint: `next lint` is deprecated and will be removed in Next.js 16.
+@mercurjs/storefront:lint: For new projects, use create-next-app to choose your preferred linter.
+@mercurjs/storefront:lint: For existing projects, migrate to the ESLint CLI:
+@mercurjs/storefront:lint: npx @next/codemod@canary next-lint-to-eslint-cli .
+@mercurjs/storefront:lint: 
+@mercurjs/storefront:lint: ✔ No ESLint warnings or errors
+@acme/vendor:lint: cache hit, replaying logs 2c5511abea95bfa1
+@acme/vendor:lint: $ eslint .
+
+ Tasks:    3 successful, 3 total
+Cached:    3 cached, 3 total
+  Time:    43ms >>> FULL TURBO
+
+$ node ../../scripts/prepare-codegen-cache.mjs && mercurjs codegen
+Official Mercur 2.3.7 codegen fallback cache prepared.
+✔ Route types generated successfully.
+
+$ node scripts/local.mjs test
+Platform: linux/x64; Node 24.19.0; Bun 1.4.3; local Docker ready
+Disposable local QA database/services created. Persistent UAT volumes and configuration are not used.
+$ bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    Running migrations...
+[32minfo[39m:    Creating migrations table 'mikro_orm_migrations'...
+[32minfo[39m:    Migrations table created successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: admin_ui
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: codegen
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: commission
+[32minfo[39m:      ● Migrating Migration20260130132817
+[32minfo[39m:      ✔ Migrated Migration20260130132817
+[32minfo[39m:      ● Migrating Migration20260615120000
+[32minfo[39m:      ✔ Migrated Migration20260615120000
+[32minfo[39m:      ● Migrating Migration20260910000000
+[32minfo[39m:      ✔ Migrated Migration20260910000000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: custom_fields
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: media
+[32minfo[39m:      ● Migrating Migration20260616000000
+[32minfo[39m:      ✔ Migrated Migration20260616000000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: offer
+[32minfo[39m:      ● Migrating Migration20260520104835
+[32minfo[39m:      ✔ Migrated Migration20260520104835
+[32minfo[39m:      ● Migrating Migration20260526000000
+[32minfo[39m:      ✔ Migrated Migration20260526000000
+[32minfo[39m:      ● Migrating Migration20260622000000
+[32minfo[39m:      ✔ Migrated Migration20260622000000
+[32minfo[39m:      ● Migrating Migration20260804000000
+[32minfo[39m:      ✔ Migrated Migration20260804000000
+[32minfo[39m:      ● Migrating Migration20260908000000
+[32minfo[39m:      ✔ Migrated Migration20260908000000
+[32minfo[39m:      ● Migrating Migration20261007000000
+[32minfo[39m:      ✔ Migrated Migration20261007000000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: payout
+[32minfo[39m:      ● Migrating Migration20260130132816
+[32minfo[39m:      ✔ Migrated Migration20260130132816
+[32minfo[39m:      ● Migrating Migration20260216152209
+[32minfo[39m:      ✔ Migrated Migration20260216152209
+[32minfo[39m:      ● Migrating Migration20260317000000
+[32minfo[39m:      ✔ Migrated Migration20260317000000
+[32minfo[39m:      ● Migrating Migration20260323170925
+[32minfo[39m:      ✔ Migrated Migration20260323170925
+[32minfo[39m:      ● Migrating Migration20260928120000
+[32minfo[39m:      ✔ Migrated Migration20260928120000
+[32minfo[39m:      ● Migrating Migration20261006120000
+[32minfo[39m:      ✔ Migrated Migration20261006120000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: product_attribute
+[32minfo[39m:      ● Migrating Migration20260601000000
+[32minfo[39m:      ✔ Migrated Migration20260601000000
+[32minfo[39m:      ● Migrating Migration20260601000001
+[32minfo[39m:      ✔ Migrated Migration20260601000001
+[32minfo[39m:      ● Migrating Migration20260601000002
+[32minfo[39m:      ✔ Migrated Migration20260601000002
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: product_edit
+[32minfo[39m:      ● Migrating Migration20260601130000
+[32minfo[39m:      ✔ Migrated Migration20260601130000
+[32minfo[39m:      ● Migrating Migration20260828120000
+[32minfo[39m:      ✔ Migrated Migration20260828120000
+[32minfo[39m:      ● Migrating Migration20260901120000
+[32minfo[39m:      ✔ Migrated Migration20260901120000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: promotion_cost
+[32minfo[39m:      ● Migrating Migration20260722120000
+[32minfo[39m:      ✔ Migrated Migration20260722120000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: review
+[32minfo[39m:      ● Migrating Migration20260729120000
+[32minfo[39m:      ✔ Migrated Migration20260729120000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: seller
+[32minfo[39m:      ● Migrating Migration20260324104737
+[32minfo[39m:      ✔ Migrated Migration20260324104737
+[32minfo[39m:      ● Migrating Migration20260330093053
+[32minfo[39m:      ✔ Migrated Migration20260330093053
+[32minfo[39m:      ● Migrating Migration20260331113435
+[32minfo[39m:      ✔ Migrated Migration20260331113435
+[32minfo[39m:      ● Migrating Migration20260401093720
+[32minfo[39m:      ✔ Migrated Migration20260401093720
+[32minfo[39m:      ● Migrating Migration20260410120000
+[32minfo[39m:      ✔ Migrated Migration20260410120000
+[32minfo[39m:      ● Migrating Migration20260414123048
+[32minfo[39m:      ✔ Migrated Migration20260414123048
+[32minfo[39m:      ● Migrating Migration20260421102419
+[32minfo[39m:      ✔ Migrated Migration20260421102419
+[32minfo[39m:      ● Migrating Migration20260422130000
+[32minfo[39m:      ✔ Migrated Migration20260422130000
+[32minfo[39m:      ● Migrating Migration20260422140000
+[32minfo[39m:      ✔ Migrated Migration20260422140000
+[32minfo[39m:      ● Migrating Migration20260427100000
+[32minfo[39m:      ✔ Migrated Migration20260427100000
+[32minfo[39m:      ● Migrating Migration20260616120000
+[32minfo[39m:      ✔ Migrated Migration20260616120000
+[32minfo[39m:      ● Migrating Migration20260908010000
+[32minfo[39m:      ✔ Migrated Migration20260908010000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: vendor_ui
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: stock_location
+[32minfo[39m:      ● Migrating Migration20240307161216
+[32minfo[39m:      ✔ Migrated Migration20240307161216
+[32minfo[39m:      ● Migrating Migration20241210073813
+[32minfo[39m:      ✔ Migrated Migration20241210073813
+[32minfo[39m:      ● Migrating Migration20250106142624
+[32minfo[39m:      ✔ Migrated Migration20250106142624
+[32minfo[39m:      ● Migrating Migration20250120110820
+[32minfo[39m:      ✔ Migrated Migration20250120110820
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: inventory
+[32minfo[39m:      ● Migrating Migration20240307132720
+[32minfo[39m:      ✔ Migrated Migration20240307132720
+[32minfo[39m:      ● Migrating Migration20240719123015
+[32minfo[39m:      ✔ Migrated Migration20240719123015
+[32minfo[39m:      ● Migrating Migration20241213063611
+[32minfo[39m:      ✔ Migrated Migration20241213063611
+[32minfo[39m:      ● Migrating Migration20251010131115
+[32minfo[39m:      ✔ Migrated Migration20251010131115
+[32minfo[39m:      ● Migrating Migration20260815185216
+[32minfo[39m:      ✔ Migrated Migration20260815185216
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: product
+[32minfo[39m:      ● Migrating InitialSetup20240401153642
+[32minfo[39m:      ✔ Migrated InitialSetup20240401153642
+[32minfo[39m:      ● Migrating Migration20240601111544
+[32minfo[39m:      ✔ Migrated Migration20240601111544
+[32minfo[39m:      ● Migrating Migration202408271511
+[32minfo[39m:      ✔ Migrated Migration202408271511
+[32minfo[39m:      ● Migrating Migration20241122120331
+[32minfo[39m:      ✔ Migrated Migration20241122120331
+[32minfo[39m:      ● Migrating Migration20241125090957
+[32minfo[39m:      ✔ Migrated Migration20241125090957
+[32minfo[39m:      ● Migrating Migration20250411073236
+[32minfo[39m:      ✔ Migrated Migration20250411073236
+[32minfo[39m:      ● Migrating Migration20250516081326
+[32minfo[39m:      ✔ Migrated Migration20250516081326
+[32minfo[39m:      ● Migrating Migration20250910154539
+[32minfo[39m:      ✔ Migrated Migration20250910154539
+[32minfo[39m:      ● Migrating Migration20250911092221
+[32minfo[39m:      ✔ Migrated Migration20250911092221
+[32minfo[39m:      ● Migrating Migration20250929204438
+[32minfo[39m:      ✔ Migrated Migration20250929204438
+[32minfo[39m:      ● Migrating Migration20251008132218
+[32minfo[39m:      ✔ Migrated Migration20251008132218
+[32minfo[39m:      ● Migrating Migration20251011090511
+[32minfo[39m:      ✔ Migrated Migration20251011090511
+[32minfo[39m:      ● Migrating Migration20251022153442
+[32minfo[39m:      ✔ Migrated Migration20251022153442
+[32minfo[39m:      ● Migrating Migration20251029150809
+[32minfo[39m:      ✔ Migrated Migration20251029150809
+[32minfo[39m:      ● Migrating Migration20251110180907
+[32minfo[39m:      ✔ Migrated Migration20251110180907
+[32minfo[39m:      ● Migrating Migration20251113183352
+[32minfo[39m:      ✔ Migrated Migration20251113183352
+[32minfo[39m:      ● Migrating Migration20260224120000
+[32minfo[39m:      ✔ Migrated Migration20260224120000
+[32minfo[39m:      ● Migrating Migration20260301002050
+[32minfo[39m:      ✔ Migrated Migration20260301002050
+[32minfo[39m:      ● Migrating Migration20260306120000
+[32minfo[39m:      ✔ Migrated Migration20260306120000
+[32minfo[39m:      ● Migrating Migration20260623180000
+[32minfo[39m:      ✔ Migrated Migration20260623180000
+[32minfo[39m:      ● Migrating Migration20260730104846
+[32minfo[39m:      ✔ Migrated Migration20260730104846
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: pricing
+[32minfo[39m:      ● Migrating Migration20230929122253
+[32minfo[39m:      ✔ Migrated Migration20230929122253
+[32minfo[39m:      ● Migrating Migration20240322094407
+[32minfo[39m:      ✔ Migrated Migration20240322094407
+[32minfo[39m:      ● Migrating Migration20240322113359
+[32minfo[39m:      ✔ Migrated Migration20240322113359
+[32minfo[39m:      ● Migrating Migration20240322120125
+[32minfo[39m:      ✔ Migrated Migration20240322120125
+[32minfo[39m:      ● Migrating Migration20240626133555
+[32minfo[39m:      ✔ Migrated Migration20240626133555
+[32minfo[39m:      ● Migrating Migration20240704094505
+[32minfo[39m:      ✔ Migrated Migration20240704094505
+[32minfo[39m:      ● Migrating Migration20241127114534
+[32minfo[39m:      ✔ Migrated Migration20241127114534
+[32minfo[39m:      ● Migrating Migration20241127223829
+[32minfo[39m:      ✔ Migrated Migration20241127223829
+[32minfo[39m:      ● Migrating Migration20241128055359
+[32minfo[39m:      ✔ Migrated Migration20241128055359
+[32minfo[39m:      ● Migrating Migration20241212190401
+[32minfo[39m:      ✔ Migrated Migration20241212190401
+[32minfo[39m:      ● Migrating Migration20250408145122
+[32minfo[39m:      ✔ Migrated Migration20250408145122
+[32minfo[39m:      ● Migrating Migration20250409122219
+[32minfo[39m:      ✔ Migrated Migration20250409122219
+[32minfo[39m:      ● Migrating Migration20251009110625
+[32minfo[39m:      ✔ Migrated Migration20251009110625
+[32minfo[39m:      ● Migrating Migration20251112192723
+[32minfo[39m:      ✔ Migrated Migration20251112192723
+[32minfo[39m:      ● Migrating Migration20260429163502
+[32minfo[39m:      ✔ Migrated Migration20260429163502
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: promotion
+[32minfo[39m:      ● Migrating Migration20240227120221
+[32minfo[39m:      ✔ Migrated Migration20240227120221
+[32minfo[39m:      ● Migrating Migration20240617102917
+[32minfo[39m:      ✔ Migrated Migration20240617102917
+[32minfo[39m:      ● Migrating Migration20240624153824
+[32minfo[39m:      ✔ Migrated Migration20240624153824
+[32minfo[39m:      ● Migrating Migration20241211061114
+[32minfo[39m:      ✔ Migrated Migration20241211061114
+[32minfo[39m:      ● Migrating Migration20250113094144
+[32minfo[39m:      ✔ Migrated Migration20250113094144
+[32minfo[39m:      ● Migrating Migration20250120110700
+[32minfo[39m:      ✔ Migrated Migration20250120110700
+[32minfo[39m:      ● Migrating Migration20250226130616
+[32minfo[39m:      ✔ Migrated Migration20250226130616
+[32minfo[39m:      ● Migrating Migration20250508081510
+[32minfo[39m:      ✔ Migrated Migration20250508081510
+[32minfo[39m:      ● Migrating Migration20250828075407
+[32minfo[39m:      ✔ Migrated Migration20250828075407
+[32minfo[39m:      ● Migrating Migration20250909083125
+[32minfo[39m:      ✔ Migrated Migration20250909083125
+[32minfo[39m:      ● Migrating Migration20250916120552
+[32minfo[39m:      ✔ Migrated Migration20250916120552
+[32minfo[39m:      ● Migrating Migration20250917143818
+[32minfo[39m:      ✔ Migrated Migration20250917143818
+[32minfo[39m:      ● Migrating Migration20250919122137
+[32minfo[39m:      ✔ Migrated Migration20250919122137
+[32minfo[39m:      ● Migrating Migration20251006000000
+[32minfo[39m:      ✔ Migrated Migration20251006000000
+[32minfo[39m:      ● Migrating Migration20251015113934
+[32minfo[39m:      ✔ Migrated Migration20251015113934
+[32minfo[39m:      ● Migrating Migration20251107050148
+[32minfo[39m:      ✔ Migrated Migration20251107050148
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: customer
+[32minfo[39m:      ● Migrating Migration20240124154000
+[32minfo[39m:      ✔ Migrated Migration20240124154000
+[32minfo[39m:      ● Migrating Migration20240524123112
+[32minfo[39m:      ✔ Migrated Migration20240524123112
+[32minfo[39m:      ● Migrating Migration20240602110946
+[32minfo[39m:      ✔ Migrated Migration20240602110946
+[32minfo[39m:      ● Migrating Migration20241211074630
+[32minfo[39m:      ✔ Migrated Migration20241211074630
+[32minfo[39m:      ● Migrating Migration20251010130829
+[32minfo[39m:      ✔ Migrated Migration20251010130829
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: sales_channel
+[32minfo[39m:      ● Migrating Migration20240115152146
+[32minfo[39m:      ✔ Migrated Migration20240115152146
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: cart
+[32minfo[39m:      ● Migrating Migration20240222170223
+[32minfo[39m:      ✔ Migrated Migration20240222170223
+[32minfo[39m:      ● Migrating Migration20240831125857
+[32minfo[39m:      ✔ Migrated Migration20240831125857
+[32minfo[39m:      ● Migrating Migration20241106085918
+[32minfo[39m:      ✔ Migrated Migration20241106085918
+[32minfo[39m:      ● Migrating Migration20241205095237
+[32minfo[39m:      ✔ Migrated Migration20241205095237
+[32minfo[39m:      ● Migrating Migration20241216183049
+[32minfo[39m:      ✔ Migrated Migration20241216183049
+[32minfo[39m:      ● Migrating Migration20241218091938
+[32minfo[39m:      ✔ Migrated Migration20241218091938
+[32minfo[39m:      ● Migrating Migration20250120115059
+[32minfo[39m:      ✔ Migrated Migration20250120115059
+[32minfo[39m:      ● Migrating Migration20250212131240
+[32minfo[39m:      ✔ Migrated Migration20250212131240
+[32minfo[39m:      ● Migrating Migration20250326151602
+[32minfo[39m:      ✔ Migrated Migration20250326151602
+[32minfo[39m:      ● Migrating Migration20250508081553
+[32minfo[39m:      ✔ Migrated Migration20250508081553
+[32minfo[39m:      ● Migrating Migration20251017153909
+[32minfo[39m:      ✔ Migrated Migration20251017153909
+[32minfo[39m:      ● Migrating Migration20251208130704
+[32minfo[39m:      ✔ Migrated Migration20251208130704
+[32minfo[39m:      ● Migrating Migration20260626000000
+[32minfo[39m:      ✔ Migrated Migration20260626000000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: region
+[32minfo[39m:      ● Migrating Migration20240205173216
+[32minfo[39m:      ✔ Migrated Migration20240205173216
+[32minfo[39m:      ● Migrating Migration20240624200006
+[32minfo[39m:      ✔ Migrated Migration20240624200006
+[32minfo[39m:      ● Migrating Migration20250120110744
+[32minfo[39m:      ✔ Migrated Migration20250120110744
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: api_key
+[32minfo[39m:      ● Migrating InitialSetup20240221144943
+[32minfo[39m:      ✔ Migrated InitialSetup20240221144943
+[32minfo[39m:      ● Migrating Migration20240604080145
+[32minfo[39m:      ✔ Migrated Migration20240604080145
+[32minfo[39m:      ● Migrating Migration20241205122700
+[32minfo[39m:      ✔ Migrated Migration20241205122700
+[32minfo[39m:      ● Migrating Migration20251015123842
+[32minfo[39m:      ✔ Migrated Migration20251015123842
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: store
+[32minfo[39m:      ● Migrating InitialSetup20240227075933
+[32minfo[39m:      ✔ Migrated InitialSetup20240227075933
+[32minfo[39m:      ● Migrating Migration20240621145944
+[32minfo[39m:      ✔ Migrated Migration20240621145944
+[32minfo[39m:      ● Migrating Migration20241206083313
+[32minfo[39m:      ✔ Migrated Migration20241206083313
+[32minfo[39m:      ● Migrating Migration20251202184737
+[32minfo[39m:      ✔ Migrated Migration20251202184737
+[32minfo[39m:      ● Migrating Migration20251212161429
+[32minfo[39m:      ✔ Migrated Migration20251212161429
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: tax
+[32minfo[39m:      ● Migrating Migration20240227090331
+[32minfo[39m:      ✔ Migrated Migration20240227090331
+[32minfo[39m:      ● Migrating Migration20240710135844
+[32minfo[39m:      ✔ Migrated Migration20240710135844
+[32minfo[39m:      ● Migrating Migration20240924114005
+[32minfo[39m:      ✔ Migrated Migration20240924114005
+[32minfo[39m:      ● Migrating Migration20241212052837
+[32minfo[39m:      ✔ Migrated Migration20241212052837
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: currency
+[32minfo[39m:      ● Migrating InitialSetup20240228133303
+[32minfo[39m:      ✔ Migrated InitialSetup20240228133303
+[32minfo[39m:      ● Migrating Migration20240624082354
+[32minfo[39m:      ✔ Migrated Migration20240624082354
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: payment
+[32minfo[39m:      ● Migrating Migration20240225134525
+[32minfo[39m:      ✔ Migrated Migration20240225134525
+[32minfo[39m:      ● Migrating Migration20240806072619
+[32minfo[39m:      ✔ Migrated Migration20240806072619
+[32minfo[39m:      ● Migrating Migration20241211151053
+[32minfo[39m:      ✔ Migrated Migration20241211151053
+[32minfo[39m:      ● Migrating Migration20250115160517
+[32minfo[39m:      ✔ Migrated Migration20250115160517
+[32minfo[39m:      ● Migrating Migration20250120110552
+[32minfo[39m:      ✔ Migrated Migration20250120110552
+[32minfo[39m:      ● Migrating Migration20250123122334
+[32minfo[39m:      ✔ Migrated Migration20250123122334
+[32minfo[39m:      ● Migrating Migration20250206105639
+[32minfo[39m:      ✔ Migrated Migration20250206105639
+[32minfo[39m:      ● Migrating Migration20250207132723
+[32minfo[39m:      ✔ Migrated Migration20250207132723
+[32minfo[39m:      ● Migrating Migration20250625084134
+[32minfo[39m:      ✔ Migrated Migration20250625084134
+[32minfo[39m:      ● Migrating Migration20250924135437
+[32minfo[39m:      ✔ Migrated Migration20250924135437
+[32minfo[39m:      ● Migrating Migration20250929124701
+[32minfo[39m:      ✔ Migrated Migration20250929124701
+[32minfo[39m:      ● Migrating Migration20260411223700
+[32minfo[39m:      ✔ Migrated Migration20260411223700
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: order
+[32minfo[39m:      ● Migrating Migration20240219102530
+[32minfo[39m:      ✔ Migrated Migration20240219102530
+[32minfo[39m:      ● Migrating Migration20240604100512
+[32minfo[39m:      ✔ Migrated Migration20240604100512
+[32minfo[39m:      ● Migrating Migration20240715102100
+[32minfo[39m:      ✔ Migrated Migration20240715102100
+[32minfo[39m:      ● Migrating Migration20240715174100
+[32minfo[39m:      ✔ Migrated Migration20240715174100
+[32minfo[39m:      ● Migrating Migration20240716081800
+[32minfo[39m:      ✔ Migrated Migration20240716081800
+[32minfo[39m:      ● Migrating Migration20240801085921
+[32minfo[39m:      ✔ Migrated Migration20240801085921
+[32minfo[39m:      ● Migrating Migration20240821164505
+[32minfo[39m:      ✔ Migrated Migration20240821164505
+[32minfo[39m:      ● Migrating Migration20240821170920
+[32minfo[39m:      ✔ Migrated Migration20240821170920
+[32minfo[39m:      ● Migrating Migration20240827133639
+[32minfo[39m:      ✔ Migrated Migration20240827133639
+[32minfo[39m:      ● Migrating Migration20240902195921
+[32minfo[39m:      ✔ Migrated Migration20240902195921
+[32minfo[39m:      ● Migrating Migration20240913092514
+[32minfo[39m:      ✔ Migrated Migration20240913092514
+[32minfo[39m:      ● Migrating Migration20240930122627
+[32minfo[39m:      ✔ Migrated Migration20240930122627
+[32minfo[39m:      ● Migrating Migration20241014142943
+[32minfo[39m:      ✔ Migrated Migration20241014142943
+[32minfo[39m:      ● Migrating Migration20241106085223
+[32minfo[39m:      ✔ Migrated Migration20241106085223
+[32minfo[39m:      ● Migrating Migration20241129124827
+[32minfo[39m:      ✔ Migrated Migration20241129124827
+[32minfo[39m:      ● Migrating Migration20241217162224
+[32minfo[39m:      ✔ Migrated Migration20241217162224
+[32minfo[39m:      ● Migrating Migration20250326151554
+[32minfo[39m:      ✔ Migrated Migration20250326151554
+[32minfo[39m:      ● Migrating Migration20250522181137
+[32minfo[39m:      ✔ Migrated Migration20250522181137
+[32minfo[39m:      ● Migrating Migration20250702095353
+[32minfo[39m:      ✔ Migrated Migration20250702095353
+[32minfo[39m:      ● Migrating Migration20250704120229
+[32minfo[39m:      ✔ Migrated Migration20250704120229
+[32minfo[39m:      ● Migrating Migration20250910130000
+[32minfo[39m:      ✔ Migrated Migration20250910130000
+[32minfo[39m:      ● Migrating Migration20251016160403
+[32minfo[39m:      ✔ Migrated Migration20251016160403
+[32minfo[39m:      ● Migrating Migration20251016182939
+[32minfo[39m:      ✔ Migrated Migration20251016182939
+[32minfo[39m:      ● Migrating Migration20251017155709
+[32minfo[39m:      ✔ Migrated Migration20251017155709
+[32minfo[39m:      ● Migrating Migration20251114100559
+[32minfo[39m:      ✔ Migrated Migration20251114100559
+[32minfo[39m:      ● Migrating Migration20251125164002
+[32minfo[39m:      ✔ Migrated Migration20251125164002
+[32minfo[39m:      ● Migrating Migration20251210112909
+[32minfo[39m:      ✔ Migrated Migration20251210112909
+[32minfo[39m:      ● Migrating Migration20251210112924
+[32minfo[39m:      ✔ Migrated Migration20251210112924
+[32minfo[39m:      ● Migrating Migration20251225120947
+[32minfo[39m:      ✔ Migrated Migration20251225120947
+[32minfo[39m:      ● Migrating Migration20260106185528
+[32minfo[39m:      ✔ Migrated Migration20260106185528
+[32minfo[39m:      ● Migrating Migration20260625000000
+[32minfo[39m:      ✔ Migrated Migration20260625000000
+[32minfo[39m:      ● Migrating Migration20260729154253
+[32minfo[39m:      ✔ Migrated Migration20260729154253
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: settings
+[32minfo[39m:      ● Migrating Migration20250717162007
+[32minfo[39m:      ✔ Migrated Migration20250717162007
+[32minfo[39m:      ● Migrating Migration20260127081758
+[32minfo[39m:      ✔ Migrated Migration20260127081758
+[32minfo[39m:      ● Migrating Migration20260615151246
+[32minfo[39m:      ✔ Migrated Migration20260615151246
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: auth
+[32minfo[39m:      ● Migrating Migration20240205025928
+[32minfo[39m:      ✔ Migrated Migration20240205025928
+[32minfo[39m:      ● Migrating Migration20240529080336
+[32minfo[39m:      ✔ Migrated Migration20240529080336
+[32minfo[39m:      ● Migrating Migration20241202100304
+[32minfo[39m:      ✔ Migrated Migration20241202100304
+[32minfo[39m:      ● Migrating Migration20260514083900
+[32minfo[39m:      ✔ Migrated Migration20260514083900
+[32minfo[39m:      ● Migrating Migration20260525090000
+[32minfo[39m:      ✔ Migrated Migration20260525090000
+[32minfo[39m:      ● Migrating Migration20260604120000
+[32minfo[39m:      ✔ Migrated Migration20260604120000
+[32minfo[39m:      ● Migrating Migration20260616075929
+[32minfo[39m:      ✔ Migrated Migration20260616075929
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: auth
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: auth
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: user
+[32minfo[39m:      ● Migrating Migration20240214033943
+[32minfo[39m:      ✔ Migrated Migration20240214033943
+[32minfo[39m:      ● Migrating Migration20240703095850
+Note: If the index "IDX_user_email" fails to create, then delete any existing users with duplicate emails before retrying the migration.
+[32minfo[39m:      ✔ Migrated Migration20240703095850
+[32minfo[39m:      ● Migrating Migration20241202103352
+[32minfo[39m:      ✔ Migrated Migration20241202103352
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: fulfillment
+[32minfo[39m:      ● Migrating Migration20240311145700_InitialSetupMigration
+[32minfo[39m:      ✔ Migrated Migration20240311145700_InitialSetupMigration
+[32minfo[39m:      ● Migrating Migration20240821170957
+[32minfo[39m:      ✔ Migrated Migration20240821170957
+[32minfo[39m:      ● Migrating Migration20240917161003
+[32minfo[39m:      ✔ Migrated Migration20240917161003
+[32minfo[39m:      ● Migrating Migration20241217110416
+[32minfo[39m:      ✔ Migrated Migration20241217110416
+[32minfo[39m:      ● Migrating Migration20250113122235
+[32minfo[39m:      ✔ Migrated Migration20250113122235
+[32minfo[39m:      ● Migrating Migration20250120115002
+[32minfo[39m:      ✔ Migrated Migration20250120115002
+[32minfo[39m:      ● Migrating Migration20250822130931
+[32minfo[39m:      ✔ Migrated Migration20250822130931
+[32minfo[39m:      ● Migrating Migration20250825132614
+[32minfo[39m:      ✔ Migrated Migration20250825132614
+[32minfo[39m:      ● Migrating Migration20251114133146
+[32minfo[39m:      ✔ Migrated Migration20251114133146
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: fulfillment
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: fulfillment
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: notification
+[32minfo[39m:      ● Migrating Migration20240509083918_InitialSetupMigration
+[32minfo[39m:      ✔ Migrated Migration20240509083918_InitialSetupMigration
+[32minfo[39m:      ● Migrating Migration20240628075401
+[32minfo[39m:      ✔ Migrated Migration20240628075401
+[32minfo[39m:      ● Migrating Migration20240830094712
+[32minfo[39m:      ✔ Migrated Migration20240830094712
+[32minfo[39m:      ● Migrating Migration20250120110514
+[32minfo[39m:      ✔ Migrated Migration20250120110514
+[32minfo[39m:      ● Migrating Migration20251028172715
+[32minfo[39m:      ✔ Migrated Migration20251028172715
+[32minfo[39m:      ● Migrating Migration20251121123942
+[32minfo[39m:      ✔ Migrated Migration20251121123942
+[32minfo[39m:      ● Migrating Migration20251121150408
+[32minfo[39m:      ✔ Migrated Migration20251121150408
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: notification
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: notification
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: search
+[32minfo[39m:      ● Migrating Migration20260805085626
+[32minfo[39m:      ✔ Migrated Migration20260805085626
+[32minfo[39m:      ● Migrating Migration20260903085616
+[32minfo[39m:      ✔ Migrated Migration20260903085616
+[32minfo[39m:      ● Migrating Migration20260911115931
+[32minfo[39m:      ✔ Migrated Migration20260911115931
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: search
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: search
+[32minfo[39m:      ● Migrating Migration20260807120000
+[32minfo[39m:      ✔ Migrated Migration20260807120000
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: cache
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: event_bus
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: workflows
+[32minfo[39m:      ● Migrating Migration20231228143900
+[32minfo[39m:      ✔ Migrated Migration20231228143900
+[32minfo[39m:      ● Migrating Migration20241206101446
+[32minfo[39m:      ✔ Migrated Migration20241206101446
+[32minfo[39m:      ● Migrating Migration20250128174331
+[32minfo[39m:      ✔ Migrated Migration20250128174331
+[32minfo[39m:      ● Migrating Migration20250505092459
+[32minfo[39m:      ✔ Migrated Migration20250505092459
+[32minfo[39m:      ● Migrating Migration20250819104213
+[32minfo[39m:      ✔ Migrated Migration20250819104213
+[32minfo[39m:      ● Migrating Migration20250819110924
+[32minfo[39m:      ✔ Migrated Migration20250819110924
+[32minfo[39m:      ● Migrating Migration20250908080305
+[32minfo[39m:      ✔ Migrated Migration20250908080305
+[32minfo[39m:    Completed successfully
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: locking
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: file
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: file
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: file
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    
+[32minfo[39m:    MODULE: permissions
+[32minfo[39m:    Skipped. Database is up-to-date for module.
+[32minfo[39m:    
+[32minfo[39m:    Migrations completed
+[32minfo[39m:    
+[32minfo[39m:    Syncing links...
+[32minfo[39m:    ┌──────────────────────────────────────────────────────────────────────────────┐│                                                                              ││   Created following links tables                                             ││   - cart.cart <> payment.payment_collection (cart_payment_collection)        ││   - cart.cart <> promotion.promotions (cart_promotion)                       ││   - customer.customer <> payment.account_holder (customer_account_holder)    ││   - stock_location.location <> fulfillment.fulfillment_provider              ││   (location_fulfillment_provider)                                            ││   - stock_location.location <> fulfillment.fulfillment_set                   ││   (location_fulfillment_set)                                                 ││   - user.invite <> rbac.rbac_role (invite_rbac_role)                         ││   - order.order <> cart.cart (order_cart)                                    ││   - order.order <> fulfillment.fulfillments (order_fulfillment)              ││   - order.order <> payment.payment_collection (order_payment_collection)     ││   - order.order <> promotion.promotions (order_promotion)                    ││   - order.return <> fulfillment.fulfillments (return_fulfillment)            ││   - product.product <> sales_channel.sales_channel (product_sales_channel)   ││   - product.product <> fulfillment.shipping_profile                          ││   (product_shipping_profile)                                                 ││   - product.variant <> inventory.inventory                                   ││   (product_variant_inventory_item)                                           ││   - product.variant <> pricing.price_set (product_variant_price_set)         ││   - api_key.api_key <> sales_channel.sales_channel                           ││   (publishable_api_key_sales_channel)                                        ││   - region.region <> payment.payment_provider (region_payment_provider)      ││   - sales_channel.sales_channel <> stock_location.location                   ││   (sales_channel_stock_location)                                             ││   - fulfillment.shipping_option <> pricing.price_set                         ││   (shipping_option_price_set)                                                ││   - user.user <> rbac.rbac_role (user_rbac_role)                             ││   - promotion.campaign <> seller.seller (promotion_campaign_seller_seller)   ││   - cart.line_item <> offer.offer (cart_line_item_offer_offer)               ││   - product.product_category <> seller.seller                                ││   (product_product_category_seller_seller)                                   ││   - customer.customer <> review.review (customer_customer_review_review)     ││   - seller.seller <> fulfillment.fulfillment_set                             ││   (seller_seller_fulfillment_fulfillment_set)                                ││   - inventory.inventory_item <> seller.seller                                ││   (inventory_inventory_item_seller_seller)                                   ││   - product.product_category <> media.media_image                            ││   (product_product_category_media_media_image)                               ││   - product.product_collection <> media.media_image                          ││   (product_product_collection_media_media_image)                             ││   - offer.offer <> inventory.inventory_item (offer_inventory_item)           ││   - offer.offer <> pricing.price (offer_offer_pricing_price)                 ││   - seller.order_group <> order.order (order_group_order)                    ││   - order.order_line_item <> offer.offer                                     ││   (order_order_line_item_offer_offer)                                        ││   - order.order <> payout.payout (order_order_payout_payout)                 ││   - order.order <> review.review (order_order_review_review)                 ││   - order.order <> seller.seller (order_order_seller_seller)                 ││   - payout.payout <> seller.seller (payout_payout_seller_seller)             ││   - pricing.price_list <> seller.seller (pricing_price_list_seller_seller)   ││   - product_attribute.product_attribute <> product.categories                ││   (product_category_attribute)                                               ││   - product.product <> product_attribute.product_attribute_value             ││   (product_attribute_value_link)                                             ││   - product.product <> review.review (product_product_review_review)         ││   - product.product <> seller.seller (product_seller)                        ││   - promotion.promotion <> seller.seller                                     ││   (promotion_promotion_seller_seller)                                        ││   - customer.customer_group <> seller.seller                                 ││   (customer_customer_group_seller_seller)                                    ││   - seller.seller <> customer.customer (seller_seller_customer_customer)     ││   - seller.seller <> payout.payout_account                                   ││   (seller_seller_payout_payout_account)                                      ││   - seller.seller <> review.review (seller_seller_review_review)             ││   - seller.seller <> fulfillment.service_zone                                ││   (seller_seller_fulfillment_service_zone)                                   ││   - fulfillment.shipping_option <> seller.seller                             ││   (fulfillment_shipping_option_seller_seller)                                ││   - stock_location.stock_location <> seller.seller                           ││   (stock_location_stock_location_seller_seller)                              ││                                                                              │└──────────────────────────────────────────────────────────────────────────────┘
+[32minfo[39m:    Links sync completed
+[32minfo[39m:    
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    No custom fields configured. Skipping.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    Migrating search indexes...
+[32minfo[39m:    Search indexes already up-to-date
+[32minfo[39m:    
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[32minfo[39m:    No custom fields configured. Skipping.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    Admin URL → http://localhost:9000/dashboard
+[32minfo[39m:    Vendor URL → http://localhost:9000/seller
+[32minfo[39m:    No workflow to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+[32minfo[39m:    Creating migrations table 'script_migrations'...
+[32minfo[39m:    Migrations table created successfully
+[32minfo[39m:    
+[32minfo[39m:    Pending migration scripts to execute
+[32minfo[39m:    /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/create-super-admin-role.js
+/workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+/workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+/workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+/workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+/workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+/workspace/work/didar-pr29/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+[32minfo[39m:    
+[32minfo[39m:    Running migration scripts...
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js
+[32minfo[39m:    Starting migration to normalize currency codes...
+[32minfo[39m:    Finished migration to normalize currency codes.
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-normalize-currency-codes-normalization.js completed (0.06s)
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js
+[32minfo[39m:    Starting migration of product option link ids...
+[32minfo[39m:    No ids to rewrite in product_product_option. Skipping.
+[32minfo[39m:    No ids to rewrite in product_product_option_value. Skipping.
+[32minfo[39m:    Finished migration of product option link ids.
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-option-link-ids.js completed (0.00s)
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js
+[32minfo[39m:    Assigning products to shipping profile
+[32minfo[39m:    Products assigned to shipping profile
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-product-shipping-profile.js completed (0.04s)
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js
+[32minfo[39m:    Assigning tax system provider to tax regions
+[32minfo[39m:    System provider assigned to tax regions
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/migrate-tax-region-provider.js completed (0.01s)
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js
+[32minfo[39m:    Starting reconciliation of inventory_level.reserved_quantity against active reservation_item rows...
+[32minfo[39m:    Finished reconciliation of inventory_level.reserved_quantity.
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@medusajs+medusa@2.21.2+fce65fdc2501d7ba/node_modules/@medusajs/medusa/dist/migration-scripts/reconcile-inventory-reserved-quantity.js completed (0.01s)
+[32minfo[39m:    Running migration script /workspace/work/didar-pr29/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js
+[32minfo[39m:    Migration script /workspace/work/didar-pr29/node_modules/.bun/@mercurjs+core@2.3.7+281275e64ed0feb7/node_modules/@mercurjs/core/.medusa/server/src/migration-scripts/drop-fulfillment-global-unique-indexes.js completed (0.01s)
+[32minfo[39m:    
+[32minfo[39m:    Migration scripts completed
+[32minfo[39m:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+[32minfo[39m:    No subscriber to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+[32minfo[39m:    Admin URL → http://localhost:9000/dashboard
+[32minfo[39m:    Vendor URL → http://localhost:9000/seller
+(node:73771) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Didar schema and shared gold catalog seeded (idempotent).
+[32minfo[39m:    Finished executing script.
+[32minfo[39m:    Executing script at ./src/scripts/didar-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+[32minfo[39m:    No subscriber to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+[32minfo[39m:    Admin URL → http://localhost:9000/dashboard
+[32minfo[39m:    Vendor URL → http://localhost:9000/seller
+Didar additive migrations applied; existing catalog preserved, demo seed disabled.
+[32minfo[39m:    Finished executing script.
+[32minfo[39m:    Executing script at ./src/scripts/native-qa-seed.ts...
+apply-product-change-actions: "when" name should be defined. A random one will be assigned to it, which is not recommended for production.
+ ({ buckets }) => buckets.productsToDelete.length > 0
+[32minfo[39m:    No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.
+[33mwarn[39m:    Local Event Bus installed. This is not recommended for production.
+[32minfo[39m:    Locking module: Using "in-memory" as default.
+[32minfo[39m:    No workflow to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/workflows. skipped.
+[32minfo[39m:    No subscriber to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/subscribers. skipped.
+[32minfo[39m:    Admin URL → http://localhost:9000/dashboard
+[32minfo[39m:    Vendor URL → http://localhost:9000/seller
+Native QA fixture identities created through native services/workflows; original Didar commerce unchanged.
+[32minfo[39m:    Finished executing script.
+$ bun run --cwd packages/api codegen && bun run build:panels && bun run --cwd packages/api build && bun run --cwd apps/storefront build
+$ node ../../scripts/prepare-codegen-cache.mjs && mercurjs codegen
+Official Mercur 2.3.7 codegen fallback cache prepared.
+✔ Route types generated successfully.
+
+$ node scripts/build-panels.mjs
+$ tsc -b && vite build
+vite v6.4.4 building for production...
+transforming...
+✓ 4166 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                                     0.56 kB │ gzip:     0.33 kB
+dist/assets/logo-DsMDmcX5.svg                                                       0.92 kB │ gzip:     0.36 kB
+dist/assets/RobotoMono-Medium-LUNBMOOH-B0UKl2Zn.ttf                                87.17 kB
+dist/assets/RobotoMono-Regular-27MA6W2G-44XoGH_Y.ttf                               87.24 kB
+dist/assets/Inter-Regular-CKBOXRQ3-DYjygwQm.ttf                                   310.25 kB
+dist/assets/Inter-Medium-RUQTUVA3-CKLJZXR2.ttf                                    315.13 kB
+dist/assets/index-CdnWGebV.css                                                    124.17 kB │ gzip:    21.70 kB
+dist/assets/chunk-LO2ZWQGL-6quLyd-M.js                                              0.04 kB │ gzip:     0.06 kB
+dist/assets/chunk-EOZUAYQL-DKo14Q46.js                                              0.04 kB │ gzip:     0.06 kB
+dist/assets/chunk-SMQT3ZNO-CDc7wW5L.js                                              0.07 kB │ gzip:     0.09 kB
+dist/assets/chunk-XSX255FK-C3WbDglz.js                                              0.12 kB │ gzip:     0.13 kB
+dist/assets/chunk-LTBX54CI--ihHhQFK.js                                              0.12 kB │ gzip:     0.13 kB
+dist/assets/chunk-54TMLQH3-Xd5bJjzc.js                                              0.13 kB │ gzip:     0.13 kB
+dist/assets/chunk-VW56KWO2-aVJcUHa1.js                                              0.16 kB │ gzip:     0.15 kB
+dist/assets/chunk-THHRRYRS-DxMxcXUm.js                                              0.17 kB │ gzip:     0.17 kB
+dist/assets/chunk-QDPLZDMX-BpW1LsFY.js                                              0.17 kB │ gzip:     0.16 kB
+dist/assets/chunk-LXSBG6LK-D8Zv8hXV.js                                              0.18 kB │ gzip:     0.16 kB
+dist/assets/chunk-PHOCVOZ5-BhCWW_N8.js                                              0.19 kB │ gzip:     0.17 kB
+dist/assets/home-ET6TYEZ5-kcRjBp-y.js                                               0.21 kB │ gzip:     0.19 kB
+dist/assets/chunk-IUFXXCV6-BBBgDAV9.js                                              0.21 kB │ gzip:     0.19 kB
+dist/assets/chunk-6BAPAIQM-DXqufzGw.js                                              0.23 kB │ gzip:     0.14 kB
+dist/assets/chunk-26OOAKQ6-Dql3W1iS.js                                              0.23 kB │ gzip:     0.18 kB
+dist/assets/settings-B77FRGCP-Buj9If9C.js                                           0.24 kB │ gzip:     0.20 kB
+dist/assets/chunk-O7MEMWAX-DWyT9LR4.js                                              0.25 kB │ gzip:     0.21 kB
+dist/assets/breadcrumb-3BIIWMAF-DwYkhUn1.js                                         0.27 kB │ gzip:     0.24 kB
+dist/assets/chunk-3KOTDGC2-C7XLEHYL.js                                              0.29 kB │ gzip:     0.21 kB
+dist/assets/chunk-U2L77ZDR-I1ZTJ1Pv.js                                              0.31 kB │ gzip:     0.25 kB
+dist/assets/chunk-PYDRHQTY-BY436rAx.js                                              0.33 kB │ gzip:     0.24 kB
+dist/assets/loader-G5I6BFQA-BekC7EeW.js                                             0.34 kB │ gzip:     0.27 kB
+dist/assets/chunk-2NSVAEDY-CKANvZRZ.js                                              0.36 kB │ gzip:     0.23 kB
+dist/assets/chunk-CMKC2YBP-DY7KRjNT.js                                              0.38 kB │ gzip:     0.25 kB
+dist/assets/campaign-create-AJ7MTML5-ZMko2hpg.js                                    0.38 kB │ gzip:     0.27 kB
+dist/assets/chunk-37XW63IZ-BbQIhrXU.js                                              0.38 kB │ gzip:     0.25 kB
+dist/assets/breadcrumb-TDHU2ZGQ-Bg_2YRvl.js                                         0.39 kB │ gzip:     0.29 kB
+dist/assets/chunk-ZFHLNBCG-4xEGMFwC.js                                              0.39 kB │ gzip:     0.28 kB
+dist/assets/chunk-7AV5EJJ5-D3vrBaSG.js                                              0.39 kB │ gzip:     0.27 kB
+dist/assets/chunk-WP3B4NEU-D-0tzZhW.js                                              0.45 kB │ gzip:     0.26 kB
+dist/assets/loader-WNM6S7E5-BYoNTra-.js                                             0.46 kB │ gzip:     0.33 kB
+dist/assets/chunk-54EPH67T-BWfDqNYK.js                                              0.47 kB │ gzip:     0.31 kB
+dist/assets/chunk-N4G3RFLY-BiFuXhtx.js                                              0.48 kB │ gzip:     0.32 kB
+dist/assets/chunk-XFR5JLNF-C9g-VuwI.js                                              0.49 kB │ gzip:     0.27 kB
+dist/assets/chunk-LQORKOPK-CgHH_BOb.js                                              0.50 kB │ gzip:     0.33 kB
+dist/assets/chunk-SANVDYAL-B6TihZsw.js                                              0.50 kB │ gzip:     0.31 kB
+dist/assets/chunk-2Y3WMGN6-dO1x0SAS.js                                              0.51 kB │ gzip:     0.35 kB
+dist/assets/chunk-CES3573I-r0PpbMVy.js                                              0.52 kB │ gzip:     0.33 kB
+dist/assets/chunk-H2SE3EHA-QsnI9vM0.js                                              0.52 kB │ gzip:     0.35 kB
+dist/assets/chunk-2FX4JEC4-BreXIvcq.js                                              0.52 kB │ gzip:     0.34 kB
+dist/assets/chunk-3XPXUIK3-DnxNYxQ4.js                                              0.55 kB │ gzip:     0.37 kB
+dist/assets/chunk-BW7BDHZV-TjZq3dkJ.js                                              0.56 kB │ gzip:     0.33 kB
+dist/assets/chunk-AJLGY3LQ-DEOlAHZ9.js                                              0.58 kB │ gzip:     0.31 kB
+dist/assets/chunk-HJ56YXBU-BJMydbF1.js                                              0.62 kB │ gzip:     0.43 kB
+dist/assets/chunk-2EME4AWX-BNuRDirp.js                                              0.65 kB │ gzip:     0.41 kB
+dist/assets/chunk-F3XPA5ID-DpIhbHDv.js                                              0.65 kB │ gzip:     0.35 kB
+dist/assets/chunk-PXYDR7WQ-YYq2KsMH.js                                              0.65 kB │ gzip:     0.40 kB
+dist/assets/chunk-NBMM2TZK-pGK41Boo.js                                              0.65 kB │ gzip:     0.39 kB
+dist/assets/chunk-U2EI2ZLM--bO13Sue.js                                              0.66 kB │ gzip:     0.34 kB
+dist/assets/collection-metadata-WAIDRGO4-CtPG6S0d.js                                0.66 kB │ gzip:     0.44 kB
+dist/assets/product-tag-metadata-FDOGSBZL-C2WgD5Lz.js                               0.66 kB │ gzip:     0.44 kB
+dist/assets/product-type-metadata-OXY6JBQN-m1ZaGlxb.js                              0.67 kB │ gzip:     0.45 kB
+dist/assets/order-metadata-2DOHAY2R-fxMmz3MR.js                                     0.68 kB │ gzip:     0.45 kB
+dist/assets/product-variant-metadata-UAKLODU7-naWdUsnN.js                           0.68 kB │ gzip:     0.45 kB
+dist/assets/chunk-DB6ANJBO-Dg2jgxEu.js                                              0.68 kB │ gzip:     0.38 kB
+dist/assets/chunk-MDABSESI-C_leAjEm.js                                              0.68 kB │ gzip:     0.38 kB
+dist/assets/chunk-ZDRFUXWQ-dH75fapY.js                                              0.69 kB │ gzip:     0.48 kB
+dist/assets/chunk-HC25LNX7-DbXuoyCH.js                                              0.69 kB │ gzip:     0.31 kB
+dist/assets/chunk-QLOJNFUE-D47OywWC.js                                              0.70 kB │ gzip:     0.41 kB
+dist/assets/categories-metadata-2PUEPCPF-B95tl8Iq.js                                0.70 kB │ gzip:     0.46 kB
+dist/assets/chunk-V74Y5NIV-CoftCiHv.js                                              0.71 kB │ gzip:     0.43 kB
+dist/assets/product-metadata-VRF6DJAO-DkkYFIlm.js                                   0.71 kB │ gzip:     0.47 kB
+dist/assets/customer-metadata-72NYZNAR-k84LPN7p.js                                  0.72 kB │ gzip:     0.47 kB
+dist/assets/user-metadata-KHYWKURL-B0zF0ywS.js                                      0.72 kB │ gzip:     0.47 kB
+dist/assets/shipping-profile-metadata-L7655VUS-CdpQUlq8.js                          0.73 kB │ gzip:     0.47 kB
+dist/assets/customer-group-metadata-YGQZXDVY-BrXSe34F.js                            0.73 kB │ gzip:     0.48 kB
+dist/assets/reservation-metadata-SLIXYJH6-xSGlaeMh.js                               0.73 kB │ gzip:     0.48 kB
+dist/assets/tax-region-metadata-LU6WHANR-BJKWgiUS.js                                0.73 kB │ gzip:     0.48 kB
+dist/assets/inventory-metadata-T3W4TYRL-Ny79iKGY.js                                 0.74 kB │ gzip:     0.48 kB
+dist/assets/chunk-4F5GP7J7-CUY074K0.js                                              0.74 kB │ gzip:     0.42 kB
+dist/assets/region-metadata-TOCGHS2U-D9sfsvBd.js                                    0.77 kB │ gzip:     0.49 kB
+dist/assets/marketplace-metadata-4Z6XHHC3-DiWSRQQE.js                               0.78 kB │ gzip:     0.49 kB
+dist/assets/sales-channel-metadata-2DMUXR5C-CKiJJXe8.js                             0.78 kB │ gzip:     0.50 kB
+dist/assets/promotion-add-campaign-2YKHR4CY-C3bHngnz.js                             0.80 kB │ gzip:     0.49 kB
+dist/assets/chunk-64XMEZ5A-CXpqrG2Q.js                                              0.80 kB │ gzip:     0.48 kB
+dist/assets/chunk-W6Y3PPU5-BT4_plo1.js                                              0.81 kB │ gzip:     0.43 kB
+dist/assets/chunk-U4FPQ62Q-Dx_gtbKm.js                                              0.83 kB │ gzip:     0.46 kB
+dist/assets/chunk-JHIMVLB2-BbuABuTU.js                                              0.83 kB │ gzip:     0.39 kB
+dist/assets/chunk-4YWKKCTT-BuSDPIds.js                                              0.83 kB │ gzip:     0.46 kB
+dist/assets/chunk-FCM3KNF4-DUHmTZ7E.js                                              0.84 kB │ gzip:     0.50 kB
+dist/assets/no-match-JLVLPCRH-DzuEBNvM.js                                           0.85 kB │ gzip:     0.42 kB
+dist/assets/chunk-NOWUEJ74-BOEigGxa.js                                              0.85 kB │ gzip:     0.42 kB
+dist/assets/alert-DItD-Tda.js                                                       0.87 kB │ gzip:     0.52 kB
+dist/assets/status-badge-kIOBjhOi.js                                                0.88 kB │ gzip:     0.48 kB
+dist/assets/chunk-QUHSHIAC-Dj4BESzl.js                                              0.92 kB │ gzip:     0.42 kB
+dist/assets/chunk-Y4Q2FSFA-CtTk9OaZ.js                                              0.92 kB │ gzip:     0.41 kB
+dist/assets/chunk-CXZYKHP3-JTrrXG8-.js                                              0.94 kB │ gzip:     0.55 kB
+dist/assets/chunk-JPYECNPC-D0RfYhiR.js                                              0.94 kB │ gzip:     0.50 kB
+dist/assets/chunk-D2WH4C7A-CjQDBrV8.js                                              0.94 kB │ gzip:     0.37 kB
+dist/assets/chunk-AQTL34LL-DSSZQZEw.js                                              0.95 kB │ gzip:     0.35 kB
+dist/assets/chunk-5Z35DKBQ-gV11Nh1v.js                                              0.95 kB │ gzip:     0.37 kB
+dist/assets/arrows-pointing-out-CZdQoMyX.js                                         0.96 kB │ gzip:     0.57 kB
+dist/assets/chunk-BEGO7ZS5-C9DXR6o-.js                                              0.97 kB │ gzip:     0.38 kB
+dist/assets/chunk-UST2RGWB-CA4Yil_Q.js                                              1.00 kB │ gzip:     0.50 kB
+dist/assets/chunk-PG5CKQX6-z9Oes0sy.js                                              1.01 kB │ gzip:     0.38 kB
+dist/assets/chunk-KOURHC2N-DuC1f1lG.js                                              1.05 kB │ gzip:     0.45 kB
+dist/assets/queue-list-_e6TN4lA.js                                                  1.05 kB │ gzip:     0.62 kB
+dist/assets/chunk-I2EYFPSO-C-9BMuEz.js                                              1.05 kB │ gzip:     0.38 kB
+dist/assets/chunk-O5W5DCKH-BMe7Yfrk.js                                              1.07 kB │ gzip:     0.55 kB
+dist/assets/arrow-down-right-mini-Bl_rRNyL.js                                       1.09 kB │ gzip:     0.60 kB
+dist/assets/chunk-O7324VFF-DI2z55Sn.js                                              1.14 kB │ gzip:     0.50 kB
+dist/assets/chunk-5KGMGL4N-DKpqArS0.js                                              1.14 kB │ gzip:     0.62 kB
+dist/assets/x-circle-CyEsfQYs.js                                                    1.16 kB │ gzip:     0.65 kB
+dist/assets/react-country-flag.esm-DraGhVLg.js                                      1.16 kB │ gzip:     0.67 kB
+dist/assets/useInfiniteQuery-BkXafaid.js                                            1.17 kB │ gzip:     0.51 kB
+dist/assets/chunk-2HJEBOO3-CmhxWxuW.js                                              1.17 kB │ gzip:     0.37 kB
+dist/assets/chunk-F7VUPDXV-CMbV22Ig.js                                              1.19 kB │ gzip:     0.39 kB
+dist/assets/stack-perspective-C-rk1Jz7.js                                           1.20 kB │ gzip:     0.71 kB
+dist/assets/index-BTD79gYY.js                                                       1.22 kB │ gzip:     0.65 kB
+dist/assets/chunk-TUJIAA5O-B1mJFfNV.js                                              1.24 kB │ gzip:     0.73 kB
+dist/assets/product-edit-attribute-3KYO6HRS-Dwh-07dE.js                             1.24 kB │ gzip:     0.73 kB
+dist/assets/arrow-path-DZUDQTeE.js                                                  1.26 kB │ gzip:     0.69 kB
+dist/assets/chunk-5MXEKSK4-J5Ebehj1.js                                              1.28 kB │ gzip:     0.61 kB
+dist/assets/chunk-32URSQ4F-DzI72xDA.js                                              1.36 kB │ gzip:     0.70 kB
+dist/assets/chunk-66L2TV2T-CBH5qvGW.js                                              1.46 kB │ gzip:     0.73 kB
+dist/assets/chunk-Y456KVIN-DWMq7yL7.js                                              1.48 kB │ gzip:     0.57 kB
+dist/assets/chunk-JHBNG7OD-DkAvwlrO.js                                              1.49 kB │ gzip:     0.49 kB
+dist/assets/chunk-FFX43PNV-CQHDKqZ3.js                                              1.61 kB │ gzip:     0.46 kB
+dist/assets/category-organize-LIDQGJGG-CZspbOeo.js                                  1.64 kB │ gzip:     0.88 kB
+dist/assets/chunk-OWSAXYGH-CpS8434D.js                                              1.68 kB │ gzip:     0.63 kB
+dist/assets/chunk-ICCSGMYB-B_iX74L-.js                                              1.69 kB │ gzip:     0.58 kB
+dist/assets/chunk-WVHNOE7Y-Bpeiv7BX.js                                              1.72 kB │ gzip:     0.65 kB
+dist/assets/chunk-IWBQZK6E-CP4u6XEK.js                                              1.72 kB │ gzip:     0.47 kB
+dist/assets/chunk-7NXOLMSS-DBWjcVWD.js                                              1.80 kB │ gzip:     0.46 kB
+dist/assets/tax-region-list-4UDUAWWU-BpWbzlPf.js                                    1.80 kB │ gzip:     0.87 kB
+dist/assets/chunk-CP5IL4P6-o8Whsc4f.js                                              1.83 kB │ gzip:     0.96 kB
+dist/assets/arrow-up-mini-CK4JPaZQ.js                                               1.83 kB │ gzip:     0.68 kB
+dist/assets/chunk-MAEP2UCK-Dq4d-2UK.js                                              1.85 kB │ gzip:     0.83 kB
+dist/assets/chunk-KPNSESNF-CXuQmR8x.js                                              1.87 kB │ gzip:     0.65 kB
+dist/assets/chunk-YA25NFTB-DGj9y2Zq.js                                              1.91 kB │ gzip:     0.90 kB
+dist/assets/chunk-IIFQ7KYL-Sxms_w5P.js                                              1.95 kB │ gzip:     1.03 kB
+dist/assets/chunk-HXHUCDFL-DlVB_1yv.js                                              1.96 kB │ gzip:     0.71 kB
+dist/assets/thumbnail-badge-COblWt_5.js                                             1.96 kB │ gzip:     0.97 kB
+dist/assets/category-icon-edit-RCM5WED6-C1dfA7HT.js                                 1.99 kB │ gzip:     0.99 kB
+dist/assets/collection-icon-edit-LLVCGC34-B-iKqmwr.js                               1.99 kB │ gzip:     0.97 kB
+dist/assets/review-respond-W57V3EWA-BY5lVoBq.js                                     2.00 kB │ gzip:     0.92 kB
+dist/assets/chunk-6KVBBCYC-DxwaML33.js                                              2.02 kB │ gzip:     0.44 kB
+dist/assets/offers-3VVLBXXT-rBgmj53p.js                                             2.15 kB │ gzip:     1.15 kB
+dist/assets/order-edit-email-HB3MPHUU-BkUiZ41E.js                                   2.15 kB │ gzip:     0.90 kB
+dist/assets/product-type-edit-KS5S5C6M-CQLSoiHs.js                                  2.17 kB │ gzip:     0.86 kB
+dist/assets/collection-edit-J44NDS27-DGALdish.js                                    2.20 kB │ gzip:     0.95 kB
+dist/assets/chunk-WCT4XA4Z-86pajnWz.js                                              2.22 kB │ gzip:     1.23 kB
+dist/assets/product-tag-edit-JP3SNJHG-supcLA8r.js                                   2.23 kB │ gzip:     0.89 kB
+dist/assets/customer-group-edit-3G6BA4K2-DpPHjAFr.js                                2.28 kB │ gzip:     0.92 kB
+dist/assets/chunk-TZSOL34K-Dy1OtaUN.js                                              2.29 kB │ gzip:     0.65 kB
+dist/assets/shipping-profile-detail-YZJXE6YI-Cma8s1Fd.js                            2.33 kB │ gzip:     1.07 kB
+dist/assets/product-type-create-DHFNIKZ2-BVFkLZLd.js                                2.33 kB │ gzip:     0.89 kB
+dist/assets/chunk-7VO6VJZJ-e-GYfUUu.js                                              2.37 kB │ gzip:     0.77 kB
+dist/assets/user-edit-TYFDV5CC-D_tgCoOn.js                                          2.43 kB │ gzip:     0.87 kB
+dist/assets/product-tag-create-XSOEKCJ5-Cn1ExlSy.js                                 2.47 kB │ gzip:     0.92 kB
+dist/assets/store-closure-edit-XM7AJFED-CENfVXPm.js                                 2.48 kB │ gzip:     1.00 kB
+dist/assets/chunk-35TFC2OI-BJ3m2T2q.js                                              2.49 kB │ gzip:     1.04 kB
+dist/assets/attribute-edit-ranking-COUMVKE2-Be1CON9y.js                             2.50 kB │ gzip:     1.32 kB
+dist/assets/api-key-management-edit-GXFOY632-bC9c0RZp.js                            2.50 kB │ gzip:     0.98 kB
+dist/assets/user-detail-7FEREBQ6-Cs2F62oP.js                                        2.51 kB │ gzip:     1.16 kB
+dist/assets/chunk-EBAFVGM3-Xachx85D.js                                              2.54 kB │ gzip:     0.67 kB
+dist/assets/chunk-S4IDR46L-CEa-NXd2.js                                              2.57 kB │ gzip:     0.95 kB
+dist/assets/attribute-edit-possible-value-7FN2TK7Z-BreQlN0t.js                      2.59 kB │ gzip:     1.11 kB
+dist/assets/price-list-configuration-FQZNQPD3-Dh6bxp20.js                           2.60 kB │ gzip:     1.00 kB
+dist/assets/store-professional-details-edit-IRQM4XK2-C89ioBtP.js                    2.60 kB │ gzip:     0.95 kB
+dist/assets/chunk-MBWL6DDG-CdtXJ-Yl.js                                              2.61 kB │ gzip:     1.08 kB
+dist/assets/radio-group-CDYVwx-z.js                                                 2.61 kB │ gzip:     0.83 kB
+dist/assets/payout-detail-CPUQHAR5-Ihl7pFyF.js                                      2.63 kB │ gzip:     1.07 kB
+dist/assets/customer-group-create-GB2EV2YG-xc2PhaZ5.js                              2.65 kB │ gzip:     0.94 kB
+dist/assets/product-variant-detail-CFU26SH6-D59trHyO.js                             2.68 kB │ gzip:     1.24 kB
+dist/assets/shipping-option-type-detail-GWVNQNE7-60fcNi-G.js                        2.70 kB │ gzip:     1.00 kB
+dist/assets/tax-region-province-detail-BTSXYMTC-Yr9TfGDJ.js                         2.71 kB │ gzip:     1.35 kB
+dist/assets/store-bulk-edit-HCQXZJYA-SvPgu3ir.js                                    2.72 kB │ gzip:     1.33 kB
+dist/assets/campaign-budget-edit-RFBJZQ27-DcWYzLhr.js                               2.72 kB │ gzip:     1.14 kB
+dist/assets/payout-list-J5QBFBDQ-DxHRTP2M.js                                        2.76 kB │ gzip:     1.28 kB
+dist/assets/commission-rule-detail-5D557BUZ-DVQK-gun.js                             2.79 kB │ gzip:     1.03 kB
+dist/assets/tax-region-edit-R3LK752M-CQzt4ofl.js                                    2.80 kB │ gzip:     1.15 kB
+dist/assets/offer-variant-detail-page-UATB4UIF-wj8uiAWo.js                          2.81 kB │ gzip:     1.20 kB
+dist/assets/product-type-list-B6RRMREU-B8vHCIwS.js                                  2.83 kB │ gzip:     1.23 kB
+dist/assets/customer-list-NVJX3U6Z-MKkN57tg.js                                      2.84 kB │ gzip:     1.25 kB
+dist/assets/profile-detail-HL5JIT6Y-DCDZ_U0v.js                                     2.85 kB │ gzip:     0.92 kB
+dist/assets/product-sales-channels-AUXTWBUT-B2s22jCS.js                             2.90 kB │ gzip:     1.33 kB
+dist/assets/tax-region-tax-rate-edit-6EWOZLPI-DZcSDRF4.js                           2.91 kB │ gzip:     1.18 kB
+dist/assets/campaign-configuration-EAG7IFOW-Bf_mWiHf.js                             2.98 kB │ gzip:     1.00 kB
+dist/assets/chunk-XYTF7A7I-r-yFiGGm.js                                              3.00 kB │ gzip:     1.41 kB
+dist/assets/tax-region-tax-rate-create-FWO3L7R7-D_7GjfQT.js                         3.02 kB │ gzip:     1.22 kB
+dist/assets/location-service-zone-edit-XN3HBBAQ-CUqgcXrE.js                         3.04 kB │ gzip:     1.19 kB
+dist/assets/commission-rule-commission-edit-ACIOYCKC-DM-FIJkT.js                    3.05 kB │ gzip:     1.30 kB
+dist/assets/product-type-detail-O5MQCKY2-Cf1Q456B.js                                3.05 kB │ gzip:     1.37 kB
+dist/assets/chunk-6G456XO4-BhGIzx8Y.js                                              3.10 kB │ gzip:     1.16 kB
+dist/assets/chunk-YVLANFBK-j1rUgoEr.js                                              3.12 kB │ gzip:     1.33 kB
+dist/assets/review-edit-XUSW4ETR-DvF5w8A5.js                                        3.14 kB │ gzip:     1.21 kB
+dist/assets/chunk-FYLUWJ65-n_LJYG4N.js                                              3.14 kB │ gzip:     1.24 kB
+dist/assets/region-add-countries-IA2HWUQX-DSzNyQM_.js                               3.15 kB │ gzip:     1.48 kB
+dist/assets/location-service-zone-manage-areas-AU6O2R7D-TLS-XQf-.js                 3.15 kB │ gzip:     1.35 kB
+dist/assets/sales-channel-list-LX2Z5CJT-ac-8VVKC.js                                 3.15 kB │ gzip:     1.45 kB
+dist/assets/edit-inventory-item-VCSYYUXB-s_p4GAq7.js                                3.16 kB │ gzip:     1.05 kB
+dist/assets/shipping-profile-create-5KZA2DVE-KYbeqfCD.js                            3.19 kB │ gzip:     1.04 kB
+dist/assets/return-reason-list-3PS25BKE-p4-zcCYZ.js                                 3.21 kB │ gzip:     1.50 kB
+dist/assets/refund-reason-list-I4A25O6S-CEqBlXAJ.js                                 3.23 kB │ gzip:     1.54 kB
+dist/assets/index-BLjywj98.js                                                       3.26 kB │ gzip:     1.51 kB
+dist/assets/category-products-RYOQ5TM5-D8WNJeNF.js                                  3.28 kB │ gzip:     1.66 kB
+dist/assets/attribute-edit-JFYEZ3MP-hXddgwX-.js                                     3.31 kB │ gzip:     1.22 kB
+dist/assets/refund-reason-edit-352MH6YM-CtPhG4Kk.js                                 3.33 kB │ gzip:     1.04 kB
+dist/assets/collection-add-products-YQP5YOZO-C0UgA1xg.js                            3.33 kB │ gzip:     1.68 kB
+dist/assets/global-commission-edit-JXHJA6R2-Fbmp1cDc.js                             3.36 kB │ gzip:     1.37 kB
+dist/assets/campaign-edit-QQBMPIX2-CAGRwrpA.js                                      3.39 kB │ gzip:     1.04 kB
+dist/assets/product-tag-list-ZF44FBU3-nFSjsP29.js                                   3.42 kB │ gzip:     1.57 kB
+dist/assets/product-shipping-profile-NDEVM6EX-Cc8bVSku.js                           3.54 kB │ gzip:     1.32 kB
+dist/assets/product-tag-detail-VJW4TMI6-ByBGX3BI.js                                 3.56 kB │ gzip:     1.50 kB
+dist/assets/login-3ZFTVHBT-P2lCLQhl.js                                              3.62 kB │ gzip:     1.48 kB
+dist/assets/chunk-VSLHL2AZ-DOdV5UuK.js                                              3.63 kB │ gzip:     1.69 kB
+dist/assets/customer-group-add-customers-KF432FE3-Bz0SVNKz.js                       3.64 kB │ gzip:     1.67 kB
+dist/assets/chunk-CGIVQ7D2-BDT58FQR.js                                              3.65 kB │ gzip:     1.26 kB
+dist/assets/shipping-option-type-edit-I4RWXP5D-DYebz8Uq.js                          3.66 kB │ gzip:     1.06 kB
+dist/assets/return-reason-edit-GJPO2IFV-DZJdmjss.js                                 3.67 kB │ gzip:     1.09 kB
+dist/assets/sales-channel-edit-JPKNEI7I-maV_jKXh.js                                 3.68 kB │ gzip:     1.18 kB
+dist/assets/chunk-FB2PJHN5-Bb0wXeuZ.js                                              3.72 kB │ gzip:     1.36 kB
+dist/assets/location-service-zone-create-76EAFAJQ-MwZbpER4.js                       3.75 kB │ gzip:     1.49 kB
+dist/assets/promotion-list-AKK3OZJO-DcKkaves.js                                     3.77 kB │ gzip:     1.68 kB
+dist/assets/shipping-profiles-list-OC45TR2L-C2h2-Cgl.js                             3.78 kB │ gzip:     1.53 kB
+dist/assets/refund-reason-create-ER2HYGF7-B0xYoPSI.js                               3.81 kB │ gzip:     1.17 kB
+dist/assets/category-edit-WGTO6IO3-lG9t2gzD.js                                      3.83 kB │ gzip:     1.26 kB
+dist/assets/api-key-management-sales-channels-BVF5DIUU-BPDlcmft.js                  3.86 kB │ gzip:     1.60 kB
+dist/assets/store-address-edit-G7TW4RAA-EQl7JlbU.js                                 3.86 kB │ gzip:     1.14 kB
+dist/assets/shipping-option-type-list-SC3AKZ3A-V_hr44To.js                          3.86 kB │ gzip:     1.49 kB
+dist/assets/product-create-variant-MEERTVXZ-DsZYwJLJ.js                             3.86 kB │ gzip:     1.55 kB
+dist/assets/customers-add-customer-group-CAPDOFBQ-Dl-LMnyf.js                       3.90 kB │ gzip:     1.79 kB
+dist/assets/chunk-NFZEX33S-BCmF6GU7.js                                              3.90 kB │ gzip:     1.24 kB
+dist/assets/return-reason-create-FDRHAALE-6DBZkLC_.js                               3.90 kB │ gzip:     1.10 kB
+dist/assets/chunk-KJCBJKYC-DFNo3R0F.js                                              3.91 kB │ gzip:     0.66 kB
+dist/assets/profile-edit-POCQT5UR-BPEPOkPw.js                                       3.92 kB │ gzip:     1.28 kB
+dist/assets/customer-group-list-GOAFY7WR-BxQAHPQv.js                                3.92 kB │ gzip:     1.59 kB
+dist/assets/location-sales-channels-KNP6N2SN-HEe4pZu3.js                            3.96 kB │ gzip:     1.69 kB
+dist/assets/sales-channel-create-BRZD6BEE-DY0FfWLg.js                               3.99 kB │ gzip:     1.17 kB
+dist/assets/shipping-option-type-create-C4LVYJKK-DpzS9Cr5.js                        4.00 kB │ gzip:     1.18 kB
+dist/assets/edit-rules-FQYZY37X-DHY2g25H.js                                         4.02 kB │ gzip:     1.66 kB
+dist/assets/location-fulfillment-providers-RHFROGUA-DwABkkCO.js                     4.05 kB │ gzip:     1.83 kB
+dist/assets/price-list-customer-availability-REMZ22RS-WRholI-9.js                   4.13 kB │ gzip:     1.62 kB
+dist/assets/product-bulk-edit-X3JYKMW5-CoJ957m6.js                                  4.15 kB │ gzip:     1.74 kB
+dist/assets/store-member-invite-BS2GUZUY-Bf8VupJS.js                                4.15 kB │ gzip:     1.81 kB
+dist/assets/collection-list-Z7IA57OF-DGzL-afh.js                                    4.17 kB │ gzip:     1.83 kB
+dist/assets/store-payment-details-edit-UQ2KX2QR-8QROciT4.js                         4.19 kB │ gzip:     1.22 kB
+dist/assets/collection-create-RFPPPM6D-D1jAHY4w.js                                  4.21 kB │ gzip:     1.37 kB
+dist/assets/store-list-7FX5VPU2-BGvXhd5D.js                                         4.24 kB │ gzip:     1.78 kB
+dist/assets/sales-channel-add-products-KC4RYJT3-BlvF6Bfs.js                         4.24 kB │ gzip:     1.86 kB
+dist/assets/chunk-LX5B35Y5-B4sXC9xB.js                                              4.29 kB │ gzip:     1.66 kB
+dist/assets/chunk-UA6LFWNU-Cu7ver01.js                                              4.29 kB │ gzip:     0.65 kB
+dist/assets/product-create-attribute-TNLWM3N2-DPNUvOJv.js                           4.31 kB │ gzip:     1.54 kB
+dist/assets/user-list-ZK63T6SJ-CWLewPfk.js                                          4.32 kB │ gzip:     1.48 kB
+dist/assets/chunk-AKB5DGMK-D2kwd1Et.js                                              4.49 kB │ gzip:     1.24 kB
+dist/assets/review-detail-LG36VJTA-BRo3gN5v.js                                      4.52 kB │ gzip:     1.71 kB
+dist/assets/campaign-list-4UPMYKLS-DhMyzMh_.js                                      4.55 kB │ gzip:     1.87 kB
+dist/assets/customer-edit-C2VKS4FH-Ck7gvQhZ.js                                      4.57 kB │ gzip:     1.18 kB
+dist/assets/edit-reservation-EK6M5JDG-B_u6QUVp.js                                   4.64 kB │ gzip:     1.82 kB
+dist/assets/price-list-list-RVA2BXQB-Ca70FsLb.js                                    4.77 kB │ gzip:     1.78 kB
+dist/assets/add-campaign-promotions-6BYWL6AA-Yq5vU30a.js                            4.78 kB │ gzip:     2.00 kB
+dist/assets/adjust-inventory-D26HHGKH-CsQp5o27.js                                   4.81 kB │ gzip:     1.70 kB
+dist/assets/customer-create-N5374DJI-1Mk_wM72.js                                    4.82 kB │ gzip:     1.16 kB
+dist/assets/location-edit-LHPULRAA-DDiAWCmU.js                                      4.86 kB │ gzip:     1.27 kB
+dist/assets/tax-region-detail-54WL3VGW-PHOhaosv.js                                  4.92 kB │ gzip:     1.89 kB
+dist/assets/price-list-edit-Z7SRMWLK-CsWQAtwo.js                                    5.00 kB │ gzip:     1.39 kB
+dist/assets/region-list-QQ3XRZBU-oU_55gi_.js                                        5.10 kB │ gzip:     1.93 kB
+dist/assets/marketplace-add-currencies-LP54QP2F-BroG-qvo.js                         5.10 kB │ gzip:     2.16 kB
+dist/assets/chunk-IBEAUZBX-BZq9J5tl.js                                              5.14 kB │ gzip:     2.19 kB
+dist/assets/api-key-management-create-3ALUTZCX-Dn080t2o.js                          5.20 kB │ gzip:     1.80 kB
+dist/assets/category-list-67JSNVXT-7rKFD4WN.js                                      5.21 kB │ gzip:     2.07 kB
+dist/assets/chunk-YZ7TYYVL-mASN2w5q.js                                              5.22 kB │ gzip:     1.84 kB
+dist/assets/reservation-detail-P6ZNCGCG-BSVFBL61.js                                 5.25 kB │ gzip:     1.66 kB
+dist/assets/chunk-BJCD2G3U-2a3PUAk0.js                                              5.29 kB │ gzip:     2.23 kB
+dist/assets/product-list-YDYL765G-DQCp7XDN.js                                       5.43 kB │ gzip:     2.19 kB
+dist/assets/price-list-prices-add-MNDRESKR-BCqsardL.js                              5.43 kB │ gzip:     2.54 kB
+dist/assets/commissions-list-4MRDFAN6-CSk_F21k.js                                   5.54 kB │ gzip:     2.01 kB
+dist/assets/price-list-prices-edit-4H5QDLIO-DWO_ELjC.js                             5.63 kB │ gzip:     2.33 kB
+dist/assets/user-invite-DMUC4EQ4-Doq8snCN.js                                        5.68 kB │ gzip:     2.16 kB
+dist/assets/customer-edit-address-TAOTV7YB-Zr6ylHyX.js                              5.72 kB │ gzip:     1.28 kB
+dist/assets/location-service-zone-shipping-option-pricing-LLBUNXIJ-B1p_2Rkr.js      5.75 kB │ gzip:     2.42 kB
+dist/assets/attribute-list-QPJM77HR-C_vkyRim.js                                     5.78 kB │ gzip:     2.17 kB
+dist/assets/reservation-create-4ZFQM56T-egAjcx7_.js                                 5.83 kB │ gzip:     2.04 kB
+dist/assets/api-key-management-list-7L7OLDGO-DFhu1Ves.js                            5.83 kB │ gzip:     2.13 kB
+dist/assets/store-create-COW4AFYQ-BeNpMMYJ.js                                       5.93 kB │ gzip:     2.11 kB
+dist/assets/reservation-list-FJEIO3S2-D6QctWvY.js                                   5.95 kB │ gzip:     2.14 kB
+dist/assets/chunk-BP35TLCK-DFZJ7rM3.js                                              6.12 kB │ gzip:     1.92 kB
+dist/assets/chunk-SR3DYN52-BVNXAagN.js                                              6.15 kB │ gzip:     2.35 kB
+dist/assets/chunk-VGV7NE5T-Bj74dw7r.js                                              6.15 kB │ gzip:     1.92 kB
+dist/assets/order-create-refund-NXUEIIMT--oB-y9Xk.js                                6.24 kB │ gzip:     2.14 kB
+dist/assets/chunk-O4P7LFSP-C1qEIYy4.js                                              6.26 kB │ gzip:     2.11 kB
+dist/assets/review-list-TWXSIZOP-Dlo_0-eU.js                                        6.41 kB │ gzip:     2.52 kB
+dist/assets/chunk-E74OUNA3-mx_HMoMj.js                                              6.41 kB │ gzip:     2.00 kB
+dist/assets/product-attributes-LPONJEUN-DYaUbOYk.js                                 6.45 kB │ gzip:     1.41 kB
+dist/assets/chunk-X5PMVI7H-BINWgvjT.js                                              6.47 kB │ gzip:     2.60 kB
+dist/assets/sales-channel-detail-2NIKTQNB-BPecmkV7.js                               6.52 kB │ gzip:     2.41 kB
+dist/assets/chunk-JOIE6CIR-BmtvcBuK.js                                              6.58 kB │ gzip:     2.40 kB
+dist/assets/marketplace-edit-MOSZHO4A-czM916-U.js                                   6.60 kB │ gzip:     1.81 kB
+dist/assets/inventory-stock-UN5D4LSC-y6nUHb2C.js                                    6.67 kB │ gzip:     2.80 kB
+dist/assets/tax-region-create-37XJSH57-Dl3UbUsk.js                                  6.75 kB │ gzip:     1.86 kB
+dist/assets/location-create-4CM722T4-DlNiThHW.js                                    6.89 kB │ gzip:     1.37 kB
+dist/assets/product-add-existing-attributes-PY75RBOT-DlDzZ0rI.js                    6.93 kB │ gzip:     2.82 kB
+dist/assets/attribute-detail-5AB2NEZE-DuXz4RPq.js                                   6.94 kB │ gzip:     2.45 kB
+dist/assets/customer-group-detail-KYEP2WK5-CXGfRFu8.js                              7.01 kB │ gzip:     2.38 kB
+dist/assets/commission-rule-edit-YIZPWHWP-CjLWyI4t.js                               7.04 kB │ gzip:     2.00 kB
+dist/assets/order-edit-billing-address-FZENX5AN-BtML-J_r.js                         7.08 kB │ gzip:     1.55 kB
+dist/assets/order-edit-shipping-address-2WTLOIG3-m0FAXCco.js                        7.16 kB │ gzip:     1.56 kB
+dist/assets/tax-region-province-create-S4LRRJ3K-Ce006VuP.js                         7.18 kB │ gzip:     2.09 kB
+dist/assets/product-edit-U64A6SBS-CVBZO7Ma.js                                       7.21 kB │ gzip:     1.80 kB
+dist/assets/order-list-V5SXVY4C-DL5q9fR7.js                                         7.26 kB │ gzip:     2.87 kB
+dist/assets/region-detail-UDNWHURY-Du2MOeq9.js                                      7.36 kB │ gzip:     2.66 kB
+dist/assets/region-edit-I5NPINKO-BQmSKbQF.js                                        7.39 kB │ gzip:     2.17 kB
+dist/assets/reset-password-BEYWFFRO-GH9aeQA9.js                                     7.39 kB │ gzip:     1.75 kB
+dist/assets/attribute-create-possible-value-CD4P35HF-DNyv3eNi.js                    7.42 kB │ gzip:     2.61 kB
+dist/assets/invite-KPF43FX5-CdgeUKhA.js                                             7.50 kB │ gzip:     2.15 kB
+dist/assets/product-organization-MPWKHV3M-CDqL4j3w.js                               7.71 kB │ gzip:     2.12 kB
+dist/assets/location-list-YOIWEJPH-DJM8QPjI.js                                      7.77 kB │ gzip:     2.85 kB
+dist/assets/chunk-Z5OJVX5U-CUpEBcLA.js                                              8.08 kB │ gzip:     2.06 kB
+dist/assets/chunk-QPMAY54N-DWjo42H8.js                                              8.15 kB │ gzip:     2.53 kB
+dist/assets/customer-create-address-L6GM3TT6-C6lVD2l1.js                            8.20 kB │ gzip:     1.51 kB
+dist/assets/commission-rule-create-UUBQRDVI-C9rG3QUA.js                             8.24 kB │ gzip:     2.26 kB
+dist/assets/edit-inventory-item-attributes-3ZWTM5UW-P5utIwRu.js                     8.24 kB │ gzip:     1.48 kB
+dist/assets/location-service-zone-shipping-option-edit-TID4CJNY-D5N0YDvA.js         8.37 kB │ gzip:     2.27 kB
+dist/assets/manage-locations-64B6BK4P-BI3NVLDp.js                                   8.54 kB │ gzip:     2.67 kB
+dist/assets/inventory-list-PUHEUY6U-ClzF6ME6.js                                     8.61 kB │ gzip:     2.51 kB
+dist/assets/category-create-6DWKOHGB-N9WVkgwi.js                                    8.79 kB │ gzip:     2.34 kB
+dist/assets/collection-detail-IQV54EVJ-BeBqRY_G.js                                  8.89 kB │ gzip:     2.90 kB
+dist/assets/store-edit-XBWOY5CE-ahmoYJsI.js                                         8.93 kB │ gzip:     2.88 kB
+dist/assets/attribute-create-OYSJIWSD-DE0nbGoi.js                                   8.97 kB │ gzip:     2.88 kB
+dist/assets/chunk-HHJDAVVR-DksShOhD.js                                              9.09 kB │ gzip:     2.97 kB
+dist/assets/chunk-XLA2CNCW-BwwmdSH_.js                                              9.11 kB │ gzip:     4.02 kB
+dist/assets/chunk-3RIQBCYW-C5Bxp2cz.js                                              9.46 kB │ gzip:     1.94 kB
+dist/assets/api-key-management-detail-HNC43TZY-CdRZT4zL.js                          9.59 kB │ gzip:     2.81 kB
+dist/assets/chunk-IQPN4PZJ-CYCbBMOO.js                                              9.61 kB │ gzip:     2.70 kB
+dist/assets/chunk-TNDTBX2Q-w8rdigXq.js                                             10.45 kB │ gzip:     3.21 kB
+dist/assets/category-media-R75BACJD-BL3Q6j3U.js                                    10.91 kB │ gzip:     3.85 kB
+dist/assets/collection-media-3KBIJYXE-CmH5-IM3.js                                  10.93 kB │ gzip:     3.84 kB
+dist/assets/offer-detail-page-XNA63LSW-Bn1evc5V.js                                 11.02 kB │ gzip:     4.22 kB
+dist/assets/tax-region-tax-override-create-5FUN3FYU-idtygoSD.js                    11.38 kB │ gzip:     3.41 kB
+dist/assets/tax-region-tax-override-edit-AGHJ76KK-CMSBXaYg.js                      11.72 kB │ gzip:     3.85 kB
+dist/assets/currency-input-DaPPGZBd.js                                             11.74 kB │ gzip:     4.60 kB
+dist/assets/marketplace-detail-XIWEU2BP-Cinvh0SP.js                                12.02 kB │ gzip:     3.75 kB
+dist/assets/order-request-transfer-NOFW5BH6-C9HdzNbH.js                            12.05 kB │ gzip:     3.19 kB
+dist/assets/price-list-detail-K5GT75MR-D4DcWieM.js                                 12.26 kB │ gzip:     3.69 kB
+dist/assets/region-create-HRJDZSAK-B_Y81RbA.js                                     12.28 kB │ gzip:     3.39 kB
+dist/assets/category-detail-WM5PKZHS-49uB-oLW.js                                   12.74 kB │ gzip:     3.71 kB
+dist/assets/product-variant-edit-67NDBD3H-Be39BjYQ.js                              13.15 kB │ gzip:     2.70 kB
+dist/assets/campaign-detail-VT62HOSX-DiJ5jSQg.js                                   13.41 kB │ gzip:     4.15 kB
+dist/assets/chunk-TSPBHN3G-BsixvNAu.js                                             13.65 kB │ gzip:     3.48 kB
+dist/assets/product-media-K2EC5Z2P-d-Dy6PWT.js                                     13.79 kB │ gzip:     4.46 kB
+dist/assets/promotion-edit-details-BDENQO6I-U1sBRdb8.js                            14.14 kB │ gzip:     3.14 kB
+dist/assets/promotion-detail-ZZFSTZNW-CxvBo7Jj.js                                  14.23 kB │ gzip:     3.49 kB
+dist/assets/inventory-detail-5MBZ3WUH-4K1S9B-4.js                                  14.50 kB │ gzip:     3.89 kB
+dist/assets/location-service-zone-shipping-option-create-3Z4YH6UT-fZ7Fxaou.js      14.57 kB │ gzip:     4.08 kB
+dist/assets/customer-detail-KOWSLCSV-h93RbAiy.js                                   16.43 kB │ gzip:     4.80 kB
+dist/assets/price-list-create-M7DT7DIB-Dz4Y4QZB.js                                 16.58 kB │ gzip:     4.89 kB
+dist/assets/product-detail-P5TG7T7B-2qhZtQ23.js                                    18.29 kB │ gzip:     5.29 kB
+dist/assets/order-create-edit-MTLZ4MH6-DHUWTral.js                                 18.52 kB │ gzip:     5.64 kB
+dist/assets/chunk-XZ4GKMFM-29TUCc2V.js                                             21.78 kB │ gzip:     6.79 kB
+dist/assets/chunk-N2TQXB44-BdFruKSz.js                                             22.87 kB │ gzip:     9.80 kB
+dist/assets/location-detail-CVYFZAUR-CDW9zsBt.js                                   23.05 kB │ gzip:     5.60 kB
+dist/assets/order-create-return-A7F4OQUD-DDpTQMDm.js                               24.48 kB │ gzip:     7.53 kB
+dist/assets/promotion-create-EJNGNDXT-aWIIoVv-.js                                  25.17 kB │ gzip:     5.60 kB
+dist/assets/store-details-CGAKQDWN-kFSmq_K1.js                                     30.04 kB │ gzip:     8.37 kB
+dist/assets/order-create-exchange-EY5GJP46-4DEDcDXO.js                             36.04 kB │ gzip:     9.40 kB
+dist/assets/order-create-claim-SA7G3BF7-BlzWCu70.js                                36.45 kB │ gzip:     9.68 kB
+dist/assets/product-create-UZOSX5CO-DX6w4JpI.js                                    38.71 kB │ gzip:     9.72 kB
+dist/assets/chunk-VLNTJXXO-BIfv4Jx0.js                                             48.86 kB │ gzip:    14.37 kB
+dist/assets/create-data-table-column-helper-DHf4Vj5Z.js                            51.17 kB │ gzip:    13.64 kB
+dist/assets/chunk-SNRPCOU4-NP080OKE.js                                             55.43 kB │ gzip:    17.33 kB
+dist/assets/order-detail-RJFKE5JR-Djl9553g.js                                      79.89 kB │ gzip:    16.58 kB
+dist/assets/chunk-ESRIX7ZH-BiYwhDKa.js                                            242.61 kB │ gzip:    11.67 kB
+dist/assets/index-DeFqCOHR.js                                                   7,550.66 kB │ gzip: 1,861.32 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 15.35s
+$ tsc -b && vite build
+vite v6.4.4 building for production...
+transforming...
+✓ 4034 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                      0.56 kB │ gzip:     0.33 kB
+dist/assets/logo-DsMDmcX5.svg                                        0.92 kB │ gzip:     0.36 kB
+dist/assets/RobotoMono-Medium-LUNBMOOH-B0UKl2Zn.ttf                 87.17 kB
+dist/assets/RobotoMono-Regular-27MA6W2G-44XoGH_Y.ttf                87.24 kB
+dist/assets/Inter-Regular-CKBOXRQ3-DYjygwQm.ttf                    310.25 kB
+dist/assets/Inter-Medium-RUQTUVA3-CKLJZXR2.ttf                     315.13 kB
+dist/assets/index-BxFmh9Fe.css                                     124.73 kB │ gzip:    21.72 kB
+dist/assets/chunk-LEWA4BPH-BnwxmJYk.js                               0.03 kB │ gzip:     0.05 kB
+dist/assets/chunk-WQZ4ONQV-D3CXhcY4.js                               0.04 kB │ gzip:     0.06 kB
+dist/assets/chunk-SPFLYPY6-BaW5hDGw.js                               0.04 kB │ gzip:     0.06 kB
+dist/assets/chunk-RXM4B6HR-Di_6cJlP.js                               0.06 kB │ gzip:     0.08 kB
+dist/assets/chunk-SMQT3ZNO-CDc7wW5L.js                               0.07 kB │ gzip:     0.09 kB
+dist/assets/chunk-4UKAKFKL-WVLm7r9c.js                               0.09 kB │ gzip:     0.10 kB
+dist/assets/chunk-54TMLQH3-C98D4W0W.js                               0.13 kB │ gzip:     0.13 kB
+dist/assets/chunk-42R54Z2X-B4jVfctR.js                               0.14 kB │ gzip:     0.13 kB
+dist/assets/chunk-VW56KWO2-aVJcUHa1.js                               0.16 kB │ gzip:     0.15 kB
+dist/assets/organize-EDB4V2XK-_IHlAJN3.js                            0.16 kB │ gzip:     0.16 kB
+dist/assets/organize-BHJ6HWTS-Ck6EWzCs.js                            0.16 kB │ gzip:     0.16 kB
+dist/assets/chunk-THHRRYRS-Bohs_BVn.js                               0.17 kB │ gzip:     0.16 kB
+dist/assets/chunk-UM7ZR3VU-DZ_CHK12.js                               0.17 kB │ gzip:     0.13 kB
+dist/assets/chunk-BCU3FKP2-D8Zv8hXV.js                               0.18 kB │ gzip:     0.16 kB
+dist/assets/chunk-PHOCVOZ5-C9fR-HsL.js                               0.19 kB │ gzip:     0.17 kB
+dist/assets/settings-56LZ2QOK-CsWd0CBe.js                            0.20 kB │ gzip:     0.18 kB
+dist/assets/home-G3HG42YM-y2K20TpM.js                                0.21 kB │ gzip:     0.19 kB
+dist/assets/chunk-TIZRIQFH-C9JL2IqL.js                               0.22 kB │ gzip:     0.19 kB
+dist/assets/breadcrumb-A4JQ6EDC-EQuKg5pg.js                          0.22 kB │ gzip:     0.20 kB
+dist/assets/chunk-RFOLOEUY-C6ZK_PPY.js                               0.23 kB │ gzip:     0.19 kB
+dist/assets/breadcrumb-LCLZRWFG-CUzWwx9u.js                          0.23 kB │ gzip:     0.21 kB
+dist/assets/breadcrumb-FNE5V4QU-BZvXN_BL.js                          0.23 kB │ gzip:     0.21 kB
+dist/assets/chunk-CFUFUOLL-C-6BcGmt.js                               0.23 kB │ gzip:     0.19 kB
+dist/assets/breadcrumb-G6PJ7I6I-DtkLcflV.js                          0.24 kB │ gzip:     0.21 kB
+dist/assets/breadcrumb-2QUA4LRY-DqDPO7cR.js                          0.24 kB │ gzip:     0.22 kB
+dist/assets/breadcrumb-OIEWKWKR-C579QhJ5.js                          0.24 kB │ gzip:     0.21 kB
+dist/assets/breadcrumb-BJWBKQZV-DRJbQ8I1.js                          0.25 kB │ gzip:     0.22 kB
+dist/assets/chunk-YXC5DS7W-PgWLVq0X.js                               0.25 kB │ gzip:     0.21 kB
+dist/assets/chunk-7H6NMQ6U-BOaetW9O.js                               0.25 kB │ gzip:     0.19 kB
+dist/assets/breadcrumb-ZJA7PAHL-BpRkopLD.js                          0.25 kB │ gzip:     0.21 kB
+dist/assets/breadcrumb-K5NPJKFJ-BqMIVmSh.js                          0.27 kB │ gzip:     0.23 kB
+dist/assets/breadcrumb-55K5ZUXM-BBlNrX-l.js                          0.27 kB │ gzip:     0.24 kB
+dist/assets/breadcrumb-QCL54A3S-C1cwG4W9.js                          0.27 kB │ gzip:     0.24 kB
+dist/assets/breadcrumb-DLESSBT7-DoDW5DvN.js                          0.28 kB │ gzip:     0.24 kB
+dist/assets/chunk-VV2K3EBF-DhMEOCpv.js                               0.28 kB │ gzip:     0.15 kB
+dist/assets/breadcrumb-NDM3BOUM-BeyCzJwq.js                          0.28 kB │ gzip:     0.24 kB
+dist/assets/breadcrumb-T2HF575S-BnHUr8eR.js                          0.29 kB │ gzip:     0.24 kB
+dist/assets/chunk-EEBJYXWA-4T80f3Ec.js                               0.30 kB │ gzip:     0.20 kB
+dist/assets/breadcrumb-EEZLH4PE-C7FrqfC4.js                          0.30 kB │ gzip:     0.25 kB
+dist/assets/chunk-Q6SPIHFR-B-B-77aT.js                               0.30 kB │ gzip:     0.17 kB
+dist/assets/breadcrumb-BTCLA5EB-CWegbsrA.js                          0.31 kB │ gzip:     0.25 kB
+dist/assets/chunk-ZHFFTT3I-DfvgZQT2.js                               0.31 kB │ gzip:     0.25 kB
+dist/assets/loader-USWXCRPF-BJk6vuzy.js                              0.32 kB │ gzip:     0.26 kB
+dist/assets/chunk-VCUUITW6-DEhg7yo7.js                               0.34 kB │ gzip:     0.26 kB
+dist/assets/loader-KKHXERTR-BJl_y4XU.js                              0.37 kB │ gzip:     0.28 kB
+dist/assets/chunk-DHC22IMF-2vhwpKMI.js                               0.37 kB │ gzip:     0.23 kB
+dist/assets/breadcrumb-L5D2RZ67-CY0YFSYb.js                          0.37 kB │ gzip:     0.29 kB
+dist/assets/create-KCF62PCA-8ACQpZs7.js                              0.38 kB │ gzip:     0.27 kB
+dist/assets/chunk-ITV6SKOV-Dgj3nqIQ.js                               0.39 kB │ gzip:     0.25 kB
+dist/assets/chunk-7AV5EJJ5-CLDXDOKF.js                               0.39 kB │ gzip:     0.27 kB
+dist/assets/metadata-SIK4VNPL-CiIB7nl4.js                            0.40 kB │ gzip:     0.29 kB
+dist/assets/metadata-LEMNES27-BLK4tEKN.js                            0.40 kB │ gzip:     0.30 kB
+dist/assets/metadata-JGLHL3FU-CV2Q3JLc.js                            0.41 kB │ gzip:     0.30 kB
+dist/assets/metadata-46LW5L7T-B0EVWai_.js                            0.41 kB │ gzip:     0.31 kB
+dist/assets/chunk-WP3B4NEU-kVC9O0_b.js                               0.44 kB │ gzip:     0.26 kB
+dist/assets/chunk-WQ467F7S-BNUbyi3r.js                               0.45 kB │ gzip:     0.33 kB
+dist/assets/metadata-U7K5JCLI-n0aDGrxh.js                            0.47 kB │ gzip:     0.34 kB
+dist/assets/chunk-7RPRNVBS-DTK1vQpB.js                               0.47 kB │ gzip:     0.27 kB
+dist/assets/chunk-J6XCRFBW-Dpvli_TF.js                               0.48 kB │ gzip:     0.27 kB
+dist/assets/chunk-E3MNEQID-AccSSmF5.js                               0.48 kB │ gzip:     0.25 kB
+dist/assets/chunk-HB3BP55W-BFlJPym3.js                               0.49 kB │ gzip:     0.31 kB
+dist/assets/chunk-OK6P4MZX-Ci-vdlK4.js                               0.50 kB │ gzip:     0.32 kB
+dist/assets/chunk-FWPGOIFA-C9m5pJmC.js                               0.50 kB │ gzip:     0.31 kB
+dist/assets/chunk-5YZ3G5EZ-BPVE9NjN.js                               0.51 kB │ gzip:     0.34 kB
+dist/assets/chunk-LHRB32KX-ChtGC8iE.js                               0.55 kB │ gzip:     0.32 kB
+dist/assets/chunk-4TLP3TAA-NvUqOh0h.js                               0.55 kB │ gzip:     0.36 kB
+dist/assets/chunk-73VXES4R-Zrxa6rNu.js                               0.58 kB │ gzip:     0.31 kB
+dist/assets/chunk-UXD3VNBO-fsmz1Wrq.js                               0.59 kB │ gzip:     0.31 kB
+dist/assets/chunk-YBF45CX5-CKlur827.js                               0.60 kB │ gzip:     0.35 kB
+dist/assets/chunk-VKOE5J66-D9uTqprX.js                               0.62 kB │ gzip:     0.39 kB
+dist/assets/chunk-HJ56YXBU-BG7C7HmT.js                               0.62 kB │ gzip:     0.43 kB
+dist/assets/chunk-YVCBMOJG-C5Y_LXqk.js                               0.63 kB │ gzip:     0.40 kB
+dist/assets/chunk-NBMM2TZK-pGK41Boo.js                               0.65 kB │ gzip:     0.39 kB
+dist/assets/chunk-U2EI2ZLM-DGvlzQPk.js                               0.66 kB │ gzip:     0.34 kB
+dist/assets/chunk-DB6ANJBO-DLzthf69.js                               0.68 kB │ gzip:     0.38 kB
+dist/assets/chunk-MDABSESI-CcenJ0zW.js                               0.68 kB │ gzip:     0.38 kB
+dist/assets/chunk-DNFMMT64-BvdLdblj.js                               0.69 kB │ gzip:     0.37 kB
+dist/assets/chunk-QLOJNFUE-CDyPcIf5.js                               0.70 kB │ gzip:     0.40 kB
+dist/assets/chunk-XCHKUSUU-B7Q2AK0e.js                               0.71 kB │ gzip:     0.43 kB
+dist/assets/breadcrumb-JZS6U2YE-D6Ud8GND.js                          0.71 kB │ gzip:     0.39 kB
+dist/assets/chunk-LYYM7H7H-81nFUuys.js                               0.74 kB │ gzip:     0.35 kB
+dist/assets/chunk-YDRZ6TVC-3SPvxYEI.js                               0.79 kB │ gzip:     0.47 kB
+dist/assets/chunk-W6Y3PPU5-CDmFzHDn.js                               0.82 kB │ gzip:     0.44 kB
+dist/assets/chunk-JHIMVLB2-TbB8b6zV.js                               0.83 kB │ gzip:     0.39 kB
+dist/assets/no-match-JLVLPCRH-B9ypNq2W.js                            0.85 kB │ gzip:     0.42 kB
+dist/assets/customer-group-detail-3MH4R7C5-ChVILBqq.js               0.86 kB │ gzip:     0.51 kB
+dist/assets/alert-B074zqNt.js                                        0.87 kB │ gzip:     0.51 kB
+dist/assets/status-badge-BShoSRue.js                                 0.88 kB │ gzip:     0.48 kB
+dist/assets/offers-OYVOW23Y-Cf8lFlVQ.js                              0.88 kB │ gzip:     0.50 kB
+dist/assets/chunk-JVQQKRAB-BD-eWCLl.js                               0.94 kB │ gzip:     0.37 kB
+dist/assets/chunk-3ZYETUPK-DVwbTTGN.js                               0.95 kB │ gzip:     0.37 kB
+dist/assets/add-to-campaign-NOTFKGZY-C-gqXLuk.js                     0.97 kB │ gzip:     0.57 kB
+dist/assets/chunk-OSQQD2Z6-VWDOOZav.js                               0.98 kB │ gzip:     0.48 kB
+dist/assets/chunk-UST2RGWB-CgAeC1xd.js                               1.00 kB │ gzip:     0.50 kB
+dist/assets/chunk-BEPAXQMU-CgHkvI-8.js                               1.01 kB │ gzip:     0.51 kB
+dist/assets/chunk-SWZYH77J-DWrFeNAr.js                               1.05 kB │ gzip:     0.54 kB
+dist/assets/edit-EKAUVJT5-B0EI1q_a.js                                1.09 kB │ gzip:     0.61 kB
+dist/assets/chunk-7CAFYKKA-CxQtdX6z.js                               1.11 kB │ gzip:     0.64 kB
+dist/assets/_id_-7GKD655T-BDIu_5aM.js                                1.13 kB │ gzip:     0.66 kB
+dist/assets/x-circle-B9Mlv2S7.js                                     1.16 kB │ gzip:     0.65 kB
+dist/assets/chunk-T7BYPH4H-C_3kE50p.js                               1.18 kB │ gzip:     0.53 kB
+dist/assets/edit-O5K6IVV2-CmaH_kt9.js                                1.18 kB │ gzip:     0.67 kB
+dist/assets/shopping-bag-CxiiUIsd.js                                 1.19 kB │ gzip:     0.64 kB
+dist/assets/chunk-5VHIKXLR-CoPA6kqp.js                               1.19 kB │ gzip:     0.52 kB
+dist/assets/chunk-37GBG5JR-Di58gTuO.js                               1.21 kB │ gzip:     0.39 kB
+dist/assets/component-DZveVC9j.js                                    1.22 kB │ gzip:     0.66 kB
+dist/assets/index-CWjsY9Y9.js                                        1.22 kB │ gzip:     0.65 kB
+dist/assets/chunk-IMJ62GAP-Dphqx52o.js                               1.23 kB │ gzip:     0.45 kB
+dist/assets/document-text-DyVtixRA.js                                1.24 kB │ gzip:     0.69 kB
+dist/assets/chunk-CDJVJZGQ-CGHJe3E4.js                               1.34 kB │ gzip:     0.69 kB
+dist/assets/chunk-YP7Z5JFS-JJZM38mN.js                               1.38 kB │ gzip:     0.37 kB
+dist/assets/building-storefront-D5g16OLC.js                          1.41 kB │ gzip:     0.79 kB
+dist/assets/chunk-4GWGFBV5-DLXpO72M.js                               1.44 kB │ gzip:     0.66 kB
+dist/assets/chunk-BI2AYXZQ-DmlTcmMY.js                               1.50 kB │ gzip:     0.34 kB
+dist/assets/chunk-EXNGI5EU-DxdcGtJq.js                               1.50 kB │ gzip:     0.56 kB
+dist/assets/chunk-V7ZAQBSV-DjJSFqv0.js                               1.52 kB │ gzip:     0.55 kB
+dist/assets/edit-NVYJX3GX-Wb2CTbxl.js                                1.53 kB │ gzip:     0.87 kB
+dist/assets/edit-4IYMSIB7-dvuDM91X.js                                1.54 kB │ gzip:     0.77 kB
+dist/assets/chunk-G646ITFW-BmraW2po.js                               1.57 kB │ gzip:     0.79 kB
+dist/assets/chat-bubble-CM4DQdqA.js                                  1.58 kB │ gzip:     0.83 kB
+dist/assets/edit-NILXRC63-B6PoAQ3S.js                                1.61 kB │ gzip:     0.80 kB
+dist/assets/chunk-T35QBLG7-CuRut-In.js                               1.63 kB │ gzip:     0.41 kB
+dist/assets/chunk-WIBM2YZE-BR5qSrbs.js                               1.73 kB │ gzip:     0.68 kB
+dist/assets/chunk-N3OUMXNV-CyaVgBDW.js                               1.74 kB │ gzip:     0.65 kB
+dist/assets/chunk-CP5IL4P6-C4nSO5ET.js                               1.83 kB │ gzip:     0.96 kB
+dist/assets/arrow-up-mini-CzzrRfrV.js                                1.83 kB │ gzip:     0.68 kB
+dist/assets/chunk-J654EXP7-BdX6bhJA.js                               1.84 kB │ gzip:     0.83 kB
+dist/assets/chunk-G6J5ZKM3-Djdxbkf_.js                               1.84 kB │ gzip:     1.00 kB
+dist/assets/chunk-UFGKREXQ-CauOhJI3.js                               1.90 kB │ gzip:     0.50 kB
+dist/assets/edit-inventory-item-WBOIG2RN-DmriC5Gw.js                 1.91 kB │ gzip:     0.87 kB
+dist/assets/thumbnail-badge-Bg_3iXpS.js                              1.96 kB │ gzip:     0.97 kB
+dist/assets/chunk-BIIYZTKH-3KoTAkkP.js                               1.97 kB │ gzip:     0.71 kB
+dist/assets/chunk-YUML3NF5-BELESaS9.js                               2.01 kB │ gzip:     0.61 kB
+dist/assets/customer-group-edit-AIKWPGFT-DO-Gkm7B.js                 2.03 kB │ gzip:     0.92 kB
+dist/assets/chunk-5ZHZVKNQ-76-UO6e7.js                               2.05 kB │ gzip:     0.53 kB
+dist/assets/respond-MYAOLCRF-I4xWCMG7.js                             2.08 kB │ gzip:     0.96 kB
+dist/assets/product-tags-G3CS5MMC-DCGdpIsY.js                        2.15 kB │ gzip:     1.06 kB
+dist/assets/configuration-KOXZFOJX-Djl1L7Ke.js                       2.15 kB │ gzip:     0.90 kB
+dist/assets/edit-budget-CPOIDSV5-DCxGER2z.js                         2.16 kB │ gzip:     1.05 kB
+dist/assets/customers-DGPEV543-lnlbUyyy.js                           2.23 kB │ gzip:     1.05 kB
+dist/assets/edit-DSMLNSAZ-Cv1x2jD0.js                                2.25 kB │ gzip:     1.09 kB
+dist/assets/create-data-table-column-helper-3T9pr06g.js              2.27 kB │ gzip:     0.98 kB
+dist/assets/_id_-ZHOKCJ4T-BXQT3474.js                                2.27 kB │ gzip:     1.19 kB
+dist/assets/customer-group-create-4346MD3S-84V_v-ac.js               2.30 kB │ gzip:     1.01 kB
+dist/assets/chunk-KDE4HKH2-BIZjBLdU.js                               2.33 kB │ gzip:     1.17 kB
+dist/assets/sales-channels-OACMLQPI-D2AgpFel.js                      2.33 kB │ gzip:     1.24 kB
+dist/assets/chunk-OVPAOBZB-DX_zvsn3.js                               2.38 kB │ gzip:     1.05 kB
+dist/assets/orders-2ILL72R4-Dt05bkX0.js                              2.40 kB │ gzip:     1.18 kB
+dist/assets/edit-AGPCY3HW-DpV8RjzH.js                                2.44 kB │ gzip:     0.93 kB
+dist/assets/shipping-FIWGNBNC-CG5N5C6u.js                            2.44 kB │ gzip:     1.15 kB
+dist/assets/shipping-profile-4QOOTWEZ-B-v6h69p.js                    2.45 kB │ gzip:     1.17 kB
+dist/assets/edit-S6US4DAU-XAnZENM4.js                                2.49 kB │ gzip:     0.96 kB
+dist/assets/shipping-profiles-JJ4HH5Y7-w_zmuk3W.js                   2.53 kB │ gzip:     1.16 kB
+dist/assets/return-reasons-5MPNWIQK-CIL3sjY6.js                      2.55 kB │ gzip:     1.27 kB
+dist/assets/chunk-HNLII2AN-CJ0zsKvF.js                               2.57 kB │ gzip:     1.03 kB
+dist/assets/product-types-NY63VPCR-dswUQYK9.js                       2.57 kB │ gzip:     1.16 kB
+dist/assets/create-DOTVIQY3-DYAHzFky.js                              2.57 kB │ gzip:     0.96 kB
+dist/assets/configuration-TAKG3VWR-rCw_sFJ9.js                       2.59 kB │ gzip:     1.00 kB
+dist/assets/radio-group-Bc6LN-3k.js                                  2.61 kB │ gzip:     0.83 kB
+dist/assets/areas-EN5EUBEO-CIsT4V0b.js                               2.69 kB │ gzip:     1.32 kB
+dist/assets/store-closure-TYZV2MRG-NFPTDiCN.js                       2.70 kB │ gzip:     1.04 kB
+dist/assets/_id_-KYC52AAR-BRSeblrK.js                                2.70 kB │ gzip:     1.33 kB
+dist/assets/_id_-UOGZ23E5-B0zl9auf.js                                2.73 kB │ gzip:     1.01 kB
+dist/assets/professional-details-DNDPFYGU-QPXRvSN-.js                2.75 kB │ gzip:     0.98 kB
+dist/assets/chunk-IDQIECSP-rZJMHaCk.js                               2.87 kB │ gzip:     1.19 kB
+dist/assets/chunk-XAASERO6-C_bgOA37.js                               2.89 kB │ gzip:     1.10 kB
+dist/assets/sales-channels-GRGCKN75-W9xmekDF.js                      2.91 kB │ gzip:     1.47 kB
+dist/assets/chunk-5D6P5ZSS-CfwoWTbl.js                               2.92 kB │ gzip:     0.98 kB
+dist/assets/customer-availability-OWVQVCTN-CywTPR2g.js               2.96 kB │ gzip:     1.27 kB
+dist/assets/create-6F3ZTAOG-Cn032j3j.js                              2.99 kB │ gzip:     1.43 kB
+dist/assets/chunk-74U3KTTL-DPa6Et0K.js                               3.06 kB │ gzip:     1.14 kB
+dist/assets/collections-YI345PXH-CaNtz2d_.js                         3.09 kB │ gzip:     1.40 kB
+dist/assets/adjust-inventory-NGANX3VZ-B3aH09SZ.js                    3.24 kB │ gzip:     1.45 kB
+dist/assets/edit-SZXNN4QR-CUqrrQ0s.js                                3.27 kB │ gzip:     1.26 kB
+dist/assets/pricing-ROKACFQV-C_bzra2a.js                             3.32 kB │ gzip:     1.66 kB
+dist/assets/edit-price-DABJMEL3-CgQQFTRm.js                          3.34 kB │ gzip:     1.62 kB
+dist/assets/products-P74QKZEO-BiMD6EOS.js                            3.38 kB │ gzip:     1.69 kB
+dist/assets/shipment-DNSHILRM-BjJYxa0B.js                            3.43 kB │ gzip:     1.39 kB
+dist/assets/add-products-OELSCMHI-DirGK1lC.js                        3.43 kB │ gzip:     1.73 kB
+dist/assets/create-264ONF7U-C4HgbSzs.js                              3.43 kB │ gzip:     1.50 kB
+dist/assets/promotions-RXTEX2JX-xhGGVtFM.js                          3.44 kB │ gzip:     1.55 kB
+dist/assets/edit-VWLAKVLW-D0LdiMoQ.js                                3.45 kB │ gzip:     1.49 kB
+dist/assets/add-customer-groups-JMKG22IT-BmPxYuK3.js                 3.52 kB │ gzip:     1.73 kB
+dist/assets/fulfillment-providers-Q7X6EB3X-Rd1CdAFU.js               3.56 kB │ gzip:     1.76 kB
+dist/assets/chunk-WQTWBXKO-BGPnd0m_.js                               3.63 kB │ gzip:     1.73 kB
+dist/assets/customer-group-add-customers-GXG7YOY5-CGqWn8l-.js        3.65 kB │ gzip:     1.73 kB
+dist/assets/login-W3PYWTDO-CzlVXNdB.js                               3.67 kB │ gzip:     1.51 kB
+dist/assets/edit-UZP7TBH2-JfZbXQik.js                                3.79 kB │ gzip:     1.45 kB
+dist/assets/manage-locations-OHDNUOOQ-y4S3ZcHJ.js                    3.88 kB │ gzip:     1.57 kB
+dist/assets/_id_-27XE66SM-CYpatKMI.js                                3.89 kB │ gzip:     1.42 kB
+dist/assets/store-select-QASXNKMO-9Gwl1LKn.js                        4.00 kB │ gzip:     1.80 kB
+dist/assets/address-JYUFTBRK-CiwuxUCf.js                             4.00 kB │ gzip:     1.19 kB
+dist/assets/team-CF4F6KTM-B--tk27H.js                                4.02 kB │ gzip:     1.66 kB
+dist/assets/edit-stock-PTXEUMBY-B7W9f_Wi.js                          4.06 kB │ gzip:     1.85 kB
+dist/assets/pricing-XNTOYT2H-23YYVJ80.js                             4.07 kB │ gzip:     2.00 kB
+dist/assets/register-FCTWVDWF-Dhf7dUvF.js                            4.12 kB │ gzip:     1.56 kB
+dist/assets/create-GBOXDT3N-C2qq-uZ3.js                              4.13 kB │ gzip:     1.10 kB
+dist/assets/edit-inventory-item-attributes-CLPB2B3N-RkePqvlG.js      4.15 kB │ gzip:     1.16 kB
+dist/assets/categories-GEVHGKQE-BL_7yBX-.js                          4.16 kB │ gzip:     1.75 kB
+dist/assets/payouts-BU2ANJMA-CUX0dpKR.js                             4.21 kB │ gzip:     1.67 kB
+dist/assets/chunk-EHBZOCQO-DdTZMqlG.js                               4.27 kB │ gzip:     1.55 kB
+dist/assets/add-promotions-453ZFOHU-DJ4xOmmz.js                      4.31 kB │ gzip:     1.98 kB
+dist/assets/edit-BJAXWLIN-SQAEnCg3.js                                4.31 kB │ gzip:     1.19 kB
+dist/assets/payment-details-5A7IUG5U-BeZJUElg.js                     4.37 kB │ gzip:     1.27 kB
+dist/assets/reviews-3V3PFC62-BzoXCppf.js                             4.37 kB │ gzip:     1.56 kB
+dist/assets/edit-reservation-7QPD2NAS-B3uO1b-6.js                    4.38 kB │ gzip:     1.69 kB
+dist/assets/edit-I2HM5RVW-CdwLM_GH.js                                4.42 kB │ gzip:     1.72 kB
+dist/assets/create-FUM6N3U2-BTaxP5-W.js                              4.54 kB │ gzip:     1.66 kB
+dist/assets/chunk-LJM4C4MH-DlUxYPd8.js                               4.60 kB │ gzip:     2.01 kB
+dist/assets/products-2FUI5H5W-pzCwEerb.js                            4.65 kB │ gzip:     2.07 kB
+dist/assets/stock-LTZBLHJW-Du929cXx.js                               4.65 kB │ gzip:     1.92 kB
+dist/assets/_id_-666YLRJF-_5D6nmOn.js                                4.67 kB │ gzip:     1.41 kB
+dist/assets/price-lists-A6EHUTTE-DRJJkE1g.js                         4.81 kB │ gzip:     1.81 kB
+dist/assets/locations-MKGRYQYU-Dk3n8VUY.js                           4.81 kB │ gzip:     1.81 kB
+dist/assets/chunk-S6IGY77X-DCVRq0z-.js                               4.88 kB │ gzip:     2.05 kB
+dist/assets/reservations-GLVY3X2G-BqB_R5re.js                        4.94 kB │ gzip:     1.89 kB
+dist/assets/refund-LBEW5S35-5UBYYSBT.js                              4.95 kB │ gzip:     2.11 kB
+dist/assets/edit-MGRXCUVW-B-XhViKM.js                                4.99 kB │ gzip:     1.39 kB
+dist/assets/inventory-WRRJWQFB-DXRRxMmo.js                           5.00 kB │ gzip:     2.14 kB
+dist/assets/invite-IPHZFADY-ClnR3EWH.js                              5.01 kB │ gzip:     2.02 kB
+dist/assets/chunk-XLGMSDJO-C-lqOC7B.js                               5.05 kB │ gzip:     2.10 kB
+dist/assets/chunk-7CL7NS4N-6onYOmg4.js                               5.27 kB │ gzip:     0.67 kB
+dist/assets/profile-TFG3JE7U-B-i6Emq7.js                             5.35 kB │ gzip:     1.77 kB
+dist/assets/chunk-A6HRUSPP-BpfYBmsX.js                               5.37 kB │ gzip:     2.04 kB
+dist/assets/product-variant-detail-7IMC2SAO-Do9kXhcY.js              5.61 kB │ gzip:     2.26 kB
+dist/assets/manage-items-VVFNTJX7-Cn16pJsb.js                        5.66 kB │ gzip:     2.23 kB
+dist/assets/create-L35A3OKF-DVff62Pz.js                              5.71 kB │ gzip:     1.98 kB
+dist/assets/reset-password-R3HXKS3J-BOT1bHaD.js                      5.76 kB │ gzip:     1.57 kB
+dist/assets/campaigns-6HUFYU2H-R9J_tVRX.js                           5.85 kB │ gzip:     2.06 kB
+dist/assets/chunk-PYLKKTXF-C4xukk0z.js                               5.89 kB │ gzip:     1.62 kB
+dist/assets/organization-GKL3Z5AS-CkiaxU1s.js                        5.90 kB │ gzip:     1.73 kB
+dist/assets/customer-groups-V6ZZHJX7-DfDcPqVq.js                     5.99 kB │ gzip:     2.57 kB
+dist/assets/media-5IJEFAYC-CY26WqCn.js                               6.00 kB │ gzip:     2.30 kB
+dist/assets/chunk-7KVWBGJ4-B1PxzXX4.js                               6.13 kB │ gzip:     2.14 kB
+dist/assets/attributes-E6EEEP36-C5tHEnhD.js                          6.23 kB │ gzip:     1.38 kB
+dist/assets/chunk-YV6MK4PZ-oAnW_dUI.js                               6.33 kB │ gzip:     1.96 kB
+dist/assets/chunk-VAFGNDAP-_3JMzMck.js                               6.34 kB │ gzip:     2.44 kB
+dist/assets/chunk-LFUX2JW3-kJLneK74.js                               6.45 kB │ gzip:     2.71 kB
+dist/assets/chunk-AWPOH6IK-BsJtCZpQ.js                               6.46 kB │ gzip:     2.59 kB
+dist/assets/chunk-2ERDNBOU-BSYyuV05.js                               6.59 kB │ gzip:     1.73 kB
+dist/assets/invite-ELEPCOPG-MyYcUiW6.js                              6.61 kB │ gzip:     2.42 kB
+dist/assets/add-QJVY7JHR-DAlTivmW.js                                 7.12 kB │ gzip:     2.94 kB
+dist/assets/_id_-MJGZQFKV-D3h0Ou2X.js                                7.41 kB │ gzip:     2.58 kB
+dist/assets/product-variant-edit-RWYSXW3M-CUfb9vhN.js                7.42 kB │ gzip:     2.31 kB
+dist/assets/edit-VLKDSPFM-sVhmz6hG.js                                7.58 kB │ gzip:     2.54 kB
+dist/assets/inventory-6W64L5G3-DaWeUV6s.js                           7.81 kB │ gzip:     2.48 kB
+dist/assets/offer-variant-detail-page-SRB5J3TJ-hvADZ6H4.js           7.83 kB │ gzip:     2.55 kB
+dist/assets/edit-YTFZY3A7-BHSs9hrZ.js                                8.04 kB │ gzip:     2.18 kB
+dist/assets/add-VMWDXYOJ-BnHnEKRK.js                                 8.06 kB │ gzip:     3.48 kB
+dist/assets/create-MQFDW6CK-Dva9_5dZ.js                              8.67 kB │ gzip:     2.69 kB
+dist/assets/chunk-AQI5E3SK-BD6XzGQR.js                               9.13 kB │ gzip:     3.13 kB
+dist/assets/_id_-MDSZJASE-Dhtcdwbm.js                                9.33 kB │ gzip:     2.78 kB
+dist/assets/chunk-IQPN4PZJ-CYCbBMOO.js                               9.61 kB │ gzip:     2.70 kB
+dist/assets/create-KVTRPU5I-CICQKGg5.js                              9.62 kB │ gzip:     3.67 kB
+dist/assets/chunk-YMUXQFOC-CuFeLgRU.js                               9.83 kB │ gzip:     3.84 kB
+dist/assets/offer-detail-page-KRH4TNJN-BkRVXTZm.js                  10.12 kB │ gzip:     3.72 kB
+dist/assets/_id_-DJ6I7ZWW-BLA_xxAj.js                               10.24 kB │ gzip:     3.09 kB
+dist/assets/_id_-XQWHZ4UU-3vBFx2b6.js                               10.30 kB │ gzip:     3.49 kB
+dist/assets/chunk-2X47WY4U-B_QWDB5I.js                              10.44 kB │ gzip:     4.54 kB
+dist/assets/_id_-ETBVSKK3-DG7MxsIw.js                               10.81 kB │ gzip:     3.74 kB
+dist/assets/media-K6I5ZZBK-BibDEgD4.js                              11.38 kB │ gzip:     4.10 kB
+dist/assets/currency-input-ZA9g07EY.js                              11.74 kB │ gzip:     4.60 kB
+dist/assets/offer-create-page-36PYLWW4-DxpRn6go.js                  11.92 kB │ gzip:     4.55 kB
+dist/assets/create-5OVMJIGW-BucryUGx.js                             12.10 kB │ gzip:     4.11 kB
+dist/assets/fulfillment-EBULAIBY-KATeofi9.js                        12.39 kB │ gzip:     3.99 kB
+dist/assets/_id_-D224RIUO-B-UZKqBw.js                               12.73 kB │ gzip:     3.58 kB
+dist/assets/receive-GPJQEJFY-DGfoH_jt.js                            12.82 kB │ gzip:     4.23 kB
+dist/assets/_id_-GQQXDJGU-Dp9BN8I9.js                               13.50 kB │ gzip:     4.12 kB
+dist/assets/chunk-RFBXMG3F-CAAQjtHs.js                              13.63 kB │ gzip:     3.37 kB
+dist/assets/_id_-4FS7TSTE-Qn8EL_Jn.js                               14.10 kB │ gzip:     4.90 kB
+dist/assets/store-MZRR67LA-igMoACN0.js                              14.20 kB │ gzip:     3.93 kB
+dist/assets/allocate-items-Y4G6RRBN-DmPUOElF.js                     14.33 kB │ gzip:     4.48 kB
+dist/assets/edit-6FQM5DIT-DnJkax8w.js                               14.73 kB │ gzip:     4.85 kB
+dist/assets/_location_id_-WAAVKYMQ-D40xBU6W.js                      16.55 kB │ gzip:     4.87 kB
+dist/assets/create-JXTADLBY-C95DQTdV.js                             16.94 kB │ gzip:     4.39 kB
+dist/assets/onboarding-4RRUUXWQ-CELbdIRj.js                         17.22 kB │ gzip:     4.21 kB
+dist/assets/chunk-JRTZWK77-B-bTD3uz.js                              21.53 kB │ gzip:     6.14 kB
+dist/assets/create-3VIRP7IK-CdpesX-2.js                             21.55 kB │ gzip:     6.64 kB
+dist/assets/chunk-CMZOZFZU-D-eEVg23.js                              21.74 kB │ gzip:     6.72 kB
+dist/assets/chunk-GSRMAHJE-BeIpTciU.js                              25.71 kB │ gzip:     7.96 kB
+dist/assets/create-JBOQ2DZW-vUtTu1Do.js                             29.45 kB │ gzip:     8.38 kB
+dist/assets/create-C5K3TJGT-Bxo44iwv.js                             31.80 kB │ gzip:     8.73 kB
+dist/assets/create-MYLL6LX4-Bf48cUoN.js                             34.66 kB │ gzip:     9.22 kB
+dist/assets/chunk-YXJUIFQA-CPz3bGFJ.js                              58.40 kB │ gzip:    18.12 kB
+dist/assets/_id_-ASQEGEPZ-CXn4GXgc.js                               65.76 kB │ gzip:    14.24 kB
+dist/assets/chunk-MKAGFKBV-B9tt-M82.js                              97.88 kB │ gzip:    27.25 kB
+dist/assets/chunk-ESRIX7ZH-BiYwhDKa.js                             242.61 kB │ gzip:    11.67 kB
+dist/assets/index-ChuGBZfc.js                                    7,798.99 kB │ gzip: 1,950.06 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 13.71s
+$ medusa build && node ./scripts/bundle-dashboards.mjs && node ./scripts/bundle-didar-schema.mjs
+{"level":"info","message":"Generating types...","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"No link to load from /workspace/work/didar-pr29/node_modules/.bun/@medusajs+draft-order@2.21.2+f476f8fa74016f63/node_modules/@medusajs/draft-order/.medusa/server/src/links. skipped.","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Types generated successfully","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Starting build...","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Compiling backend source...","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Removing existing \".medusa/server\" folder","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Skipping admin build, since its disabled inside the medusa-config file","timestamp":"2026-10-18 10:21:33"}
+{"level":"info","message":"Backend build completed successfully (7.84s)","timestamp":"2026-10-18 10:21:41"}
+[bundle-dashboards] admin: apps/admin/dist -> .medusa/server/dashboards/admin/dist
+[bundle-dashboards] vendor: apps/vendor/dist -> .medusa/server/dashboards/vendor/dist
+[bundle-dashboards] done — the artifact serves 2 panel(s) at their configured paths.
+[bundle-didar-schema] bundled 22 additive SQL/vocabulary resources for artifact-only deployments.
+$ next build
+   ▲ Next.js 15.5.24
+   - Experiments (use with caution):
+     · cpus: 2
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.8s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/24) ...
+   Generating static pages (6/24) 
+   Generating static pages (12/24) 
+   Generating static pages (18/24) 
+ ✓ Generating static pages (24/24)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ƒ /                                    4.46 kB         127 kB
+├ ○ /_not-found                            134 B         102 kB
+├ ○ /account                               174 B         133 kB
+├ ○ /account/wallet                       1.9 kB         113 kB
+├ ƒ /api/didar/[action]                    134 B         102 kB
+├ ○ /cart                                  178 B         133 kB
+├ ƒ /categories/[slug]                     368 B         120 kB
+├ ○ /checkout                              178 B         133 kB
+├ ƒ /collections/[slug]                    368 B         120 kB
+├ ƒ /discover/[slug]                       310 B         120 kB
+├ ƒ /fa/products/[...path]                 310 B         120 kB
+├ ƒ /i/[uid]                               134 B         102 kB
+├ ○ /login                                 174 B         133 kB
+├ ƒ /m/[handle]/[[...path]]              2.89 kB         139 kB
+├ ○ /manage                                258 B         137 kB
+├ ○ /manage/acceptance                   1.87 kB         113 kB
+├ ○ /manage/admin                          258 B         137 kB
+├ ○ /manage/finance                        246 B         111 kB
+├ ○ /manage/ledger                       2.51 kB         114 kB
+├ ○ /manage/onboarding                    5.1 kB         142 kB
+├ ○ /manage/operations                   8.19 kB         116 kB
+├ ○ /manage/pages                          133 B         126 kB
+├ ƒ /manage/pages/preview/[version]        134 B         126 kB
+├ ○ /manage/pricing                      3.63 kB         132 kB
+├ ○ /manage/sharing                        250 B         120 kB
+├ ○ /manage/storefront                   2.58 kB         105 kB
+├ ○ /manage/supplier                       258 B         137 kB
+├ ○ /manage/tahesab                      2.23 kB         113 kB
+├ ○ /manage/treasury                     2.94 kB         114 kB
+├ ○ /orders                                178 B         133 kB
+├ ƒ /orders/[id]                           178 B         133 kB
+├ ƒ /orders/[id]/invoice                 2.24 kB         110 kB
+├ ○ /products                              310 B         120 kB
+└ ƒ /products/[...path]                    310 B         120 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/31-e848d59fb1e5c5d2.js        45.8 kB
+  ├ chunks/84342583-2a829a53f40f4580.js  54.2 kB
+  └ other shared chunks (total)          1.88 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+bun test v1.4.3 (c6da4a4d3)
+
+tests/local-workflow.test.ts:
+(pass) local setup is repeatable, creates private configuration and preserves passwords byte-for-byte [1.01ms]
+(pass) only a demonstrated local legacy sandbox can gain the missing environment flag [0.34ms]
+(pass) local tooling rejects staging environment [0.07ms]
+(pass) local tooling rejects production environment
+(pass) local tooling rejects missing environment
+(pass) local boundary rejects unsafe DATABASE_URL without disclosing the value [0.04ms]
+(pass) local boundary rejects unsafe REDIS_URL without disclosing the value
+(pass) local boundary rejects unsafe STORE_CORS without disclosing the value [0.01ms]
+(pass) local boundary rejects unsafe DIDAR_PAYMENT_MODE without disclosing the value
+(pass) local boundary rejects unsafe DIDAR_SEED_DEMO without disclosing the value
+(pass) local boundary rejects unsafe JWT_SECRET without disclosing the value
+(pass) unsafe existing config is preserved and a frontend destination mismatch is refused [0.23ms]
+(pass) injected staging/remote credentials fail the guard even when the local file is safe [0.16ms]
+(pass) Playwright uses its platform browser, honors an explicit executable and requires sandbox opt-out [0.05ms]
+(pass) preflight refuses an occupied port without terminating its owner [2.04ms]
+(pass) Docker exec relay carries simultaneous binary TCP streams over loopback, with no bridge address [34.59ms]
+(pass) remote Docker TCP/SSH targets are refused before any daemon access [0.18ms]
+(pass) failed child verification preserves the nonzero result [22.73ms]
+(pass) locked native compiler/image artifacts include Intel and Apple Silicon Mac variants [0.56ms]
+(pass) an explicitly blank environment flag is preserved and never relabeled local [0.29ms]
+(pass) local stop recognizes only the native dev wrapper, never unrelated or test processes [0.11ms]
+(pass) build reuse refuses changed source, damaged artifacts, another platform or a missing receipt [1.27ms]
+(pass) build receipt accepts a tracked route removal and still detects a newly added replacement route [11.96ms]
+
+tests/pricing.test.ts:
+(pass) gold-first legacy making compatibility uses additive base margin and IRR tax [0.96ms]
+(pass) fractional gram uses integer upward rial rounding [0.06ms]
+(pass) tax excludes gold principal [0.04ms]
+(pass) invalid quantities and rates cannot enter arithmetic [0.10ms]
+(pass) percentage making charge, fixed fees and configurable rounding preserve hand-checked amounts [0.04ms]
+(pass) default margin is configurable while an explicit zero margin stays zero [0.09ms]
+(pass) invalid commercial policy cannot silently influence customer totals [0.05ms]
+
+tests/inventory.test.ts:
+(pass) exact grouped stock permits the last piece but never an oversell [0.03ms]
+(pass) fractional, unsafe and invalid stock requests cannot be reserved [0.07ms]
+(pass) only pending reservations expire, including the exact expiry boundary [0.25ms]
+
+tests/security.test.ts:
+(pass) public demo identities require explicit local runtime, independent of build mode [0.21ms]
+(pass) payment selection fails closed for production, missing environment and live modes [0.12ms]
+(pass) live Iranian gateway boundary never initiates an unconfigured charge [0.14ms]
+(pass) sandbox authority has no money movement and rejects invalid money [0.16ms]
+(pass) password verification handles corrupt records without crashing and uses unique salted hashes [104.19ms]
+
+tests/commerce.test.ts:
+(pass) anonymous and customer users cannot change stock or rate [22.28ms]
+(pass) supplier cannot update or read another supplier inventory [66.58ms]
+(pass) supplier creates exact-weight offer only under own identity [37.80ms]
+(pass) stock reserve is idempotent and failed payment restores exactly once [48.02ms]
+(pass) stale prices, fractional quantities and duplicate lines rejected [19.58ms]
+(pass) two concurrent purchases cannot oversell and paid stock remains deducted [48.34ms]
+(pass) one checkout spans suppliers with isolated order views [49.26ms]
+(pass) expired reservation is released, cannot become paid [34.17ms]
+
+tests/upgraded-commerce.test.ts:
+(pass) supplier registration requires admin approval and cannot self-approve [97.23ms]
+(pass) admin category and product edits persist publication controls [346.67ms]
+(pass) subcategory hierarchy rejects cycles and collection membership is editable [219.10ms]
+(pass) product images require admin authorization and matching image bytes [107.56ms]
+(pass) supplier manages multiple weights, deactivates an offer, and cannot alter another supplier [124.63ms]
+(pass) supplier product requests remain pending until admin review [67.89ms]
+(pass) approved supplier product request becomes one shared native-linked product [172.37ms]
+(pass) stock edits during a reservation count available pieces and release exactly once [99.43ms]
+(pass) payment initialization and concurrent callbacks are idempotent and owner scoped [165.95ms]
+(pass) expired initialized payment releases stock and cannot confirm successfully [136.25ms]
+(pass) paid allocation progresses through valid fulfillment and protects customer privacy [134.92ms]
+(pass) product purity edits invalidate old offers without changing paid pricing snapshots [230.15ms]
+(pass) profile updates are private, validated and logout revokes the session [15.02ms]
+
+tests/phase1.test.ts:
+(pass) mandatory 100g Gold-First 12+3+7, IRR VAT and fixed equivalent making are additive [0.84ms]
+(pass) all eight supplier mutations default denied; grants revoke immediately; reads isolated [330.10ms]
+(pass) 19 separately measured items reconcile 5/135g, 2/127g, 12/117g; mismatch and unverified stock blocked [304.90ms]
+(pass) EPC normalization, global uniqueness, audited replacement and independent pairing grant [75.97ms]
+(pass) count snapshot deduplicates five EPCs and UID aliases, flags missing/unknown, never changes stock [61.71ms]
+(pass) failed, cancelled and expired payments release the identical UID exactly once [284.89ms]
+(pass) concurrent checkout reserves/sells one exact UID; immutable pricing and supplier fulfillment permission [201.90ms]
+(pass) physical return quarantines then restocks once; old callback never re-sells returned UID [141.15ms]
+(pass) physical identity and posted source are database protected, legacy stock remains unserialized [39.18ms]
+(pass) UID and active EPC uniqueness spans suppliers, with no competitor disclosure [35.05ms]
+(pass) expiry sweep releases item UID exactly once and stock correction is independently authorized/audited [268.44ms]
+(pass) explicit tolerance is versioned, admin-only, reason required, quantity exceptions still forbidden [56.19ms]
+(pass) equal-weight physical units share a derived offer and reserve/release an exact set for quantity two [145.46ms]
+(pass) voided physical UID remains permanent; authorized unpair releases its tag without recreating stock [38.92ms]
+(pass) supplier count reports redact competitor UID, item ID and EPC even when an admin scanned it [37.48ms]
+
+tests/migrations.test.ts:
+(pass) clean and repeat additive migrations preserve legacy stock and paid snapshots without invented units [190.22ms]
+
+tests/finance.test.ts:
+(pass) Gate 1: contract-independent supplier entitlement uses exact fine gold, not customer margin/VAT [0.32ms]
+(pass) Gate 1: requests scoped, approval admin-only, future contracts not silently activated [32.26ms]
+(pass) Gate 1: intake creates no debt, verified payment is exactly once and checkout terms survive amendments [160.21ms]
+(pass) Gate 1: statements scoped and append-only; return-gated refund reverses without deleting history [55.77ms]
+(pass) Gate 1: effective rial contract and Didar-owned inventory never generate fictional external gold payable [267.05ms]
+(pass) Gate 1: additive migration replay preserves existing UID and price snapshots and creates no historical exposure [7.02ms]
+
+tests/finance-procurement.test.ts:
+(pass) Gate 2: paid requests, two purchases/multiple allocations, separate title/custody and partial mixed settlement [736.34ms]
+(pass) Gate 2: concurrent over-allocation rejected, unexecuted facts reverse append-only and refunded request cannot be allocated [427.70ms]
+(pass) Gate 2: rial-only contracts remain actionable without a gold procurement request; migrations preserve facts [413.13ms]
+
+tests/finance-ledger.test.ts:
+(pass) Gate 3: payable-to-wallet is one liability; pending/available/reserved/pledged and concurrent spending are enforced [457.37ms]
+(pass) Gate 3: database rejects unbalanced journals, wallet overdraft, posting edits and replayed projections [392.88ms]
+(pass) Gate 3: documented Didar-owned jewelry cost, sale COGS and full refund reconcile without fictitious supplier debt [361.87ms]
+
+tests/finance-tahesab.test.ts:
+(pass) Gate 4 standalone local mock enforces its own envelope, retries idempotently and persists across restart [134.27ms]
+(pass) Gate 4: merchant aggregate ties to journal, separate event types, no buyer/UID/EPC; stable close and retry intent [420.74ms]
+(pass) Gate 4: strict versioned envelope, Jalali dates, spec blocker and replay-safe migrations [22.56ms]
+
+tests/finance-integrated.test.ts:
+(pass) Gate 5: one integrated 5/135g + 2/127g + 12/117g +100g UID/RFID sale, mixed finance, wallet, mock close and refund [898.62ms]
+(pass) Gate 5: disposable PostgreSQL restart preserves all physical, historical and financial rows and reconnects the API [725.12ms]
+
+tests/uat-prepare.test.ts:
+(pass) Gate 5 Mac UAT preparation creates an isolated exact 20-UID dataset and repeat keeps business records unchanged [984.95ms]
+(pass) Gate 5 Persian integer formatting preserves IRR beyond JavaScript safe-number precision [0.80ms]
+
+tests/taxonomy-labels.test.ts:
+(pass) customer label origin requires explicit verification and rejects local, sandbox, credentials and unsafe URL origins [0.88ms]
+(pass) uncategorized drafts and photo uploads work; API and database deny incomplete publication [186.01ms]
+(pass) leaf and ancestor guards prevent taxonomy corruption and preserve a shared multi-offer master [170.53ms]
+(pass) supplier proposals cannot bypass publication and admin approval requires taxonomy [116.19ms]
+(pass) admin single and batch printing uses permanent UIDs with optional EPC, gates customer visibility and forbids all other roles [655.37ms]
+(pass) public QR and legacy bookmarks redirect to canonical path without disclosing private item fields [104.27ms]
+(pass) category and product slug rename and reclassification keep old PDP URLs and every printed QR continuous [100.45ms]
+(pass) sold UID resolves a public master but exact-item stock and immutable financial sale history remain authoritative [187.12ms]
+(pass) unpublished, inactive, unknown and draft UID paths fail safely; publication restoration preserves labels [248.06ms]
+(pass) repeat migration preserves exact UIDs, offers and immutable paid financial rows [14.62ms]
+(pass) deeper canonical hierarchy uses every ancestor and product identity cannot be rewritten [114.34ms]
+(pass) UID-only HID counts deduplicate the same untagged piece and never alter stock [29.83ms]
+(pass) long UID barcodes retain exact identity; draft/void pieces never resolve or generate a customer QR [104.82ms]
+(pass) rank, active ancestry and stable machine codes are enforced in API and PostgreSQL [84.71ms]
+
+tests/facets.test.ts:
+(pass) seeds all twelve independent dimensions once, no fabricated Arabic/French labels or product assignments [219.80ms]
+(pass) AND across dimensions, OR within a dimension, distinct products/counts and stable bounded pages [180.84ms]
+(pass) offer weight, purity, stock, authoritative price filters combine on the same offer before paging [126.67ms]
+(pass) strict filters reject unknown dimensions/codes, injection, malformed or unsafe pagination [26.75ms]
+(pass) server prevents competing market tiers even with concurrent owner approvals and rejects F11 product tags [27.56ms]
+(pass) subjective heritage/luxury and best seller require evidence; suppliers cannot self-approve or merchandise [19.44ms]
+(pass) supplier default-deny, own suggestions, DIDAR review, concurrency, cross supplier denial and immediate revocation [151.00ms]
+(pass) timed merchandising, retired values and hidden dimensions immediately disappear from public filters and PDP [163.06ms]
+(pass) extend existing collections with F11, owner approval, translated label and memberships without cloning products [101.22ms]
+(pass) curated discovery composes immutable page constraints with customer filters and the same master PDP [79.75ms]
+(pass) draft translations are validated, reviewed by DIDAR and never expose raw labels or activate storefront locales [163.61ms]
+(pass) migration replays preserve old collections, product identities, exact inventory and immutable financial snapshots [674.62ms]
+(pass) reviewed best-seller badge requires paid sales, while UID checkout and balanced accounting keep the same classified master [748.59ms]
+(pass) all ten product dimensions combine with public F11 and F12 without duplicating a master [133.69ms]
+
+tests/merchant-pricing.test.ts:
+(pass) one Gold-First engine reproduces manufacturer and retailer additive 750-base examples without legacy double margins [1.21ms]
+(pass) C application modes and explicit alternative/fixed calculation bases never compound other Didar additions [1.19ms]
+(pass) same public master has two authoritative merchant-specific prices and CASH always includes the approved C [75.53ms]
+(pass) profiled mixed UID checkout snapshots rates, conditions, versions and charges; supplier entitlement remains gold-first and journals balance [73.82ms]
+(pass) reassigning approved versions affects future quotes only, detects stale carts and preserves already accepted payment snapshots [116.99ms]
+(pass) effective assignment intervals, incompatible types, immutable versions and concurrent overlapping assignments are database enforced [42.70ms]
+(pass) new merchant types and reusable profiles use the same formula and legacy merchants are not auto-assigned [337.25ms]
+(pass) suppliers can read and simulate only their own assignments; shared percentages, taxes and competitor settings are denied [27.53ms]
+(pass) mixed-merchant order services are charged once, allocated exactly, and internal/merchant costs are not added to customer VAT or gold entitlement [114.87ms]
+(pass) profile/tax retirement fails closed for future quotes and repeat migrations preserve exact UIDs, paid rows and journals [139.69ms]
+(pass) checkout and an administrator profile switch serialize: acceptance freezes the observed quote or returns a conflict [56.47ms]
+(pass) returning a profiled exact UID reverses only its allocated services, VAT, receivable and provisional costs once [35.29ms]
+(pass) PostgreSQL rejects JSON-null rule modes, missing shared service keys and re-keying approved components [21.64ms]
+
+tests/storefront.test.ts:
+(pass) merchant context filters global/scoped catalogs, facets, private offers, PDP/UID and rejects direct quote smuggling [180.21ms]
+(pass) a shared public Master never exposes its unlisted/invite-only rival Offers in global or merchant context [182.90ms]
+(pass) invite-only requires central customer identity, bound grant and immediate revocation [109.21ms]
+(pass) cross-tenant management and stable handle guard, optimistic revisions and default-deny staff [38.29ms]
+(pass) explicit membership grants one capability without global supplier or finance access, and revokes immediately [23.13ms]
+(pass) sandbox checkout preserves exact UID, supplier origin, frozen pricing, balanced journals and idempotent replay [52.96ms]
+(pass) curated sharing references ten own masters, rejects rival products, freezes valid attribution and scopes metrics [8911.44ms]
+(pass) migration replay preserves populated commerce and origin history [15.90ms]
+
+tests/onboarding-media.test.ts:
+(pass) bounded real decoding rejects disguised, oversized, corrupt and extreme-dimension images [8.35ms]
+(pass) orientation, color, transparency and private metadata normalize to proportional decoded WebP variants [421.13ms]
+(pass) merchant draft/join requests are idempotent and preserve actual creator/assistant identities with default-deny governance [63.15ms]
+(pass) private merchant new-master approval remains hidden before its first eligible public Offer [206.37ms]
+(pass) central image size, quality and byte-budget policy is admin-only, validated and revision-checked [29.35ms]
+(pass) photo receipts and variants persist privately, upload replay does not duplicate, pending product requires approval [369.34ms]
+(pass) shared Master media remains merchant-owned across scoped/public image URLs and catalog projections [365.79ms]
+(pass) twenty real authorized image operations are decoded and persisted; quotas and revocation are enforced [3920.94ms]
+(pass) media migration replay and disposable database restart preserve source IDs, variants and commerce history [656.51ms]
+
+tests/content.test.ts:
+(pass) typed blocks reject scripts, unsafe paths, tenant dot escapes and unbounded layout; starter is structural only [1.38ms]
+(pass) editorial media is real decoded, approved but private until publication, and video is normalized silent with immutable bytes [27.36ms]
+(pass) all block types persist, draft/preview isolation, approval/publish uses live public product truth, range is bounded [215.04ms]
+(pass) immutable versions, concurrent revisions, scheduled cutover, idempotency, pause and rollback preserve URL and audit [1521.47ms]
+(pass) merchant A media/pages cannot leak to B, global or anonymous invite readers; fresh grant revocation and unsafe CTA rejected [177.73ms]
+(pass) additive media/content migration replays retain bytes, immutable UID stock, paid snapshots and publications [41.33ms]
+(pass) published CMS survives a real disposable PostgreSQL restart and a fresh compiled API process [4803.11ms]
+(pass) central content capability, sanitized immutable presets and future campaign adapters cannot widen merchant authority [68.09ms]
+(pass) CMS upgrades the exact existing share slug and preserves original visit attribution without cloning masters [1096.49ms]
+
+tests/native-panels.test.ts:
+(pass) native identity migration is additive and repeatable; connections do not clone commercial records [10.88ms]
+(pass) native admin and member authentication, dual proof, immediate revocation and seller isolation [533.11ms]
+(pass) native RBAC adds a restriction to Didar admin authority and cannot be bypassed through manage mutation kinds [69.28ms]
+(pass) generic native product mutations cannot diverge or delete an existing linked gold master [97.55ms]
+(pass) native Vendor generic product mutations reveal no private product existence and cannot create a competing master [97.66ms]
+(pass) real Mercur permission resolver restricts native staff to the selected merchant and never promotes the customer identity [411.15ms]
+(pass) native global content operator and explicit readonly admin policy cannot read commerce or financial data [447.73ms]
+(pass) native access changes are audited, revocable and cannot disable the last usable central administrator [217.09ms]
+(pass) a linked pending supplier gets a native approval status without accessing stock or finance [203.22ms]
+(pass) unconnected native users have no customer/product privileges before proving an approved existing Didar role [127.99ms]
+(pass) native seller suspension gates new global/scoped sales while preserving paid history and legacy unmapped suppliers [182.13ms]
+(pass) workspace handoff status requires the existing session and exposes no native credentials [95.54ms]
+(pass) native handoff accepts bounded feature references and rejects redirects, credentials and path escapes [0.56ms]
+
+tests/native-policy.test.ts:
+(pass) C01 managed native Admin launch: real scoped UID purchase with no owner bridge and true actor audit [531.19ms]
+(pass) C02 native owner without bridge has safe selection/status but no generic commerce rights [74.73ms]
+(pass) C03 approved linked supplier is read-only for generic commerce; explicit gold grant cannot enable second native writer [149.27ms]
+(pass) C03 generic native catalog hides rival private masters in list/count/detail/variant/preview while owner keeps read [285.69ms]
+(pass) C03 explicit intake grant works through native and legacy canonical workflows and revokes immediately [42.33ms]
+(pass) C04 managed to assisted to delegated publishing keeps identical store/offer/UID/order records [665.59ms]
+(pass) C06 native ACL is surface scoped; disabling editor does not suspend managed public commerce [146.79ms]
+(pass) C07 suspension/state matrix: generic + native DIDAR + legacy denies, own history stays read-only and immutable [737.31ms]
+(pass) C08 native and legacy staff grant revocation on identical merchant records; no role promotion [107.71ms]
+
+tests/pre-rollout-authorization.test.ts:
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"canonical-private","products_count":0,"variants_count":0,"returned_product_ids":[]}
+(pass) separate Vendor variant list/count must preserve product visibility: canonical-private [158.41ms]
+INDEPENDENT_VARIANT_VISIBILITY {"kind":"native-unmapped","products_count":0,"variants_count":0,"returned_product_ids":[]}
+(pass) separate Vendor variant list/count must preserve product visibility: native-unmapped [161.50ms]
+INDEPENDENT_DEACTIVATED_MEMBER [{"path":"/vendor/products","status":403},{"path":"/vendor/offers","status":403},{"path":"/vendor/orders","status":403},{"path":"/vendor/didar/manage","status":403},{"path":"/vendor/didar/history","status":403}]
+(pass) deactivated native Member cannot retain generic or DIDAR commerce through an existing bearer [121.35ms]
+INDEPENDENT_PUBLIC_MIRROR [{"path":"/store/products?id=prod_didar_a0ed6a630abe1c74ae4ef379d9911339&limit=1","status":200,"count":0,"product_ids":[]},{"path":"/store/products/prod_didar_a0ed6a630abe1c74ae4ef379d9911339","status":404}]
+(pass) public native Store API cannot disclose a DIDAR-private master through its published mirror [53.37ms]
+INDEPENDENT_COMPENSATION {"edit_status":500,"before_native_status":"draft","after_native_status":"draft","canonical_unchanged":true}
+(pass) failed canonical edit must compensate an unapproved native mirror back to draft [126.29ms]
+(pass) authorized public native variants retain original list/count/pagination behavior [58.47ms]
+(pass) native Store keeps eligible public and untagged native-only products visible while tagged orphans stay hidden [312.03ms]
+
+tests/agency-allocation.test.ts:
+(pass) CORE-03 governed allocation without a second financial writer > MIXED preserves separate gold quantity/book value and rial [0.37ms]
+(pass) CORE-03 governed allocation without a second financial writer > gold-only and rial-only preserve their contractual instruments [0.11ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct sale has own revenue and no agency principal payable [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > a signed conversion delta must derive from the original metal/making price [0.07ms]
+(pass) CORE-03 governed allocation without a second financial writer > negative unexplained allocations fail closed [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > approved CASH/CREDIT profile beneficiaries remain explicit [0.26ms]
+(pass) CORE-03 governed allocation without a second financial writer > DIDAR direct mode never charges an uncontracted physical supplier as merchant [0.06ms]
+(pass) CORE-03 governed allocation without a second financial writer > profile unknown recipient/component never becomes a generic residual [0.03ms]
+(pass) CORE-03 governed allocation without a second financial writer > new mode is only enabled through all three explicit sandbox flags [0.08ms]
+
+tests/projection-durability.test.ts:
+(pass) projection source revision and job roll back on final canonical COMMIT failure; afterCommit never runs [13.93ms]
+(pass) latest revision wins reordered deliveries and source-row lock serializes concurrent writers [43.55ms]
+(pass) forward projection has bounded retry, observable terminal failure and explicit latest-only reconciliation [24.73ms]
+(pass) first relevant edit links an untouched historical NULL native id without bulk backfill [12.85ms]
+DIDAR_AFTER_COMMIT_RETRY_REQUIRED
+(pass) post-commit optimization failure preserves committed source and durable pending work [2.34ms]
+
+tests/issue18-acceptance.test.ts:
+(pass) I18 independent RETAILER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [724.96ms]
+(pass) I18 independent MANUFACTURER agency CASH/CREDIT: exact single liability, collection and frozen tenant-safe invoice [862.16ms]
+(pass) I18 independent DIRECT_DIDAR has no external principal obligation or duplicated agency journal [517.03ms]
+(pass) I18 independent partial GOLD/IRR settlement then return/refund keeps original allocation and explicit recoverable [584.44ms]
+(pass) I18 independent accepted-order mandate replacement and commercial suspension block payment without consuming UID [423.54ms]
+(pass) I18 independent curation gates catalog/count/PDP/media and invoice; two shops race the same physical UID [2145.69ms]
+(pass) I18 independent unknown beneficiary fails before collection; approved beneficiary is separately frozen once [734.96ms]
+(pass) I18 independent changed approved profile/tax before payment requires requote and never collects old terms [514.72ms]
+(pass) I18 independent mandate governance denies unauthenticated/customer/supplier approval and unapproved sales [343.58ms]
+(pass) I18 independent revocation and expiry invalidate new economics without rewriting contract history [340.36ms]
+(pass) I18 independent AGENCY MERCHANT-paid fees bind the actual principal once for both commercial types and CASH/CREDIT [996.90ms]
+
+tests/native-product-targets.test.ts:
+17 |     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+18 |   });
+19 | }
+20 | async function ok(path: string, method = "GET", body?: any) {
+21 |   const r = await request(path, method, body);
+22 |   expect(r.status, await r.clone().text()).toBe(200);
+                                                ^
+error: {"type":"not_allowed","code":"MISSING_PERMISSION","message":"Missing required permission: products:edit","permission":"products","right":"edit"}
+
+Expected: 200
+Received: 403
+
+      at ok (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:22:44)
+      at async <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:42:11)
+(fail) real native target setup retains DIDAR projections and ordinary native CRUD [83.92ms]
+55 |     title: "QA unrelated native edit",
+56 |   });
+57 |   expect(result.product.title).toBe("QA unrelated native edit");
+58 | });
+59 | test("a forged URL parent cannot delete the linked native variant", async () => {
+60 |   for (const id of [parent.id, "prod_nonexistent_qa"]) {
+                         ^
+TypeError: undefined is not an object (evaluating 'parent.id')
+      at <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:60:21)
+(fail) a forged URL parent cannot delete the linked native variant [0.25ms]
+75 | });
+76 | test("mixed native/DIDAR variant batches reject before any partial native mutation", async () => {
+77 |   const nativeVariant = (
+78 |     await db.query(
+79 |       "SELECT id FROM product_variant WHERE product_id=$1 AND deleted_at IS NULL LIMIT 1",
+80 |       [parent.id],
+            ^
+TypeError: undefined is not an object (evaluating 'parent.id')
+      at <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:80:8)
+(fail) mixed native/DIDAR variant batches reject before any partial native mutation [0.17ms]
+ 99 | });
+100 | test("a variant update body cannot redirect an ordinary native editor to a DIDAR target", async () => {
+101 |   const nativeVariant = (
+102 |     await db.query(
+103 |       "SELECT id FROM product_variant WHERE product_id=$1 AND deleted_at IS NULL LIMIT 1",
+104 |       [parent.id],
+             ^
+TypeError: undefined is not an object (evaluating 'parent.id')
+      at <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:104:8)
+(fail) a variant update body cannot redirect an ordinary native editor to a DIDAR target [0.12ms]
+125 | });
+126 | test("standalone shared-option writes cannot bypass the linked Product Master editor", async () => {
+127 |   const option = (
+128 |     await ok(
+129 |       "/admin/products/" +
+130 |         linked.native_id +
+              ^
+TypeError: undefined is not an object (evaluating 'linked.native_id')
+      at <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:130:9)
+(fail) standalone shared-option writes cannot bypass the linked Product Master editor [0.17ms]
+149 | });
+150 | test("authentication and native reads keep their original behavior", async () => {
+151 |   expect(
+152 |     (
+153 |       await request(
+154 |         `/admin/products/${parent.id}/variants/${linked.variant_id}`,
+                                 ^
+TypeError: undefined is not an object (evaluating 'parent.id')
+      at <anonymous> (/workspace/work/didar-pr29/tests/native-product-targets.test.ts:154:28)
+(fail) authentication and native reads keep their original behavior [0.08ms]
+
+tests/auth-hardening.test.ts:
+(pass) direct auth ignores spoofed forwarding and cookie rotation; normalized account quota persists [9389.05ms]
+(pass) one real proxy client cannot spend another network’s quota [9511.38ms]
+(pass) targeted account failures do not create a victim account ban [10092.18ms]
+(pass) private Next cannot downgrade missing proof; unsigned API uses actual socket [553.82ms]
+(pass) raw-byte binding, authenticated proxy peer and nonce replay are enforced [55.17ms]
+(pass) a first-hop proof stays single-use after Next re-signs it [53.08ms]
+(pass) concurrent requests cannot over-admit a client/account budget [306.86ms]
+(pass) database work admission applies independently of client IP and releases without account lock [1069.35ms]
+(pass) expired auth-only state is pruned in bounded batches; active state survives [553.11ms]
+(pass) native Admin and Vendor authentication and canonical customer sessions remain original authorities [759.14ms]
+
+6 tests failed:
+(fail) real native target setup retains DIDAR projections and ordinary native CRUD [83.92ms]
+(fail) a forged URL parent cannot delete the linked native variant [0.25ms]
+(fail) mixed native/DIDAR variant batches reject before any partial native mutation [0.17ms]
+(fail) a variant update body cannot redirect an ordinary native editor to a DIDAR target [0.12ms]
+(fail) standalone shared-option writes cannot bypass the linked Product Master editor [0.17ms]
+(fail) authentication and native reads keep their original behavior [0.08ms]
+
+ 225 pass
+ 6 fail
+ 3928 expect() calls
+Ran 231 tests across 28 files. [95.24s]
+bun test ./tests/local-workflow.test.ts ./tests/pricing.test.ts ./tests/inventory.test.ts ./tests/security.test.ts ./tests/commerce.test.ts ./tests/upgraded-commerce.test.ts ./tests/phase1.test.ts ./tests/migrations.test.ts ./tests/finance.test.ts ./tests/finance-procurement.test.ts ./tests/finance-ledger.test.ts ./tests/finance-tahesab.test.ts ./tests/finance-integrated.test.ts ./tests/uat-prepare.test.ts ./tests/taxonomy-labels.test.ts ./tests/facets.test.ts ./tests/merchant-pricing.test.ts ./tests/storefront.test.ts ./tests/onboarding-media.test.ts ./tests/content.test.ts ./tests/native-panels.test.ts ./tests/native-policy.test.ts ./tests/pre-rollout-authorization.test.ts ./tests/agency-allocation.test.ts ./tests/projection-durability.test.ts ./tests/issue18-acceptance.test.ts ./tests/native-product-targets.test.ts ./tests/auth-hardening.test.ts exited 1
+error: script "local:test" exited with code 1
+file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:12
+  if (child.status !== 0 || child.signal || child.error) throw Error(`${name} failed; observed exit ${child.status}, signal ${child.signal}`);
+                                                               ^
+
+Error: production-builds-backend-http-native-browser failed; observed exit 1, signal null
+    at run (file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:12:64)
+    at file:///workspace/work/didar-pr29/scripts/ci/validate.mjs:25:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.19.0

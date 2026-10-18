@@ -1,0 +1,106 @@
+{
+  "source_sha": "3c58201993c7d70df22824a4d9e93629efa77da0",
+  "status": "FAIL",
+  "fresh": [
+    {
+      "name": "automation-contracts",
+      "command": "node",
+      "args": [
+        "--test",
+        "tests/ci-release.test.mjs"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "native-sdk-lint-contracts",
+      "command": "node",
+      "args": [
+        "--test",
+        "tests/native-sdk-lint.test.mjs"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "tooling",
+      "command": "bun",
+      "args": [
+        "test",
+        "./tests/local-workflow.test.ts"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "lint",
+      "command": "bun",
+      "args": [
+        "run",
+        "lint"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "codegen",
+      "command": "bun",
+      "args": [
+        "run",
+        "--cwd",
+        "packages/api",
+        "codegen"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "api-types",
+      "command": "bun",
+      "args": [
+        "x",
+        "tsc",
+        "--noEmit",
+        "-p",
+        "packages/api/tsconfig.json"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "storefront-types",
+      "command": "bun",
+      "args": [
+        "x",
+        "tsc",
+        "--noEmit",
+        "-p",
+        "apps/storefront/tsconfig.json"
+      ],
+      "code": 0,
+      "signal": null,
+      "spawn_error": null
+    },
+    {
+      "name": "production-builds-backend-http-native-browser",
+      "command": "bun",
+      "args": [
+        "run",
+        "local:test"
+      ],
+      "code": 1,
+      "signal": null,
+      "spawn_error": null
+    }
+  ],
+  "inherited": [],
+  "limits": [
+    "Isolated Linux CI, not owner staging, public TLS or production readiness"
+  ]
+}
