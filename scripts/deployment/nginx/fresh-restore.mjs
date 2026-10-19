@@ -178,6 +178,14 @@ export function restoreOwnershipArguments(state) {
   return ['--label', 'didar.fresh-owner=' + state.token, ...(state.qa_fixture === true ? ['--label', 'didar.disposable-qa=true'] : [])]
 }
 
+export function uploadsRestoreArguments(config, volumes) {
+  if (!name(config.DIDAR_UPLOADS_VOLUME) || !name(volumes.uploads)) fail('FRESH_RESTORE_UPLOADS_VOLUME_NAMES_REQUIRED')
+  // The matched PostgreSQL utility image declares this VOLUME. Shadow it with
+  // a bounded, unused tmpfs so Docker cannot allocate an anonymous data volume.
+  // This helper runs only sh/sleep/tar; it never starts a PostgreSQL server.
+  return ['--entrypoint', 'sh', '--tmpfs', '/var/lib/postgresql/data:rw,noexec,nosuid,size=1048576', '--mount', 'type=volume,src=' + config.DIDAR_UPLOADS_VOLUME + ',dst=/source,readonly', '--mount', 'type=volume,src=' + volumes.uploads + ',dst=/restored']
+}
+
 export function restoreResourceNames(config, token, generation = null) {
   if (!name(config.DIDAR_COMPOSE_PROJECT) || !/^[a-f0-9]{48}$/.test(token)) fail('FRESH_RESTORE_OWNERSHIP_REQUIRED')
   if (generation !== null && !/^[a-f0-9]{24}$/.test(generation)) fail('FRESH_CHECKPOINT_GENERATION_REQUIRED')
@@ -338,7 +346,7 @@ async function performFreshRestore({ config, state, saveState, run, evidenceUrl,
   await run('fresh-restore-redis-load-rdb', ['exec', redis, 'redis-server', '--daemonize', 'yes', '--dir', '/data', '--dbfilename', 'dump.rdb', '--bind', '127.0.0.1', '--save', '', '--appendonly', 'no'])
   await run('fresh-restore-redis-wait', ['exec', redis, 'sh', '-ec', 'for i in $(seq 1 30); do redis-cli ping >/dev/null 2>&1 && exit 0; sleep 1; done; exit 1'])
   if (await run('fresh-restore-redis-logical-digest', ['exec', redis, 'redis-cli', '--raw', 'EVAL', redisDigestScript, '0']) !== sourceRedisDigest) fail('FRESH_REDIS_LOGICAL_RESTORATION_MISMATCH')
-  const uploads = await create('uploads', ['--entrypoint', 'sh', '--mount', 'type=volume,src=' + config.DIDAR_UPLOADS_VOLUME + ',dst=/source,readonly', '--mount', 'type=volume,src=' + volumes.uploads + ',dst=/restored'], ['-c', 'exec sleep 2147483647'])
+  const uploads = await create('uploads', uploadsRestoreArguments(config, volumes), ['-c', 'exec sleep 2147483647'])
   const mediaHash = async (path, stage) => run(stage, ['exec', uploads, 'sh', '-ec', 'cd "$1"; test -z "$(find . ! -type f ! -type d -print -quit)"; find . -type f -exec sha256sum {} \\; > /tmp/media-hashes; LC_ALL=C sort /tmp/media-hashes > /tmp/media-sorted; sha256sum /tmp/media-sorted', 'sh', path])
   const sourceMedia = await mediaHash('/source', 'fresh-backup-uploads-every-file-digest')
   await run('fresh-backup-uploads-archive', ['exec', uploads, 'tar', '-cf', temporary + '.tar', '-C', '/source', '.'])

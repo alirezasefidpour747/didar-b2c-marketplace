@@ -4,7 +4,7 @@ import { mkdtemp, chmod, writeFile, readFile, symlink, lstat } from 'node:fs/pro
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomBytes } from 'node:crypto'
-import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference, tokenizePostgresDDL, describePostgresDDLDifference, compareKnownPostgresAliases, verifyPostgresEquivalence, postgresEquivalenceSQL } from './fresh-restore.mjs'
+import { restoreResourceNames, restoreOwnershipArguments, uploadsRestoreArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference, tokenizePostgresDDL, describePostgresDDLDifference, compareKnownPostgresAliases, verifyPostgresEquivalence, postgresEquivalenceSQL } from './fresh-restore.mjs'
 import { runner, canonicalState, sha256, sanitizeFixtureObservation } from './stack.mjs'
 import { observeDaemon, assertDaemonPreserved } from './fresh.mjs'
 
@@ -142,6 +142,21 @@ test('restore volume and container ownership arguments mark only explicit QA fix
   assert.deepEqual(restoreOwnershipArguments({ token, qa_fixture: false }), ordinary)
   assert.deepEqual(restoreOwnershipArguments({ token, qa_fixture: true }), [...ordinary, '--label', 'didar.disposable-qa=true'])
   assert.throws(() => restoreOwnershipArguments({ token: '--label=unsafe', qa_fixture: true }), /OWNERSHIP_REQUIRED/)
+})
+
+test('uploads utility shadows declared PostgreSQL VOLUME without allocating anonymous or authoritative PG storage', () => {
+  const args = uploadsRestoreArguments({ DIDAR_UPLOADS_VOLUME: 'fresh_uploads_source' }, { uploads: 'fresh_uploads_restore' })
+  const declaredImageVolumes = ['/var/lib/postgresql/data'], explicitTargets = []
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--tmpfs') explicitTargets.push(args[i + 1].split(':')[0])
+    if (args[i] === '--mount') explicitTargets.push(args[i + 1].split(',').find(part => part.startsWith('dst=')).slice(4))
+  }
+  assert.equal(declaredImageVolumes.every(target => explicitTargets.includes(target)), true)
+  assert.equal(args[args.indexOf('--tmpfs') + 1], '/var/lib/postgresql/data:rw,noexec,nosuid,size=1048576')
+  assert.equal(args.includes('type=volume,src=fresh_uploads_source,dst=/source,readonly'), true)
+  assert.equal(args.includes('type=volume,src=fresh_uploads_restore,dst=/restored'), true)
+  assert.equal(args.some(arg => arg.startsWith('type=volume,') && arg.includes('dst=/var/lib/postgresql/data')), false)
+  assert.equal(args.some(arg => arg.includes('type=bind')), false)
 })
 
 test('checkpoint generation creates separate restore names without reusing initial restoration', () => {
