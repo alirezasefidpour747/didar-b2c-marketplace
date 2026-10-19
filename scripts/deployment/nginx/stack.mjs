@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process'
 import { isIP } from 'node:net'
 import { fileURLToPath } from 'node:url'
 
-export const actions = Object.freeze(['preflight', 'status', 'quiesce', 'migrate', 'recreate', 'health', 'recover'])
+export const actions = Object.freeze(['preflight', 'status', 'quiesce', 'migrate', 'recreate', 'health', 'recover', 'fresh-preflight', 'fresh-dependencies', 'fresh-migrate', 'fresh-admin', 'fresh-restore-check', 'fresh-checkpoint', 'fresh-prepare-api', 'fresh-observe-peer', 'fresh-bind-peer', 'fresh-start', 'fresh-quiesce'])
 export const bundleFiles = Object.freeze(['stack.mjs', 'compose.topology.json', 'auth.mjs', 'sign.mjs', 'render.mjs', 'nginx.conf.template', 'proxy-headers.conf', 'topology.env.template'])
 const configurationKeys = Object.freeze(['DIDAR_COMPOSE_PROJECT', 'DIDAR_COMPOSE_NETWORK', 'DIDAR_POSTGRES_VOLUME', 'DIDAR_REDIS_VOLUME', 'DIDAR_UPLOADS_VOLUME', 'DIDAR_API_IMAGE', 'DIDAR_STOREFRONT_IMAGE', 'DIDAR_POSTGRES_IMAGE', 'DIDAR_REDIS_IMAGE', 'DIDAR_DB_USER', 'DIDAR_DB_NAME', 'DIDAR_DB_PASSWORD', 'DATABASE_URL', 'REDIS_URL', 'JWT_SECRET', 'COOKIE_SECRET', 'DIDAR_AUTH_NETWORK_KEY', 'DIDAR_PUBLIC_ORIGIN', 'DIDAR_PUBLIC_ORIGIN_VERIFIED', 'DIDAR_AUTH_HOST_PORT', 'DIDAR_AUTH_INGRESS_PEERS', 'DIDAR_AUTH_TLS_DIR', 'DIDAR_AUTH_TLS_SERVER_NAME'])
 const stableKeys = ['JWT_SECRET', 'COOKIE_SECRET', 'DIDAR_AUTH_NETWORK_KEY', 'DATABASE_URL', 'REDIS_URL']
@@ -31,7 +31,7 @@ const exactKeys = (value, keys, code) => {
 }
 const literalPath = value => typeof value === 'string' && isAbsolute(value) && !/[\x00-\x1f\x7f]/.test(value) && !value.split('/').includes('..')
 const ownedName = value => typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/.test(value)
-export function parseConfiguration(text, inherited = {}) {
+export function parseConfiguration(text, inherited = {}, { allowPendingPeer = false } = {}) {
   if (typeof text !== 'string' || /[\x00\r]/.test(text)) fail('INVALID_ENV_BYTES')
   const result = {}
   for (const line of text.split('\n')) {
@@ -57,7 +57,7 @@ export function parseConfiguration(text, inherited = {}) {
   if (!['true', 'false'].includes(result.DIDAR_PUBLIC_ORIGIN_VERIFIED)) fail('INVALID_PUBLIC_ORIGIN_VERIFIED')
   if (!/^[0-9]{1,5}$/.test(result.DIDAR_AUTH_HOST_PORT) || +result.DIDAR_AUTH_HOST_PORT < 1024 || +result.DIDAR_AUTH_HOST_PORT > 65535) fail('INVALID_PRIVATE_RELAY_PORT')
   const peers = result.DIDAR_AUTH_INGRESS_PEERS.split(',')
-  if (peers.some(peer => canonicalPeer(peer) !== peer || peer === '0.0.0.0' || peer === '::') || new Set(peers).size !== peers.length) fail('EXACT_OBSERVED_PEERS_REQUIRED')
+  if (!(allowPendingPeer && result.DIDAR_AUTH_INGRESS_PEERS === 'PENDING') && (peers.some(peer => canonicalPeer(peer) !== peer || peer === '0.0.0.0' || peer === '::') || new Set(peers).size !== peers.length)) fail('EXACT_OBSERVED_PEERS_REQUIRED')
   if (!literalPath(result.DIDAR_AUTH_TLS_DIR)) fail('INVALID_TLS_DIRECTORY')
   if (!/^(?=.{1,253}$)[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?$/.test(result.DIDAR_AUTH_TLS_SERVER_NAME)) fail('INVALID_TLS_SERVER_NAME')
   return result
@@ -102,7 +102,7 @@ export function renderComposition(template, configuration) {
   return JSON.stringify(resolveComposition(template, configuration)).replace(/\$/g, '$$$$')
 }
 
-async function privateFile(path) {
+export async function privateFile(path) {
   if (!literalPath(path)) fail('ABSOLUTE_PRIVATE_PATH_REQUIRED')
   const info = await lstat(path)
   if (!info.isFile() || info.isSymbolicLink() || (info.mode & 0o777) !== 0o600 || typeof process.getuid === 'function' && info.uid !== process.getuid()) fail('PRIVATE_FILE_0600_OWNER_REQUIRED')
@@ -178,7 +178,7 @@ export function runner(environment, receipts, privateConfiguration = {}) {
   } })
   return run
 }
-const canonicalState = value => JSON.stringify(value, (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
+export const canonicalState = value => JSON.stringify(value, (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
 export const containerSummary = c => ({ id: c.Id, name: c.Name, image: c.Image, network_mode: c.HostConfig.NetworkMode, running: c.State.Running, started_at: c.State.StartedAt, ports: c.HostConfig.PortBindings, mounts: c.Mounts.map(m => ({ type: m.Type, name: m.Name, source: m.Source, destination: m.Destination, rw: m.RW })).sort((left, right) => left.destination < right.destination ? -1 : left.destination > right.destination ? 1 : 0) })
 const envOf = c => Object.fromEntries((c.Config.Env || []).map(value => { const i = value.indexOf('='); return [value.slice(0, i), value.slice(i + 1)] }))
 const label = (c, key) => c.Config.Labels?.['com.docker.compose.' + key]
@@ -258,13 +258,16 @@ export async function inspectPreflight({ configuration: env, bundle, operation, 
   const allIds = (await run('all-existing-containers', ['ps', '-aq', '--no-trunc'])).split('\n').filter(Boolean)
   const unrelated = []
   for (const id of allIds) if (![containers.api.Id, containers.storefront.Id].includes(id)) unrelated.push(containerSummary(JSON.parse(await run('preserve-' + id.slice(0, 12), ['inspect', id]))[0]))
+  await verifyRelayTLS(env)
+  return { docker_version: version.Version, compose_version: compose, target_config: operation.target_config, containers, unrelated }
+}
+export async function verifyRelayTLS(env) {
   const tlsDir = await lstat(env.DIDAR_AUTH_TLS_DIR)
   if (!tlsDir.isDirectory() || tlsDir.isSymbolicLink() || (tlsDir.mode & 0o077)) fail('PRIVATE_TLS_DIRECTORY_REQUIRED')
   const certificate = new X509Certificate(await readFile(join(env.DIDAR_AUTH_TLS_DIR, 'cert.pem')))
   const ca = new X509Certificate(await readFile(join(env.DIDAR_AUTH_TLS_DIR, 'ca.pem')))
   const key = createPrivateKey(await privateFile(join(env.DIDAR_AUTH_TLS_DIR, 'key.pem')))
   if (!certificate.checkHost(env.DIDAR_AUTH_TLS_SERVER_NAME) || +new Date(certificate.validTo) <= Date.now() || +new Date(certificate.validFrom) > Date.now() || !certificate.verify(ca.publicKey) || !ca.ca || !certificate.checkPrivateKey(key) || !createPublicKey(key)) fail('RELAY_TLS_PROVENANCE_FAILED')
-  return { docker_version: version.Version, compose_version: compose, target_config: operation.target_config, containers, unrelated }
 }
 
 function assertPrerequisites(operation, configuration, bundle) {
@@ -390,15 +393,21 @@ export async function operate({ action, configuration, bundle, operation, run, s
 }
 
 export async function main(argv = process.argv.slice(2), inherited = process.env) {
+  if (argv.length === 2 && argv[0] === 'provision-network-key') {
+    const { provisionNetworkKey } = await import('./fresh.mjs')
+    return provisionNetworkKey(argv[1])
+  }
   if (argv.length !== 5 || !actions.includes(argv[4])) fail('Usage: node stack.mjs /absolute/private/topology.env /absolute/kit/manifest.json MANIFEST_SHA256 /absolute/private/operation.json ACTION')
   const [environmentFile, manifestFile, manifestHash, operationFile, action] = argv
   const childEnvironment = localEnvironment(inherited)
-  const configuration = parseConfiguration((await privateFile(environmentFile)).toString('utf8'), inherited)
+  const configuration = parseConfiguration((await privateFile(environmentFile)).toString('utf8'), inherited, { allowPendingPeer: action.startsWith('fresh-') })
   const operation = JSON.parse(await privateFile(operationFile)), bundle = await readBundle(manifestFile, manifestHash, { allowFixture: operation.target_config === 'DISPOSABLE_QA' })
   const receipts = [], run = runner(childEnvironment, receipts, configuration), lock = environmentFile + '.didar-nginx.lock', statePath = environmentFile + '.didar-nginx-state.json'
   const lockHandle = await open(lock, 'wx', 0o600).catch(() => fail('OPERATION_LOCK_EXISTS_STOP_FOR_REVIEW'))
   try {
-    const result = await operate({ action, configuration, bundle, operation, run, statePath })
+    const result = action.startsWith('fresh-')
+      ? await (await import('./fresh.mjs')).operateFresh({ action, configuration, bundle, operation, run, statePath })
+      : await operate({ action, configuration, bundle, operation, run, statePath })
     process.stdout.write(JSON.stringify({ ...result, process_exits: receipts }) + '\n')
   } finally {
     try {

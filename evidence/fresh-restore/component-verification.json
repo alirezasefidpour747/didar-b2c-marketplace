@@ -1,0 +1,45 @@
+{
+  "source_application_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+  "application_images": "UNCHANGED",
+  "candidate_files": {
+    "scripts/deployment/nginx/fresh-restore.mjs": "2126bd3bd57615b235f9af5a8d33da0263fc0aec22ee9d28aeafeeb62aeaeef8",
+    "scripts/deployment/nginx/fresh-restore.test.mjs": "afbf3981be3d268c7c14ddaa346a2c6a9e610f01d2915fea634b406381dc2fca"
+  },
+  "unit": {
+    "process_code": 0,
+    "pass": 8,
+    "skip": 1,
+    "fail": 0
+  },
+  "real_fixture_attempt": {
+    "process_code": 1,
+    "status": "FAILED_BEFORE_BACKUP",
+    "reason": "PREEXISTING_DAEMON_RESOURCE_CHANGED:networks",
+    "followup": "Networknone owned endpoint normalization implemented separately; real fixture NOT_RERUN due only132MiBfree/VFS driver cost"
+  },
+  "fixture_halt": {
+    "process_code": 0,
+    "owned_container_stops": [
+      0,
+      0
+    ],
+    "deletions": 0
+  },
+  "real_restore_proof": "NOT_EXECUTED",
+  "target_server_access": "NOT_EXECUTED",
+  "target_config": "BLOCKED",
+  "public_https": "NOT_VERIFIED",
+  "qa_label_integration": {
+    "status": "PURE_TEST_PASS",
+    "process_code": 0,
+    "ordinary_resources_unchanged_labels": true,
+    "explicit_qa_ownership_labels_enforced": true
+  },
+  "checkpoint": {
+    "status": "IMPLEMENTED_PURE_TEST_PASS_REAL_RUNTIME_PENDING",
+    "process_code": 0,
+    "source_subject": "FOUR_ACTUAL_QUIESCED_FRESH_CONTAINER_IDS",
+    "new_generation_separate_from_initial_receipt": true,
+    "production_entrypoint": "PROTECTED_FRESH_CHECKPOINT_DISPATCH_INTEGRATION_BY_SEPARATE_AGENT"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PENDING",
+  "authority": "Chief Architect",
+  "scope": "PARALLEL_FRESH_INSTALL_KIT",
+  "preparation_only_mutations": true,
+  "domain_cutover_authorized": false,
+  "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+  "approval_url": "REPLACE_WITH_ACTUAL_CHIEF_ARCHITECT_ACCEPTANCE_URL",
+  "reviewer": "PENDING_ACTUAL_ACCEPTANCE",
+  "files": {
+    "stack.mjs": "EXACT_REVIEWED_FILE_SHA256",
+    "fresh.mjs": "EXACT_REVIEWED_FILE_SHA256",
+    "fresh-restore.mjs": "EXACT_REVIEWED_FILE_SHA256",
+    "compose.topology.json": "EXACT_REVIEWED_FILE_SHA256",
+    "provision-node.sh": "EXACT_REVIEWED_FILE_SHA256",
+    "fresh-operator-bundle.mjs": "EXACT_REVIEWED_FILE_SHA256"
+  },
+  "images": {
+    "api": "sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf",
+    "storefront": "sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10",
+    "postgres": "REPLACE_WITH_VERIFIED_SELECTED_IMMUTABLE_IMAGE_CONFIG_ID",
+    "redis": "REPLACE_WITH_VERIFIED_SELECTED_IMMUTABLE_IMAGE_CONFIG_ID"
+  }
+}

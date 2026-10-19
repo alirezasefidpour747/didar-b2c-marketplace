@@ -1,0 +1,535 @@
+{
+  "status": "APPROVED",
+  "approval_scope": "Independent technical approval of the fresh accepted-main packaged release and published immutable GHCR image references from authorized workflow39229912918 attempt2. This does not approve target configuration, server installation, public HTTPS or claim the separate full-ZIP transfer request succeeded.",
+  "reviewer": "/root/r5r6_independent_review",
+  "reviewer_role": "Review only; no implementation edits, rebuild, release rerun, deployment or owner-server access. Reviewer-authored previously accepted read-only live probe executed freshly in the downloaded-image verification job.",
+  "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+  "reviewed_application_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+  "accepted_pr_head_sha": "caad128036306fa2f54ff46d52b514bd3c463d2a",
+  "source_tree": "2af543e623cabe88e7e863d4c975c00c241f4fd3",
+  "topology": "nginx-verified-relay-v1",
+  "workspace_mounts": false,
+  "source_overlays": false,
+  "exit_code": 0,
+  "images": {
+    "api": "sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf",
+    "storefront": "sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10"
+  },
+  "artifact_receipt_sha256": "46c543b22c9d0a3263326bc7b3322587192299deae67e6f515345d930a657a18",
+  "evidence_url": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39229912918/artifacts/12177672730",
+  "timestamp_utc": "2026-10-19T10:03:58.598Z",
+  "release": {
+    "workflow_run": 39229912918,
+    "attempt": 2,
+    "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+    "delivery_kind": "ACCEPTED_MAIN_RELEASE",
+    "accepted_ci_run": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39226250168",
+    "github_jobs": [
+      {
+        "job": 117987041549,
+        "name": "authorize",
+        "conclusion": "success"
+      },
+      {
+        "job": 117987117554,
+        "name": "build",
+        "conclusion": "success"
+      },
+      {
+        "job": 117993178230,
+        "name": "verify",
+        "conclusion": "success"
+      },
+      {
+        "job": 117995319531,
+        "name": "publish",
+        "conclusion": "success"
+      }
+    ],
+    "github_conclusions_are_not_numeric_exit_codes": true,
+    "authorization_observed": {
+      "requested_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+      "authorization": "RELEASE 0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+      "release_enabled": true,
+      "dispatch_ref": "refs/heads/main",
+      "exact_main_ci_required": true
+    },
+    "registry_images": {
+      "api": {
+        "reference": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/api@sha256:cd332cb6a062c1b5bfa6e9473debee9a50adbbfdc286f5731428b328cedd6b58",
+        "tag": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/api:sha-0c4b047baa9dbe37cd1876159c15d22b40cf7cac-39229912918-2",
+        "id": "sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf",
+        "authenticated_digest_pull": "PASS",
+        "anonymous_manifest_access": "PASS"
+      },
+      "storefront": {
+        "reference": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/storefront@sha256:c90679eca91225ec8a550f282f43dab48a0010cdcc12d38090c880cddf6e71c7",
+        "tag": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/storefront:sha-0c4b047baa9dbe37cd1876159c15d22b40cf7cac-39229912918-2",
+        "id": "sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10",
+        "authenticated_digest_pull": "PASS",
+        "anonymous_manifest_access": "PASS"
+      }
+    },
+    "downloadable_archive": {
+      "url": "https://github.com/alirezasefidpour747/didar-b2c-marketplace/actions/runs/39229912918/artifacts/12178302167",
+      "github_zip_bytes": 855651700,
+      "github_zip_sha256": "53491cee474fee8573be7e630530f8f8e3d253920c0911e5e77a978e0f694a58",
+      "internal_images_tar_gz_sha256": "d623867da3e3392c99919bd49c3ee2855d3423577aa54d4efc4ad9088665288e",
+      "source_of_archive_hash": "Actual accepted-main manifest and clean GitHub verification runner; not a local full-ZIP hash by this reviewer",
+      "executor_full_zip_download": "BLOCKED_NOT_DOWNLOADED",
+      "storage_transfer_status": "PENDING_SEPARATE_ROOT_VERIFICATION"
+    },
+    "kit_manifest_sha256": "bf9d9da07d92f9913a8080c9a07aee1fb0f6564a553d2ed5286ce3946edcf915",
+    "storefront_packaging_sha256": "ca21861ccfdd395e565cee9ececbda1dd0f46ed916a7dda7275f101110fe40ec"
+  },
+  "fresh_evidence": {
+    "independently_downloaded_small_artifacts": [
+      {
+        "id": 12178472148,
+        "sha256": "7cc6e573ae44f7e4bd1d71dd4bd99b16160dd527989794ef0b767fdce3e293ba",
+        "scope": "registry status and accepted-main manifest"
+      },
+      {
+        "id": 12177672730,
+        "sha256": "36deec54eb014d9b46ae666553a9e273c6d4a21a707b18db52473f117353bced",
+        "scope": "actual downloaded-image topology evidence and screenshots"
+      },
+      {
+        "id": 12177571215,
+        "sha256": "282cabd39c0c1261b96e31838c8d929f24f3e3d8e8fa8c646e8e744b730aa5c3",
+        "scope": "fresh release build/CI numeric receipts"
+      }
+    ],
+    "independent_small_archive_hash_review_actual_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "build_top_level_actual_processes": [
+      {
+        "name": "automation-contracts",
+        "command": "node",
+        "args": [
+          "--test",
+          "tests/ci-release.test.mjs",
+          "tests/topology-artifacts.test.mjs",
+          "tests/operator-bundle.test.mjs",
+          "tests/nginx-stack.test.mjs",
+          "tests/process-receipts.test.mjs",
+          "scripts/deployment/nginx/compat/compat.test.mjs"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "native-sdk-lint-contracts",
+        "command": "node",
+        "args": [
+          "--test",
+          "tests/native-sdk-lint.test.mjs"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "auth-relay-config-contracts",
+        "command": "node",
+        "args": [
+          "--test",
+          "tests/auth-network-relay.test.mjs"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "nginx-signer-contracts",
+        "command": "node",
+        "args": [
+          "--test",
+          "scripts/deployment/nginx/sign.test.mjs"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "tooling",
+        "command": "bun",
+        "args": [
+          "test",
+          "./tests/local-workflow.test.ts"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "lint",
+        "command": "bun",
+        "args": [
+          "run",
+          "lint"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "codegen",
+        "command": "bun",
+        "args": [
+          "run",
+          "--cwd",
+          "packages/api",
+          "codegen"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "api-types",
+        "command": "bun",
+        "args": [
+          "x",
+          "tsc",
+          "--noEmit",
+          "-p",
+          "packages/api/tsconfig.json"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "storefront-types",
+        "command": "bun",
+        "args": [
+          "x",
+          "tsc",
+          "--noEmit",
+          "-p",
+          "apps/storefront/tsconfig.json"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "focused-cms-media-ssr",
+        "command": "node",
+        "args": [
+          "scripts/ci/cms-media.mjs"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "production-builds-backend-http-native-browser",
+        "command": "bun",
+        "args": [
+          "run",
+          "local:test"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      {
+        "name": "fresh-no-demo-bootstrap",
+        "command": "bun",
+        "args": [
+          "run",
+          "local:test",
+          "--reuse-build",
+          "--no-demo-install-only"
+        ],
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      }
+    ],
+    "build_finite_subprocesses": [
+      {
+        "format": 1,
+        "stage": "build-admin",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "spawnSync",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:32:16.902Z",
+        "closed_at": "2026-10-19T09:32:39.603Z"
+      },
+      {
+        "format": 1,
+        "stage": "build-vendor",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "spawnSync",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:32:39.603Z",
+        "closed_at": "2026-10-19T09:33:00.660Z"
+      },
+      {
+        "format": 1,
+        "stage": "build-api",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "spawnSync",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:33:00.664Z",
+        "closed_at": "2026-10-19T09:33:11.221Z"
+      },
+      {
+        "format": 1,
+        "stage": "build-storefront",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "spawnSync",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:33:11.221Z",
+        "closed_at": "2026-10-19T09:33:48.970Z"
+      },
+      {
+        "format": 1,
+        "stage": "backend-regressions",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "close",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:33:54.395Z",
+        "closed_at": "2026-10-19T09:35:33.159Z"
+      },
+      {
+        "format": 1,
+        "stage": "native-http",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "close",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:35:33.159Z",
+        "closed_at": "2026-10-19T09:35:34.299Z"
+      },
+      {
+        "format": 1,
+        "stage": "browser-login-window",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "close",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:35:34.299Z",
+        "closed_at": "2026-10-19T09:35:34.353Z"
+      },
+      {
+        "format": 1,
+        "stage": "browser-32",
+        "source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+        "observer": "close",
+        "code": 0,
+        "signal": null,
+        "spawn_error": null,
+        "started_at": "2026-10-19T09:35:34.353Z",
+        "closed_at": "2026-10-19T09:39:29.442Z"
+      }
+    ],
+    "backend_tests": 232,
+    "backend_assertions": 3961,
+    "native_http_tests": 1,
+    "browser_cases": 32,
+    "browser_duration": "3.9m",
+    "no_demo": {
+      "actual_stage_exit_code": 0,
+      "admins": 1,
+      "bridges": 1,
+      "products": 0,
+      "orders": 0,
+      "demo": 0
+    },
+    "packaged_topology": {
+      "actual_stack_process": {
+        "code": 0,
+        "signal": null,
+        "spawn_error": null
+      },
+      "categories": {
+        "application": 0,
+        "browser": 0,
+        "origin": 0,
+        "media": 0,
+        "history": 0,
+        "independent": 0,
+        "lifecycle": 0,
+        "force_recreate": 0
+      },
+      "application_cases": 10,
+      "independent_live_probe_cases": 6,
+      "browser_journeys": 3,
+      "browser_actual_process_exit": 0,
+      "origin_browser_actual_process_exit": 0,
+      "native_loaded_management_api": [
+        200,
+        200
+      ],
+      "native_rendered_own_inventory": [
+        10,
+        10
+      ],
+      "screenshots_visually_inspected": [
+        "native-admin-auth-1440.png",
+        "native-admin-auth-390.png",
+        "native-vendor-auth-1440.png",
+        "native-vendor-auth-390.png",
+        "customer-signed-ingress-auth-1440.png",
+        "customer-signed-ingress-auth-390.png"
+      ],
+      "screenshot_sha256": {
+        "native-admin-auth-1440.png": "742cfbdebb6911de4302f94de6150daace47a95794f1e7b3add80acb744a1fbb",
+        "native-admin-auth-390.png": "786fa1b195f458e6938313e984067b8c9d298e3f0fec61d014ec484b6d92690b",
+        "native-vendor-auth-1440.png": "2a3acc3d94afddf73153cb115acde0ddfdba8d55acc03ea7d86cc5698a1f0534",
+        "native-vendor-auth-390.png": "b6f13161852ce1b538f64d9cd1fff7511982fa7c98028afec88dd629d140de5d",
+        "customer-signed-ingress-auth-1440.png": "8d2be24fba1a23f27513d7d082eb0f767ed05296d07796d7e0918f584a84ab24",
+        "customer-signed-ingress-auth-390.png": "2c53179c59e032d347bbab301d872d806075c98d9ce0b472fbb868f0bae8191c"
+      },
+      "populated_history": {
+        "didar_inventory_item": 1,
+        "didar_order": 1,
+        "didar_order_line": 1,
+        "didar_payment_attempt": 1,
+        "didar_fin_event": 2,
+        "didar_fin_posting": 11
+      },
+      "paid_sandbox_order_and_uid": true,
+      "balanced_journals": true,
+      "lifecycle_cases": [
+        {
+          "name": "Real relay child crash makes original packaged supervisor exit1 and public auth fails closed",
+          "status": "PASS",
+          "original_supervisor_container_exit": 1,
+          "relay_child_signal": "SIGKILL",
+          "public_status_while_down": 502,
+          "recovered_login": 200
+        },
+        {
+          "name": "Actual API process restart validates current shared namespace, fresh replay, sessions and business state",
+          "status": "PASS",
+          "same_api_container_id": "0e2be489bf7933565557ce171741110354395012c7ba9b520220e368a4aa9cfa",
+          "namespace_before": "net:[4026532469]",
+          "namespace_after": "net:[4026532469]",
+          "frontend_namespace_after": "net:[4026532469]",
+          "namespace_inode_changed": false,
+          "api_pid_before": 7918,
+          "api_pid_after": 19505,
+          "process_restarted": true,
+          "container_recreation_claimed": false,
+          "frozen_relay_peer_preserved": true,
+          "replay_age_ms": 13735,
+          "replay_status": 403,
+          "existing_session": 200,
+          "uploaded_media": 200,
+          "business_fingerprints_unchanged": true,
+          "runtime_secret_versions_unchanged": true,
+          "graceful_frontend_exit": 0,
+          "graceful_api_exit": 0
+        },
+        {
+          "name": "Mismatched signing bundle fails closed and recovery restores exact accepted config and key version",
+          "status": "PASS",
+          "wrong_key_public_auth": 403,
+          "recovered_customer_login": 200,
+          "exact_config_restored": true,
+          "stable_key_version": true,
+          "package_manifest_unchanged": true,
+          "business_fingerprints_unchanged": true,
+          "no_cookie_jwt_rotation_or_quota_flush": true
+        },
+        {
+          "name": "Recovered native login, media, TLS and private proof boundaries remain functional",
+          "status": "PASS",
+          "native_admin_vendor_statuses": [
+            200,
+            200
+          ],
+          "unsigned_private_statuses": [
+            403,
+            403
+          ],
+          "media_bytes_unchanged": true,
+          "certificate_validation": "QA CA plus hostname verification enabled"
+        }
+      ],
+      "forced_api_frontend_container_recreation": true,
+      "populated_state_before_equals_after": true,
+      "cleanup": "PASS"
+    },
+    "registry_independent_anonymous_access": {
+      "status": "PASS",
+      "reviewer": "/root/r5r6_independent_review",
+      "anonymous_private_config": true,
+      "credentials_configured": false,
+      "container_or_image_mutation": false,
+      "actual_processes": [
+        {
+          "role": "api",
+          "reference": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/api@sha256:cd332cb6a062c1b5bfa6e9473debee9a50adbbfdc286f5731428b328cedd6b58",
+          "started_at": "2026-10-19T10:01:51.135166+00:00",
+          "closed_at": "2026-10-19T10:01:51.908217+00:00",
+          "code": 0,
+          "signal": null,
+          "spawn_error": null,
+          "stderr": "",
+          "schema_version": 2,
+          "config_digest": "sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf",
+          "config_matches_verified_image": true
+        },
+        {
+          "role": "storefront",
+          "reference": "ghcr.io/alirezasefidpour747/didar-b2c-marketplace/storefront@sha256:c90679eca91225ec8a550f282f43dab48a0010cdcc12d38090c880cddf6e71c7",
+          "started_at": "2026-10-19T10:01:51.908315+00:00",
+          "closed_at": "2026-10-19T10:01:57.573135+00:00",
+          "code": 0,
+          "signal": null,
+          "spawn_error": null,
+          "stderr": "",
+          "schema_version": 2,
+          "config_digest": "sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10",
+          "config_matches_verified_image": true
+        }
+      ],
+      "scope": "Read-only fresh anonymous registry manifest access from current executor; CI anonymous publication probes are separate evidence"
+    },
+    "review_validation_actual_exit_code": 0
+  },
+  "inherited_evidence": [
+    "PR caad R6 protocol wrapper16-case exact Debian Docker26/Compose2.26 run is unchanged-code inherited evidence; it was not rerun by this release workflow",
+    "Main push CI39226250168 is separately verified prerequisite; release attempt2 performed fresh12+8 build/tests and actual new-image R5 again",
+    "Earlier caad candidate images/digests and previous874 release are not substituted for current0c release",
+    "Prior dispatch-blocked report remains historical and is not rewritten as a successful attempt"
+  ],
+  "private_configuration_provisioning": "API/storefront ran without application overlays or workspace mounts. Nginx signer/TLS configuration was provisioned from matching kit-equivalent bytes; this is not a claim that every Nginx file executed only from its baked image.",
+  "residual_gaps": [
+    "Full855651700-byte GitHub ZIP could not be transferred into the executor: GitHub artifact connector reports536870912-byte maximum; normal supplied web download route failed before bytes were delivered. No local full-ZIP checksum or extraction is claimed. Actual clean GitHub runner downloaded/loaded/verified the packaged archive.",
+    "Durable owner-controlled registry/manifest/install-kit/evidence storage and handoff closure are coordinated by root and require their own actual transfer/hash evidence; not inferred from this technical receipt.",
+    "TARGET_CONFIG remains BLOCKED pending verified03 actual attribution peers, module/config paths, final namespace mapping, dependency identities and TLS configuration.",
+    "Existing legacy bundle remains UNIDENTIFIED; no verified rollback to an unknown previous installed image or schema downgrade is claimed.",
+    "No target installation, owner-server access, deployment, host reboot, independent public Internet HTTPS acceptance, live provider operation or next feature phase performed."
+  ],
+  "target_config": "BLOCKED",
+  "public_https_acceptance": "NOT_VERIFIED",
+  "target_installation": "NOT_EXECUTED",
+  "owner_server_access": "NOT_EXECUTED",
+  "deployment_authorized": false,
+  "durable_handoff_completion": "PENDING_ROOT_STORAGE_VERIFICATION",
+  "full_zip_transfer_request": "BLOCKED",
+  "mission_complete_claim": false
+}

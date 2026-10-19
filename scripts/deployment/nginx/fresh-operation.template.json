@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "kind": "PARALLEL_FRESH_INSTALL",
+  "target_config": "BLOCKED",
+  "project": "REPLACE_WITH_APPROVED_NEW_PROJECT",
+  "approval": {
+    "path": "/absolute/private/actual-chief-architect-approval.json",
+    "sha256": "REPLACE_WITH_ACTUAL_APPROVAL_FILE_SHA256"
+  },
+  "edge": null,
+  "restoration": {
+    "path": "/absolute/new-private/actual-restore-result.json",
+    "evidence_url": "REPLACE_WITH_ACTUAL_PRIVATE_HTTPS_STORAGE_LOCATION"
+  },
+  "admin": {
+    "path": "/absolute/new-private/explicit-first-admin.json",
+    "sha256": "REPLACE_WITH_ACTUAL_PRIVATE_CREDENTIAL_FILE_SHA256"
+  }
+}

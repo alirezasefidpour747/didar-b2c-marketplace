@@ -1,0 +1,650 @@
+{
+  "status": "FAIL",
+  "scope": "REAL_OPERATIONAL_FIXTURE_ONLY",
+  "error": "PREEXISTING_DAEMON_RESOURCE_CHANGED:networks",
+  "root": "/workspace/work/didar-fresh-restore-fixture-yj1qBz",
+  "owned_resources": {
+    "containers": [
+      "25fd7bc60ce17da2bae538951e9b67cecda5233708734348fb7db83c9a7751f7",
+      "efb47311eadfd2b59b2a57008cc0644b5f1e135eada2966502d6ea4b8192e7aa"
+    ],
+    "networks": [],
+    "volumes": [
+      "didar_restore_fixture_035489394d9f_source_pg",
+      "didar_restore_fixture_035489394d9f_source_redis",
+      "didar_restore_fixture_035489394d9f_source_uploads"
+    ]
+  },
+  "process_exits": [
+    {
+      "stage": "fixture-cached-image-POSTGRES",
+      "started_at": "2026-10-19T11:06:43.181Z",
+      "finished_at": "2026-10-19T11:06:43.198Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-cached-image-REDIS",
+      "started_at": "2026-10-19T11:06:43.198Z",
+      "finished_at": "2026-10-19T11:06:43.212Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-containers",
+      "started_at": "2026-10-19T11:06:43.213Z",
+      "finished_at": "2026-10-19T11:06:43.228Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-583c9b911132",
+      "started_at": "2026-10-19T11:06:43.228Z",
+      "finished_at": "2026-10-19T11:06:43.241Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-68b91fee0bb9",
+      "started_at": "2026-10-19T11:06:43.242Z",
+      "finished_at": "2026-10-19T11:06:43.257Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-74c4b61be6e0",
+      "started_at": "2026-10-19T11:06:43.257Z",
+      "finished_at": "2026-10-19T11:06:43.270Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-8574efd4192c",
+      "started_at": "2026-10-19T11:06:43.271Z",
+      "finished_at": "2026-10-19T11:06:43.283Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b5377752ef2e",
+      "started_at": "2026-10-19T11:06:43.283Z",
+      "finished_at": "2026-10-19T11:06:43.297Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b54919da06a7",
+      "started_at": "2026-10-19T11:06:43.297Z",
+      "finished_at": "2026-10-19T11:06:43.312Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b6a87474cd11",
+      "started_at": "2026-10-19T11:06:43.312Z",
+      "finished_at": "2026-10-19T11:06:43.325Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-cd4f9741bb95",
+      "started_at": "2026-10-19T11:06:43.325Z",
+      "finished_at": "2026-10-19T11:06:43.337Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-f3ba7ea80977",
+      "started_at": "2026-10-19T11:06:43.337Z",
+      "finished_at": "2026-10-19T11:06:43.349Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-f726ac5405f8",
+      "started_at": "2026-10-19T11:06:43.350Z",
+      "finished_at": "2026-10-19T11:06:43.362Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-networks",
+      "started_at": "2026-10-19T11:06:43.363Z",
+      "finished_at": "2026-10-19T11:06:43.374Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-422a4867441c",
+      "started_at": "2026-10-19T11:06:43.374Z",
+      "finished_at": "2026-10-19T11:06:43.386Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-9c8bed1ee4e4",
+      "started_at": "2026-10-19T11:06:43.386Z",
+      "finished_at": "2026-10-19T11:06:43.400Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-c5a0b190813d",
+      "started_at": "2026-10-19T11:06:43.400Z",
+      "finished_at": "2026-10-19T11:06:43.412Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-df7d86a96d32",
+      "started_at": "2026-10-19T11:06:43.412Z",
+      "finished_at": "2026-10-19T11:06:43.425Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-volumes",
+      "started_at": "2026-10-19T11:06:43.425Z",
+      "finished_at": "2026-10-19T11:06:43.441Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716",
+      "started_at": "2026-10-19T11:06:43.442Z",
+      "finished_at": "2026-10-19T11:06:43.455Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771",
+      "started_at": "2026-10-19T11:06:43.455Z",
+      "finished_at": "2026-10-19T11:06:43.469Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6",
+      "started_at": "2026-10-19T11:06:43.469Z",
+      "finished_at": "2026-10-19T11:06:43.482Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e",
+      "started_at": "2026-10-19T11:06:43.483Z",
+      "finished_at": "2026-10-19T11:06:43.495Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4",
+      "started_at": "2026-10-19T11:06:43.495Z",
+      "finished_at": "2026-10-19T11:06:43.508Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb",
+      "started_at": "2026-10-19T11:06:43.508Z",
+      "finished_at": "2026-10-19T11:06:43.523Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar-gold_postgres",
+      "started_at": "2026-10-19T11:06:43.523Z",
+      "finished_at": "2026-10-19T11:06:43.539Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar-gold_uploads",
+      "started_at": "2026-10-19T11:06:43.539Z",
+      "finished_at": "2026-10-19T11:06:43.553Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb",
+      "started_at": "2026-10-19T11:06:43.553Z",
+      "finished_at": "2026-10-19T11:06:43.566Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-create-owned-volume",
+      "started_at": "2026-10-19T11:06:43.567Z",
+      "finished_at": "2026-10-19T11:06:43.585Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-create-owned-volume",
+      "started_at": "2026-10-19T11:06:43.586Z",
+      "finished_at": "2026-10-19T11:06:43.604Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-create-owned-volume",
+      "started_at": "2026-10-19T11:06:43.605Z",
+      "finished_at": "2026-10-19T11:06:43.620Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-create-postgres",
+      "started_at": "2026-10-19T11:06:43.620Z",
+      "finished_at": "2026-10-19T11:06:46.313Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-start-postgres",
+      "started_at": "2026-10-19T11:06:46.314Z",
+      "finished_at": "2026-10-19T11:06:46.483Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-create-redis",
+      "started_at": "2026-10-19T11:06:46.483Z",
+      "finished_at": "2026-10-19T11:06:47.042Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-start-redis",
+      "started_at": "2026-10-19T11:06:47.044Z",
+      "finished_at": "2026-10-19T11:06:47.165Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-wait-postgres",
+      "started_at": "2026-10-19T11:06:47.166Z",
+      "finished_at": "2026-10-19T11:06:49.242Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-real-postgres-content",
+      "started_at": "2026-10-19T11:06:49.242Z",
+      "finished_at": "2026-10-19T11:06:49.329Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-real-redis-content",
+      "started_at": "2026-10-19T11:06:49.329Z",
+      "finished_at": "2026-10-19T11:06:49.414Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fixture-real-media-content",
+      "started_at": "2026-10-19T11:06:49.414Z",
+      "finished_at": "2026-10-19T11:06:49.498Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-containers",
+      "started_at": "2026-10-19T11:06:49.499Z",
+      "finished_at": "2026-10-19T11:06:49.518Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-25fd7bc60ce1",
+      "started_at": "2026-10-19T11:06:49.518Z",
+      "finished_at": "2026-10-19T11:06:49.541Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-583c9b911132",
+      "started_at": "2026-10-19T11:06:49.542Z",
+      "finished_at": "2026-10-19T11:06:49.561Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-68b91fee0bb9",
+      "started_at": "2026-10-19T11:06:49.562Z",
+      "finished_at": "2026-10-19T11:06:49.584Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-74c4b61be6e0",
+      "started_at": "2026-10-19T11:06:49.584Z",
+      "finished_at": "2026-10-19T11:06:49.599Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-8574efd4192c",
+      "started_at": "2026-10-19T11:06:49.600Z",
+      "finished_at": "2026-10-19T11:06:49.615Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b5377752ef2e",
+      "started_at": "2026-10-19T11:06:49.616Z",
+      "finished_at": "2026-10-19T11:06:49.631Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b54919da06a7",
+      "started_at": "2026-10-19T11:06:49.632Z",
+      "finished_at": "2026-10-19T11:06:49.666Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-b6a87474cd11",
+      "started_at": "2026-10-19T11:06:49.667Z",
+      "finished_at": "2026-10-19T11:06:49.681Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-cd4f9741bb95",
+      "started_at": "2026-10-19T11:06:49.681Z",
+      "finished_at": "2026-10-19T11:06:49.693Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-efb47311eadf",
+      "started_at": "2026-10-19T11:06:49.694Z",
+      "finished_at": "2026-10-19T11:06:49.718Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-f3ba7ea80977",
+      "started_at": "2026-10-19T11:06:49.718Z",
+      "finished_at": "2026-10-19T11:06:49.734Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-container-f726ac5405f8",
+      "started_at": "2026-10-19T11:06:49.734Z",
+      "finished_at": "2026-10-19T11:06:49.750Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-networks",
+      "started_at": "2026-10-19T11:06:49.750Z",
+      "finished_at": "2026-10-19T11:06:49.762Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-422a4867441c",
+      "started_at": "2026-10-19T11:06:49.762Z",
+      "finished_at": "2026-10-19T11:06:49.786Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-9c8bed1ee4e4",
+      "started_at": "2026-10-19T11:06:49.787Z",
+      "finished_at": "2026-10-19T11:06:49.800Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-c5a0b190813d",
+      "started_at": "2026-10-19T11:06:49.800Z",
+      "finished_at": "2026-10-19T11:06:49.813Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-network-df7d86a96d32",
+      "started_at": "2026-10-19T11:06:49.814Z",
+      "finished_at": "2026-10-19T11:06:49.825Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-list-volumes",
+      "started_at": "2026-10-19T11:06:49.825Z",
+      "finished_at": "2026-10-19T11:06:49.839Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-44785a34ed396a55aa15ac8c4ffe8e5a5688ac5ba1632fdb39b31f85dec34716",
+      "started_at": "2026-10-19T11:06:49.839Z",
+      "finished_at": "2026-10-19T11:06:49.851Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-4f968dbf76fb1b3a5700b16d47cc038d1141ad700374b569d68f23a31d8cd771",
+      "started_at": "2026-10-19T11:06:49.851Z",
+      "finished_at": "2026-10-19T11:06:49.863Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-76addb34da9ef2100877cf84e8aecda7ac85c15cc2ef08d5e99f26cb0326c1d6",
+      "started_at": "2026-10-19T11:06:49.863Z",
+      "finished_at": "2026-10-19T11:06:49.876Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-c1a7d217ba29c8e227ea26ca288545c93dfb1629b8ed4f76fe5f63c5de8b8c7e",
+      "started_at": "2026-10-19T11:06:49.876Z",
+      "finished_at": "2026-10-19T11:06:49.887Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-c44acbdbadf65556dc770d321e8b3a88329b523543c53ba374925a9a06687fa4",
+      "started_at": "2026-10-19T11:06:49.887Z",
+      "finished_at": "2026-10-19T11:06:49.898Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-dbac5ae27262789cdd4337c0821f06983661c7b3abaa4012f07674ccd90936eb",
+      "started_at": "2026-10-19T11:06:49.898Z",
+      "finished_at": "2026-10-19T11:06:49.912Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar-gold_postgres",
+      "started_at": "2026-10-19T11:06:49.912Z",
+      "finished_at": "2026-10-19T11:06:49.924Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar-gold_uploads",
+      "started_at": "2026-10-19T11:06:49.924Z",
+      "finished_at": "2026-10-19T11:06:49.937Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar_restore_fixture_035489394d9f_source_pg",
+      "started_at": "2026-10-19T11:06:49.937Z",
+      "finished_at": "2026-10-19T11:06:49.951Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar_restore_fixture_035489394d9f_source_redis",
+      "started_at": "2026-10-19T11:06:49.951Z",
+      "finished_at": "2026-10-19T11:06:49.963Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-didar_restore_fixture_035489394d9f_source_uploads",
+      "started_at": "2026-10-19T11:06:49.963Z",
+      "finished_at": "2026-10-19T11:06:49.975Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    },
+    {
+      "stage": "fresh-observe-volume-e9dd61e8c762cd609c1104f84e99fe7f0e8da57c1b5961793f9e5092a824aedb",
+      "started_at": "2026-10-19T11:06:49.975Z",
+      "finished_at": "2026-10-19T11:06:49.988Z",
+      "code": 0,
+      "signal": null,
+      "spawn_error": null,
+      "timed_out": false
+    }
+  ]
+}

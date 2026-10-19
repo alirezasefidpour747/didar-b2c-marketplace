@@ -1,0 +1,90 @@
+{
+  "status": "SOURCE_SCOPED_REGRESSION_PASS_REAL_DOCKER_GATES_BLOCKED",
+  "accepted_application_source_sha": "0c4b047baa9dbe37cd1876159c15d22b40cf7cac",
+  "changes": "INSTALLATION_KIT_CANDIDATE_ONLY_NO_APPLICATION_IMAGE_CHANGES",
+  "files": {
+    "scripts/deployment/nginx/stack.mjs": "6cd840de22ac7d32c315864264c50046337df27f074f570900059a24c4882674",
+    "scripts/deployment/nginx/fresh.mjs": "81451684823b771cc57e32dcd19ed7e5b7bd60c52fb8bad8f75b5fcffa9eeaaf",
+    "scripts/deployment/nginx/fresh-restore.mjs": "2126bd3bd57615b235f9af5a8d33da0263fc0aec22ee9d28aeafeeb62aeaeef8",
+    "scripts/ci/verify-fresh-install.mjs": "1eb5226338a9c4b0850f30d3c4a01f962f2eb74921ac6f2deea0f90cb7de36d1",
+    "scripts/ci/verify-fresh-readback.mjs": "adf84a64fc354aefb247d905806fb3692d28f7a569f450384f31970fb2cb9ad6",
+    ".github/workflows/didar-fresh-install.yml": "1b8cbd9f5daa9293871ed0ab4701c12c995b7754067ee8dc92c0f4d31ad3b855",
+    "tests/nginx-fresh.test.mjs": "11b3b0c3ca2fb0f20ec2bb3290083fd90a8136283d49946137d1c00ee53db21e",
+    "tests/fresh-readback.test.mjs": "bc0fec5decd45cc3881d2bb307c8ccafd55c3e73cead1ad8bde920450781a566"
+  },
+  "executed": [
+    {
+      "stage": "initial-unit",
+      "exit_code": 1,
+      "log": "/workspace/work/fresh-wrapper-unit.log",
+      "reason": "testfixture permission assertion invalid under restrictive umask; fixed explicit chmod"
+    },
+    {
+      "stage": "initial-expanded-regression",
+      "exit_code": 1,
+      "log": "/workspace/work/fresh-wrapper-regression.log",
+      "reason": "source worktree missing declared @didar/auth-network dependency; failed test after-hook hung; only own auth test child terminated SIGTERM, runner exited1"
+    },
+    {
+      "stage": "local-dependency-setup",
+      "exit_code": 0,
+      "kind": "3 unchanged regular package files copied into ignored node_modules; no symlinks/app image changes"
+    },
+    {
+      "stage": "final-seven-source-suites",
+      "exit_code": 0,
+      "log": "/workspace/work/fresh-wrapper-regression-final-frozen.log",
+      "test_count": 72,
+      "passed": 71,
+      "failed": 0,
+      "skipped": 1,
+      "command": "node --test tests/nginx-fresh.test.mjs tests/nginx-stack.test.mjs tests/operator-bundle.test.mjs tests/auth-network-relay.test.mjs tests/topology-artifacts.test.mjs scripts/deployment/nginx/fresh-restore.test.mjs tests/fresh-operator-bundle.test.mjs"
+    },
+    {
+      "stage": "final-nine-source-suites",
+      "exit_code": 0,
+      "log": "/workspace/work/fresh-wrapper-ci-source-final.log",
+      "test_count": 86,
+      "passed": 85,
+      "failed": 0,
+      "skipped": 1
+    }
+  ],
+  "actual_child_outcomes_asserted": [
+    {
+      "stage": "fresh-key CLI initial",
+      "exit_code": 0
+    },
+    {
+      "stage": "fresh-key CLI replacement denied",
+      "exit_code": 2
+    },
+    {
+      "stage": "temporary openssl observer test certificate",
+      "exit_code": 0
+    },
+    {
+      "stage": "local HTTPS signed socket observer",
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "SOURCE TESTS ARE NOT PACKAGED ACCEPTED IMAGE DOCKER ACCEPTANCE",
+    "Actual full accepted-image bootstrap, migration, Admin/Vendor browser and matched namespace fresh installation were not executed here",
+    "Real Docker restore fixture is explicitly skipped by default; separate retained attempted run failed early; capacity guard remains blocking",
+    "No target/owner-server access or modification",
+    "No genuine Chief Architect approval receipt generated"
+  ],
+  "target_config": "BLOCKED",
+  "public_https": "NOT_VERIFIED",
+  "github_full_fresh_install": "PREPARED_NOT_EXECUTED_IN_EXECUTOR_REQUIRES_ISOLATED_GITHUB_RUNNER",
+  "pending_ci": [
+    "Exact855651700-byte acceptedreleaseZIP534 download/fullinternalchecksums",
+    "CleanactualacceptedimagesloadIDs1ff/b928",
+    ">=15GiB andNode24.19 privateprovision positive",
+    "ActualemptyfreshDBmigration/nativeadmin bootstrap/threeauthoritybrowserjourneys",
+    "Actual3volumeinitialrestore andciphertextActionsupload/downloadreadback",
+    "ActualsignedHTTPSNginxsocketobservation/sharednamespace",
+    "Real4IDcheckpoint andsamebundleprotectedrecover/persistence"
+  ]
+}
