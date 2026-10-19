@@ -49,7 +49,9 @@ assert.match(source, /^[a-f0-9]{40}$/, 'Explicit exact fixture source SHA requir
 const sourceDirectory = resolve(import.meta.dirname, '../scripts/deployment/nginx')
 const environmentFile = join(root, 'staging.env'), operationFile = join(root, 'operation.json'), manifestFile = join(kit, 'manifest.json')
 async function wrapper(action, { expected = [0], overrides = {} } = {}) {
-  const result = await execute('wrapper-' + action + '-' + rows.length, process.execPath, [join(kit, 'stack.mjs'), environmentFile, manifestFile, sha256(await readFile(manifestFile)), operationFile, action], { expected, env: { ...environment, ...overrides } })
+  // This flag belongs only to the internal Compose child, not a new operator CLI.
+  const operatorEnvironment = { ...environment }; delete operatorEnvironment.COMPOSE_DISABLE_ENV_FILE
+  const result = await execute('wrapper-' + action + '-' + rows.length, process.execPath, [join(kit, 'stack.mjs'), environmentFile, manifestFile, sha256(await readFile(manifestFile)), operationFile, action], { expected, env: { ...operatorEnvironment, ...overrides } })
   const parsed = result.code === 0 ? JSON.parse(result.stdout.toString()) : { code: result.code, error: result.stderr.toString().trim() }
   wrapperResults.push({ action, ...parsed }); await save(join(output, 'wrapper-results.json'), JSON.stringify(wrapperResults, null, 2) + '\n')
   return parsed
@@ -184,6 +186,7 @@ try {
   const blocked = structuredClone(operation); operation.target_config = 'BLOCKED'; await saveOperation(); assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'TARGET_CONFIG_BLOCKED'); operation = blocked; await saveOperation(); cases.push('target-blocked-no-mutation')
   const backupStatus = operation.backup.status; operation.backup.status = 'UNVERIFIED'; await saveOperation(); assert.match((await wrapper('quiesce', { expected: [2] })).error, /BACKUP_AND_ISOLATED/); operation.backup.status = backupStatus; await saveOperation(); cases.push('missing-backup-blocked')
   assert.match((await wrapper('preflight', { expected: [2], overrides: { COMPOSE_FILE: '/untrusted/override' } })).error, /UNSAFE_PROCESS_OVERRIDE/); cases.push('stale-compose-override-blocked')
+  assert.equal((await wrapper('preflight', { expected: [2], overrides: { COMPOSE_DISABLE_ENV_FILE: '1' } })).error, 'UNSAFE_PROCESS_OVERRIDE:COMPOSE_DISABLE_ENV_FILE'); cases.push('caller-internal-compose-flag-still-blocked')
   assert.match((await wrapper('preflight', { expected: [2], overrides: { JWT_SECRET: 'stale-private-value' } })).error, /STALE_ENV_OVERRIDE/); cases.push('stale-secret-blocked-no-disclosure')
   await wrapper('quiesce'); await wrapper('migrate'); await wrapper('recreate'); await wrapper('health'); cases.push('migrate-recreate-separate-cli-health')
   const stateFile = environmentFile + '.didar-nginx-state.json', state = JSON.parse(await readFile(stateFile, 'utf8'))

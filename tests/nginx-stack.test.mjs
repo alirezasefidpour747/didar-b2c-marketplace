@@ -197,3 +197,15 @@ test('failed-stage diagnostics redact private-file-only secrets and encoded form
   assert.equal(redacted.includes('proxy-secret'), false); assert.equal(redacted.includes('fake.jwt.token'), false)
   assert.match(redacted, /REDACTED/)
 })
+
+
+test('internal Compose environment is not re-entered as operator input, while caller Compose overrides remain rejected', () => {
+  const inherited = { PATH: '/bin', HTTPS_PROXY: 'http://managed.test', NODE_EXTRA_CA_CERTS: '/managed/ca.pem' }
+  const internal = localEnvironment(inherited)
+  assert.equal(internal.COMPOSE_DISABLE_ENV_FILE, '1')
+  assert.throws(() => localEnvironment(internal), /UNSAFE_PROCESS_OVERRIDE:COMPOSE_DISABLE_ENV_FILE/)
+  const operator = { ...internal }; delete operator.COMPOSE_DISABLE_ENV_FILE
+  assert.deepEqual(localEnvironment(operator), internal)
+  assert.throws(() => localEnvironment({ ...operator, COMPOSE_DISABLE_ENV_FILE: '1' }), /UNSAFE_PROCESS_OVERRIDE:COMPOSE_DISABLE_ENV_FILE/)
+  assert.throws(() => localEnvironment({ ...operator, COMPOSE_FILE: '/untrusted/override.yml' }), /UNSAFE_PROCESS_OVERRIDE:COMPOSE_FILE/)
+})
