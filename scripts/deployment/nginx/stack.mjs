@@ -152,6 +152,8 @@ export function redactDiagnostic(bytes, ...sources) {
 
 export function runner(environment, receipts, privateConfiguration = {}) {
   let fixtureDiagnostics = false
+  let diagnosticStages = () => true
+  const privateSources = [privateConfiguration]
   const run = async (stage, args, input) => new Promise((done, reject) => {
     const start = new Date().toISOString(), child = spawn('docker', ['--host=unix:///var/run/docker.sock', ...args], { env: environment, stdio: ['pipe', 'pipe', 'pipe'] })
     const stdout = [], stderr = []; let count = 0, timedOut = false, spawnError = null
@@ -166,13 +168,14 @@ export function runner(environment, receipts, privateConfiguration = {}) {
       const failed = code !== 0 || signal || spawnError || timedOut || count > 32 * 1024 * 1024
       const receipt = { stage, started_at: start, finished_at: new Date().toISOString(), code, signal, spawn_error: spawnError, timed_out: timedOut }
       if (failed) { receipt.stdout_sha256 = sha256(Buffer.concat(stdout)); receipt.stderr_sha256 = sha256(Buffer.concat(stderr)) }
-      if (failed && fixtureDiagnostics) receipt.diagnostic = { stdout: redactDiagnostic(Buffer.concat(stdout), privateConfiguration, environment), stderr: redactDiagnostic(Buffer.concat(stderr), privateConfiguration, environment) }
+      if (failed && fixtureDiagnostics && diagnosticStages(stage)) receipt.diagnostic = { stdout: redactDiagnostic(Buffer.concat(stdout), ...privateSources, environment), stderr: redactDiagnostic(Buffer.concat(stderr), ...privateSources, environment) }
       receipts.push(receipt)
       if (failed) reject(Error('DOCKER_STAGE_FAILED:' + stage + ':exit=' + code))
       else done(Buffer.concat(stdout).toString('utf8').trim())
     })
   })
-  Object.defineProperty(run, 'enableFixtureDiagnostics', { value: () => { fixtureDiagnostics = true } })
+  Object.defineProperty(run, 'enableFixtureDiagnostics', { value: (stages = () => true) => { fixtureDiagnostics = true; diagnosticStages = stages } })
+  Object.defineProperty(run, 'addPrivateDiagnosticSource', { value: source => { privateSources.push(source) } })
   Object.defineProperty(run, 'recordFixtureObservation', { value: (stage, observation) => {
     if (fixtureDiagnostics) receipts.push({ stage, kind: 'FIXTURE_OBSERVATION_NOT_PROCESS_EXIT', observed_at: new Date().toISOString(), observation })
   } })

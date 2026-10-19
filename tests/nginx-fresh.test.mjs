@@ -7,7 +7,7 @@ import { spawnSync, spawn } from 'node:child_process'
 import { createServer } from 'node:net'
 import { request } from 'node:https'
 import { createRequire } from 'node:module'
-import { provisionNetworkKey, validateFreshConfiguration, assertDaemonPreserved, assertFreshNames, freshComposition, verifyCandidateApproval, verifyFreshRestore, operateFresh, socketObserverSource } from '../scripts/deployment/nginx/fresh.mjs'
+import { provisionNetworkKey, validateFreshConfiguration, assertDaemonPreserved, assertFreshNames, freshComposition, verifyCandidateApproval, verifyFreshRestore, operateFresh, socketObserverSource, startOwnedHealthy } from '../scripts/deployment/nginx/fresh.mjs'
 import { sha256, parseConfiguration, actions, canonicalState } from '../scripts/deployment/nginx/stack.mjs'
 
 const image = c => 'sha256:' + c.repeat(64)
@@ -196,3 +196,21 @@ test('stop-only fresh-quiesce survives low capacity, creates nothing and still r
   assert.equal(calls.some(args => args[0] === 'stop'), false)
   await assert.rejects(operateFresh({ action: 'fresh-dependencies', configuration, bundle, operation, run, statePath }), /INSUFFICIENT_OR_UNSUPPORTED_DOCKER_RESOURCES/)
 }))
+
+test('portable start uses only journaled exact Docker IDs, verifies health and rejects ownership or unhealthy state', async () => {
+  const api = 'a'.repeat(64), token = 'b'.repeat(48), state = { ids: { api }, token }, configuration = env(), bundle = { manifest: { images: { api: { image_id: image('a') } } } }
+  let started = false, owner = token, health = 'healthy', preserved = false; const calls = []
+  const run = async (_stage, args) => {
+    calls.push(args)
+    if (args[0] === 'start') { assert.deepEqual(args, ['start', api]); started = true; return api }
+    assert.deepEqual(args, ['inspect', api])
+    return JSON.stringify([{ Id: api, Image: image('a'), Config: { Labels: { 'didar.fresh-owner': owner, 'didar.disposable-qa': 'true', 'com.docker.compose.project': configuration.DIDAR_COMPOSE_PROJECT, 'com.docker.compose.service': 'api' } }, State: { Running: started, Health: { Status: health }, ExitCode: 0 } }])
+  }
+  const options = { stage: 'unit-start', selected: ['api'], state, bundle, configuration, qa: true, run, timeout: 1, preserve: async () => { preserved = true } }
+  await startOwnedHealthy(options); assert.equal(preserved, true)
+  assert.equal(calls.some(args => args.includes('--wait') || args.includes('--wait-timeout') || args[0] === 'compose'), false)
+  started = false; owner = 'c'.repeat(48); calls.length = 0
+  await assert.rejects(startOwnedHealthy(options), /OWNERSHIP_CHANGED/); assert.equal(calls.some(args => args[0] === 'start'), false)
+  owner = token; health = 'unhealthy'; preserved = false
+  await assert.rejects(startOwnedHealthy(options), /UNHEALTHY/); assert.equal(preserved, false)
+})

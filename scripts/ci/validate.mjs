@@ -29,7 +29,7 @@ try {
   try { const file = lstatSync(receiptPath); if (!file.isFile() || file.isSymbolicLink()) throw Error('Unsafe CI receipt file'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   writeFileSync(receiptPath, '', { mode: 0o600 }); // Only this run's fixed CI receipt.
   subprocesses = { status: 'IN_PROGRESS', source_sha: source };
-  run('automation-contracts', 'node', ['--test', 'tests/ci-release.test.mjs', 'tests/topology-artifacts.test.mjs', 'tests/operator-bundle.test.mjs', 'tests/fresh-operator-bundle.test.mjs', 'tests/fresh-browser.test.mjs', 'tests/nginx-stack.test.mjs', 'tests/nginx-fresh.test.mjs', 'scripts/deployment/nginx/fresh-restore.test.mjs', 'tests/process-receipts.test.mjs', 'scripts/deployment/nginx/compat/compat.test.mjs']);
+  run('automation-contracts', 'node', ['--test', 'tests/ci-release.test.mjs', 'tests/topology-artifacts.test.mjs', 'tests/operator-bundle.test.mjs', 'tests/fresh-operator-bundle.test.mjs', 'tests/fresh-browser.test.mjs', 'tests/fresh-readback.test.mjs', 'tests/fresh-kit-export.test.mjs', 'tests/nginx-stack.test.mjs', 'tests/nginx-fresh.test.mjs', 'scripts/deployment/nginx/fresh-restore.test.mjs', 'tests/process-receipts.test.mjs', 'scripts/deployment/nginx/compat/compat.test.mjs']);
   run('native-sdk-lint-contracts', 'node', ['--test', 'tests/native-sdk-lint.test.mjs']);
   run('auth-relay-config-contracts', 'node', ['--test', 'tests/auth-network-relay.test.mjs']);
   run('nginx-signer-contracts', 'node', ['--test', 'scripts/deployment/nginx/sign.test.mjs']);

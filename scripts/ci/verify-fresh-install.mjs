@@ -12,6 +12,7 @@ import { fileHash, validateManifest } from './release.mjs'
 import { verifyInstallKit } from './install-kit.mjs'
 import { sha256, redactDiagnostic } from '../deployment/nginx/stack.mjs'
 import { render } from '../deployment/nginx/render.mjs'
+import { exportFreshInstallKit } from './export-fresh-install-kit.mjs'
 
 const [phase, zipArgument, rootArgument, outArgument, readbackArgument] = process.argv.slice(2)
 assert.ok(['prepare', 'complete'].includes(phase), 'Use prepare|complete ZIP PRIVATE_ROOT SANITIZED_OUTPUT [DOWNLOADED_BACKUP_DIR]')
@@ -30,7 +31,8 @@ const run = async (stage, command, args, options = {}) => {
     child.stdin.on('error', () => {}); child.stdin.end(options.input)
     child.on('close', (code, signal) => { clearTimeout(timer); done({ code, signal, spawn_error: spawnError, timed_out: timedOut, stdout: Buffer.concat(stdout), stderr: Buffer.concat(stderr) }) })
   })
-  rows.push({ ...record, code: result.code, signal: result.signal, spawn_error: result.spawn_error, timed_out: result.timed_out, finished_at: new Date().toISOString() })
+  const expected = options.expected || [0]
+  rows.push({ ...record, code: result.code, signal: result.signal, spawn_error: result.spawn_error, timed_out: result.timed_out, expected_codes: expected, expectation_matched: expected.includes(result.code) && !result.signal && !result.spawn_error && !result.timed_out, finished_at: new Date().toISOString() })
   await save(join(output, 'process-exits.json'), rows)
   if (!(options.expected || [0]).includes(result.code) || result.signal || result.spawn_error || result.timed_out) {
     await save(join(output, 'failure-' + rows.length + '.json'), { stage, code: result.code, signal: result.signal, spawn_error: result.spawn_error, stderr_sha256: sha256(result.stderr), diagnostic: redactDiagnostic(result.stderr, context.env, context.admin, process.env) })
@@ -43,6 +45,24 @@ const inspect = async id => JSON.parse(await docker('inspect-' + rows.length, ['
 const writeContext = () => save(contextPath, context)
 const saveEnv = () => save(context.environmentFile, Object.entries(context.env).map(([name, value]) => name + '=' + value).join('\n') + '\n')
 const saveOperation = () => save(context.operationFile, context.operation)
+async function collectWrapperJournals() {
+  if (!context.environmentFile) return 'NOT_EXECUTED_NO_WRAPPER_CONFIGURATION'
+  const directory = context.environmentFile + '.didar-nginx-journal'
+  let names
+  try { names = (await readdir(directory)).filter(name => /^[0-9]+-[a-f0-9]+\.json$/.test(name)).sort() } catch (error) { if (error.code === 'ENOENT') return 'UNAVAILABLE_NO_WRAPPER_JOURNAL'; throw error }
+  const journals = []
+  for (const name of names) {
+    const bytes = await readFile(join(directory, name)), record = JSON.parse(bytes)
+    journals.push({ action: record.action, source_sha: record.source_sha, bundle_sha256: record.bundle_sha256, completed_at: record.completed_at, journal_sha256: sha256(bytes), process_exits: (record.process_exits || []).map(row => {
+      const allowed = Object.fromEntries(['stage', 'kind', 'started_at', 'finished_at', 'code', 'signal', 'spawn_error', 'timed_out', 'stdout_sha256', 'stderr_sha256'].filter(key => Object.hasOwn(row, key)).map(key => [key, row[key]]))
+      if (row.diagnostic) allowed.diagnostic = { stdout: redactDiagnostic(Buffer.from(row.diagnostic.stdout || ''), context.env, context.admin, process.env), stderr: redactDiagnostic(Buffer.from(row.diagnostic.stderr || ''), context.env, context.admin, process.env) }
+      if (row.observation) allowed.observation = Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(row.observation, key)).map(key => [key, row.observation[key]]))
+      return allowed
+    }) })
+  }
+  await save(join(output, 'wrapper-journal-receipts.json'), { kind: 'SANITIZED_ACTUAL_WRAPPER_CHILD_RECEIPTS', raw_private_state_and_configuration_included: false, journals })
+  return 'RETAINED_SANITIZED_ACTUAL_CHILD_RECEIPTS'
+}
 const wrapper = async action => {
   const env = { ...process.env }
   for (const name of Object.keys(env)) if (name.startsWith('COMPOSE_') || name.startsWith('DOCKER_') || Object.hasOwn(context.env, name)) delete env[name]
@@ -85,6 +105,8 @@ try {
   if (phase === 'prepare') {
     await mkdir(root, { recursive: false, mode: 0o700 })
     const info = JSON.parse(await docker('capacity-docker-root', ['info', '--format', '{{json .}}'])), storage = await statfs(info.DockerRootDir)
+    context.runnerRuntime = { kind: 'ACTUAL_SANITIZED_DISPOSABLE_RUNNER_OBSERVATION', node: process.version, docker: { server_version: info.ServerVersion, os_type: info.OSType, architecture: info.Architecture, cpus: info.NCPU, memory_bytes: info.MemTotal }, compose: await docker('actual-runner-compose-version', ['compose', 'version', '--short']), target_server_facts: false }
+    await save(join(output, 'runner-runtime.json'), context.runnerRuntime)
     const free = Number(storage.bavail) * Number(storage.bsize)
     await save(join(output, 'capacity.json'), { before_load_free_bytes: free, required_free_bytes: 15 * 1024 ** 3 })
     assert.ok(free >= 15 * 1024 ** 3, 'At least 15GiB required before accepted-image load; no cleanup to bypass capacity')
@@ -103,6 +125,7 @@ try {
       const actual = JSON.parse(await docker('verify-accepted-image-' + role, ['image', 'inspect', manifest.images[role].local_tag]))[0]
       assert.equal(actual.Id, applicationImages[role]); assert.equal(actual.Config.Labels['org.opencontainers.image.revision'], applicationSource); assert.equal(actual.Os + '/' + actual.Architecture, 'linux/amd64')
     }
+    await save(join(output, 'accepted-artifact-provenance.json'), { source_sha: applicationSource, installation_source_sha: context.source, artifact_id: 12178302167, release_run_id: 39229912918, artifact_bytes: 855651700, artifact_zip_sha256: await fileHash(zip), archive_sha256: manifest.archive_sha256, images: applicationImages, original_install_kit_sha256: manifest.install_kit.sha256, status: 'ACCEPTED_ARTIFACT_LOADED_AND_IDENTITIES_VERIFIED', no_application_builds: true, no_application_source_mounts: true })
     const dependencies = {}
     for (const [role, reference] of [['postgres', 'postgres:17-bookworm@sha256:66aafa11cf15800a3c94763f7e11d1e7b2e37e5e84bc4ce027cb6e1e4bfaf4df'], ['redis', 'redis:7-bookworm@sha256:cd745595f143052dd6a743bc5651d3ce4b03979fe5c99c7fcfab73461f6f217b']]) {
       await docker('pull-pinned-' + role, ['pull', reference]); dependencies[role] = { reference, image_id: JSON.parse(await docker('inspect-pinned-' + role, ['image', 'inspect', reference]))[0].Id }
@@ -114,6 +137,9 @@ try {
     await run('assemble-original-accepted-operator', process.execPath, [join(context.release, 'install-kit/scripts/ci/operator-bundle.mjs'), context.release, review, dependenciesFile, original])
     context.kit = join(root, 'candidate-operator')
     const amendment = await assembleFreshAmendment(original, await fileHash(join(original, 'operator-manifest.json')), context.source, context.kit)
+    // Export the real matching target candidate before adding any QA labels,
+    // fixture receipts, private runtime configuration, TLS or credentials.
+    await exportFreshInstallKit({ originalDirectory: original, originalHash: await fileHash(join(original, 'operator-manifest.json')), candidateDirectory: context.kit, candidateHash: amendment.operator_manifest_sha256, sourceRoot: resolve('.'), installationSource: context.source, outputDirectory: output, run })
     const fixture = JSON.parse(await readFile(join(context.kit, 'operator-manifest.json')))
     fixture.kind = 'didar-nginx-wrapper-protocol-fixture'
     const compositionPath = join(context.kit, 'compose.topology.json'), composition = JSON.parse(await readFile(compositionPath))
@@ -130,7 +156,9 @@ try {
     const nodeParent = join(root, 'private-node-parent'); await mkdir(nodeParent, { mode: 0o700 })
     await run('private-node-positive-provision', 'bash', [join(context.kit, 'provision-node.sh'), join(nodeParent, 'node-24.19.0')])
     context.privateNodePath = join(nodeParent, 'node-24.19.0/runtime/bin/node')
-    assert.equal(await run('private-provisioned-node-version', context.privateNodePath, ['--version']), 'v24.19.0')
+    const privateNodeVersion = await run('private-provisioned-node-version', context.privateNodePath, ['--version']); assert.equal(privateNodeVersion, 'v24.19.0')
+    context.runnerRuntime.private_operator_node = { version: privateNodeVersion, actual_archive_sha256: await fileHash(join(nodeParent, 'node-24.19.0/node-v24.19.0-linux-x64.tar.xz')), system_runtime_modified: false }
+    await save(join(output, 'runner-runtime.json'), context.runnerRuntime)
     context.project = 'didar-fresh-' + randomBytes(6).toString('hex'); context.environmentFile = join(root, 'fresh.env'); context.operationFile = join(root, 'operation.json')
     const tls = join(root, 'tls'); await mkdir(tls, { mode: 0o700 })
     await run('fresh-private-relay-tls', 'openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-days', '2', '-subj', '/CN=relay.test', '-addext', 'subjectAltName=DNS:relay.test,DNS:localhost,IP:127.0.0.1', '-addext', 'basicConstraints=critical,CA:TRUE', '-keyout', join(tls, 'key.pem'), '-out', join(tls, 'cert.pem')])
@@ -220,5 +248,8 @@ try {
     await writeContext(); success = true
   }
 } finally {
-  await save(join(output, 'result-' + phase + '.json'), { status: success ? phase === 'prepare' ? 'INITIALIZED_AWAITING_ACTUAL_ARTIFACT_READBACK' : 'PASS_SCOPED_FRESH_INSTALL_QA' : 'FAIL', accepted_application_source_sha: applicationSource, installation_source_sha: context.source || null, phase, fixture_only: true, target_config: 'BLOCKED', public_https: 'NOT_VERIFIED', no_application_rebuild: true, actual_process_exits_file: 'process-exits.json', retained_resources: 'Owned resources retained until disposable GitHub runner teardown; no owner/executor cleanup', limits: ['No owner server operations', 'No target approval', 'No TLS/public Internet acceptance', 'No different-image/schema rollback claim', 'No permanent owner-target backup custody claim'] })
+  let journals
+  try { journals = await collectWrapperJournals() } catch (error) { journals = 'FAILED_SANITIZED_JOURNAL_COLLECTION'; success = false; await save(join(output, 'journal-collection-failure.json'), { status: 'FAIL', error_sha256: sha256(String(error?.message || error)) }) }
+  await save(join(output, 'result-' + phase + '.json'), { status: success ? phase === 'prepare' ? 'INITIALIZED_AWAITING_ACTUAL_ARTIFACT_READBACK' : 'PASS_SCOPED_FRESH_INSTALL_QA' : 'FAIL', accepted_application_source_sha: applicationSource, installation_source_sha: context.source || null, phase, fixture_only: true, target_config: 'BLOCKED', public_https: 'NOT_VERIFIED', no_application_rebuild: true, actual_process_exits_file: 'process-exits.json', wrapper_journals: journals, retained_resources: 'Owned resources retained until disposable GitHub runner teardown; no owner/executor cleanup', limits: ['No owner server operations', 'No target approval', 'No TLS/public Internet acceptance', 'No different-image/schema rollback claim', 'No permanent owner-target backup custody claim'] })
+  if (journals === 'FAILED_SANITIZED_JOURNAL_COLLECTION') throw Error('SANITIZED_JOURNAL_COLLECTION_FAILED')
 }

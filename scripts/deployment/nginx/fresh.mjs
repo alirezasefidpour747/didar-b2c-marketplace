@@ -1,5 +1,5 @@
 // Candidate operator-kit extension. Does not alter accepted application images.
-// Never adopts, removes, stops or reads secrets from legacy containers.
+// Never adopts, removes, stops or reuses secrets from legacy containers.
 import { randomBytes } from 'node:crypto'
 import { readFile, writeFile, lstat, realpath, open, statfs } from 'node:fs/promises'
 import { dirname, resolve, join } from 'node:path'
@@ -15,6 +15,36 @@ const stableConfiguration = env => { const value = { ...env }; delete value.DIDA
 
 export function socketObserverSource({ modulePath = '/app/packages/auth-network/index.cjs', tlsDir = '/run/didar-tls', port = 3000 } = {}) {
   return "const fs=require('node:fs'),https=require('node:https'),{verifyNetwork,HEADER}=require(" + JSON.stringify(modulePath) + ");const s=https.createServer({cert:fs.readFileSync(" + JSON.stringify(tlsDir + '/cert.pem') + "),key:fs.readFileSync(" + JSON.stringify(tlsDir + '/key.pem') + ")},(q,r)=>{const parts=[];let n=0;q.on('data',p=>{n+=p.length;if(n>4096){q.destroy();return}parts.push(p)});q.on('end',()=>{try{const body=Buffer.concat(parts);if(q.method!=='POST'||q.url!=='/api/didar/login'||body.toString()!==JSON.stringify({didar_peer_probe:process.env.PROBE_CHALLENGE}))throw Error();verifyNetwork({key:process.env.DIDAR_AUTH_NETWORK_KEY,assertion:q.headers[HEADER],method:q.method,path:q.url,body});console.log(JSON.stringify({socket_peer:q.socket.remoteAddress,api_namespace:process.env.OBSERVED_API_ID,signed_probe:'PASS'}));r.writeHead(204).end();s.close(()=>process.exit(0))}catch{r.writeHead(403).end()}})});s.listen(" + JSON.stringify(port) + ",'0.0.0.0');setTimeout(()=>{s.close();process.exit(2)},60000).unref()"
+}
+
+export async function startOwnedHealthy({ stage, selected, state, bundle, configuration, qa, run, timeout, preserve }) {
+  if (!selected.length || selected.some(role => !roles.includes(role) || !idPattern.test(state.ids[role] || ''))) fail('EXACT_JOURNALED_START_IDS_REQUIRED')
+  const verify = (c, expectedRole) => {
+    const role = c.Config.Labels?.['com.docker.compose.service']
+    if (role !== expectedRole || !selected.includes(role) || c.Id !== state.ids[role] || c.Image !== bundle.manifest.images[role].image_id || c.Config.Labels?.['didar.fresh-owner'] !== state.token || c.Config.Labels?.['com.docker.compose.project'] !== configuration.DIDAR_COMPOSE_PROJECT || qa && c.Config.Labels?.['didar.disposable-qa'] !== 'true') fail('FRESH_START_OWNERSHIP_CHANGED')
+    return role
+  }
+  for (const role of selected) {
+    const c = JSON.parse(await run(stage + '-before-start-' + role, ['inspect', state.ids[role]]))[0]
+    verify(c, role); if (c.State.Running) fail('FRESH_STOPPED_OWNED_START_REQUIRED')
+  }
+  await run(stage + '-start-exact-ids', ['start', ...selected.map(role => state.ids[role])])
+  for (const role of selected) {
+    const deadline = Date.now() + timeout * 1000
+    let healthy = false
+    while (Date.now() < deadline) {
+      const c = JSON.parse(await run(stage + '-health-' + role, ['inspect', state.ids[role]]))[0]; verify(c, role)
+      if (!c.State.Running || c.State.Health?.Status === 'unhealthy') {
+        run.recordFixtureObservation?.('fresh-owned-start-state', { role, container_id: c.Id, container_exit_code: c.State.ExitCode, running: c.State.Running, health: c.State.Health?.Status || null, oom_killed: c.State.OOMKilled })
+        fail('FRESH_APPLICATION_OR_DEPENDENCY_UNHEALTHY:' + role)
+      }
+      if (c.State.Health?.Status === 'healthy') { healthy = true; break }
+      if (!c.State.Health) fail('FRESH_HEALTHCHECK_REQUIRED:' + role)
+      await new Promise(done => setTimeout(done, 1000))
+    }
+    if (!healthy) fail('FRESH_HEALTH_TIMEOUT:' + role)
+  }
+  await preserve()
 }
 
 export async function provisionNetworkKey(path) {
@@ -188,6 +218,7 @@ export async function operateFresh({ action, configuration, bundle, operation, r
     }
   }
   await preserve()
+  if (qa) run.enableFixtureDiagnostics?.(stage => !/^fresh-(?:observe-|list-|project-)/.test(stage))
   const compose = (stage, args) => run(stage, ['compose', '--project-name', configuration.DIDAR_COMPOSE_PROJECT, '--project-directory', bundle.root, '--env-file', '/dev/null', '-f', '-', ...args], freshComposition(bundle, configuration, state.token, qa))
   await compose('fresh-compose-config', ['config', '--quiet'])
   const capture = async role => {
@@ -209,7 +240,9 @@ export async function operateFresh({ action, configuration, bundle, operation, r
     }
     for (const role of selected) await capture(role)
     await preserve()
-    await compose(stage + '-start', ['start', '--wait', '--wait-timeout', String(timeout), ...selected])
+    // Compose start has no portable --wait contract (including v2.40.3).
+    // Start only the exact IDs already captured and ownership-verified above.
+    await startOwnedHealthy({ stage, selected, state, bundle, configuration, qa, run, timeout, preserve })
   }
   if (action === 'fresh-dependencies') {
     if (state.phase !== 'PREFLIGHT') fail('FRESH_PREFLIGHT_PHASE_REQUIRED')
@@ -245,6 +278,7 @@ export async function operateFresh({ action, configuration, bundle, operation, r
     const credentials = JSON.parse(bytes)
     exact(credentials, ['DIDAR_BOOTSTRAP_EMAIL', 'DIDAR_BOOTSTRAP_PASSWORD', 'NATIVE_BOOTSTRAP_PASSWORD'], 'EXPLICIT_PRIVATE_FIRST_ADMIN_REQUIRED')
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(credentials.DIDAR_BOOTSTRAP_EMAIL) || [credentials.DIDAR_BOOTSTRAP_PASSWORD, credentials.NATIVE_BOOTSTRAP_PASSWORD].some(value => typeof value !== 'string' || value.length < 16) || credentials.DIDAR_BOOTSTRAP_PASSWORD === credentials.NATIVE_BOOTSTRAP_PASSWORD) fail('DISTINCT_EXPLICIT_FIRST_ADMIN_PASSWORDS_REQUIRED')
+    run.addPrivateDiagnosticSource?.(credentials)
     const template = structuredClone(bundle.composition)
     template.services.migrate.labels = labels(state.token, qa)
     template.services.migrate.command = ['sh', '-c', 'cd packages/api && NODE_ENV=development bun x --no-install medusa exec ./src/scripts/provision-first-admin.ts']

@@ -235,7 +235,9 @@ test('actual failed Docker child records redacted private diagnostics while its 
   const directory = await mkdtemp(join(tmpdir(), 'didar-wrapper-diagnostic-'))
   try {
     const privateConfiguration = { JWT_SECRET: 'private-file-only-jwt-' + 'a'.repeat(32), DIDAR_AUTH_NETWORK_KEY: 'private-file-only-network-' + 'b'.repeat(32), DIDAR_DB_PASSWORD: 'private$database#canary' }
-    const canary = Object.values(privateConfiguration).join(' ') + ' ' + Object.values(privateConfiguration).map(encodeURIComponent).join(' ')
+    const latePrivateCredentials = { DIDAR_BOOTSTRAP_PASSWORD: 'late-first-admin$secret#' + 'c'.repeat(32), NATIVE_BOOTSTRAP_PASSWORD: 'late-native-admin$secret#' + 'd'.repeat(32) }
+    const allPrivate = { ...privateConfiguration, ...latePrivateCredentials }
+    const canary = Object.values(allPrivate).join(' ') + ' ' + Object.values(allPrivate).map(encodeURIComponent).join(' ')
     const executable = join(directory, 'docker')
     await writeFile(executable, '#!' + process.execPath + '\nconst value=Buffer.from(' + JSON.stringify(Buffer.from(canary).toString('base64')) + ',"base64");process.stdout.write(value);process.stderr.write(value);process.exit(73)\n', { mode: 0o700 })
     const productionReceipts = []
@@ -243,13 +245,16 @@ test('actual failed Docker child records redacted private diagnostics while its 
     assert.equal(productionReceipts[0].diagnostic, undefined); assert.match(productionReceipts[0].stdout_sha256, /^[a-f0-9]{64}$/); assert.match(productionReceipts[0].stderr_sha256, /^[a-f0-9]{64}$/)
     assert.equal(JSON.stringify(productionReceipts).includes('private-file-only'), false)
     const receipts = [], qa = runner({ PATH: directory }, receipts, privateConfiguration)
-    qa.enableFixtureDiagnostics() // The real operator enables this only after owned protocol-fixture preflight.
+    qa.addPrivateDiagnosticSource(latePrivateCredentials)
+    qa.enableFixtureDiagnostics(stage => stage === 'deliberate-failure') // Owned fixture stages only; never unrelated container discovery.
     await assert.rejects(qa('deliberate-failure', []), error => error.message === 'DOCKER_STAGE_FAILED:deliberate-failure:exit=73')
     assert.equal(receipts.length, 1); assert.equal(receipts[0].code, 73); assert.equal(receipts[0].signal, null); assert.equal(receipts[0].spawn_error, null)
     for (const stream of ['stdout', 'stderr']) {
-      for (const value of Object.values(privateConfiguration)) { assert.equal(receipts[0].diagnostic[stream].includes(value), false); assert.equal(receipts[0].diagnostic[stream].includes(encodeURIComponent(value)), false) }
+      for (const value of Object.values(allPrivate)) { assert.equal(receipts[0].diagnostic[stream].includes(value), false); assert.equal(receipts[0].diagnostic[stream].includes(encodeURIComponent(value)), false) }
       assert.match(receipts[0].diagnostic[stream], /REDACTED/)
     }
+    await assert.rejects(qa('fresh-observe-container-unrelated', []), /exit=73/)
+    assert.equal(receipts[1].diagnostic, undefined, 'Unrelated/private discovery output is never retained')
   } finally { await rm(directory, { recursive: true, force: true }) }
 })
 

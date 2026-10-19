@@ -45,7 +45,7 @@ jobs:
           set -euo pipefail
           mkdir -p .local/fresh-install-evidence
           set +e
-          node --test tests/nginx-fresh.test.mjs tests/nginx-stack.test.mjs tests/operator-bundle.test.mjs tests/auth-network-relay.test.mjs tests/topology-artifacts.test.mjs scripts/deployment/nginx/fresh-restore.test.mjs tests/fresh-operator-bundle.test.mjs tests/fresh-browser.test.mjs tests/fresh-readback.test.mjs
+          node --test tests/nginx-fresh.test.mjs tests/nginx-stack.test.mjs tests/operator-bundle.test.mjs tests/auth-network-relay.test.mjs tests/topology-artifacts.test.mjs scripts/deployment/nginx/fresh-restore.test.mjs tests/fresh-operator-bundle.test.mjs tests/fresh-browser.test.mjs tests/fresh-readback.test.mjs tests/fresh-kit-export.test.mjs
           code=$?
           printf '{"stage":"focused-source-checks","exit_code":%s}\n' "$code" > .local/fresh-install-evidence/source-check-exit.json
           exit "$code"
@@ -104,6 +104,8 @@ jobs:
           name: fresh-install-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             .local/fresh-install-evidence/*.json
+            .local/fresh-install-evidence/install-kit-candidate.tar.gz
+            .local/fresh-install-evidence/install-kit-candidate.tar.gz.sha256
             .local/fresh-install-evidence/browser/**/*.json
             .local/fresh-install-evidence/browser/**/*.png
           include-hidden-files: true

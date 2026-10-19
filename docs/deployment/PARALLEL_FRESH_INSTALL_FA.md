@@ -35,13 +35,11 @@ config: sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10
 
 `images.tar.gz`=`d623867da3e3392c99919bd49c3ee2855d3423577aa54d4efc4ad9088665288e` و اصل `install-kit/kit-manifest.json`=`bf9d9da07d92f9913a8080c9a07aee1fb0f6564a553d2ed5286ce3946edcf915`. اصل release را نگه دارید؛ assembler پذیرفته‌شده archive واقعی را لازم دارد. تصاویر candidate قبلی یا image ID محلی جای دانلود محسوب نمی‌شوند.
 
-برای dependencies نصب تازه می‌توان از immutable refs زیر، پس از pull و تطبیق config واقعی، استفاده کرد؛ این‌ها انتخاب جدید برای منابع تازه‌اند و نسخهٔ نصب legacy فرض نمی‌شوند:
+workflow نصب تازه از همان dependencyهای Bookworm پذیرفته‌شدهٔ R5 و immutable refs زیر استفاده می‌کند. پس از pull، config ID واقعی باید ثبت و در manifest/approval bind شود؛ نسخهٔ نصب legacy فرض نمی‌شود. refs محلی Alpine در این مسیر آزمون کامل محسوب نمی‌شوند:
 
 ```text
-docker.io/library/postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
-config: sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537
-docker.io/library/redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
-config: sha256:f84b0c4678011602b9b98c227a4dcd5468bf8b088b02fdd4165cb7758bad8058
+postgres:17-bookworm@sha256:66aafa11cf15800a3c94763f7e11d1e7b2e37e5e84bc4ce027cb6e1e4bfaf4df
+redis:7-bookworm@sha256:cd745595f143052dd6a743bc5651d3ce4b03979fe5c99c7fcfab73461f6f217b
 ```
 
 ## مرز حفاظت و منابع مستقل
@@ -129,6 +127,7 @@ MANIFEST_SHA=EXACT_NEW_OPERATOR_MANIFEST_SHA256
 8. `fresh-bind-peer`: پس از بررسی actual discovery/module/TLS و maintenance، peer و hashes واقعی را به همان API ID/config/operation bind می‌کند. هنوز public cutover ممنوع است.
 9. `fresh-start`: فقط پس از bind، restore evidence و edge واقعی `VERIFIED`، storefront را در namespace API شروع و TLS health/private unsigned denial را بررسی می‌کند؛ وضعیت فقط internal است.
 10. `fresh-quiesce`: فقط fresh container IDs واقعی و journaled را با ترتیب storefront سپس API متوقف می‌کند؛ dependencies و legacy باقی می‌مانند.
+11. `fresh-checkpoint`: در state دقیق `QUIESCED`، با هر چهار ID واقعی و images/namespace/mount/metadata منطبق، backup و isolated restore تازه به سه volume جدید می‌گیرد؛ receipt اولیه overwrite نمی‌شود. پیش از فرمان، `restoration.path` باید مسیر خصوصی جدید و `evidence_url` مقصد واقعی custody باشد. receipt موفق `FRESH_QUIESCED_FOUR_CONTAINER_CHECKPOINT` است؛ receipt قبلی دو-container جای آن پذیرفته نیست.
 
 wrapper به default local Unix Docker socket، حداقل دو CPU/4 GiB RAM و 2 GiB فضای آزاد daemon نیاز دارد؛ برای images، منابع موازی، backup و restore فضای بیشتری لازم است. فقط `fresh-quiesce` که صرفاً stopِ منابع owned است از threshold ظرفیت معاف است؛ hash/ownership/context/approval و حفاظت منابع قبلی همچنان بررسی می‌شوند و این استثنا اجازهٔ create/start نمی‌دهد. volume/image/containerهای دیگر را برای عبور از guard حذف نکنید. `--no-deps` و immutable loaded references حفظ می‌شوند. lock و journal خصوصی نگهداری می‌شوند؛ بعد از failure آن‌ها را برای ادامهٔ خودکار پاک نکنید.
 
@@ -164,7 +163,7 @@ helper، PostgreSQL dump واقعی، Redis RDB و media bytes را به منا�
 
 **backup کامل recovery فراتر از env است:** اصل images/ZIP و manifest، amendment/approval، signer/module/config، relay/public cert/key/CA، network key version و credential custody نیز باید encrypted/off-host نگهداری و بازیابی واقعی آن‌ها جدا بررسی شود. helper DB/media به‌تنهایی rollback کامل میزبان یا Nginx را اثبات نمی‌کند.
 
-قبل از ترافیک عمومی، backup جدیدی با هر چهار fresh app/dependency ID واقعی و restore مستقل بگیرید. سپس می‌توان با operation واقعی و همان matched bundle به verbs موجود `preflight/quiesce/migrate/recreate/health/recover` تحویل داد؛ original-wrapper backup شروطش حذف نمی‌شود. API پیش از storefront recreate می‌شود و پس از تغییر API ID، namespace و peer/binding مجدداً بررسی می‌شوند.
+قبل از ترافیک عمومی، پس از `fresh-quiesce` از `fresh-checkpoint` با مسیر receipt جدید برای backup هر چهار fresh app/dependency ID واقعی و restore مستقل استفاده کنید. backup و receipt این checkpoint نیز باید off-host رمزگذاری، دانلود و بررسی شوند؛ initial backup این مرحله را پوشش نمی‌دهد. سپس می‌توان با operation واقعی و همان matched bundle به verbs موجود `preflight/quiesce/migrate/recreate/health/recover` تحویل داد؛ original-wrapper backup شروطش حذف نمی‌شود. API پیش از storefront recreate می‌شود و پس از تغییر API ID، namespace و peer/binding مجدداً بررسی می‌شوند.
 
 در partial failure، فقط IDهای واقعیِ ثبت‌شده و owner/image/project-verified قابل توقف‌اند. منابع unjournaled یا state مبهم باعث `BLOCKED` می‌شوند؛ auto-adoption، `rm/down -v` یا دستکاری state مجاز نیست. اگر `fresh-quiesce` به‌دلیل resource mismatch نتوانست توقف امن انجام دهد، خروج و منابع را حفظ و برای بررسی اپراتور/Chief Architect توقف کنید. restart/ادامهٔ bootstrap از state نامعلوم در این candidate مجوز ندارد.
 
