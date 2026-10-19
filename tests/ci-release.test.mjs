@@ -121,3 +121,24 @@ test('real fixture ports are distinct and only the exact loopback mappings survi
     m => { m['3000/tcp'].push({ HostIp: '::', HostPort: String(ingress) }); },
   ]) { const m = structuredClone(mappings); change(m); assert.throws(() => assertLoopbackMappings(m, expected)); }
 });
+
+test('standalone Nginx runbook has a complete local policy/guide closure and current protected entrypoint', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { posix } = await import('node:path');
+  const dir = await mkdtemp(join(tmpdir(), 'didar-kit-docs-'));
+  try {
+    const receipt = await prepareInstallKit(dir, sha);
+    await verifyInstallKit(dir, sha, receipt);
+    const guide = 'docs/deployment/PR31_R5_R6.md';
+    const text = await readFile(join(dir, 'install-kit', guide), 'utf8');
+    for (const [, link] of text.matchAll(/\]\(([^)]+\.md)\)/g)) {
+      const file = posix.normalize(posix.join(posix.dirname(guide), link));
+      assert.ok(kitFiles.includes(file), 'Required standalone guide missing: ' + file);
+      assert.ok((await readFile(join(dir, 'install-kit', file))).length > 0);
+    }
+    const entrypoint = await readFile(new URL('../docs/CI_RELEASE_INSTALL.md', import.meta.url), 'utf8');
+    assert.match(entrypoint, /install-kit\/docs\/deployment\/PR31_R5_R6\.md/);
+    assert.match(entrypoint, /NGINX_INSTALL_WRAPPER\.md/);
+    assert.doesNotMatch(entrypoint, /install-kit\/docs\/deployment\/PR31_RELEASE_PREPARATION\.md/);
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});

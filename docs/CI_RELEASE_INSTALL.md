@@ -1,9 +1,10 @@
 # DIDAR release installation handoff
 
 **New Nginx topology releases:** in this downloaded archive, follow
-`install-kit/docs/deployment/PR31_RELEASE_PREPARATION.md` and the matching
+`install-kit/docs/deployment/PR31_R5_R6.md` and the matching
 `install-kit/kit-manifest.json`. In a source checkout the guide is
-`docs/deployment/PR31_RELEASE_PREPARATION.md`. The legacy socket-mode
+`docs/deployment/PR31_R5_R6.md`. Use its matching `NGINX_INSTALL_WRAPPER.md` and protected operator bundle; do not
+substitute the legacy root Compose or socket-mode wrapper. The legacy socket-mode
 image verifier and root Compose do not certify Nginx/verified-relay topology.
 `TARGET_CONFIG=BLOCKED` until verified03 discovery; no target installation is
 authorized by this generic guide.
@@ -31,7 +32,9 @@ Before any migration/update, create and verify a consistent backup of database, 
 
 ## Configure the reviewed package
 
-Use the exact source revision in the manifest for the matching `compose.yaml`, `docs/AUTH_DEPLOYMENT_PACKAGING.md` and `docs/AUTH_NETWORK_TRUST_AND_THROTTLING.md`. Do not run `compose up --build`: that would substitute a new unverified build for the delivered artifact. An operator-reviewed Compose override should set API/storefront/migrate images to the manifest's loaded tags/IDs or GHCR digest references, with `--no-build` for startup. The guide must adapt actual existing service and volume names before issuing commands.
+For bundles containing `install-kit`, use only the matching protected composition and closed operator wrapper described in `install-kit/docs/deployment/NGINX_INSTALL_WRAPPER.md`. Assemble its manifest deterministically with the shipped `scripts/ci/operator-bundle.mjs` after actual artifact verification and independent review; provide explicitly inspected PostgreSQL/Redis identities. Do not manually retype file hashes, use root `compose.yaml`, pass arbitrary overrides, rebuild application images, or run the old socket wrapper as a substitute. The operation remains blocked until target discovery, backups, isolated restoration and the signed path are verified.
+
+Legacy bundles without an installation kit retain their accepted source-matched socket-mode procedure in `AUTH_DEPLOYMENT_PACKAGING.md`; that background does not authorize Nginx/verified-relay installation. Do not use `compose up --build` to replace verified images. Preserve exact existing service/network/volume identities and stable secrets.
 
 Required configuration is supplied securely at runtime: original database/cache origins, JWT secret, stable COOKIE_SECRET, shared server-only DIDAR_AUTH_NETWORK_KEY, exact DIDAR_AUTH_PROXY_PEERS, public CORS/file origins, and a read-only TLS certificate directory. Do not generate or rotate existing secrets incidentally. No secret is included in the release artifact.
 

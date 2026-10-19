@@ -6,6 +6,7 @@ import { resolve, dirname, join } from 'node:path';
 export const kitFiles = [
   'scripts/ci/operator-bundle.mjs',
   'scripts/ci/topology-receipt.mjs',
+  'docs/OPERATING_GUIDANCE.md',
   'docs/AUTH_DEPLOYMENT_PACKAGING.md',
   'docs/AUTH_NETWORK_TRUST_AND_THROTTLING.md',
   'docs/deployment/NGINX_VERIFIED_TOPOLOGY.md',
