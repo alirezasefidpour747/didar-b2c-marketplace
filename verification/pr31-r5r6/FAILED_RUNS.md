@@ -21,6 +21,17 @@ Some earlier full CI/image jobs were cancelled by a later branch push before
 completion. Those executions are **CANCELLED**, not passing or numeric exit `0`.
 The final handoff identifies the actual final-source runs separately.
 
+The interim `d660048` R5 runner and all eight recorded groups returned `0`.
+Independent visual review nevertheless found its Vendor desktop screenshot in
+transient loading: the old browser check asserted a heading also present before
+the canonical workspace loaded. The mobile screenshot taken afterward showed
+the loaded own inventory. Preserve that evidence, but do not cite its desktop
+image as loaded-workspace acceptance. The corrected harness requires HTTP `200`
+from the real canonical native management API, populated product/offer data,
+Vendor own-supplier scope, and matching rendered offer quantity before either
+screenshot. Final-source execution is required; this is a verifier correction,
+not a demonstrated application defect.
+
 Additional isolated Debian compatibility failures and their actual receipts are
 retained in [`debian-compat/scope-and-failures.json`](debian-compat/scope-and-failures.json):
 fixture startup `1`, fixture stderr setup `1`, and the original njs0.8.9 empty-body
