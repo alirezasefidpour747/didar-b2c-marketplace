@@ -15,7 +15,7 @@ const environment = localEnvironment(), rows = [], cases = [], wrapperResults = 
 const label = 'didar.disposable-qa=true', project = 'didar-wrapper-' + randomBytes(5).toString('hex')
 const root = await mkdtemp(join(tmpdir(), project + '-')), kit = join(root, 'kit'), tls = join(root, 'tls'), build = join(root, 'build')
 for (const path of [kit, tls, build]) await mkdir(path, { mode: 0o700 })
-let success = false
+let success = false, env, operation, manifest, bundleA, bundleB
 async function execute(stage, command, args, { input, expected = [0], env = environment } = {}) {
   const record = { stage, command, started_at: new Date().toISOString() }
   const result = await new Promise((done, reject) => {
@@ -28,6 +28,15 @@ async function execute(stage, command, args, { input, expected = [0], env = envi
   })
   rows.push({ ...record, code: result.code, signal: result.signal, spawn_error: result.spawnError, finished_at: new Date().toISOString() })
   await writeFile(join(output, 'process-exits.json'), JSON.stringify(rows, null, 2) + '\n')
+  if (!expected.includes(result.code) || result.signal || result.spawnError) {
+    const privateValues = [...Object.entries(env || {}), ...Object.entries(environment)].filter(([name]) => /SECRET|KEY|PASSWORD|TOKEN|CREDENTIAL|_PROXY$|_URL$/.test(name)).map(([, value]) => value).filter(value => typeof value === 'string' && value.length >= 8)
+    const redact = bytes => {
+      let text = bytes.toString('utf8')
+      for (const value of privateValues) for (const variant of [value, encodeURIComponent(value), encodeURIComponent(encodeURIComponent(value))]) text = text.split(variant).join('[REDACTED]')
+      return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@').replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').slice(-65536)
+    }
+    await writeFile(join(output, 'failure-diagnostic-' + rows.length + '.json'), JSON.stringify({ scope: 'OWNED_DISPOSABLE_FIXTURE_ONLY', stage, code: result.code, signal: result.signal, spawn_error: result.spawnError, stdout: redact(result.stdout), stderr: redact(result.stderr) }, null, 2) + '\n', { mode: 0o600, flag: 'wx' })
+  }
   assert.ok(expected.includes(result.code) && !result.signal && !result.spawnError, stage + ': observed exit ' + result.code + '; stderr sha256=' + sha256(result.stderr))
   return result
 }
@@ -44,7 +53,6 @@ const source = process.env.DIDAR_WRAPPER_SOURCE_SHA || (await execute('fixture-s
 assert.match(source, /^[a-f0-9]{40}$/, 'Explicit exact fixture source SHA required')
 const sourceDirectory = resolve(import.meta.dirname, '../scripts/deployment/nginx')
 const environmentFile = join(root, 'staging.env'), operationFile = join(root, 'operation.json'), manifestFile = join(kit, 'manifest.json')
-let env, operation, manifest, bundleA, bundleB
 async function wrapper(action, { expected = [0], overrides = {} } = {}) {
   const result = await execute('wrapper-' + action + '-' + rows.length, process.execPath, [join(kit, 'stack.mjs'), environmentFile, manifestFile, sha256(await readFile(manifestFile)), operationFile, action], { expected, env: { ...environment, ...overrides } })
   const parsed = result.code === 0 ? JSON.parse(result.stdout.toString()) : { code: result.code, error: result.stderr.toString().trim() }
@@ -98,7 +106,7 @@ try {
   containers.api = await create('api', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=volume,source=' + volumes.uploads + ',target=/app/packages/api/.medusa/server/static'], ['node', '/app/fixture.mjs', 'api'])
   containers.storefront = await create('storefront', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=bind,source=' + tls + ',target=/run/didar-tls,readonly'], ['node', '/app/fixture.mjs', 'storefront'])
   for (const id of Object.values(containers)) await docker('start-' + rows.length, ['start', id])
-  await wait('fixture-pg', async () => (await execute('pg-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', containers.postgres, 'pg_isready', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
+  await wait('fixture-pg', async () => (await execute('pg-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', containers.postgres, 'pg_isready', '-h', '127.0.0.1', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
   await docker('seed-postgres-state', ['exec', containers.postgres, 'psql', '-U', 'didar', '-d', 'didar', '-c', "CREATE TABLE wrapper_state(value text);INSERT INTO wrapper_state VALUES ('preserved-postgres');"])
   await docker('seed-redis-state', ['exec', containers.redis, 'redis-cli', 'SET', 'wrapper-state', 'preserved-redis'])
   await docker('seed-media-state', ['exec', containers.api, 'node', '-e', "require('fs').writeFileSync('/app/packages/api/.medusa/server/static/wrapper-state','preserved-media')"])
@@ -109,7 +117,7 @@ try {
   const restoredVolume = await docker('create-isolated-restore-volume', ['volume', 'create', '--label', label, project + '_restored']); owned.volumes.push(restoredVolume)
   const restored = await create('restore-postgres', ids.postgres, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=volume,source=' + restoredVolume + ',target=/var/lib/postgresql/data'], [])
   await docker('start-isolated-restoration', ['start', restored])
-  await wait('restored-pg', async () => (await execute('restore-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', restored, 'pg_isready', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
+  await wait('restored-pg', async () => (await execute('restore-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', restored, 'pg_isready', '-h', '127.0.0.1', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
   await docker('restore-isolated-postgres', ['exec', '-i', restored, 'psql', '-U', 'didar', '-d', 'didar'], { input: await readFile(databaseBackup) })
   assert.equal(await docker('verify-isolated-restored-state', ['exec', restored, 'psql', '-U', 'didar', '-d', 'didar', '-Atc', 'SELECT value FROM wrapper_state']), before.pg)
   let restoreNumber = 0

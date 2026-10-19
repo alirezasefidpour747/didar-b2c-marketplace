@@ -1,7 +1,7 @@
 // Owned nested Debian daemon. Never changes the executor/owner Docker daemon.
 import assert from 'node:assert/strict'
 import { randomBytes } from 'node:crypto'
-import { mkdir, readFile, writeFile, cp, mkdtemp, rm } from 'node:fs/promises'
+import { mkdir, readFile, writeFile, cp, mkdtemp, rm, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { observer } from '../topology/process.mjs'
@@ -37,6 +37,7 @@ try {
   await writeFile(join(output, 'fixture-runner.log'), diagnostic)
   console.log('DIDAR_WRAPPER_FIXTURE_ACTUAL_EXIT ' + JSON.stringify({code:result.code,signal:result.signal,spawn_error:result.spawn_error}))
   if (result.code !== 0) console.error(diagnostic.slice(-10000))
+  if (result.code !== 0) for (const file of await readdir(join(output, 'fixture'))) if (/^failure-diagnostic-[0-9]+\.json$/.test(file)) console.error('DIDAR_WRAPPER_SANITIZED_FAILURE ' + await readFile(join(output, 'fixture', file), 'utf8'))
   assert.equal(result.code, 0)
   const fixture = JSON.parse(await readFile(join(output, 'fixture/result.json'))); assert.equal(fixture.status, 'PASS')
   await writeFile(join(output, 'provenance.json'), JSON.stringify({ source_sha: source, daemon_image_id: image.Id, server: JSON.parse(version), compose, candidate_package_provenance: JSON.parse(await readFile(join(root, 'context/packages.json'))), target_binary_identity_claimed: false, scope: 'Exact upstream version pair with independently pinned Debian package revisions; target package revisions unobserved. Wrapper protocol fixture, not R5 application or target acceptance.', application_source_overlays: false }, null, 2) + '\n')
