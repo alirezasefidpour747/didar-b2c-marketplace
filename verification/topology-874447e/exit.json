@@ -1,0 +1,9 @@
+{
+  "command": "node verification/topology-874447e/probe.mjs",
+  "observed_process_exit": 0,
+  "child_ingress": { "code": null, "signal": "SIGTERM" },
+  "meaning": "Source-level gap reproduction succeeded; deployment remains blocked.",
+  "full_ci": "NOT_EXECUTED_FOR_THIS_AUDIT",
+  "nginx_docker_acceptance": "NOT_EXECUTED",
+  "owner_server_access": "NOT_PERFORMED"
+}

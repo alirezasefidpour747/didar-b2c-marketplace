@@ -1,0 +1,89 @@
+{
+  "release": "874447e6ec8fc58af3f09a87a4131b45c550a478",
+  "status": "AUDIT_PASS_DEPLOYMENT_BLOCKED",
+  "observations": [
+    {
+      "check": "direct first-hop uses socket and replaces forged headers",
+      "result": "PASS",
+      "peer": "127.0.0.2"
+    },
+    {
+      "check": "ordinary HTTP reverse proxy collapses two client sockets at current signer",
+      "result": "GAP_REPRODUCED",
+      "peers": [
+        "127.0.0.1",
+        "127.0.0.1"
+      ],
+      "note": "Node HTTP proxy models a new upstream socket; this is not an actual Nginx/Docker test."
+    },
+    {
+      "check": "pre-signing before unchanged ingress does not preserve the proof",
+      "result": "GAP_REPRODUCED",
+      "peer": "127.0.0.1"
+    },
+    {
+      "check": "all paths use one configured Next upstream",
+      "result": "GAP_REPRODUCED",
+      "routes": [
+        {
+          "path": "/dashboard",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/seller",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/auth/user/emailpass",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/admin/didar/pages",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/vendor/didar/pages",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/didar/catalog",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/static/synthetic.jpg",
+          "actual_upstream": "NEXT_STUB"
+        },
+        {
+          "path": "/api/didar/image?id=synthetic",
+          "actual_upstream": "NEXT_STUB"
+        }
+      ],
+      "note": "Stub identifies transport target; it is not a native-panel success assertion."
+    },
+    {
+      "check": "existing v1 proof binds exact method/path/body",
+      "result": "PASS"
+    }
+  ],
+  "failure": null,
+  "child_exit": {
+    "code": null,
+    "signal": "SIGTERM"
+  },
+  "stderr": "",
+  "node": "24.19.0",
+  "source_hashes": {
+    "apps/storefront/auth-ingress.mjs": "cf95b0c732fbfdf456ff2ce1fd9938970d0473e6002e80bce6e124c7e76a0e69",
+    "packages/auth-network/index.cjs": "bf566fa44d8e9e8f421d7031f9e8a3a0cb67b7f885098c67a25811fff678db18",
+    "scripts/deployment/storefront.mjs": "47448841d9c6507d750817317e0b05225770025ab37fe6f424b7e0bf1db584da",
+    "compose.yaml": "bc1240ba5c6c07f1ef3b007325486d6089ddd9f49a3186a6cd41c090457ccf6d"
+  },
+  "not_executed": [
+    "Actual Nginx HTTPS topology",
+    "Docker bridge/NAT",
+    "PostgreSQL nonce/quota integration",
+    "Native panel browser acceptance",
+    "Owner server or Internet verification"
+  ],
+  "boundary": "Successful probe execution proves current-source gaps, not readiness of a proposed deployment."
+}
