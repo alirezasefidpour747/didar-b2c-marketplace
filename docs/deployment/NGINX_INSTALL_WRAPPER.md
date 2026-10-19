@@ -238,8 +238,12 @@ Only after separate target installation authorization and satisfied prerequisite
 An exclusive private lock serializes operations. An existing lock is a stop for
 manual investigation, never permission to kill unknown processes or remove an
 active lock. Private mode-0600 state and append-only per-operation journal files
-are adjacent to the environment file. Journals contain hashes and actual child
+are adjacent to the environment file. Production journals contain hashes and actual child
 exit/signal/spawn/timeout fields, never environment values or raw Docker output.
+Only a label-verified `DISPOSABLE_QA` protocol fixture may retain bounded redacted
+failure diagnostics; its redactor explicitly receives the private configuration.
+The operator CLI still prints only a bounded failure code. Fixture cleanup also
+retains redacted owned API/storefront State/log evidence before removing them.
 Keep failure journals and original delivery evidence; do not rewrite a FAIL as a
 PASS. Malformed foreign parser errors are reduced to `WRAPPER_FAILED` to avoid
 leaking input snippets.

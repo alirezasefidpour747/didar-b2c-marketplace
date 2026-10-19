@@ -41,7 +41,7 @@ const save = (path, bytes) => writeFile(path, bytes, { mode: 0o600 })
 async function freePort() { const socket = createServer(); await new Promise((yes, no) => { socket.once('error', no); socket.listen(0, '127.0.0.1', yes) }); const port = socket.address().port; await new Promise(yes => socket.close(yes)); return port }
 async function wait(stage, check) { for (let count = 0; count < 120; count++) { if (await check()) return; await new Promise(done => setTimeout(done, 500)) } throw Error(stage + '_TIMED_OUT') }
 async function create(role, image, extra, command) {
-  const id = await docker('create-' + role, ['create', '--name', project + '-' + role + '-1', '--label', label, '--label', 'com.docker.compose.project=' + project, '--label', 'com.docker.compose.service=' + role, '--label', 'com.docker.compose.config-hash=legacy-protocol-fixture', ...extra, image, ...command])
+  const id = await docker('create-' + role, ['create', '--name', project + '-' + role + '-1', '--label', label, '--label', 'com.docker.compose.project=' + project, '--label', 'com.docker.compose.service=' + role, '--label', 'com.docker.compose.config-hash=legacy-protocol-fixture', '--label', 'com.docker.compose.container-number=1', '--label', 'com.docker.compose.oneoff=False', '--label', 'com.docker.compose.version=2.26.1', ...extra, image, ...command])
   owned.containers.push(id); return id
 }
 const source = process.env.DIDAR_WRAPPER_SOURCE_SHA || (await execute('fixture-source', 'git', ['rev-parse', 'HEAD'])).stdout.toString().trim()
@@ -103,6 +103,8 @@ try {
   containers.api = await create('api', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=volume,source=' + volumes.uploads + ',target=/app/packages/api/.medusa/server/static'], ['node', '/app/fixture.mjs', 'api'])
   containers.storefront = await create('storefront', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=bind,source=' + tls + ',target=/run/didar-tls,readonly'], ['node', '/app/fixture.mjs', 'storefront'])
   for (const id of Object.values(containers)) await docker('start-' + rows.length, ['start', id])
+  for (const [role, id] of Object.entries(containers)) { const actual = await inspect(id); assert.equal(actual.Config.Labels['com.docker.compose.container-number'], '1'); assert.equal(actual.Config.Labels['com.docker.compose.oneoff'], 'False'); assert.equal(actual.HostConfig.NetworkMode, networkName); assert.equal(actual.Config.Labels['com.docker.compose.service'], role) }
+  cases.push('faithful-numbered-compose-legacy-containers-separate-namespaces')
   await wait('fixture-pg', async () => (await execute('pg-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', containers.postgres, 'pg_isready', '-h', '127.0.0.1', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
   await docker('seed-postgres-state', ['exec', containers.postgres, 'psql', '-v', 'ON_ERROR_STOP=1', '-U', 'didar', '-d', 'didar', '-c', "CREATE TABLE wrapper_state(value text);INSERT INTO wrapper_state VALUES ('preserved-postgres');"])
   await docker('seed-redis-state', ['exec', containers.redis, 'redis-cli', 'SET', 'wrapper-state', 'preserved-redis'])
@@ -234,7 +236,17 @@ try {
   } catch (error) { if (error.code !== 'ENOENT') throw error }
   // Compose creates replacement IDs; remove only the exact fixture project+ownership intersection.
   const current = (await docker('fixture-cleanup-candidates', ['ps', '-aq', '--no-trunc', '--filter', 'label=didar.disposable-qa=true', '--filter', 'label=com.docker.compose.project=' + project])).split('\n').filter(Boolean)
-  for (const id of current) { const container = await inspect(id); assert.equal(container.Config.Labels['didar.disposable-qa'], 'true'); assert.equal(container.Config.Labels['com.docker.compose.project'], project); await docker('remove-owned-fixture-' + id.slice(0, 12), ['rm', '--force', id]) }
+  const applicationDiagnostics = []
+  for (const id of current) {
+    const container = await inspect(id); assert.equal(container.Config.Labels['didar.disposable-qa'], 'true'); assert.equal(container.Config.Labels['com.docker.compose.project'], project)
+    if (['api', 'storefront'].includes(container.Config.Labels['com.docker.compose.service'])) {
+      const logs = await execute('owned-application-diagnostic-logs-' + id.slice(0, 12), 'docker', ['--host=unix:///var/run/docker.sock', 'logs', '--tail', '80', id], { expected: [0, 1] })
+      const state = { running: container.State.Running, exit_code: container.State.ExitCode, oom_killed: container.State.OOMKilled, error: container.State.Error, started_at: container.State.StartedAt, finished_at: container.State.FinishedAt }
+      applicationDiagnostics.push({ role: container.Config.Labels['com.docker.compose.service'], id, image: container.Image, state: JSON.parse(redactDiagnostic(Buffer.from(JSON.stringify(state)), env, environment)), logs_process: { code: logs.code, signal: logs.signal, spawn_error: logs.spawnError }, stdout: redactDiagnostic(logs.stdout, env, environment), stderr: redactDiagnostic(logs.stderr, env, environment) })
+      await save(join(output, 'application-container-diagnostics.json'), JSON.stringify(applicationDiagnostics, null, 2) + '\n')
+    }
+    await docker('remove-owned-fixture-' + id.slice(0, 12), ['rm', '--force', id])
+  }
   for (const volume of owned.volumes) { const actual = JSON.parse(await docker('verify-owned-volume', ['volume', 'inspect', volume]))[0]; assert.equal(actual.Labels['didar.disposable-qa'], 'true'); await docker('remove-owned-volume', ['volume', 'rm', volume]) }
   if (owned.network) { const actual = JSON.parse(await docker('verify-owned-network', ['network', 'inspect', owned.network]))[0]; assert.equal(actual.Labels['didar.disposable-qa'], 'true'); await docker('remove-owned-network', ['network', 'rm', owned.network]) }
   for (const image of owned.images) await docker('remove-owned-protocol-image', ['image', 'rm', project + ':protocol'])

@@ -4,7 +4,7 @@ import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink, lsta
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -229,3 +229,26 @@ test('actual CLI denies a protocol fixture in BLOCKED target mode before invokin
   assert.equal(result.stderr.trim(), 'INVALID_BUNDLE_PROVENANCE')
   await assert.rejects(lstat(marker), { code: 'ENOENT' })
 }))
+
+
+test('actual failed Docker child records redacted private diagnostics while its thrown CLI code stays bounded', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'didar-wrapper-diagnostic-'))
+  try {
+    const privateConfiguration = { JWT_SECRET: 'private-file-only-jwt-' + 'a'.repeat(32), DIDAR_AUTH_NETWORK_KEY: 'private-file-only-network-' + 'b'.repeat(32), DIDAR_DB_PASSWORD: 'private$database#canary' }
+    const canary = Object.values(privateConfiguration).join(' ') + ' ' + Object.values(privateConfiguration).map(encodeURIComponent).join(' ')
+    const executable = join(directory, 'docker')
+    await writeFile(executable, '#!' + process.execPath + '\nconst value=Buffer.from(' + JSON.stringify(Buffer.from(canary).toString('base64')) + ',"base64");process.stdout.write(value);process.stderr.write(value);process.exit(73)\n', { mode: 0o700 })
+    const productionReceipts = []
+    await assert.rejects(runner({ PATH: directory }, productionReceipts, privateConfiguration)('production-diagnostic-denied', []), /DOCKER_STAGE_FAILED:production-diagnostic-denied:exit=73/)
+    assert.equal(productionReceipts[0].diagnostic, undefined); assert.match(productionReceipts[0].stdout_sha256, /^[a-f0-9]{64}$/); assert.match(productionReceipts[0].stderr_sha256, /^[a-f0-9]{64}$/)
+    assert.equal(JSON.stringify(productionReceipts).includes('private-file-only'), false)
+    const receipts = [], qa = runner({ PATH: directory }, receipts, privateConfiguration)
+    qa.enableFixtureDiagnostics() // The real operator enables this only after owned protocol-fixture preflight.
+    await assert.rejects(qa('deliberate-failure', []), error => error.message === 'DOCKER_STAGE_FAILED:deliberate-failure:exit=73')
+    assert.equal(receipts.length, 1); assert.equal(receipts[0].code, 73); assert.equal(receipts[0].signal, null); assert.equal(receipts[0].spawn_error, null)
+    for (const stream of ['stdout', 'stderr']) {
+      for (const value of Object.values(privateConfiguration)) { assert.equal(receipts[0].diagnostic[stream].includes(value), false); assert.equal(receipts[0].diagnostic[stream].includes(encodeURIComponent(value)), false) }
+      assert.match(receipts[0].diagnostic[stream], /REDACTED/)
+    }
+  } finally { await rm(directory, { recursive: true, force: true }) }
+})

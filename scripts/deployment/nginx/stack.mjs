@@ -144,11 +144,12 @@ export function redactDiagnostic(bytes, ...sources) {
   const privateValues = sources.flatMap(source => Object.entries(source || {})).filter(([name, value]) => /SECRET|KEY|PASSWORD|TOKEN|CREDENTIAL|_PROXY$|_URL$/.test(name) && typeof value === 'string' && value.length).map(([, value]) => value).sort((left, right) => right.length - left.length)
   let text = bytes.toString('utf8')
   for (const value of privateValues) for (const variant of [value, encodeURIComponent(value), encodeURIComponent(encodeURIComponent(value))]) text = text.split(variant).join('[REDACTED]')
-  return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@').replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').slice(-65536)
+  return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@').replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[JWT_REDACTED]').replace(/\bv1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[AUTH_PROOF_REDACTED]').slice(-65536)
 }
 
-export function runner(environment, receipts) {
-  return async (stage, args, input) => new Promise((done, reject) => {
+export function runner(environment, receipts, privateConfiguration = {}) {
+  let fixtureDiagnostics = false
+  const run = async (stage, args, input) => new Promise((done, reject) => {
     const start = new Date().toISOString(), child = spawn('docker', ['--host=unix:///var/run/docker.sock', ...args], { env: environment, stdio: ['pipe', 'pipe', 'pipe'] })
     const stdout = [], stderr = []; let count = 0, timedOut = false, spawnError = null
     const timeout = setTimeout(() => { timedOut = true; child.kill('SIGTERM'); setTimeout(() => child.kill('SIGKILL'), 5000).unref() }, 600000)
@@ -159,11 +160,17 @@ export function runner(environment, receipts) {
     child.stdin.end(input)
     child.on('close', (code, signal) => {
       clearTimeout(timeout)
-      receipts.push({ stage, started_at: start, finished_at: new Date().toISOString(), code, signal, spawn_error: spawnError, timed_out: timedOut })
-      if (code !== 0 || signal || spawnError || timedOut || count > 32 * 1024 * 1024) reject(Error('DOCKER_STAGE_FAILED:' + stage + ':exit=' + code))
+      const failed = code !== 0 || signal || spawnError || timedOut || count > 32 * 1024 * 1024
+      const receipt = { stage, started_at: start, finished_at: new Date().toISOString(), code, signal, spawn_error: spawnError, timed_out: timedOut }
+      if (failed) { receipt.stdout_sha256 = sha256(Buffer.concat(stdout)); receipt.stderr_sha256 = sha256(Buffer.concat(stderr)) }
+      if (failed && fixtureDiagnostics) receipt.diagnostic = { stdout: redactDiagnostic(Buffer.concat(stdout), privateConfiguration, environment), stderr: redactDiagnostic(Buffer.concat(stderr), privateConfiguration, environment) }
+      receipts.push(receipt)
+      if (failed) reject(Error('DOCKER_STAGE_FAILED:' + stage + ':exit=' + code))
       else done(Buffer.concat(stdout).toString('utf8').trim())
     })
   })
+  Object.defineProperty(run, 'enableFixtureDiagnostics', { value: () => { fixtureDiagnostics = true } })
+  return run
 }
 const canonicalState = value => JSON.stringify(value, (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
 const containerSummary = c => ({ id: c.Id, name: c.Name, image: c.Image, network_mode: c.HostConfig.NetworkMode, running: c.State.Running, started_at: c.State.StartedAt, ports: c.HostConfig.PortBindings, mounts: c.Mounts.map(m => ({ type: m.Type, name: m.Name, source: m.Source, destination: m.Destination, rw: m.RW })) })
@@ -288,6 +295,8 @@ export async function operate({ action, configuration, bundle, operation, run, s
     if (!idPattern.test(previousState.containers?.api) || !idPattern.test(previousState.containers?.storefront)) fail('HEALTHY_CURRENT_CONTAINER_IDS_REQUIRED')
   }
   const before = await inspectPreflight({ configuration, bundle, operation, run, currentContainers: previousState?.containers })
+  // Full preflight has verified every QA resource ownership label before diagnostics.
+  if (operation.target_config === 'DISPOSABLE_QA' && bundle.manifest.kind === 'didar-nginx-wrapper-protocol-fixture') run.enableFixtureDiagnostics?.()
   const base = { format: 1, bundle_sha256: bundle.hash, source_sha: bundle.manifest.source_sha, configuration_sha256: sha256(canonicalState(configuration)), operation_sha256: sha256(canonicalState(operation)), preserved: before.unrelated }
   const compose = async (stage, args) => run(stage, ['compose', '--project-name', configuration.DIDAR_COMPOSE_PROJECT, '--project-directory', bundle.root, '--env-file', '/dev/null', '-f', '-', ...args], renderComposition(bundle.composition, configuration))
   await compose('compose-config-validation', ['config', '--quiet'])
@@ -346,7 +355,7 @@ export async function main(argv = process.argv.slice(2), inherited = process.env
   const childEnvironment = localEnvironment(inherited)
   const configuration = parseConfiguration((await privateFile(environmentFile)).toString('utf8'), inherited)
   const operation = JSON.parse(await privateFile(operationFile)), bundle = await readBundle(manifestFile, manifestHash, { allowFixture: operation.target_config === 'DISPOSABLE_QA' })
-  const receipts = [], run = runner(childEnvironment, receipts), lock = environmentFile + '.didar-nginx.lock', statePath = environmentFile + '.didar-nginx-state.json'
+  const receipts = [], run = runner(childEnvironment, receipts, configuration), lock = environmentFile + '.didar-nginx.lock', statePath = environmentFile + '.didar-nginx-state.json'
   const lockHandle = await open(lock, 'wx', 0o600).catch(() => fail('OPERATION_LOCK_EXISTS_STOP_FOR_REVIEW'))
   try {
     const result = await operate({ action, configuration, bundle, operation, run, statePath })
