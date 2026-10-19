@@ -11,6 +11,42 @@ const id = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
 const name = value => typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/.test(value)
 const redisDigestScript = "local k=redis.call('KEYS','*');table.sort(k);local a={};for _,v in ipairs(k) do a[#a+1]=redis.sha1hex(v)..':'..redis.sha1hex(redis.call('DUMP',v))..':'..redis.call('PEXPIRETIME',v) end;return redis.sha1hex(table.concat(a,'\\n'))"
 
+// Diagnostics only: these classifications never authorize a mismatching dump.
+// Raw SQL stays in the caller's private backup directory, outside CI uploads.
+export function describePostgresDumpDifference(source, restored) {
+  const types = new Set(['TABLE_DATA', 'SEQUENCE_SET', 'TABLE', 'INDEX', 'CONSTRAINT', 'FK_CONSTRAINT', 'SEQUENCE', 'SCHEMA', 'FUNCTION', 'TYPE', 'EXTENSION', 'ACL', 'COMMENT', 'DEFAULT'])
+  const summarize = bytes => {
+    const lines = bytes.toString('utf8').split('\n'), classified = [], sections = [], counts = new Map()
+    let section = { type: 'HEADER', identity: sha256('HEADER'), lines: [], rows: [] }, copy = false
+    for (const line of lines) {
+      if (!copy && /^-- Name: /.test(line)) {
+        sections.push(section)
+        const raw = sha256(line), occurrence = counts.get(raw) || 0; counts.set(raw, occurrence + 1)
+        const parsed = /; Type: ([A-Z][A-Z ]*); Schema:/.exec(line)?.[1]?.replaceAll(' ', '_')
+        section = { type: types.has(parsed) ? parsed : 'OTHER', identity: sha256(raw + ':' + occurrence), lines: [], rows: [] }
+      }
+      let category
+      if (copy) { category = line === '\\.' ? 'COPY_END' : 'COPY_DATA'; if (category === 'COPY_END') copy = false; else section.rows.push(sha256(line)) }
+      else if (/^COPY .* FROM stdin;$/.test(line)) { category = 'COPY_HEADER'; copy = true }
+      else if (/^SELECT pg_catalog\.setval\(/.test(line)) category = 'SEQUENCE_STATE'
+      else category = line === '' ? 'BLANK' : line.startsWith('--') ? 'COMMENT' : 'SQL'
+      classified.push(category); section.lines.push(line)
+    }
+    sections.push(section)
+    return { bytes, lines, classified, sections }
+  }
+  const left = summarize(Buffer.from(source)), right = summarize(Buffer.from(restored)), leftMap = new Map(left.sections.map(section => [section.identity, section])), rightMap = new Map(right.sections.map(section => [section.identity, section]))
+  let offset = 0
+  while (offset < left.lines.length && offset < right.lines.length && left.lines[offset] === right.lines[offset]) offset++
+  const differing = []
+  for (const identity of new Set([...leftMap.keys(), ...rightMap.keys()])) {
+    const a = leftMap.get(identity), b = rightMap.get(identity), aHash = a ? sha256(a.lines.join('\n')) : null, bHash = b ? sha256(b.lines.join('\n')) : null
+    if (aHash === bHash) continue
+    differing.push({ section_type: (a || b).type, section_identity_sha256: identity, source_sha256: aHash, restored_sha256: bHash, source_lines: a?.lines.length || 0, restored_lines: b?.lines.length || 0, source_rows: a?.rows.length || 0, restored_rows: b?.rows.length || 0, row_multiset_equal: a && b ? same([...a.rows].sort(), [...b.rows].sort()) : null })
+  }
+  return { kind: 'POSTGRES_DUMP_DIFFERENCE_V1', source_sha256: sha256(left.bytes), restored_sha256: sha256(right.bytes), source_line_count: left.lines.length, restored_line_count: right.lines.length, source_byte_count: left.bytes.length, restored_byte_count: right.bytes.length, section_order_equal: same(left.sections.map(section => section.identity), right.sections.map(section => section.identity)), differing_section_count: differing.length, first_difference: { source_line: Math.min(offset + 1, left.lines.length + 1), restored_line: Math.min(offset + 1, right.lines.length + 1), source_class: left.classified[offset] || 'EOF', restored_class: right.classified[offset] || 'EOF', source_line_sha256: sha256(left.lines[offset] || ''), restored_line_sha256: sha256(right.lines[offset] || '') }, section_differences: differing.slice(0, 25) }
+}
+
 export function restoreOwnershipArguments(state) {
   if (!/^[a-f0-9]{48}$/.test(state.token || '')) fail('FRESH_RESTORE_OWNERSHIP_REQUIRED')
   return ['--label', 'didar.fresh-owner=' + state.token, ...(state.qa_fixture === true ? ['--label', 'didar.disposable-qa=true'] : [])]
@@ -39,6 +75,21 @@ const hashPrivateCopy = async path => {
   if (!info.isFile() || info.isSymbolicLink() || info.size === 0 || info.uid !== process.getuid()) fail('RESTORE_BACKUP_REGULAR_NONEMPTY_FILE_REQUIRED')
   await chmod(path, 0o600)
   return sha256(await readFile(path))
+}
+
+export async function recordPostgresDumpDifference({ sourceContainer, restoredContainer, run, backupDir, sourceDigest, restoredDigest }) {
+  if (!id(sourceContainer) || !id(restoredContainer)) fail('FRESH_POSTGRES_DIAGNOSTIC_CONTAINER_IDS_REQUIRED')
+  const sourcePath = join(backupDir, 'postgres.source.normalized.private.sql'), restoredPath = join(backupDir, 'postgres.restored.normalized.private.sql')
+  await verifyNewPrivateDestination(sourcePath); await verifyNewPrivateDestination(restoredPath)
+  await run('fresh-restore-postgres-source-diagnostic-copy', ['cp', sourceContainer + ':/tmp/didar-comparison-normalized.sql', sourcePath])
+  await hashPrivateCopy(sourcePath)
+  await run('fresh-restore-postgres-restored-diagnostic-copy', ['cp', restoredContainer + ':/tmp/didar-comparison-normalized.sql', restoredPath])
+  await hashPrivateCopy(restoredPath)
+  const diagnostic = describePostgresDumpDifference(await readFile(sourcePath), await readFile(restoredPath))
+  if (diagnostic.source_sha256 !== sourceDigest.split(' ')[0] || diagnostic.restored_sha256 !== restoredDigest.split(' ')[0]) fail('FRESH_POSTGRES_DIAGNOSTIC_SUBJECT_CHANGED')
+  await writeFile(join(backupDir, 'postgres-difference.sanitized.json'), JSON.stringify(diagnostic, null, 2) + '\n', { mode: 0o600, flag: 'wx' })
+  run.recordFixtureObservation?.('fresh-postgres-logical-difference', diagnostic)
+  return diagnostic
 }
 
 export const runFreshRestore = options => performFreshRestore({ ...options, checkpoint: false })
@@ -136,7 +187,15 @@ async function performFreshRestore({ config, state, saveState, run, evidenceUrl,
   await run('fresh-restore-postgres-custom', ['exec', pg, 'pg_restore', ...dbArgs, '--exit-on-error', '--single-transaction', temporary + '.dump'])
   const logicalPg = async (container, stage) => run(stage, ['exec', container, 'sh', '-ec', 'pg_dump -U "$1" -d "$2" --no-owner --no-privileges --file=/tmp/didar-comparison.sql; sed \'/^\\\\restrict /d; /^\\\\unrestrict /d; /^-- Dumped /d\' /tmp/didar-comparison.sql > /tmp/didar-comparison-normalized.sql; sha256sum /tmp/didar-comparison-normalized.sql', 'sh', config.DIDAR_DB_USER, config.DIDAR_DB_NAME])
   const pgSource = await logicalPg(sourceIds.postgres, 'fresh-restore-postgres-source-digest'), pgRestored = await logicalPg(pg, 'fresh-restore-postgres-restored-digest')
-  if (pgSource !== pgRestored) fail('FRESH_POSTGRES_LOGICAL_RESTORATION_MISMATCH')
+  if (pgSource !== pgRestored) {
+    try {
+      await recordPostgresDumpDifference({ sourceContainer: sourceIds.postgres, restoredContainer: pg, run, backupDir, sourceDigest: pgSource, restoredDigest: pgRestored })
+    } catch {
+      // Numeric failure receipts are already journaled by run(); preserve the
+      // original strict mismatch and never substitute raw SQL in public logs.
+    }
+    fail('FRESH_POSTGRES_LOGICAL_RESTORATION_MISMATCH')
+  }
   const redis = await create('redis', ['--entrypoint', 'sh', '--mount', 'type=volume,src=' + volumes.redis + ',dst=/data'], ['-c', 'exec sleep 2147483647'])
   await run('fresh-restore-redis-rdb-copy', ['cp', join(backupDir, 'redis.rdb'), redis + ':/data/dump.rdb'])
   await run('fresh-restore-redis-load-rdb', ['exec', redis, 'redis-server', '--daemonize', 'yes', '--dir', '/data', '--dbfilename', 'dump.rdb', '--bind', '127.0.0.1', '--save', '', '--appendonly', 'no'])

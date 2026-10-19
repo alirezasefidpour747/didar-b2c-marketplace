@@ -10,7 +10,7 @@ import https from 'node:https'
 import { applicationSource, applicationImages, assembleFreshAmendment } from './fresh-operator-bundle.mjs'
 import { fileHash, validateManifest } from './release.mjs'
 import { verifyInstallKit } from './install-kit.mjs'
-import { sha256, redactDiagnostic } from '../deployment/nginx/stack.mjs'
+import { sha256, redactDiagnostic, sanitizeFixtureObservation } from '../deployment/nginx/stack.mjs'
 import { render } from '../deployment/nginx/render.mjs'
 import { exportFreshInstallKit } from './export-fresh-install-kit.mjs'
 
@@ -54,9 +54,9 @@ async function collectWrapperJournals() {
   for (const name of names) {
     const bytes = await readFile(join(directory, name)), record = JSON.parse(bytes)
     journals.push({ action: record.action, source_sha: record.source_sha, bundle_sha256: record.bundle_sha256, completed_at: record.completed_at, journal_sha256: sha256(bytes), process_exits: (record.process_exits || []).map(row => {
-      const allowed = Object.fromEntries(['stage', 'kind', 'started_at', 'finished_at', 'code', 'signal', 'spawn_error', 'timed_out', 'stdout_sha256', 'stderr_sha256'].filter(key => Object.hasOwn(row, key)).map(key => [key, row[key]]))
+      const allowed = Object.fromEntries(['stage', 'kind', 'observed_at', 'started_at', 'finished_at', 'code', 'signal', 'spawn_error', 'timed_out', 'stdout_sha256', 'stderr_sha256'].filter(key => Object.hasOwn(row, key)).map(key => [key, row[key]]))
       if (row.diagnostic) allowed.diagnostic = { stdout: redactDiagnostic(Buffer.from(row.diagnostic.stdout || ''), context.env, context.admin, process.env), stderr: redactDiagnostic(Buffer.from(row.diagnostic.stderr || ''), context.env, context.admin, process.env) }
-      if (row.observation) allowed.observation = Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(row.observation, key)).map(key => [key, row.observation[key]]))
+      if (row.observation) { const sanitized = sanitizeFixtureObservation(row.stage, row.observation); if (sanitized) allowed.observation = sanitized }
       return allowed
     }) })
   }

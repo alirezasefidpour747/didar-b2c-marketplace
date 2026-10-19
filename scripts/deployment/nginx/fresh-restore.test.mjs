@@ -4,9 +4,45 @@ import { mkdtemp, chmod, writeFile, readFile, symlink, lstat } from 'node:fs/pro
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomBytes } from 'node:crypto'
-import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications } from './fresh-restore.mjs'
-import { runner, canonicalState, sha256 } from './stack.mjs'
+import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference } from './fresh-restore.mjs'
+import { runner, canonicalState, sha256, sanitizeFixtureObservation } from './stack.mjs'
 import { observeDaemon, assertDaemonPreserved } from './fresh.mjs'
+
+const privateSqlFixture = rows => '-- Name: protected_fixture; Type: TABLE DATA; Schema: public; Owner: didar\nCOPY public.protected_fixture (id, value) FROM stdin;\n' + rows.join('\n') + '\n\\.\n'
+
+test('Postgres diagnostics identify row tampering versus ordering without authorizing either', () => {
+  const source = privateSqlFixture(['1\tDO_NOT_PUBLISH_ALPHA', '2\tDO_NOT_PUBLISH_BETA']), reordered = privateSqlFixture(['2\tDO_NOT_PUBLISH_BETA', '1\tDO_NOT_PUBLISH_ALPHA']), tampered = privateSqlFixture(['1\tDO_NOT_PUBLISH_ALPHA', '2\tTAMPERED_PRIVATE_VALUE'])
+  const order = describePostgresDumpDifference(source, reordered), mutation = describePostgresDumpDifference(source, tampered)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-logical-difference', order), order)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-logical-difference', mutation), mutation)
+  assert.notEqual(order.source_sha256, order.restored_sha256)
+  assert.equal(order.first_difference.source_class, 'COPY_DATA')
+  assert.equal(order.section_differences[0].row_multiset_equal, true)
+  assert.equal(mutation.section_differences[0].row_multiset_equal, false)
+  assert.equal(JSON.stringify(mutation).includes('PRIVATE_VALUE'), false)
+  assert.equal(JSON.stringify(order).includes('DO_NOT_PUBLISH'), false)
+  const schema = '-- Name: protected_fixture; Type: TABLE; Schema: public; Owner: didar\nCREATE TABLE public.protected_fixture(id bigint, value text);\n'
+  const changed = describePostgresDumpDifference(schema, schema.replace('bigint', 'integer'))
+  assert.equal(changed.section_differences[0].section_type, 'TABLE')
+  assert.equal(changed.first_difference.source_class, 'SQL')
+  assert.notEqual(changed.source_sha256, changed.restored_sha256)
+  const sequence = '-- Name: protected_fixture_id_seq; Type: SEQUENCE SET; Schema: public; Owner: didar\nSELECT pg_catalog.setval(\'public.protected_fixture_id_seq\', 7, true);\n'
+  assert.equal(describePostgresDumpDifference(sequence, sequence.replace(', 7,', ', 8,')).first_difference.source_class, 'SEQUENCE_STATE')
+})
+
+test('mismatching dump copies remain private0600 and only hash/count diagnostics reach observer', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'didar-private-dump-diagnostic-')); await chmod(root, 0o700)
+  const source = privateSqlFixture(['1\tPRIVATE_SQL_NEVER_UPLOAD']), restored = privateSqlFixture(['1\tPRIVATE_SQL_CHANGED']), observed = []
+  const run = async (stage, args) => { await writeFile(args[2], stage.includes('-source-') ? source : restored, { mode: 0o644 }); return '' }
+  run.recordFixtureObservation = (stage, observation) => observed.push({ stage, observation })
+  const diagnostic = await recordPostgresDumpDifference({ sourceContainer: '1'.repeat(64), restoredContainer: '2'.repeat(64), run, backupDir: root, sourceDigest: sha256(source) + '  /tmp/didar-comparison-normalized.sql', restoredDigest: sha256(restored) + '  /tmp/didar-comparison-normalized.sql' })
+  assert.equal(observed.length, 1)
+  assert.equal(observed[0].stage, 'fresh-postgres-logical-difference')
+  assert.equal(JSON.stringify(observed).includes('PRIVATE_SQL'), false)
+  assert.deepEqual(observed[0].observation, diagnostic)
+  for (const file of ['postgres.source.normalized.private.sql', 'postgres.restored.normalized.private.sql', 'postgres-difference.sanitized.json']) assert.equal((await lstat(join(root, file))).mode & 0o777, 0o600)
+  assert.equal(await readFile(join(root, 'postgres.source.normalized.private.sql'), 'utf8'), source)
+})
 
 test('restore volume names are fixed owned names and disjoint from all source volumes', () => {
   const config = { DIDAR_COMPOSE_PROJECT: 'fresh_candidate', DIDAR_POSTGRES_VOLUME: 'src_pg', DIDAR_REDIS_VOLUME: 'src_redis', DIDAR_UPLOADS_VOLUME: 'src_uploads' }, token = 'a'.repeat(48)
@@ -118,8 +154,8 @@ test('real isolated PostgreSQL, Redis, uploads and configuration backup/restore'
   await chmod(root, 0o700)
   const receipts = [], run = runner(process.env, receipts), token = randomBytes(24).toString('hex'), prefix = 'didar_restore_fixture_' + token.slice(0, 12)
   const config = { DIDAR_COMPOSE_PROJECT: prefix, DIDAR_POSTGRES_VOLUME: prefix + '_source_pg', DIDAR_REDIS_VOLUME: prefix + '_source_redis', DIDAR_UPLOADS_VOLUME: prefix + '_source_uploads', DIDAR_DB_USER: 'didar_restore', DIDAR_DB_NAME: 'didar_restore', JWT_SECRET: randomBytes(32).toString('hex'), COOKIE_SECRET: randomBytes(32).toString('hex'), DIDAR_AUTH_NETWORK_KEY: randomBytes(32).toString('hex'), DIDAR_DB_PASSWORD: randomBytes(32).toString('hex') }
-  // Resolve cached fixture tags to exact immutable config IDs before creation.
-  for (const [role, tag] of [['POSTGRES', 'postgres:17-alpine'], ['REDIS', 'redis:7-alpine']]) config['DIDAR_' + role + '_IMAGE'] = JSON.parse(await run('fixture-cached-image-' + role, ['image', 'inspect', tag]))[0].Id
+  // Inspect exact compatible dependency digests; never pull mutable tags.
+  for (const [role, reference] of [['POSTGRES', 'postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'], ['REDIS', 'redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499']]) config['DIDAR_' + role + '_IMAGE'] = JSON.parse(await run('fixture-cached-image-' + role, ['image', 'inspect', reference]))[0].Id
   const state = { phase: 'INITIALIZED', token, ids: {}, baseline: await observeDaemon(run), owned: { containers: [], networks: [], volumes: [] }, initialization_state_sha256: sha256('REAL_OPERATIONAL_FIXTURE_NOT_APPLICATION_ACCEPTANCE') }
   const saveState = () => writeFile(join(root, 'private-state.json'), JSON.stringify(state) + '\n', { mode: 0o600 })
   const preserve = async () => assertDaemonPreserved(state.baseline, await observeDaemon(run), state.owned)

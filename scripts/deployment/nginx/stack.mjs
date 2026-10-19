@@ -150,6 +150,24 @@ export function redactDiagnostic(bytes, ...sources) {
   return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@').replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[JWT_REDACTED]').replace(/\bv1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[AUTH_PROOF_REDACTED]').slice(-65536)
 }
 
+// The public QA journal may describe a strict restoration failure using hashes,
+// counts and fixed classes only. SQL, relation names and private paths stay out.
+export function sanitizeFixtureObservation(stage, observation) {
+  if (!observation || typeof observation !== 'object' || Array.isArray(observation)) return null
+  if (stage !== 'fresh-postgres-logical-difference') return Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(observation, key)).map(key => [key, observation[key]]))
+  const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key))
+  const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
+  const count = value => Number.isSafeInteger(value) && value >= 0 && value <= 1000000000
+  const lineClasses = ['BLANK', 'COMMENT', 'COPY_HEADER', 'COPY_DATA', 'COPY_END', 'SEQUENCE_STATE', 'SQL', 'EOF']
+  const sectionClasses = ['HEADER', 'TABLE_DATA', 'SEQUENCE_SET', 'TABLE', 'INDEX', 'CONSTRAINT', 'FK_CONSTRAINT', 'SEQUENCE', 'SCHEMA', 'FUNCTION', 'TYPE', 'EXTENSION', 'ACL', 'COMMENT', 'DEFAULT', 'OTHER']
+  if (!keys(observation, ['kind', 'source_sha256', 'restored_sha256', 'source_line_count', 'restored_line_count', 'source_byte_count', 'restored_byte_count', 'section_order_equal', 'differing_section_count', 'first_difference', 'section_differences']) || observation.kind !== 'POSTGRES_DUMP_DIFFERENCE_V1' || !digest(observation.source_sha256) || !digest(observation.restored_sha256) || !['source_line_count', 'restored_line_count', 'source_byte_count', 'restored_byte_count', 'differing_section_count'].every(key => count(observation[key])) || typeof observation.section_order_equal !== 'boolean') return null
+  const first = observation.first_difference
+  if (!keys(first, ['source_line', 'restored_line', 'source_class', 'restored_class', 'source_line_sha256', 'restored_line_sha256']) || !count(first.source_line) || !count(first.restored_line) || !lineClasses.includes(first.source_class) || !lineClasses.includes(first.restored_class) || !digest(first.source_line_sha256) || !digest(first.restored_line_sha256)) return null
+  if (!Array.isArray(observation.section_differences) || observation.section_differences.length > 25 || observation.section_differences.length > observation.differing_section_count) return null
+  for (const section of observation.section_differences) if (!keys(section, ['section_type', 'section_identity_sha256', 'source_sha256', 'restored_sha256', 'source_lines', 'restored_lines', 'source_rows', 'restored_rows', 'row_multiset_equal']) || !sectionClasses.includes(section.section_type) || !digest(section.section_identity_sha256) || ![section.source_sha256, section.restored_sha256].every(value => value === null || digest(value)) || !['source_lines', 'restored_lines', 'source_rows', 'restored_rows'].every(key => count(section[key])) || section.row_multiset_equal !== null && typeof section.row_multiset_equal !== 'boolean') return null
+  return structuredClone(observation)
+}
+
 export function runner(environment, receipts, privateConfiguration = {}) {
   let fixtureDiagnostics = false
   let diagnosticStages = () => true
@@ -177,7 +195,8 @@ export function runner(environment, receipts, privateConfiguration = {}) {
   Object.defineProperty(run, 'enableFixtureDiagnostics', { value: (stages = () => true) => { fixtureDiagnostics = true; diagnosticStages = stages } })
   Object.defineProperty(run, 'addPrivateDiagnosticSource', { value: source => { privateSources.push(source) } })
   Object.defineProperty(run, 'recordFixtureObservation', { value: (stage, observation) => {
-    if (fixtureDiagnostics) receipts.push({ stage, kind: 'FIXTURE_OBSERVATION_NOT_PROCESS_EXIT', observed_at: new Date().toISOString(), observation })
+    const sanitized = fixtureDiagnostics && sanitizeFixtureObservation(stage, observation)
+    if (sanitized) receipts.push({ stage, kind: 'FIXTURE_OBSERVATION_NOT_PROCESS_EXIT', observed_at: new Date().toISOString(), observation: sanitized })
   } })
   return run
 }

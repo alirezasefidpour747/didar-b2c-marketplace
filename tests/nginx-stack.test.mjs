@@ -4,7 +4,7 @@ import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink, lsta
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner, containerSummary, resolveComposition, verifyPreservedEnvironment, verifyPreservedMounts } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner, sanitizeFixtureObservation, containerSummary, resolveComposition, verifyPreservedEnvironment, verifyPreservedMounts } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -18,6 +18,44 @@ const values = () => ({
   DIDAR_AUTH_INGRESS_PEERS: '192.0.2.44', DIDAR_AUTH_TLS_DIR: '/private/tls', DIDAR_AUTH_TLS_SERVER_NAME: 'relay.test',
 })
 const envText = object => Object.entries(object).map(([key, value]) => key + '=' + value).join('\n') + '\n'
+
+const postgresDifference = () => ({ kind: 'POSTGRES_DUMP_DIFFERENCE_V1', source_sha256: sha256('source'), restored_sha256: sha256('restored'), source_line_count: 10, restored_line_count: 10, source_byte_count: 100, restored_byte_count: 100, section_order_equal: true, differing_section_count: 1, first_difference: { source_line: 8, restored_line: 8, source_class: 'COPY_DATA', restored_class: 'COPY_DATA', source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line') }, section_differences: [{ section_type: 'TABLE_DATA', section_identity_sha256: sha256('section'), source_sha256: sha256('source-section'), restored_sha256: sha256('restored-section'), source_lines: 2, restored_lines: 2, source_rows: 1, restored_rows: 1, row_multiset_equal: false }] })
+
+test('PostgreSQL mismatch observation retains only strict hash/count/enum evidence in enabled QA journals', () => {
+  const observation = postgresDifference(), receipts = [], run = runner({}, receipts)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-logical-difference', observation), observation)
+  run.recordFixtureObservation('fresh-postgres-logical-difference', observation)
+  assert.equal(receipts.length, 0, 'Production/default journals do not gain QA observations')
+  run.enableFixtureDiagnostics()
+  run.recordFixtureObservation('fresh-postgres-logical-difference', observation)
+  assert.equal(receipts.length, 1); assert.deepEqual(receipts[0].observation, observation)
+  assert.equal(receipts[0].kind, 'FIXTURE_OBSERVATION_NOT_PROCESS_EXIT'); assert.equal(Object.hasOwn(receipts[0], 'code'), false)
+  observation.first_difference.source_class = 'PRIVATE_SQL_CANARY'
+  assert.equal(receipts[0].observation.first_difference.source_class, 'COPY_DATA', 'Journal owns an immutable copy of the safe values')
+})
+
+test('PostgreSQL mismatch diagnostic rejects SQL, identities, paths, unexpected keys and malformed values without emitting them', () => {
+  const changes = [
+    value => { value.sql = 'PRIVATE_SQL_CANARY' },
+    value => { value.first_difference.raw_line = 'PRIVATE_SQL_CANARY' },
+    value => { value.first_difference.source_class = 'PRIVATE_SQL_CANARY' },
+    value => { value.first_difference.source_line_sha256 = '/private/PRIVATE_SQL_CANARY' },
+    value => { value.section_differences[0].relation_name = 'PRIVATE_SQL_CANARY' },
+    value => { value.section_differences[0].section_type = 'PRIVATE_SQL_CANARY' },
+    value => { value.section_differences[0].source_sha256 = 'PRIVATE_SQL_CANARY' },
+    value => { value.section_differences[0].source_rows = -1 },
+    value => { value.section_order_equal = 'true' },
+    value => { value.source_byte_count = Infinity },
+    value => { value.section_differences = Array(26).fill(value.section_differences[0]); value.differing_section_count = 26 },
+  ]
+  const receipts = [], run = runner({}, receipts); run.enableFixtureDiagnostics()
+  for (const change of changes) {
+    const value = postgresDifference(); change(value)
+    assert.equal(sanitizeFixtureObservation('fresh-postgres-logical-difference', value), null)
+    run.recordFixtureObservation('fresh-postgres-logical-difference', value)
+  }
+  assert.deepEqual(receipts, [])
+})
 
 test('literal private configuration preserves existing secret characters without executing or reconstructing URLs', () => {
   assert.deepEqual(parseConfiguration('# private literal values\n' + envText(values())), values())
