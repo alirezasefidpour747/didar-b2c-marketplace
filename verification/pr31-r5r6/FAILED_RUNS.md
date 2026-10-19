@@ -32,6 +32,15 @@ Vendor own-supplier scope, and matching rendered offer quantity before either
 screenshot. Final-source execution is required; this is a verifier correction,
 not a demonstrated application defect.
 
+The subsequent `99b7dea` source passed its complete existing CI and real R5/R6
+functional gates, including the corrected loaded Vendor screenshots. Independent
+review still found an evidence gap: CI retained the numeric `local:test` group
+exit, but not separate closes for all four builds/backend/native/32-browser
+commands. Those per-command numbers must not be inferred from the group or log
+summaries. The bounded instrumentation retains the actual outcomes and fails
+closed on missing/stale/duplicate/failed receipts; final-source execution is
+required again. All original `99b7dea` functional evidence remains retained.
+
 Additional isolated Debian compatibility failures and their actual receipts are
 retained in [`debian-compat/scope-and-failures.json`](debian-compat/scope-and-failures.json):
 fixture startup `1`, fixture stderr setup `1`, and the original njs0.8.9 empty-body

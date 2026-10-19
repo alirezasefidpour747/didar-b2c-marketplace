@@ -3,6 +3,7 @@ import { existsSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs
 import { randomBytes } from 'node:crypto'
 import { createServer } from 'node:net'
 import { parseEnv } from 'node:util'
+import { observeProcessClose } from '../ci/process-receipts.mjs'
 
 export const loopback = host => ['localhost', '127.0.0.1', '[::1]', '::1'].includes(host)
 export function localURL(value, protocol, label) {
@@ -78,14 +79,16 @@ export async function freePort(port = 0) {
   return chosen
 }
 export async function run(cmd, args, options = {}) {
-  const child = spawn(cmd, args, { stdio: 'inherit', detached: true, ...options })
+  const { receiptStage, ...spawnOptions } = options
+  const started_at = new Date().toISOString()
+  const child = spawn(cmd, args, { stdio: 'inherit', detached: true, ...spawnOptions })
+  const observed = observeProcessClose(child, receiptStage, { environment: spawnOptions.env || process.env, started_at })
   const stop = () => { if (child.pid) { try { process.kill(-child.pid, 'SIGTERM') } catch {} } }
   for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.once(signal, stop)
   try {
-    await new Promise((resolve, reject) => {
-      child.once('error', reject)
-      child.once('exit', code => code === 0 ? resolve() : reject(new Error(`${cmd} ${args.join(' ')} exited ${code}`)))
-    })
+    const result = await observed
+    if (result.error) throw new Error('Process spawn failed: ' + (result.error.code || 'SPAWN_ERROR'))
+    if (result.code !== 0 || result.signal) throw new Error(`Process exited ${result.code}${result.signal ? ' (signal ' + result.signal + ')' : ''}`)
   } finally { for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.removeListener(signal, stop) }
 }
 export async function waitHTTP(url, validate, timeout = 300000, requestTimeout = 10000) {

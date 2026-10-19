@@ -12,7 +12,7 @@
     "db:setup": "bun run --cwd packages/api medusa db:migrate && bun run --cwd packages/api medusa exec ./src/scripts/didar-seed.ts",
     "dev:api": "bun run --cwd packages/api dev",
     "dev:web": "bun run --cwd apps/storefront dev",
-    "build:all": "bun run --cwd packages/api codegen && bun run build:panels && bun run --cwd packages/api build && bun run --cwd apps/storefront build",
+    "build:all": "node scripts/build-all.mjs",
     "build:panels": "node scripts/build-panels.mjs",
     "local:setup": "node scripts/local.mjs setup",
     "local:dev": "node scripts/local.mjs dev",
