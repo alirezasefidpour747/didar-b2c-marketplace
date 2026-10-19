@@ -33,9 +33,14 @@ try {
   assert.match(JSON.parse(version).Version, /^26\.1\.5(?:\+dfsg1)?$/); assert.match(compose, /^v?2\.26\.1(?:-4)?$/)
   const result = await run('real-wrapper-lifecycle-and-safe-failures', 'docker', ['exec', '-e', 'DIDAR_WRAPPER_SOURCE_SHA=' + source, '-w', '/qa', id, 'node', 'tests/nginx-stack-docker.mjs', '/qa/evidence'], { timeout: 1800000, expected: [0, 1] })
   await docker('retrieve-fixture-evidence', ['cp', id + ':/qa/evidence', join(output, 'fixture')])
+  const diagnostic = Buffer.concat([result.stdout, result.stderr]).toString().replace(/literal(?:\$|%24)wrapper(?:#|%23)[a-f0-9]+/g, '[QA_SECRET_REDACTED]')
+  await writeFile(join(output, 'fixture-runner.log'), diagnostic)
+  console.log('DIDAR_WRAPPER_FIXTURE_ACTUAL_EXIT ' + JSON.stringify({code:result.code,signal:result.signal,spawn_error:result.spawn_error}))
+  if (result.code !== 0) console.error(diagnostic.slice(-10000))
   assert.equal(result.code, 0)
   const fixture = JSON.parse(await readFile(join(output, 'fixture/result.json'))); assert.equal(fixture.status, 'PASS')
   await writeFile(join(output, 'provenance.json'), JSON.stringify({ source_sha: source, daemon_image_id: image.Id, server: JSON.parse(version), compose, candidate_package_provenance: JSON.parse(await readFile(join(root, 'context/packages.json'))), target_binary_identity_claimed: false, scope: 'Exact upstream version pair with independently pinned Debian package revisions; target package revisions unobserved. Wrapper protocol fixture, not R5 application or target acceptance.', application_source_overlays: false }, null, 2) + '\n')
+  console.log('DIDAR_WRAPPER_OBSERVED_RESULT ' + JSON.stringify(fixture))
   success = true
 } finally {
   if (id) {

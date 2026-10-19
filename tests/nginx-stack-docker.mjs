@@ -1,7 +1,7 @@
 // Real Docker/Compose operator-protocol fixture, NOT application/R5/TLS-target acceptance.
 // Fresh labelled resources only; no source mounts/patches in fixture applications.
 import assert from 'node:assert/strict'
-import { mkdtemp, mkdir, readFile, writeFile, copyFile, rm, readdir } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, copyFile, rm, readdir, chmod, lstat } from 'node:fs/promises'
 import { resolve, join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
@@ -112,8 +112,49 @@ try {
   await wait('restored-pg', async () => (await execute('restore-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', restored, 'pg_isready', '-U', 'didar', '-d', 'didar'], { expected: [0, 1, 2] })).code === 0)
   await docker('restore-isolated-postgres', ['exec', '-i', restored, 'psql', '-U', 'didar', '-d', 'didar'], { input: await readFile(databaseBackup) })
   assert.equal(await docker('verify-isolated-restored-state', ['exec', restored, 'psql', '-U', 'didar', '-d', 'didar', '-Atc', 'SELECT value FROM wrapper_state']), before.pg)
+  let restoreNumber = 0
+  async function restoreAncillary(currentIds) {
+    const sequence = ++restoreNumber
+    await docker('redis-save-backup-' + sequence, ['exec', currentIds.redis, 'redis-cli', 'SAVE'])
+    const redisBase64 = await docker('redis-rdb-backup-' + sequence, ['exec', currentIds.redis, 'base64', '-w0', '/data/dump.rdb'])
+    const uploadsBackup = JSON.parse(await docker('uploads-tar-backup-' + sequence, ['exec', currentIds.api, 'node', '-e', "const r=require('child_process').spawnSync('tar',['-C','/app/packages/api/.medusa/server/static','-cf','-','.']);process.stdout.write(JSON.stringify({code:r.status,signal:r.signal,error:r.error?.code||null,base64:r.stdout.toString('base64')}));process.exitCode=r.status??1"]))
+    assert.equal(uploadsBackup.code, 0); assert.equal(uploadsBackup.signal, null); assert.equal(uploadsBackup.error, null)
+    const mediaBase64 = uploadsBackup.base64, redisBytes = Buffer.from(redisBase64, 'base64'), mediaBytes = Buffer.from(mediaBase64, 'base64')
+    assert.ok(redisBytes.length > 0); assert.ok(mediaBytes.length > 0)
+    await save(join(root, 'redis-backup-' + sequence + '.rdb'), redisBytes); await save(join(root, 'uploads-backup-' + sequence + '.tar'), mediaBytes)
+    const isolated = {}
+    for (const role of ['redis', 'uploads']) {
+      isolated[role] = await docker('create-isolated-' + role + '-volume-' + sequence, ['volume', 'create', '--label', label, project + '_restore_' + role + '_' + sequence]); owned.volumes.push(isolated[role])
+    }
+    const loaderProgram = "const fs=require('fs'),c=require('crypto');let text='';process.stdin.on('data',x=>text+=x);process.stdin.on('end',()=>{const x=JSON.parse(text);fs.writeFileSync('/restore/redis/dump.rdb',Buffer.from(x.redis,'base64'));fs.writeFileSync('/tmp/uploads.tar',Buffer.from(x.media,'base64'));const r=require('child_process').spawnSync('tar',['-C','/restore/uploads','-xf','/tmp/uploads.tar']);const h=p=>c.createHash('sha256').update(fs.readFileSync(p)).digest('hex');process.stdout.write(JSON.stringify({redis_sha256:h('/restore/redis/dump.rdb'),uploads_archive_sha256:h('/tmp/uploads.tar'),media_sha256:r.status===0?h('/restore/uploads/wrapper-state'):null,extract_code:r.status,extract_signal:r.signal,extract_error:r.error?.code||null}));process.exitCode=r.status??1})"
+    const loader = await create('restore-loader-' + sequence, ids.node, ['--interactive', '--network', 'none', '--mount', 'type=volume,source=' + isolated.redis + ',target=/restore/redis', '--mount', 'type=volume,source=' + isolated.uploads + ',target=/restore/uploads'], ['node', '-e', loaderProgram])
+    const loaded = JSON.parse(await docker('restore-isolated-redis-and-uploads-' + sequence, ['start', '--attach', '--interactive', loader], { input: JSON.stringify({ redis: redisBase64, media: mediaBase64 }) }))
+    const loaderState = await inspect(loader); assert.equal(loaderState.State.ExitCode, 0)
+    assert.equal(loaded.redis_sha256, sha256(redisBytes)); assert.equal(loaded.uploads_archive_sha256, sha256(mediaBytes)); assert.equal(loaded.media_sha256, sha256(Buffer.from(before.media))); assert.equal(loaded.extract_code, 0); assert.equal(loaded.extract_signal, null); assert.equal(loaded.extract_error, null)
+    const restoredRedis = await create('restore-redis-' + sequence, ids.redis, ['--network', networkName, '--mount', 'type=volume,source=' + isolated.redis + ',target=/data'], ['redis-server', '--appendonly', 'no'])
+    await docker('start-isolated-restored-redis-' + sequence, ['start', restoredRedis])
+    await wait('restored-redis-' + sequence, async () => (await execute('restore-redis-ready-' + rows.length, 'docker', ['--host=unix:///var/run/docker.sock', 'exec', restoredRedis, 'redis-cli', 'PING'], { expected: [0, 1] })).code === 0)
+    assert.equal(await docker('verify-isolated-restored-redis-' + sequence, ['exec', restoredRedis, 'redis-cli', 'GET', 'wrapper-state']), before.redis)
+    const backupConfig = join(root, 'backup-config-' + sequence), restoreConfig = join(root, 'isolated-config-' + sequence)
+    await mkdir(backupConfig, { mode: 0o700 }); await mkdir(restoreConfig, { mode: 0o700 })
+    const configurationHashes = {}
+    for (const [name, original] of [['topology_env', environmentFile], ['runtime_env', privateRuntime], ['relay_cert', join(tls, 'cert.pem')], ['relay_key', join(tls, 'key.pem')], ['relay_ca', join(tls, 'ca.pem')]]) {
+      await copyFile(original, join(backupConfig, name)); await chmod(join(backupConfig, name), 0o600)
+      await copyFile(join(backupConfig, name), join(restoreConfig, name)); await chmod(join(restoreConfig, name), 0o600)
+      const originalHash = sha256(await readFile(original)), recoveredHash = sha256(await readFile(join(restoreConfig, name)))
+      assert.equal(recoveredHash, originalHash); assert.equal((await lstat(join(restoreConfig, name))).mode & 0o777, 0o600)
+      configurationHashes[name] = recoveredHash
+    }
+    return { isolated_volumes: { postgres: restoredVolume, ...isolated }, configuration_hashes: configurationHashes, redis_rdb_sha256: sha256(redisBytes), uploads_archive_sha256: sha256(mediaBytes), restored_media_sha256: loaded.media_sha256, archive_process: { code: uploadsBackup.code, signal: uploadsBackup.signal, spawn_error: uploadsBackup.error }, extract_process: { code: loaded.extract_code, signal: loaded.extract_signal, spawn_error: loaded.extract_error }, restored_redis: restoredRedis, loader_exit: loaderState.State.ExitCode }
+  }
   const backupEvidence = join(root, 'backup-evidence.json')
-  await save(backupEvidence, JSON.stringify({ status: 'PASS', scope: 'WRAPPER_PROTOCOL_FIXTURE', source_container_ids: containers, database_dump_sha256: sha256(await readFile(databaseBackup)), isolated_restore_volume: restoredVolume, database_restoration: 'PASS', media_and_redis_state: 'CHECKED_BEFORE_AND_AFTER_WRAPPER_OPERATIONS_NOT_FULL_BACKUP_RESTORE' }))
+  async function writeBackupProof(currentIds, databaseBytes) {
+    const ancillary = await restoreAncillary(currentIds)
+    const proof = { status: 'PASS', scope: 'WRAPPER_PROTOCOL_FIXTURE', source_container_ids: currentIds, database_dump_sha256: sha256(databaseBytes), database_restoration: 'PASS', restoration: { postgres: 'PASS', redis: 'PASS', uploads: 'PASS', configuration: 'PASS' }, ...ancillary }
+    await save(backupEvidence, JSON.stringify(proof)); await save(join(output, 'backup-restore-proof-' + restoreNumber + '.json'), JSON.stringify(proof, null, 2) + '\n')
+  }
+  await writeBackupProof(containers, await readFile(databaseBackup))
+  cases.push('postgres-redis-uploads-configuration-actually-restored-isolated')
   const discovery = join(root, 'discovery.json'), moduleFile = join(root, 'module-fixture-not-a-binary'), nginxConfig = join(root, 'nginx-fixture-not-a-vhost')
   await save(discovery, JSON.stringify({ status: 'DISPOSABLE_PROTOCOL_FIXTURE_ONLY', target: false, namespaces: 'SEPARATE_OBSERVED', target_module_abi: 'NOT_TESTED' }))
   await save(moduleFile, 'WRAPPER_PROTOCOL_FIXTURE_ONLY_NOT_NGINX_MODULE'); await save(nginxConfig, 'WRAPPER_PROTOCOL_FIXTURE_ONLY_NOT_NGINX_CONFIG')
@@ -150,7 +191,7 @@ try {
     await save(databaseBackup, fresh.stdout)
     await docker('fresh-isolated-restore', ['exec', '-i', restored, 'psql', '-U', 'didar', '-d', 'didar'], { input: fresh.stdout })
     assert.equal(await docker('fresh-isolated-state', ['exec', restored, 'psql', '-U', 'didar', '-d', 'didar', '-Atc', 'SELECT value FROM wrapper_state']), before.pg)
-    await save(backupEvidence, JSON.stringify({ status: 'PASS', scope: 'WRAPPER_PROTOCOL_FIXTURE', source_container_ids: currentIds, database_dump_sha256: sha256(fresh.stdout), isolated_restore_volume: restoredVolume, database_restoration: 'PASS', media_and_redis_state: 'CHECKED_BEFORE_AND_AFTER_NOT_FULL_BACKUP_RESTORE' }))
+    await writeBackupProof(currentIds, fresh.stdout)
     operation.containers = currentIds; operation.backup.source_container_ids = currentIds; operation.backup.evidence_sha256 = sha256(await readFile(backupEvidence)); await saveOperation()
   }
   // Re-discover actual IDs and obtain fresh backup evidence after application replacement.

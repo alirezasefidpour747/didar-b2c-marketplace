@@ -40,6 +40,10 @@ if (process.argv[1] && resolve(process.argv[1]) === import.meta.filename) {
     validateTopologyReceipt(manifest, receipt)
     manifest.verification.independent_artifacts = receipt
     await writeFile(join(dir, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n'); await checksums(dir)
+    console.log('DIDAR_ARTIFACT_OBSERVED_RECEIPT ' + JSON.stringify(receipt))
+    for (const path of ['populated-history.json','browser/browser-verdict.json','media/result.json','independent-review/result.json','independent-review/cases.json','lifecycle/cases.json','force-recreate/result.json']) {
+      try { console.log('DIDAR_ARTIFACT_EVIDENCE ' + path + ' ' + await readFile(join(out,'topology',path),'utf8')) } catch {}
+    }
     status = 'PASS'
   } finally { await writeFile(join(out, 'result.json'), JSON.stringify({ status, source_sha: source, actual_child_exits: exits, candidate_not_accepted_main_release: true, target_config: 'BLOCKED', public_https_acceptance: 'NOT_EXECUTED' }, null, 2) + '\n') }
 }

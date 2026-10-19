@@ -197,7 +197,7 @@ references to isolated destinations. Preserve the immutable recovery artifacts.
 Never test restoration over authoritative live volumes. Record IDs, checksums,
 restore commands and actual exits, and identity/commerce/media/session-state
 comparisons in the referenced private evidence. The wrapper verifies the exact
-operator-declared evidence file/hash and its bound source IDs; production receipts
+operator-declared evidence file/hash and its bound source IDs; all mutation receipts
 also require `status=PASS`, a `restoration` object with `postgres`, `redis`,
 `uploads`, `configuration` all `PASS`, and `isolated_volumes` with three distinct
 PostgreSQL/Redis/uploads names different from all authoritative volume names.
@@ -285,8 +285,8 @@ JWT/cookie/network keys, reset DB, delete volumes or fall back to unsigned auth.
 
 `node --test tests/nginx-stack.test.mjs` checks parser/authority/manifest/closed-CLI
 negatives. `node tests/nginx-stack-docker.mjs NEW_OUTPUT_DIRECTORY` creates only
-label-owned disposable services and performs actual Compose transitions, SQL
-backup/restoration, persistence checks, separate-process health, partial-start
+label-owned disposable services and performs actual Compose transitions, PostgreSQL/Redis/uploads/configuration
+backup and isolated restoration, persistence checks, separate-process health, partial-start
 failure and matching-bundle recovery. It records actual Docker/Compose versions.
 Its mini application/module/config files are explicitly **operator-protocol
 fixtures**, not an application artifact, a working Nginx module or target acceptance.

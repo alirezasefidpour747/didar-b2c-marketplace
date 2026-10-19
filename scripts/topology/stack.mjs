@@ -159,7 +159,7 @@ try {
       assert.ok(state.Mounts.every(m => role === 'api' && m.Type === 'volume' && m.Name === uploadVolume))
     }
   }
-  const runtime = { run_id: runId, source_sha: input.source_sha, network, api, frontend, edge, nginx_image: input.nginx_image, ca_file: join(tls, 'cert.pem'), edge_ip: edgeIp, public_host: '127.0.0.1', public_port: Number(publicPort), edge_listen_port: 8443, relay_ip: apiIp, relay_port: 3000, relay_tls_name: 'didar.test', key_file: keyFile, output_dir: join(output, 'application'), owner_label: labelName, lifecycle_output: join(output, 'lifecycle'), nginx_config_file: join(config, 'nginx.conf'), edge_ca_file: join(tls, 'cert.pem'), origin, frontend_manifest_sha256: actualManifestHash, upload_volume: uploadVolume, repository: repo, origin_output: join(output, 'origin') }
+  const runtime = { image_ids: input.image_ids || null, run_id: runId, source_sha: input.source_sha, network, api, frontend, edge, nginx_image: input.nginx_image, ca_file: join(tls, 'cert.pem'), edge_ip: edgeIp, public_host: '127.0.0.1', public_port: Number(publicPort), edge_listen_port: 8443, relay_ip: apiIp, relay_port: 3000, relay_tls_name: 'didar.test', key_file: keyFile, output_dir: join(output, 'application'), owner_label: labelName, lifecycle_output: join(output, 'lifecycle'), nginx_config_file: join(config, 'nginx.conf'), edge_ca_file: join(tls, 'cert.pem'), origin, frontend_manifest_sha256: actualManifestHash, upload_volume: uploadVolume, repository: repo, origin_output: join(output, 'origin') }
   const runtimeFile = join(root, 'runtime.json'); await writeFile(runtimeFile, JSON.stringify(runtime), { mode: 0o600 })
   await writeFile(join(output, 'provenance.json'), JSON.stringify({ source_sha: input.source_sha, api_base_image: input.api_image, api_overlay: overlay, frontend_packaging: frontendPackaging, nginx_image: input.nginx_image, network: { id: network, api_ip: apiIp, edge_ip: edgeIp }, origin, packaged_images: packaged, image_ids: input.image_ids || null, distinction: packaged ? 'Fresh source-bound immutable API/storefront images. No application overlays, source mounts or dependency injection.' : 'OCI API base identity is accepted874; candidate application source/compiled overlays are separately hashed, not a published replacement image or release' }, null, 2) + '\n')
   const saveVerificationLog = async (name, result) => {
@@ -168,9 +168,11 @@ try {
     for (const value of secrets) if (value) text = text.split(value).join('[REDACTED]')
     text = text.replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[TOKEN_REDACTED]')
     await writeFile(join(output, name + '-output.log'), text)
+    if (result.code !== 0) console.error('DIDAR_TOPOLOGY_CHILD_FAILURE ' + name + '\n' + text.slice(-6000))
   }
   const applicationResult = await command('real-application-topology-matrix', process.execPath, [join(repo, 'scripts/topology/application.mjs'), runtimeFile], { timeout: 1200000, expected: [0, 1] })
   verificationOutcomes.application = applicationResult.code; await saveVerificationLog('application', applicationResult)
+  try { console.log('DIDAR_APPLICATION_CASES ' + await readFile(join(output, 'application/cases.json'), 'utf8')) } catch {}
   const linked = JSON.parse(await qaExec('browser-product-fixture', ['node', '-e', "const{Pool}=require('/app/packages/api/node_modules/pg');const p=new Pool({connectionString:process.env.DATABASE_URL});p.query('SELECT id FROM didar_product ORDER BY id LIMIT 1').then(r=>process.stdout.write(JSON.stringify(r.rows[0]))).finally(()=>p.end())"]))
   const browserDir = join(output, 'browser'); await mkdir(browserDir)
   await writeFile(join(browserDir, 'browser-fixture.json'), JSON.stringify({ run_id: runId, api: origin, web: origin, root: repo, linked_id: linked.id }))
@@ -202,6 +204,10 @@ try {
     const history = await docker('canonical-sandbox-populated-history', ['exec', '-w', '/app', api, 'bun', 'scripts/topology/history-fixture.mjs'], { timeout: 300000 })
     await writeFile(join(output, 'populated-history.json'), history + '\n')
     assert.equal(JSON.parse(history).status, 'PASS'); verificationOutcomes.history = 0
+  }
+  if (packaged) {
+    const independent = await command('independent-reviewer-read-only-artifact-probes', process.execPath, [join(repo, 'verification/pr31-r5r6/independent-probe.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
+    verificationOutcomes.independent = independent.code; await saveVerificationLog('independent', independent)
   }
   const lifecycleResult = await command('real-lifecycle-compatible-bundle-recovery', process.execPath, [join(repo, 'scripts/topology/lifecycle.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
   verificationOutcomes.lifecycle = lifecycleResult.code; await saveVerificationLog('lifecycle', lifecycleResult)
@@ -352,6 +358,7 @@ try {
   if (!protectedIds.every(id => remaining.includes(id))) cleanup = false
   await rm(root, { recursive: true, force: true })
   await writeFile(join(output, 'result.json'), JSON.stringify({ status: success && cleanup ? 'PASS_SCOPED_APPLICATION_TOPOLOGY' : 'FAIL', run_id: runId, source_sha: input.source_sha, cleanup: cleanup ? 'PASS' : 'FAIL', protected_containers: protectedIds.length, verification_outcomes: verificationOutcomes, actual_child_exits: stages, not_executed: ['Owner target discovery and Internet TLS', 'Host reboot', 'Rollback to a different published release', 'Complete CI; separate runner evidence required'] }, null, 2) + '\n')
+  console.log('DIDAR_TOPOLOGY_OBSERVED_RESULTS ' + JSON.stringify({success,cleanup,source_sha:input.source_sha,verification_outcomes:verificationOutcomes}))
   if (!cleanup) throw Error('Owned topology cleanup or protected-resource preservation failed')
 }
 if (!success) throw Error('Topology contains failed verification stages; see verification_outcomes and actual child exits')

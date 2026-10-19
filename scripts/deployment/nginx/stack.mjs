@@ -241,7 +241,8 @@ export async function verifyPrerequisiteFiles(operation, configuration) {
   if (backup.status !== 'PASS' || canonicalState(backup.source_container_ids) !== canonicalState(operation.containers)) fail('BACKUP_EVIDENCE_SUBJECT_MISMATCH')
   if (operation.target_config === 'DISPOSABLE_QA') {
     if (backup.scope !== 'WRAPPER_PROTOCOL_FIXTURE' || backup.database_restoration !== 'PASS') fail('DISPOSABLE_BACKUP_RECEIPT_REQUIRED')
-  } else {
+  }
+  {
     exactKeys(backup.restoration, ['postgres', 'redis', 'uploads', 'configuration'], 'COMPLETE_ISOLATED_RESTORATION_REQUIRED')
     exactKeys(backup.isolated_volumes, ['postgres', 'redis', 'uploads'], 'ISOLATED_RESTORATION_VOLUMES_REQUIRED')
     const destinations = Object.values(backup.isolated_volumes), authoritative = [configuration.DIDAR_POSTGRES_VOLUME, configuration.DIDAR_REDIS_VOLUME, configuration.DIDAR_UPLOADS_VOLUME]
