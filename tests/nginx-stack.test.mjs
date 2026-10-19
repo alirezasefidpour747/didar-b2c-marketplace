@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -184,4 +184,16 @@ test('matched recovery receipt cannot substitute source/image/config/signer/key-
     await save(original); await writeFile(path, 'tampered')
     await assert.rejects(verifyRecoveryEvidence(operation, bundle), /RECOVERY_EVIDENCE_HASH_MISMATCH/)
   } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+
+test('failed-stage diagnostics redact private-file-only secrets and encoded forms absent from child process env', () => {
+  const privateConfig = { JWT_SECRET: 'FileOnlyJWT_' + 'a'.repeat(40), COOKIE_SECRET: 'FileOnlyCookie_' + 'b'.repeat(40), DIDAR_AUTH_NETWORK_KEY: 'FileOnlyNetwork$#' + 'c'.repeat(40), DIDAR_DB_PASSWORD: 'Short7', DATABASE_URL: 'postgres://user:File%24Only%23Password@db/didar' }
+  const processConfig = { PATH: '/bin', HTTPS_PROXY: 'http://proxy-user:proxy-secret@managed.test' }
+  const canaries = [...Object.values(privateConfig), ...Object.values(privateConfig).map(encodeURIComponent), ...Object.values(privateConfig).map(value => encodeURIComponent(encodeURIComponent(value)))]
+  const raw = Buffer.from('ERROR ' + canaries.join('\n') + '\n' + processConfig.HTTPS_PROXY + '\nBearer fake.jwt.token')
+  const redacted = redactDiagnostic(raw, privateConfig, processConfig)
+  for (const canary of canaries) assert.equal(redacted.includes(canary), false)
+  assert.equal(redacted.includes('proxy-secret'), false); assert.equal(redacted.includes('fake.jwt.token'), false)
+  assert.match(redacted, /REDACTED/)
 })

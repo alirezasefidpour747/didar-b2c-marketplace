@@ -139,6 +139,14 @@ export async function readBundle(path, expected, { allowFixture = false } = {}) 
   return { manifest, root, hash: expected, composition: JSON.parse(await readFile(join(root, 'compose.topology.json'), 'utf8')) }
 }
 
+// Diagnostic output is for owned disposable fixtures only, never raw env dumps.
+export function redactDiagnostic(bytes, ...sources) {
+  const privateValues = sources.flatMap(source => Object.entries(source || {})).filter(([name, value]) => /SECRET|KEY|PASSWORD|TOKEN|CREDENTIAL|_PROXY$|_URL$/.test(name) && typeof value === 'string' && value.length).map(([, value]) => value).sort((left, right) => right.length - left.length)
+  let text = bytes.toString('utf8')
+  for (const value of privateValues) for (const variant of [value, encodeURIComponent(value), encodeURIComponent(encodeURIComponent(value))]) text = text.split(variant).join('[REDACTED]')
+  return text.replace(/([a-z][a-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/@]+@/gi, '$1[REDACTED]@').replace(/Bearer [A-Za-z0-9._-]+/g, 'Bearer [REDACTED]').slice(-65536)
+}
+
 export function runner(environment, receipts) {
   return async (stage, args, input) => new Promise((done, reject) => {
     const start = new Date().toISOString(), child = spawn('docker', ['--host=unix:///var/run/docker.sock', ...args], { env: environment, stdio: ['pipe', 'pipe', 'pipe'] })
