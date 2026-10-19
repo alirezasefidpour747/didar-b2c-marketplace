@@ -154,10 +154,21 @@ export function redactDiagnostic(bytes, ...sources) {
 // counts and fixed classes only. SQL, relation names and private paths stay out.
 export function sanitizeFixtureObservation(stage, observation) {
   if (!observation || typeof observation !== 'object' || Array.isArray(observation)) return null
-  if (!['fresh-postgres-logical-difference', 'fresh-postgres-ddl-difference'].includes(stage)) return Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(observation, key)).map(key => [key, observation[key]]))
+  if (!['fresh-postgres-logical-difference', 'fresh-postgres-ddl-difference', 'fresh-postgres-equivalence-proof', 'fresh-postgres-known-aliases'].includes(stage)) return Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(observation, key)).map(key => [key, observation[key]]))
   const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key))
   const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
+  const sourceSha = value => typeof value === 'string' && shaPattern.test(value)
+  const imageId = value => typeof value === 'string' && /^sha256:[a-f0-9]{64}$/.test(value)
   const count = value => Number.isSafeInteger(value) && value >= 0 && value <= 1000000000
+  if (stage === 'fresh-postgres-equivalence-proof') {
+    if (!keys(observation, ['kind', 'postgres_image_id', 'application_source_sha', 'query_sha256', 'and_cases', 'array_cases', 'any_cases', 'and_associativity', 'array_cast_equivalence', 'any_cast_equivalence', 'array_type_equivalence']) || observation.kind !== 'POSTGRES_KNOWN_DDL_EQUIVALENCE_V1' || !imageId(observation.postgres_image_id) || !sourceSha(observation.application_source_sha) || !digest(observation.query_sha256) || observation.and_cases !== 27 || observation.array_cases !== 343 || observation.any_cases !== 2401 || !['and_associativity', 'array_cast_equivalence', 'any_cast_equivalence', 'array_type_equivalence'].every(key => typeof observation[key] === 'boolean')) return null
+    return structuredClone(observation)
+  }
+  if (stage === 'fresh-postgres-known-aliases') {
+    if (!keys(observation, ['kind', 'application_source_sha', 'postgres_image_id', 'source_sha256', 'restored_sha256', 'canonical_sha256', 'alias_count', 'aliases']) || observation.kind !== 'POSTGRES_KNOWN_DDL_ALIASES_V1' || !imageId(observation.postgres_image_id) || !sourceSha(observation.application_source_sha) || !['source_sha256', 'restored_sha256', 'canonical_sha256'].every(key => digest(observation[key])) || !Array.isArray(observation.aliases) || !Number.isSafeInteger(observation.alias_count) || observation.alias_count < 1 || observation.alias_count > 3 || observation.aliases.length !== observation.alias_count) return null
+    for (const alias of observation.aliases) if (!keys(alias, ['section_identity_sha256', 'source_line_sha256', 'restored_line_sha256']) || !Object.values(alias).every(digest)) return null
+    return structuredClone(observation)
+  }
   if (stage === 'fresh-postgres-ddl-difference') {
     const enums = {
       KEYWORD: ['CREATE', 'TABLE', 'INDEX', 'UNIQUE', 'CONSTRAINT', 'CHECK', 'WHERE', 'AND', 'OR', 'NOT', 'IS', 'NULL', 'ANY', 'ALL', 'BETWEEN', 'IN', 'ON', 'USING', 'ONLY', 'DEFAULT', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'WITH', 'WITHOUT', 'AS', 'SELECT', 'FROM', 'TRUE', 'FALSE', 'COLLATE', 'ASC', 'DESC', 'NULLS', 'FIRST', 'LAST', 'INCLUDE', 'TABLESPACE', 'DEFERRABLE', 'INITIALLY', 'DEFERRED', 'IMMEDIATE', 'MATCH', 'FULL', 'SIMPLE', 'PARTIAL', 'NO', 'ACTION', 'RESTRICT', 'CASCADE', 'SET', 'UPDATE', 'DELETE', 'ALTER', 'ADD', 'DROP', 'COLUMN', 'VALID', 'VALIDATE', 'STORED', 'GENERATED', 'ALWAYS', 'BY', 'IDENTITY'],

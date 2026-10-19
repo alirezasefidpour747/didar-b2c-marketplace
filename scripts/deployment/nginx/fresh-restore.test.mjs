@@ -4,11 +4,56 @@ import { mkdtemp, chmod, writeFile, readFile, symlink, lstat } from 'node:fs/pro
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomBytes } from 'node:crypto'
-import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference, tokenizePostgresDDL, describePostgresDDLDifference } from './fresh-restore.mjs'
+import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference, tokenizePostgresDDL, describePostgresDDLDifference, compareKnownPostgresAliases, verifyPostgresEquivalence, postgresEquivalenceSQL } from './fresh-restore.mjs'
 import { runner, canonicalState, sha256, sanitizeFixtureObservation } from './stack.mjs'
 import { observeDaemon, assertDaemonPreserved } from './fresh.mjs'
 
 const privateSqlFixture = rows => '-- Name: protected_fixture; Type: TABLE DATA; Schema: public; Owner: didar\nCOPY public.protected_fixture (id, value) FROM stdin;\n' + rows.join('\n') + '\n\\.\n'
+const acceptedAliasContext = { applicationSource: '0c4b047baa9dbe37cd1876159c15d22b40cf7cac', postgresImage: 'sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f', applicationImages: { api: 'sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf', storefront: 'sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10' } }
+const knownPublicDDL = [
+  { name: 'didar_catalog_translation', type: 'TABLE', before: "    CONSTRAINT didar_catalog_translation_label_check CHECK ((((length(TRIM(BOTH FROM label)) >= 2) AND (length(TRIM(BOTH FROM label)) <= 200)) AND (label !~ '[[:cntrl:]<>]'::text))),", after: "    CONSTRAINT didar_catalog_translation_label_check CHECK (((length(TRIM(BOTH FROM label)) >= 2) AND (length(TRIM(BOTH FROM label)) <= 200) AND (label !~ '[[:cntrl:]<>]'::text)))," },
+  { name: 'didar_merchant_profile', type: 'TABLE', before: "    CONSTRAINT didar_merchant_profile_merchant_types_check CHECK ((((cardinality(merchant_types) >= 1) AND (cardinality(merchant_types) <= 30)) AND (NOT ('LEGACY_UNCLASSIFIED'::text = ANY (merchant_types)))))", after: "    CONSTRAINT didar_merchant_profile_merchant_types_check CHECK (((cardinality(merchant_types) >= 1) AND (cardinality(merchant_types) <= 30) AND (NOT ('LEGACY_UNCLASSIFIED'::text = ANY (merchant_types)))))" },
+  { name: 'IDX_workflow_execution_updated_at_retention_time', type: 'INDEX', before: `CREATE INDEX "IDX_workflow_execution_updated_at_retention_time" ON public.workflow_execution USING btree (updated_at, retention_time) WHERE ((deleted_at IS NULL) AND (retention_time IS NOT NULL) AND ((state)::text = ANY ((ARRAY['done'::character varying, 'failed'::character varying, 'reverted'::character varying])::text[])));`, after: `CREATE INDEX "IDX_workflow_execution_updated_at_retention_time" ON public.workflow_execution USING btree (updated_at, retention_time) WHERE ((deleted_at IS NULL) AND (retention_time IS NOT NULL) AND ((state)::text = ANY (ARRAY[('done'::character varying)::text, ('failed'::character varying)::text, ('reverted'::character varying)::text])));` }
+]
+const knownDDLText = version => knownPublicDDL.map(item => '-- Name: ' + item.name + '; Type: ' + item.type + '; Schema: public; Owner: -\n' + item[version] + '\n').join('\n')
+
+test('only observed whole-line aliases in exact public sections and pinned context become proof candidates', () => {
+  const source = knownDDLText('before'), restored = knownDDLText('after'), result = compareKnownPostgresAliases({ ...acceptedAliasContext, source, restored })
+  assert.equal(result.alias_count, 3)
+  assert.notEqual(result.source_sha256, result.restored_sha256)
+  assert.equal(result.canonical_sha256, result.restored_sha256)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-known-aliases', result), result)
+  for (const changed of [{ applicationSource: 'a'.repeat(40) }, { postgresImage: 'sha256:' + 'a'.repeat(64) }, { applicationImages: { ...acceptedAliasContext.applicationImages, api: 'sha256:' + 'a'.repeat(64) } }, { applicationImages: { ...acceptedAliasContext.applicationImages, storefront: 'sha256:' + 'a'.repeat(64) } }]) assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, ...changed, source, restored }), null)
+  for (const changed of [restored.replace('<= 200', '<= 201'), restored.replace('retention_time) WHERE', 'state) WHERE'), restored.replace('AND ((state)', 'OR ((state)'), restored.replace("'failed'::character", "'changed'::character"), restored.replace('::character varying', '::integer'), restored.replace('CHECK (', 'CHECK  ('), restored.replace('Type: TABLE', 'Type: INDEX')]) assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source, restored: changed }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: restored, restored: source }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: source + privateSqlFixture(['1\toriginal']), restored: restored + privateSqlFixture(['1\ttampered']) }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: source + privateSqlFixture(['1\tone', '2\ttwo']), restored: restored + privateSqlFixture(['2\ttwo', '1\tone']) }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: source + "SELECT pg_catalog.setval('seq', 7, true);\n", restored: restored + "SELECT pg_catalog.setval('seq', 8, true);\n" }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: 'COPY public.x (v) FROM stdin;\n' + source + '\\.\n', restored: 'COPY public.x (v) FROM stdin;\n' + restored + '\\.\n' }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: 'DO $private$\n' + source + '$private$;\n', restored: 'DO $private$\n' + restored + '$private$;\n' }), null)
+  assert.equal(compareKnownPostgresAliases({ ...acceptedAliasContext, source: Buffer.concat([Buffer.from(source), Buffer.from([0x80])]), restored: Buffer.concat([Buffer.from(restored), Buffer.from([0x81])]) }), null)
+})
+
+test('Postgres semantic proof requires real runner success and exact NULL-inclusive SQL results', async () => {
+  const expected = { and_cases: 27, array_cases: 343, any_cases: 2401, and_associativity: true, array_cast_equivalence: true, array_type_equivalence: true, any_cast_equivalence: true }, calls = [], observations = []
+  const run = async (stage, args, input) => { calls.push({ stage, args, input }); return JSON.stringify(expected) }
+  run.recordFixtureObservation = (stage, observation) => observations.push({ stage, observation })
+  const context = { run, sourceContainer: '1'.repeat(64), dbUser: 'didar', dbName: 'didar_fresh', applicationSource: acceptedAliasContext.applicationSource, postgresImage: acceptedAliasContext.postgresImage }
+  const proof = await verifyPostgresEquivalence(context)
+  assert.equal(calls.length, 1); assert.equal(calls[0].stage, 'fresh-postgres-known-equivalence-proof')
+  assert.equal(calls[0].args.includes('ON_ERROR_STOP=1'), true)
+  assert.equal(calls[0].input, postgresEquivalenceSQL)
+  assert.equal(postgresEquivalenceSQL.includes('NULL::boolean'), true)
+  assert.equal(postgresEquivalenceSQL.includes('NULL::character varying'), true)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-equivalence-proof', proof), proof)
+  await assert.rejects(verifyPostgresEquivalence({ ...context, run: async () => JSON.stringify({ ...expected, any_cast_equivalence: false }) }), /PROOF_FAILED/)
+  const falseObservations = [], falseRun = async () => JSON.stringify({ ...expected, and_associativity: false }); falseRun.recordFixtureObservation = (stage, observation) => falseObservations.push(observation)
+  await assert.rejects(verifyPostgresEquivalence({ ...context, run: falseRun }), /PROOF_FAILED/)
+  assert.equal(falseObservations.length, 1); assert.equal(falseObservations[0].and_associativity, false)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-equivalence-proof', falseObservations[0]), falseObservations[0])
+  await assert.rejects(verifyPostgresEquivalence({ ...context, run: async () => JSON.stringify({ ...expected, and_cases: 26 }) }), /PROOF_FAILED/)
+  await assert.rejects(verifyPostgresEquivalence({ ...context, run: async () => { throw Error('DOCKER_STAGE_FAILED:proof:exit=1') } }), /DOCKER_STAGE_FAILED/)
+})
 
 test('Postgres diagnostics identify row tampering versus ordering without authorizing either', () => {
   const source = privateSqlFixture(['1\tDO_NOT_PUBLISH_ALPHA', '2\tDO_NOT_PUBLISH_BETA']), reordered = privateSqlFixture(['2\tDO_NOT_PUBLISH_BETA', '1\tDO_NOT_PUBLISH_ALPHA']), tampered = privateSqlFixture(['1\tDO_NOT_PUBLISH_ALPHA', '2\tTAMPERED_PRIVATE_VALUE'])

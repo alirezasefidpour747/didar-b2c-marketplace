@@ -22,6 +22,24 @@ const envText = object => Object.entries(object).map(([key, value]) => key + '='
 const postgresDifference = () => ({ kind: 'POSTGRES_DUMP_DIFFERENCE_V1', source_sha256: sha256('source'), restored_sha256: sha256('restored'), source_line_count: 10, restored_line_count: 10, source_byte_count: 100, restored_byte_count: 100, section_order_equal: true, differing_section_count: 1, first_difference: { source_line: 8, restored_line: 8, source_class: 'COPY_DATA', restored_class: 'COPY_DATA', source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line') }, section_differences: [{ section_type: 'TABLE_DATA', section_identity_sha256: sha256('section'), source_sha256: sha256('source-section'), restored_sha256: sha256('restored-section'), source_lines: 2, restored_lines: 2, source_rows: 1, restored_rows: 1, row_multiset_equal: false }] })
 const ddlDifference = () => ({ kind: 'POSTGRES_DDL_DIFFERENCE_V1', changed_line_count: 1, lines: [{ section_type: 'TABLE', section_identity_sha256: sha256('section'), source_line: 10, restored_line: 10, source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line'), source_token_count: 3, restored_token_count: 3, source_tokens: ['KEYWORD:CHECK', 'PUNCTUATION:LPAREN', 'IDENTIFIER:' + sha256('private-identifier') + ':18'], restored_tokens: ['KEYWORD:CHECK', 'PUNCTUATION:LPAREN', 'OPERATOR:NE'] }] })
 
+test('known-DDL proof and alias observations retain actual scoped hashes and booleans without inventing process exits', () => {
+  const proof = { kind: 'POSTGRES_KNOWN_DDL_EQUIVALENCE_V1', postgres_image_id: reference('c'), application_source_sha: 'a'.repeat(40), query_sha256: sha256('fixed-public-query-fixture'), and_cases: 27, array_cases: 343, any_cases: 2401, and_associativity: true, array_cast_equivalence: true, any_cast_equivalence: false, array_type_equivalence: true }
+  const aliases = { kind: 'POSTGRES_KNOWN_DDL_ALIASES_V1', application_source_sha: 'a'.repeat(40), postgres_image_id: reference('c'), source_sha256: sha256('source'), restored_sha256: sha256('restored'), canonical_sha256: sha256('canonical'), alias_count: 1, aliases: [{ section_identity_sha256: sha256('section'), source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line') }] }
+  const receipts = [], run = runner({}, receipts); run.enableFixtureDiagnostics()
+  for (const [stage, value] of [['fresh-postgres-equivalence-proof', proof], ['fresh-postgres-known-aliases', aliases]]) {
+    assert.deepEqual(sanitizeFixtureObservation(stage, value), value)
+    run.recordFixtureObservation(stage, value)
+    assert.equal(Object.hasOwn(receipts.at(-1), 'code'), false)
+    for (const invalid of [{ ...value, raw_sql: 'PRIVATE_SQL_CANARY' }, { ...value, application_source_sha: ['a'.repeat(40)] }, { ...value, postgres_image_id: [reference('c')] }]) assert.equal(sanitizeFixtureObservation(stage, invalid), null)
+  }
+  assert.equal(receipts[0].observation.any_cast_equivalence, false, 'A failed semantic assertion remains a false observation, never a successful exit')
+  assert.equal(sanitizeFixtureObservation('fresh-postgres-equivalence-proof', { ...proof, and_cases: 26 }), null)
+  assert.equal(sanitizeFixtureObservation('fresh-postgres-equivalence-proof', { ...proof, and_associativity: 'true' }), null)
+  assert.equal(sanitizeFixtureObservation('fresh-postgres-known-aliases', { ...aliases, alias_count: 2 }), null)
+  assert.equal(sanitizeFixtureObservation('fresh-postgres-known-aliases', { ...aliases, alias_count: 4, aliases: Array(4).fill(aliases.aliases[0]) }), null)
+  assert.equal(sanitizeFixtureObservation('fresh-postgres-known-aliases', { ...aliases, aliases: [{ ...aliases.aliases[0], identifier: 'PRIVATE_SQL_CANARY' }] }), null)
+})
+
 test('DDL diagnostic allows bounded fixed SQL token enums and hash/length-only private tokens in QA observations', () => {
   const observation = ddlDifference(), receipts = [], run = runner({}, receipts)
   run.recordFixtureObservation('fresh-postgres-ddl-difference', observation); assert.deepEqual(receipts, [])

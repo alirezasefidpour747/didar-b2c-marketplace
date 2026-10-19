@@ -303,7 +303,7 @@ export async function operateFresh({ action, configuration, bundle, operation, r
     exact(operation.restoration, ['path', 'evidence_url'], 'EXPLICIT_FRESH_RESTORE_DESTINATION_REQUIRED')
     const helper = await import('./fresh-restore.mjs')
     const restore = action === 'fresh-checkpoint' ? helper.runFreshCheckpoint : helper.runFreshRestore
-    const result = await restore({ config: configuration, state, saveState: persist, run, evidenceUrl: operation.restoration.evidence_url, receiptPath: operation.restoration.path, preserve, applicationImages: { api: bundle.manifest.images.api.image_id, storefront: bundle.manifest.images.storefront.image_id } })
+    const result = await restore({ config: configuration, state, saveState: persist, run, evidenceUrl: operation.restoration.evidence_url, receiptPath: operation.restoration.path, preserve, applicationSource: bundle.manifest.source_sha, applicationImages: { api: bundle.manifest.images.api.image_id, storefront: bundle.manifest.images.storefront.image_id } })
     await preserve()
     return result
   }

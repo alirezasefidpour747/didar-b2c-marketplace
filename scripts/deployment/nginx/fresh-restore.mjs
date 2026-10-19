@@ -13,6 +13,51 @@ const redisDigestScript = "local k=redis.call('KEYS','*');table.sort(k);local a=
 const ddlKeywords = new Set('CREATE TABLE INDEX UNIQUE CONSTRAINT CHECK WHERE AND OR NOT IS NULL ANY ALL BETWEEN IN ON USING ONLY DEFAULT PRIMARY KEY FOREIGN REFERENCES WITH WITHOUT AS SELECT FROM TRUE FALSE COLLATE ASC DESC NULLS FIRST LAST INCLUDE TABLESPACE DEFERRABLE INITIALLY DEFERRED IMMEDIATE MATCH FULL SIMPLE PARTIAL NO ACTION RESTRICT CASCADE SET UPDATE DELETE ALTER ADD DROP COLUMN VALID VALIDATE STORED GENERATED ALWAYS BY IDENTITY'.split(' '))
 const ddlOperators = Object.entries({ '!~~*': 'NOT_ILIKE', '~~*': 'ILIKE', '!~~': 'NOT_LIKE', '~~': 'LIKE', '!~*': 'NOT_REGEX_I', '!~': 'NOT_REGEX', '~*': 'REGEX_I', '->>': 'JSON_GET_TEXT', '->': 'JSON_GET', '::': 'CAST', '<>': 'NE', '!=': 'NE', '<=': 'LE', '>=': 'GE', '||': 'CONCAT', '@>': 'CONTAINS', '<@': 'CONTAINED_BY', '?&': 'HAS_ALL_KEYS', '?|': 'HAS_ANY_KEY', '&&': 'OVERLAP', ':=': 'ASSIGN', '=': 'EQ', '<': 'LT', '>': 'GT', '+': 'PLUS', '-': 'MINUS', '*': 'STAR', '/': 'SLASH', '~': 'REGEX', '?': 'HAS_KEY', '&': 'BIT_AND', '|': 'BIT_OR', '#': 'BIT_XOR', '%': 'MODULO' }).sort((a, b) => b[0].length - a[0].length)
 const ddlPunctuation = { '(': 'LPAREN', ')': 'RPAREN', '[': 'LBRACKET', ']': 'RBRACKET', ',': 'COMMA', '.': 'DOT', ';': 'SEMICOLON' }
+const acceptedPostgresContext = Object.freeze({ applicationSource: '0c4b047baa9dbe37cd1876159c15d22b40cf7cac', postgresImage: 'sha256:589f742565e4f6d22149176b032974f55f8201a8a37b71ed587ec5c6902e689f', api: 'sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf', storefront: 'sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10' })
+const acceptedPostgresAliases = Object.freeze([
+  { section_identity_sha256: '70dbc31802a691878cddde37666e19b30b26c99b84eba02e45d9df29091354f8', source_line_sha256: 'ffa06f7eaa1df00fc64c1145686c4e2cde4a9657a1f9a377610946ae6d42c5bb', restored_line_sha256: '56f08a0524fb72b0d2fc9ed310fa21fdcfd2fd8f5829027674c03a0bc251d242' },
+  { section_identity_sha256: 'a2e71cb32dc1a244cce7859fb8559df64928a8300df2789bc2e761ecfbc72f94', source_line_sha256: 'c2d5f891b57e5fd8c4f42085623fee5dc9b1195b2f9155375633bb028532bc5e', restored_line_sha256: 'd60395404f629617e0f7e0bca3f91fe1b06b9cbf23ab9ff0cb7757d921babbee' },
+  { section_identity_sha256: '7a493f43c9f489dfc93622484658fa9c8dc4fccc4b37cb73f776d3983be83e71', source_line_sha256: '34e1f9cbc58639c8b53caa31de0aac98651e54d3e26d80d2f09e3e228b11f682', restored_line_sha256: 'f1d7cf7db48e2d6335be4ba48204a5710b5fadaf2b7125f5041a524bd50e33d7' }
+])
+
+// Exact three known deparser line pairs, observed in run 39251313621. No
+// general SQL/parenthesis normalization. This returns a candidate, never proof.
+export function compareKnownPostgresAliases({ source, restored, applicationSource, applicationImages, postgresImage }) {
+  if (applicationSource !== acceptedPostgresContext.applicationSource || postgresImage !== acceptedPostgresContext.postgresImage || applicationImages?.api !== acceptedPostgresContext.api || applicationImages?.storefront !== acceptedPostgresContext.storefront) return null
+  const sourceBytes = Buffer.from(source), restoredBytes = Buffer.from(restored), sourceText = sourceBytes.toString('utf8'), restoredText = restoredBytes.toString('utf8')
+  if (!Buffer.from(sourceText).equals(sourceBytes) || !Buffer.from(restoredText).equals(restoredBytes)) return null
+  const left = sourceText.split('\n'), right = restoredText.split('\n')
+  if (left.length !== right.length) return null
+  const ddl = describePostgresDDLDifference(source, restored), lines = new Map(ddl.lines.map(line => [line.source_line, line])), aliases = [], canonical = [...left], used = new Set()
+  for (let position = 0; position < left.length; position++) {
+    if (left[position] === right[position]) continue
+    const line = lines.get(position + 1), alias = line && acceptedPostgresAliases.find(candidate => same(candidate, { section_identity_sha256: line.section_identity_sha256, source_line_sha256: sha256(left[position]), restored_line_sha256: sha256(right[position]) }))
+    if (!alias || used.has(alias.section_identity_sha256)) return null
+    used.add(alias.section_identity_sha256); aliases.push(alias); canonical[position] = right[position]
+  }
+  if (!aliases.length || canonical.join('\n') !== right.join('\n')) return null
+  return { kind: 'POSTGRES_KNOWN_DDL_ALIASES_V1', application_source_sha: applicationSource, postgres_image_id: postgresImage, source_sha256: sha256(Buffer.from(source)), restored_sha256: sha256(Buffer.from(restored)), canonical_sha256: sha256(canonical.join('\n')), alias_count: aliases.length, aliases }
+}
+
+export const postgresEquivalenceSQL = `WITH
+bool_values(v) AS (VALUES (true),(false),(NULL::boolean)),
+and_cases AS (SELECT ((a.v AND b.v) AND c.v) IS NOT DISTINCT FROM (a.v AND (b.v AND c.v)) AS ok FROM bool_values a CROSS JOIN bool_values b CROSS JOIN bool_values c),
+text_values(v) AS (VALUES (NULL::character varying),(''::character varying),('done'::character varying),('failed'::character varying),('reverted'::character varying),('other'::character varying),('طلا'::character varying)),
+arrays AS (SELECT a.v AS a,b.v AS b,c.v AS c FROM text_values a CROSS JOIN text_values b CROSS JOIN text_values c),
+array_cases AS (SELECT ARRAY[a,b,c]::text[] IS NOT DISTINCT FROM ARRAY[a::text,b::text,c::text] AS ok,pg_typeof(ARRAY[a,b,c]::text[])::text='text[]' AND pg_typeof(ARRAY[a::text,b::text,c::text])::text='text[]' AS type_ok FROM arrays),
+any_cases AS (SELECT (v.v::text=ANY(ARRAY[a.a,a.b,a.c]::text[])) IS NOT DISTINCT FROM (v.v::text=ANY(ARRAY[a.a::text,a.b::text,a.c::text])) AS ok FROM arrays a CROSS JOIN text_values v)
+SELECT json_build_object('and_cases',(SELECT count(*) FROM and_cases),'array_cases',(SELECT count(*) FROM array_cases),'any_cases',(SELECT count(*) FROM any_cases),'and_associativity',(SELECT bool_and(ok) FROM and_cases),'array_cast_equivalence',(SELECT bool_and(ok) FROM array_cases),'array_type_equivalence',(SELECT bool_and(type_ok) FROM array_cases),'any_cast_equivalence',(SELECT bool_and(ok) FROM any_cases));\n`
+
+export async function verifyPostgresEquivalence({ run, sourceContainer, dbUser, dbName, applicationSource, postgresImage }) {
+  if (!id(sourceContainer) || applicationSource !== acceptedPostgresContext.applicationSource || postgresImage !== acceptedPostgresContext.postgresImage) fail('FRESH_POSTGRES_EQUIVALENCE_CONTEXT_REQUIRED')
+  const output = await run('fresh-postgres-known-equivalence-proof', ['exec', '-i', sourceContainer, 'psql', '--no-psqlrc', '-X', '-q', '-t', '-A', '-v', 'ON_ERROR_STOP=1', '-U', dbUser, '-d', dbName], postgresEquivalenceSQL)
+  const actual = JSON.parse(output), expected = { and_cases: 27, array_cases: 343, any_cases: 2401, and_associativity: true, array_cast_equivalence: true, array_type_equivalence: true, any_cast_equivalence: true }
+  if (!same(Object.keys(actual).sort(), Object.keys(expected).sort()) || ['and_cases', 'array_cases', 'any_cases'].some(key => actual[key] !== expected[key]) || ['and_associativity', 'array_cast_equivalence', 'array_type_equivalence', 'any_cast_equivalence'].some(key => typeof actual[key] !== 'boolean')) fail('FRESH_POSTGRES_EQUIVALENCE_PROOF_FAILED')
+  const proof = { kind: 'POSTGRES_KNOWN_DDL_EQUIVALENCE_V1', postgres_image_id: postgresImage, application_source_sha: applicationSource, query_sha256: sha256(postgresEquivalenceSQL), ...actual }
+  run.recordFixtureObservation?.('fresh-postgres-equivalence-proof', proof)
+  if (!same(actual, expected)) fail('FRESH_POSTGRES_EQUIVALENCE_PROOF_FAILED')
+  return proof
+}
 
 function lexPostgresDDL(text) {
   const result = []; let offset = 0, line = 1
@@ -194,7 +239,7 @@ export async function verifyCheckpointApplications({ config, state, run, applica
   return subjects
 }
 
-async function performFreshRestore({ config, state, saveState, run, evidenceUrl, receiptPath, preserve, checkpoint, applicationImages }) {
+async function performFreshRestore({ config, state, saveState, run, evidenceUrl, receiptPath, preserve, checkpoint, applicationImages, applicationSource }) {
   const attemptKey = checkpoint ? 'checkpoint_attempt' : 'restore_attempt'
   if (!checkpoint && (state.phase !== 'INITIALIZED' || !id(state.ids?.postgres) || !id(state.ids?.redis) || state.ids.api || state.ids.storefront || !/^[a-f0-9]{64}$/.test(state.initialization_state_sha256 || ''))) fail('FRESH_INITIALIZED_DEPENDENCIES_ONLY_REQUIRED')
   if (state[attemptKey]) fail('FRESH_RESTORE_ALREADY_ATTEMPTED_REVIEW_RETAINED_RESOURCES')
@@ -271,14 +316,22 @@ async function performFreshRestore({ config, state, saveState, run, evidenceUrl,
   await run('fresh-restore-postgres-custom', ['exec', pg, 'pg_restore', ...dbArgs, '--exit-on-error', '--single-transaction', temporary + '.dump'])
   const logicalPg = async (container, stage) => run(stage, ['exec', container, 'sh', '-ec', 'pg_dump -U "$1" -d "$2" --no-owner --no-privileges --file=/tmp/didar-comparison.sql; sed \'/^\\\\restrict /d; /^\\\\unrestrict /d; /^-- Dumped /d\' /tmp/didar-comparison.sql > /tmp/didar-comparison-normalized.sql; sha256sum /tmp/didar-comparison-normalized.sql', 'sh', config.DIDAR_DB_USER, config.DIDAR_DB_NAME])
   const pgSource = await logicalPg(sourceIds.postgres, 'fresh-restore-postgres-source-digest'), pgRestored = await logicalPg(pg, 'fresh-restore-postgres-restored-digest')
+  let postgresComparison = { status: 'RAW_EQUAL', raw_status: 'RAW_EQUAL', source_sha256: pgSource.split(' ')[0], restored_sha256: pgRestored.split(' ')[0], canonical_sha256: pgSource.split(' ')[0], known_alias_count: 0, proof_stage: null, proof_query_sha256: null }
   if (pgSource !== pgRestored) {
+    postgresComparison = null
     try {
       await recordPostgresDumpDifference({ sourceContainer: sourceIds.postgres, restoredContainer: pg, run, backupDir, sourceDigest: pgSource, restoredDigest: pgRestored })
+      const alias = compareKnownPostgresAliases({ source: await readFile(join(backupDir, 'postgres.source.normalized.private.sql')), restored: await readFile(join(backupDir, 'postgres.restored.normalized.private.sql')), applicationSource, applicationImages, postgresImage: images.postgres })
+      if (alias) {
+        const proof = await verifyPostgresEquivalence({ run, sourceContainer: sourceIds.postgres, dbUser: config.DIDAR_DB_USER, dbName: config.DIDAR_DB_NAME, applicationSource, postgresImage: images.postgres })
+        run.recordFixtureObservation?.('fresh-postgres-known-aliases', alias)
+        postgresComparison = { status: 'KNOWN_NORMALIZED_EQUAL', raw_status: 'RAW_DIFFERENT', source_sha256: alias.source_sha256, restored_sha256: alias.restored_sha256, canonical_sha256: alias.canonical_sha256, known_alias_count: alias.alias_count, proof_stage: 'fresh-postgres-known-equivalence-proof', proof_query_sha256: proof.query_sha256 }
+      }
     } catch {
       // Numeric failure receipts are already journaled by run(); preserve the
       // original strict mismatch and never substitute raw SQL in public logs.
     }
-    fail('FRESH_POSTGRES_LOGICAL_RESTORATION_MISMATCH')
+    if (!postgresComparison) fail('FRESH_POSTGRES_LOGICAL_RESTORATION_MISMATCH')
   }
   const redis = await create('redis', ['--entrypoint', 'sh', '--mount', 'type=volume,src=' + volumes.redis + ',dst=/data'], ['-c', 'exec sleep 2147483647'])
   await run('fresh-restore-redis-rdb-copy', ['cp', join(backupDir, 'redis.rdb'), redis + ':/data/dump.rdb'])
@@ -303,7 +356,7 @@ async function performFreshRestore({ config, state, saveState, run, evidenceUrl,
     await run('fresh-restore-stop-retain', ['stop', '--time', '15', container])
   }
   if (checkpoint && !same(checkpointSubjects, await verifyCheckpointApplications({ config, state, run, applicationImages }))) fail('FRESH_CHECKPOINT_APPLICATION_METADATA_CHANGED')
-  const receipt = { format: 1, status: 'PASS', scope: checkpoint ? state.qa_fixture === true ? 'WRAPPER_PROTOCOL_FIXTURE' : 'FRESH_QUIESCED_FOUR_CONTAINER_CHECKPOINT' : 'PARALLEL_FRESH_INITIALIZED_STATE', source_container_ids: receiptSourceIds, initialization_state_sha256: state.initialization_state_sha256, checkpoint_generation: generation, matched_application_images: checkpoint ? applicationImages : null, checkpoint_application_metadata_sha256: checkpointSubjects, database_restoration: 'PASS', restoration: { postgres: 'PASS', redis: 'PASS', uploads: 'PASS', configuration: 'PASS' }, isolated_volumes: volumes, isolated_restore_containers: 'STOPPED_RETAINED', matched_dependency_images: images, backup_sha256: { postgres: pgHash, redis: redisHash, uploads: uploadsHash, configuration: configHash }, logical_sha256: { postgres: pgSource.split(' ')[0], uploads: sourceMedia.split(' ')[0] }, redis_logical_sha1: sourceRedisDigest, evidence_url: evidenceUrl, evidence_publication_status: 'NOT_VERIFIED_OWNER_DESTINATION_ONLY', backup_directory: backupDir, created_at: new Date().toISOString(), limitations: [checkpoint ? 'QUIESCED_FRESH_FOUR_CONTAINER_STATE_ONLY_NOT_LEGACY_BACKUP' : 'INITIALIZED_FRESH_STATE_ONLY_NOT_A_LEGACY_OR_RUNNING_FOUR_CONTAINER_BACKUP', 'CONFIGURATION_SCOPE_LITERAL_APPLICATION_ENV_ONLY_NOT_HOST_NGINX_TLS_FILES', 'NO_TARGET_OR_PUBLIC_HTTPS_ACCEPTANCE'] }
+  const receipt = { format: 1, status: 'PASS', scope: checkpoint ? state.qa_fixture === true ? 'WRAPPER_PROTOCOL_FIXTURE' : 'FRESH_QUIESCED_FOUR_CONTAINER_CHECKPOINT' : 'PARALLEL_FRESH_INITIALIZED_STATE', source_container_ids: receiptSourceIds, initialization_state_sha256: state.initialization_state_sha256, checkpoint_generation: generation, matched_application_images: checkpoint ? applicationImages : null, checkpoint_application_metadata_sha256: checkpointSubjects, database_restoration: 'PASS', restoration: { postgres: 'PASS', redis: 'PASS', uploads: 'PASS', configuration: 'PASS' }, postgres_comparison: postgresComparison, isolated_volumes: volumes, isolated_restore_containers: 'STOPPED_RETAINED', matched_dependency_images: images, backup_sha256: { postgres: pgHash, redis: redisHash, uploads: uploadsHash, configuration: configHash }, logical_sha256: { postgres: postgresComparison.canonical_sha256, uploads: sourceMedia.split(' ')[0] }, redis_logical_sha1: sourceRedisDigest, evidence_url: evidenceUrl, evidence_publication_status: 'NOT_VERIFIED_OWNER_DESTINATION_ONLY', backup_directory: backupDir, created_at: new Date().toISOString(), limitations: [checkpoint ? 'QUIESCED_FRESH_FOUR_CONTAINER_STATE_ONLY_NOT_LEGACY_BACKUP' : 'INITIALIZED_FRESH_STATE_ONLY_NOT_A_LEGACY_OR_RUNNING_FOUR_CONTAINER_BACKUP', 'CONFIGURATION_SCOPE_LITERAL_APPLICATION_ENV_ONLY_NOT_HOST_NGINX_TLS_FILES', 'NO_TARGET_OR_PUBLIC_HTTPS_ACCEPTANCE'] }
   await preserve()
   const bytes = Buffer.from(JSON.stringify(receipt, null, 2) + '\n'), file = await open(receiptPath, 'wx', 0o600)
   try { await file.writeFile(bytes); await file.sync() } finally { await file.close() }
