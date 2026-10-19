@@ -1,7 +1,9 @@
 # DIDAR release installation handoff
 
-**New Nginx topology releases:** follow `deployment/PR31_RELEASE_PREPARATION.md`
-and the matching `install-kit/` source-bound manifest. The legacy socket-mode
+**New Nginx topology releases:** in this downloaded archive, follow
+`install-kit/docs/deployment/PR31_RELEASE_PREPARATION.md` and the matching
+`install-kit/kit-manifest.json`. In a source checkout the guide is
+`docs/deployment/PR31_RELEASE_PREPARATION.md`. The legacy socket-mode
 image verifier and root Compose do not certify Nginx/verified-relay topology.
 `TARGET_CONFIG=BLOCKED` until verified03 discovery; no target installation is
 authorized by this generic guide.
