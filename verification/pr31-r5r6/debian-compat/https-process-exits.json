@@ -1,0 +1,79 @@
+[
+  {
+    "stage": "nginx-version",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "nginx version: nginx/1.26.3\nbuilt with OpenSSL 3.5.7 9 Jun 2026\nTLS SNI support enabled\nconfigure arguments: --with-cc-opt='-g -O2 -Werror=implicit-function-declaration -ffile-prefix-map=/build/reproducible-path/nginx-1.26.3=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=stderr --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_v3_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_secure_link_module --with-http_sub_module --with-mail_ssl_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-stream_realip_module --with-http_geoip_module=dynamic --with-http_image_filter_module=dynamic --with-http_perl_module=dynamic --with-http_xslt_module=dynamic --with-mail=dynamic --with-stream=dynamic --with-stream_geoip_module=dynamic\n"
+  },
+  {
+    "stage": "njs-version",
+    "code": 0,
+    "signal": null,
+    "stdout": "0.8.9\n",
+    "stderr": ""
+  },
+  {
+    "stage": "module-dependencies",
+    "code": 0,
+    "signal": null,
+    "stdout": "\tlinux-vdso.so.1 (0x00007fe641e55000)\n\tlibxml2.so.2 => /lib/x86_64-linux-gnu/libxml2.so.2 (0x00007fe641b76000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fe641a86000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe641892000)\n\tlibz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007fe641872000)\n\tliblzma.so.5 => /lib/x86_64-linux-gnu/liblzma.so.5 (0x00007fe64183f000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fe641e57000)\n",
+    "stderr": ""
+  },
+  {
+    "stage": "njs-exact-v1-vectors",
+    "code": 0,
+    "signal": null,
+    "stdout": "{\"status\":\"PASS\",\"vectors\":36,\"invalid_peers\":5,\"observed_distinct_secure_nonces\":true}\n",
+    "stderr": ""
+  },
+  {
+    "stage": "test-certificate",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "....+....+..............+++++++++++++++++++++++++++++++++++++++*...............+.+...+..+++++++++++++++++++++++++++++++++++++++*.+.......+.....+.+..+......+.+.........+..+..........+...+..+............+...+....+...+...+........+....+............+..................+.....+...+.........+......+...+....++++++\n...+.......+..+.............+++++++++++++++++++++++++++++++++++++++*...+..+++++++++++++++++++++++++++++++++++++++*.......+...+...+..+.........+...+......+....+...+..+......+.+......+....................+.........+...+......+......+......+.........+.+...+.........+............+...+...+...+.....+......+...+.+............+..+.+......+........+...+...+............+......................+...........+....+......+.........+...+...+......+.....+....+..+..........+..+................+.....+.......+.....+.......+..+....+.....+.+........+...+.......+.....+......+......+.+.......................+......+.+...+.....+....+...+.........+..............+...............+.+....................+...+.+......+...+.....+......+.+.....+......+.......+............+.....+......+...+............+....++++++\n-----\n"
+  },
+  {
+    "stage": "nginx-config-supported",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209938#209938: js vm init njs: 000055BB4F636180\nnginx: the configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/supported/nginx.conf syntax is ok\nnginx: configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/supported/nginx.conf test is successful\n"
+  },
+  {
+    "stage": "nginx-supported",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209939#209939: js vm init njs: 00005630ED1DE180\n"
+  },
+  {
+    "stage": "nginx-config-missing-key",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209941#209941: js vm init njs: 0000557859517180\nnginx: the configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/missing-key/nginx.conf syntax is ok\nnginx: configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/missing-key/nginx.conf test is successful\n"
+  },
+  {
+    "stage": "nginx-missing-key",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209942#209942: js vm init njs: 000056039B47E180\n"
+  },
+  {
+    "stage": "nginx-config-rewritten-peer",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209944#209944: js vm init njs: 0000558C117B5180\nnginx: the configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/rewritten-peer/nginx.conf syntax is ok\nnginx: configuration file /workspace/work/pr31-r5r6/compat/https-normalized-final/rewritten-peer/nginx.conf test is successful\n"
+  },
+  {
+    "stage": "nginx-rewritten-peer",
+    "code": 0,
+    "signal": null,
+    "stdout": "",
+    "stderr": "2026/10/19 06:14:44 [notice] 209945#209945: js vm init njs: 0000563AA88E0180\n"
+  }
+]

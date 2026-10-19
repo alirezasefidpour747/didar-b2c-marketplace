@@ -8,6 +8,8 @@ import { spawn, spawnSync } from 'node:child_process';
 import { pipeline } from 'node:stream/promises';
 import { createGzip } from 'node:zlib';
 import { pathToFileURL } from 'node:url';
+import { prepareInstallKit, verifyInstallKit } from './install-kit.mjs';
+import { validateTopologyReceipt } from './topology-receipt.mjs';
 
 export const requireSHA = value => {
   assert.match(value || '', /^[a-f0-9]{40}$/, 'Exact source SHA required');
@@ -46,6 +48,7 @@ export const imageInfo = (ref, env = process.env) => JSON.parse(command('docker'
 export async function loadBundle(dir, expectedSource) {
   const m = validateManifest(JSON.parse(await readFile(join(dir, 'release-manifest.json'))), expectedSource);
   assert.equal(await fileHash(join(dir, m.archive)), m.archive_sha256, 'Archive digest mismatch');
+  if (m.install_kit) await verifyInstallKit(dir, m.source_sha, m.install_kit);
   command('docker', ['load', '--input', join(dir, m.archive)]);
   for (const image of Object.values(m.images)) {
     const actual = imageInfo(image.local_tag);
@@ -56,7 +59,9 @@ export async function loadBundle(dir, expectedSource) {
   return m;
 }
 export async function checksums(dir) {
-  const files = ['images.tar.gz', 'release-manifest.json', 'INSTALL.md'];
+  const m = JSON.parse(await readFile(join(dir, 'release-manifest.json')));
+  const kit = m.install_kit ? await verifyInstallKit(dir, m.source_sha, m.install_kit) : [];
+  const files = ['images.tar.gz', 'release-manifest.json', 'INSTALL.md', ...kit];
   await writeFile(join(dir, 'SHA256SUMS'), (await Promise.all(files.map(async f => `${await fileHash(join(dir, f))}  ${f}`))).join('\n') + '\n');
 }
 async function build(dir) {
@@ -83,7 +88,7 @@ async function build(dir) {
   });
   await Promise.all([closed, pipeline(child.stdout, createGzip({ level: 6 }), createWriteStream(join(dir, 'images.tar.gz')))]);
   const manifest = {
-    format: 1, source_sha: sha, created_at: new Date().toISOString(),
+    format: 1, delivery_kind: process.env.DIDAR_RELEASE_KIND === 'REVIEW_CANDIDATE' ? 'REVIEW_CANDIDATE' : 'ACCEPTED_MAIN_RELEASE', source_sha: sha, install_kit: await prepareInstallKit(dir, sha), created_at: new Date().toISOString(),
     workflow_run: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
     accepted_ci_run: process.env.DIDAR_RELEASE_CI_RUN,
     images, archive: 'images.tar.gz', archive_sha256: await fileHash(join(dir, 'images.tar.gz')),
@@ -96,9 +101,18 @@ async function build(dir) {
   await copyFile('docs/CI_RELEASE_INSTALL.md', join(dir, 'INSTALL.md'));
   await checksums(dir);
 }
-async function publish(dir) {
-  const m = await loadBundle(dir, process.env.DIDAR_RELEASE_SOURCE);
+export function requirePublishableBundle(m) {
   assert.equal(m.verification.independent_artifacts.status, 'PASS');
+  assert.notEqual(m.delivery_kind, 'REVIEW_CANDIDATE', 'Candidate artifacts cannot authorize accepted-main publication');
+  if (m.install_kit) {
+    assert.equal(m.delivery_kind, 'ACCEPTED_MAIN_RELEASE');
+    validateTopologyReceipt(m, m.verification.independent_artifacts);
+  }
+}
+async function publish(dir) {
+  const candidate = validateManifest(JSON.parse(await readFile(join(dir, 'release-manifest.json'))), process.env.DIDAR_RELEASE_SOURCE);
+  requirePublishableBundle(candidate);
+  const m = await loadBundle(dir, process.env.DIDAR_RELEASE_SOURCE);
   const root = await mkdtemp(join(process.env.RUNNER_TEMP || tmpdir(), 'didar-registry-'));
   const authenticated = join(root, 'authenticated'), anonymous = join(root, 'anonymous');
   await mkdir(authenticated, { mode: 0o700 }); await mkdir(anonymous, { mode: 0o700 });

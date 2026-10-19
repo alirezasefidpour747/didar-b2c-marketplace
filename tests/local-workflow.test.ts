@@ -155,3 +155,20 @@ test('build receipt accepts a tracked route removal and still detects a newly ad
   recordBuild(root);expect(()=>verifyBuild(root)).not.toThrow()
   writeFileSync(join(root,replacement),'changed replacement');expect(()=>verifyBuild(root)).toThrow('source/artifacts/platform')
 }))
+
+test('build reuse includes the actual build runner and its imported observation helpers', () => fixture(root => {
+  const git = (...args: string[]) => { const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});expect(r.status,r.stderr).toBe(0) }
+  git('init','-q')
+  for (const path of ['packages/api/.medusa/server/medusa-config.js','apps/storefront/.next/BUILD_ID','apps/admin/dist/index.html','apps/vendor/dist/index.html']) {
+    mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),'compiled output')
+  }
+  for (const path of ['scripts/build-all.mjs','scripts/local/runtime.mjs','scripts/ci/process-receipts.mjs']) {
+    mkdirSync(join(root,path,'..'),{recursive:true});writeFileSync(join(root,path),'reviewed build tool')
+  }
+  recordBuild(root);expect(()=>verifyBuild(root)).not.toThrow()
+  for (const path of ['scripts/build-all.mjs','scripts/local/runtime.mjs','scripts/ci/process-receipts.mjs']) {
+    writeFileSync(join(root,path),'changed build tool')
+    expect(()=>verifyBuild(root)).toThrow('source/artifacts/platform')
+    writeFileSync(join(root,path),'reviewed build tool');expect(()=>verifyBuild(root)).not.toThrow()
+  }
+}))

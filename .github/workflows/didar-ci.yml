@@ -48,6 +48,8 @@ jobs:
           name: ci-results-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             .local/ci-evidence/validation.json
+            .local/ci-evidence/subprocess-exits.jsonl
+            .local/ci-evidence/subprocess-summary.json
             .local/ci-evidence/cms-media/results.json
             .local/evidence/pre-rollout/cms-page-errors.json
           include-hidden-files: true

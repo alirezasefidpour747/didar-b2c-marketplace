@@ -113,7 +113,10 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-build-results-${{ github.run_id }}-${{ github.run_attempt }}
-          path: .local/ci-evidence/validation.json
+          path: |
+            .local/ci-evidence/validation.json
+            .local/ci-evidence/subprocess-exits.jsonl
+            .local/ci-evidence/subprocess-summary.json
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 14
@@ -143,14 +146,20 @@ jobs:
         run: |
           bun install --frozen-lockfile
           bunx playwright install --with-deps chromium
+      - name: Build exact compatible Debian Nginx/njs verification edge
+        run: |
+          bash scripts/ci/prepare-compat-context.sh edge "$RUNNER_TEMP/edge-context"
+          docker build --platform linux/amd64 --build-arg SOURCE_SHA="$DIDAR_RELEASE_SOURCE" -t didar-qa-edge "$RUNNER_TEMP/edge-context"
+          echo "DIDAR_QA_NGINX_IMAGE=$(docker image inspect --format '{{.Id}}' didar-qa-edge)" >> "$GITHUB_ENV"
       - name: Independently load and execute the delivered images
-        run: node scripts/ci/verify-images.mjs .local/ci-release
+        run: node scripts/ci/verify-topology-images.mjs .local/ci-release
       - name: Upload sanitized independent verification receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: image-verification-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            .local/topology-artifact-evidence/
             .local/ci-evidence/image-verification.json
             .local/ci-evidence/http-before-results.json
             .local/ci-evidence/http-after-results.json

@@ -1,0 +1,30 @@
+# Disposable privileged CI daemon only. NEVER install/run this on the owner host.
+# Exact upstream Docker/Compose versions observed on target; Debian package
+# revisions/containerd/runc are independently pinned candidates, not target facts.
+FROM node:24.19.0-bookworm-slim@sha256:e5a8dee7bc1e6a215d224a7ef8206f7e77271bc3cabd5febf2beafac0674f174 AS node
+FROM debian:trixie-slim@sha256:918311b7b6c4c6f68b232ba516584925f6c78ad82b6fd534b98979df6438e483
+COPY root/ /
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+# dpkg extraction intentionally skips package maintainer scripts. Supply the
+# explicit Debian nft alternatives in THIS disposable image only.
+RUN ln -s xtables-nft-multi /usr/sbin/iptables \
+    && ln -s xtables-nft-multi /usr/sbin/ip6tables \
+    && ln -s xtables-nft-multi /usr/sbin/iptables-save \
+    && ln -s xtables-nft-multi /usr/sbin/iptables-restore \
+    && ln -s xtables-nft-multi /usr/sbin/ip6tables-save \
+    && ln -s xtables-nft-multi /usr/sbin/ip6tables-restore \
+    && find /usr/share/ca-certificates -type f -name '*.crt' -printf '%P\n' | LC_ALL=C sort > /etc/ca-certificates.conf \
+    && update-ca-certificates \
+    && test -s /etc/ssl/certs/ca-certificates.crt \
+    && sha256sum /etc/ssl/certs/ca-certificates.crt \
+    && /usr/local/bin/node --version \
+    && /usr/sbin/dockerd --version \
+    && /usr/bin/docker --version \
+    && /usr/bin/docker compose version \
+    && /usr/bin/containerd --version \
+    && /usr/sbin/runc --version
+# No Docker socket/TCP listener exposed by default. Caller uses docker exec with
+# this disposable daemon's own unix socket; never mounts the owner's socket.
+VOLUME ["/var/lib/docker"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/sbin/dockerd"]
+CMD ["--host=unix:///var/run/docker.sock", "--storage-driver=vfs"]

@@ -107,10 +107,10 @@ export async function testLocal(processes, { reuseBuild = false, noDemoOnly = fa
       console.log('C09_REPEAT_MIGRATION_NO_DEMO_VERIFIED '+JSON.stringify(counts))
       return
     }
-    await run('bun', ['test', './tests/local-workflow.test.ts', ...backendFiles], { env })
-    await run('bun', ['run', '--cwd', 'packages/api', 'test:integration:http'], { env })
-    await run('node', ['scripts/local/browser-login-window.mjs'], { env })
-    await run('bun', ['run', 'test:e2e'], { env })
+    await run('bun', ['test', './tests/local-workflow.test.ts', ...backendFiles], { env, receiptStage: 'backend-regressions' })
+    await run('bun', ['run', '--cwd', 'packages/api', 'test:integration:http'], { env, receiptStage: 'native-http' })
+    await run('node', ['scripts/local/browser-login-window.mjs'], { env, receiptStage: 'browser-login-window' })
+    await run('bun', ['run', 'test:e2e'], { env, receiptStage: 'browser-32' })
     console.log('CODEX_LINUX_VERIFIED. Owner Mac acceptance is deferred until all feature phases are complete; physical RFID hardware remains unverified.')
   } finally {
     await cleanup()

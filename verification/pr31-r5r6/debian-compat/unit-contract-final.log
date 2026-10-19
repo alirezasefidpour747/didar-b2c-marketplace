@@ -1,0 +1,17 @@
+✔ njs detached empty requestBuffer is normalized without changing the v1 empty-body proof (4.09696ms)
+✔ njs canonical peers equal the existing v1 implementation, including mapped IPv6 and compression ties (22.479555ms)
+✔ wire proof matches v1 exactly for raw bytes, UTF-8, query encodings and four auth routes (117.456345ms)
+✔ changed method/path/query/body, wrong key and time cannot verify the proof (0.569566ms)
+✔ content handler signs original raw bytes and redirects only to fixed named TLS relay (1.460826ms)
+✔ missing key, rewritten socket, PROXY protocol, temp-file, encoding and entropy failures fail closed (0.572871ms)
+✔ template keeps fixed TLS relay, attribution clearing and private transport protections (0.427152ms)
+✔ candidate rendering requires explicit observed values and refuses injection or overwrites (2.119746ms)
+✔ candidate composition keeps required strict trust and existing state with one loopback relay mapping (0.694354ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 235.660171

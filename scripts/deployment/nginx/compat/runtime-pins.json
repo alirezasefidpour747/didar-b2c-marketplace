@@ -1,0 +1,178 @@
+{
+  "nginx": [
+    "1.26.3-3+deb13u9",
+    "29258fa0e2f4c9162a95eda2c36cf84ee8f57289a14c58fb7e6d3868c61a5db3"
+  ],
+  "nginx-common": [
+    "1.26.3-3+deb13u9",
+    "d0eab69fa763305d11bd623418118b61da1738aacd1390cd4465b7773289df1c"
+  ],
+  "libnginx-mod-stream": [
+    "1.26.3-3+deb13u9",
+    "31503877739cdb8f0423ad3b43ac36d73beb50d6a0d4ff05b190b377c5014d2a"
+  ],
+  "libnginx-mod-http-js": [
+    "0.8.9-1",
+    "2892f45cb35b3893f4d331d817ad88f5fece1934dc8b83acfe6eaa6d321a6e2c"
+  ],
+  "njs": [
+    "0.8.9-1",
+    "6a411db62c936cbd9d1edf913f3ae8db2b7cf86a7a71f6e162b43a4c8e6a179b"
+  ],
+  "curl": [
+    "8.14.1-2+deb13u7",
+    "135636bd8b713c582d33e50ec4e36ea55cc3c5da3f12bbeb6b87d2bcbd3a0649"
+  ],
+  "libcrypt1": [
+    "1:4.4.38-1",
+    "0ebc144d662e3197982d1bf3a7b8b35ca845e54c68811de0328b1f0d7c67585c"
+  ],
+  "libpcre2-8-0": [
+    "10.46-1~deb13u3",
+    "e226f661d918f04daf38cdbc4806b7ed7d6ef95c7eb0ade692fc350e31970040"
+  ],
+  "libssl3t64": [
+    "3.5.7-1~deb13u3",
+    "ff16bc048bcd7d1b256094450b79c77947d8e76fe2a24bd99b91021d591fa074"
+  ],
+  "zlib1g": [
+    "1:1.3.dfsg+really1.3.1-1+b1",
+    "015be740d6236ad114582dea500c1d907f29e16d6db00566ca32fb68d71ac90d"
+  ],
+  "libxml2": [
+    "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+    "e0c6b63ce4602a036a526f60fe5e6c1586710688058d98fc1001b9b3147b7efd"
+  ],
+  "liblzma5": [
+    "5.8.1-1+deb13u2",
+    "b38acab30f295bf1066a6632e31cbd0a1980f2924b38040cda131d5dea5384ec"
+  ],
+  "libedit2": [
+    "3.1-20250104-1",
+    "b002ea172b9c1e34a67bc497c523c67bb74c3f0a4e98113cb083990a1f1d3bfe"
+  ],
+  "libbsd0": [
+    "0.12.2-2",
+    "e5a85986fa6bec3307ab1bc860736b478b331882bc45e17675a7bdf88eecb43a"
+  ],
+  "libmd0": [
+    "1.1.0-2+b1",
+    "7244ec3839b61fac0c1884fe08aaa040f26e8f1f35f1f5d3482eacefd30d1b44"
+  ],
+  "libtinfo6": [
+    "6.5+20250216-2",
+    "8b9f6a7983e9418564e48a627518de4c03917b56efe68d7f3e93bd8fffa1cc10"
+  ],
+  "libcurl4t64": [
+    "8.14.1-2+deb13u7",
+    "4f89bd3e7a33bbd8f7422817a8a8e2233c9e194fda9c331e33bf98705f525bfc"
+  ],
+  "libzstd1": [
+    "1.5.7+dfsg-1",
+    "2f6a2aeacfc925eba8b00ac9139bc4bfccf8cacb09eb93de067074b26948eef9"
+  ],
+  "openssl-provider-legacy": [
+    "3.5.7-1~deb13u3",
+    "c12e0266c4780749a4702b8959ac979689f4182e18eed85a8a5eb90ed0e16eab"
+  ],
+  "libbrotli1": [
+    "1.1.0-2+b7",
+    "0fb79f88db210afbd69282ab9649e525f393ec6950ca34da1a6b359250b8d7db"
+  ],
+  "libgssapi-krb5-2": [
+    "1.21.3-5+deb13u1",
+    "30847c1fde4240567d7ed3aeab4f655dd591203758b857e85e824045aae70299"
+  ],
+  "libidn2-0": [
+    "2.3.8-2",
+    "90b039bcdc4578f8e1c4935adf8dbb525e36a164deefdbbb8c45bac347d48278"
+  ],
+  "libldap2": [
+    "2.6.10+dfsg-1",
+    "60069e4a550ca890113fa89d3001417781b18e146ec5d637d31e368dec9909bd"
+  ],
+  "libnghttp2-14": [
+    "1.64.0-1.1+deb13u1",
+    "896cb217537c09251fb909b8541349010ac279d802d871e98c06a62a2c67ce2c"
+  ],
+  "libnghttp3-9": [
+    "1.8.0-1",
+    "388e4c33b72829cbf0d098afdc8539fa5ba7458eddb077f5538fdb4d5538716b"
+  ],
+  "libpsl5t64": [
+    "0.21.2-1.1+b1",
+    "59d42bb1f9ebc0d1776fe616efb08a7a8568b05982e00f70b03c63863db768ab"
+  ],
+  "librtmp1": [
+    "2.4+20151223.gitfa8646d.1-2+b5",
+    "93baa2004cbe6c8721b9e81beed078612540aef120970b4751305c51c6697368"
+  ],
+  "libssh2-1t64": [
+    "1.11.1-1+deb13u2",
+    "dbb1024c192d4d292b7cfa902b96076cfe81b56a5eed4fb28da36e8bf543e49a"
+  ],
+  "libkrb5-3": [
+    "1.21.3-5+deb13u1",
+    "47d71d6a7f2e59b9bae5f89602397594805113b95889ad18fa703cd53abafc97"
+  ],
+  "libcom-err2": [
+    "1.47.2-3+b12",
+    "bd43e020b8fed399db3eebf098111f10fba4c436fff99ccad72cc7e27c9764ec"
+  ],
+  "libk5crypto3": [
+    "1.21.3-5+deb13u1",
+    "7da07ee674b47f1f0be7cc89317c25310086a1f1761217d0f72e6ae2c5a69b84"
+  ],
+  "libkrb5support0": [
+    "1.21.3-5+deb13u1",
+    "3a0acd8b37955c0e102c756b52c97df2a31f67b96453c35dab70df218d309117"
+  ],
+  "libunistring5": [
+    "1.3-2",
+    "6dd3490bef06ea1096f32d10766b7e016cf579bfae8451d1b7df15ce05b8aa46"
+  ],
+  "libsasl2-2": [
+    "2.1.28+dfsg1-9",
+    "66e49d7ae026811b49a0050f18b0325960a2625ffd1ff60d91b7844a815fa9d2"
+  ],
+  "libgmp10": [
+    "2:6.3.0+dfsg-3",
+    "d0d0265eb01770f17afd0f7c8c0622f80479dcfbbe13653a0debeec61464e622"
+  ],
+  "libgnutls30t64": [
+    "3.8.9-3+deb13u4",
+    "18a8bdfd91c7e3bcb01719d55a2b56849c7160b34f1f52b1c4fdfdd41bf1352b"
+  ],
+  "libhogweed6t64": [
+    "3.10.1-1",
+    "b059ed155115ac09da295322de48ee1ed58ef5fa45edcc9e12ff0e94636ef25f"
+  ],
+  "libnettle8t64": [
+    "3.10.1-1",
+    "1b03d4a9cd9c8143ba50fe6396f36937e901a317d492d179f4596862c1731cfe"
+  ],
+  "libkeyutils1": [
+    "1.6.3-6",
+    "0b11ad17be0300b63ad4eeb4c6450fed24d34b7b740f23e5363dcb29ee6d5eba"
+  ],
+  "libsasl2-modules-db": [
+    "2.1.28+dfsg1-9",
+    "a5c38659fbd62c33c6d9bfa2be43e75a572d1818531aad32dd74d0a58cc4bd19"
+  ],
+  "libp11-kit0": [
+    "0.25.5-3",
+    "784bf2063e166c8bc851a32623b74ebd85c499043a9d57c5bbd64fa63447f45a"
+  ],
+  "libtasn1-6": [
+    "4.20.0-2+deb13u1",
+    "23fec6e06583ce2bad9b2c04c9b485e90440e259b1abf8677cd80d3ce60831ad"
+  ],
+  "libdb5.3t64": [
+    "5.3.28+dfsg2-9",
+    "18d02510ee78b67e4504ba050176797a200ff24214a7cd318082ab60ad7bf3fc"
+  ],
+  "libffi8": [
+    "3.4.8-2",
+    "0ebdc340de33333639c3c63874cd4b15ac2e83dfa1ef3053b7eefaf4919f4f68"
+  ]
+}

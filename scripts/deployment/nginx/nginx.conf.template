@@ -1,0 +1,46 @@
+# Isolated reference topology, NOT a target-server configuration.
+# Render only after observed module/peer/TLS discovery. No real_ip or PROXY protocol.
+load_module __NJS_MODULE_FILE__;
+env DIDAR_AUTH_NETWORK_KEY;
+worker_processes 1;
+pid __PID_FILE__;
+error_log /dev/stderr warn;
+events { worker_connections 1024; }
+http {
+  access_log off;
+  server_tokens off;
+  js_import didar from __SIGNER_DIRECTORY__/auth.mjs;
+  js_var $didar_network_proof "";
+  upstream didar_relay { server __RELAY_ADDRESS__; }
+  server {
+    listen __LISTEN_ADDRESS__ ssl;
+    server_name __PUBLIC_HOST__;
+    ssl_certificate __TLS_CERT_FILE__;
+    ssl_certificate_key __TLS_KEY_FILE__;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    # Existing backend supports 29MiB media payloads. Auth overrides this below.
+    client_max_body_size 29m;
+    add_header X-Content-Type-Options nosniff always;
+
+    location ~ ^/(?:api/)?didar/(?:login|register)$ {
+      client_max_body_size 1200000;
+      client_body_buffer_size 1200000;
+      client_body_in_single_buffer on;
+      js_content didar.authenticate;
+    }
+    location @didar_signed_relay {
+      include __PROXY_HEADERS_FILE__;
+      proxy_set_header X-Didar-Auth-Network $didar_network_proof;
+      proxy_ssl_name __RELAY_TLS_NAME__;
+      proxy_pass https://didar_relay;
+    }
+    # Relay owns a fixed native/API/media vs Next routing inventory. The edge
+    # never bypasses TLS across the Docker bridge or contacts the API directly.
+    location / {
+      include __PROXY_HEADERS_FILE__;
+      proxy_set_header X-Didar-Auth-Network "";
+      proxy_ssl_name __RELAY_TLS_NAME__;
+      proxy_pass https://didar_relay;
+    }
+  }
+}

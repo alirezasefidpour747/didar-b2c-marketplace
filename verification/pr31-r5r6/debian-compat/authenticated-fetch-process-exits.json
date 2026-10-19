@@ -1,0 +1,225 @@
+[
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://security.debian.org/debian-security/dists/trixie-security/InRelease",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-security-InRelease"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "sqv",
+      "--keyring=/usr/share/keyrings/debian-archive-keyring.pgp",
+      "--cleartext",
+      "--output=/workspace/work/pr31-r5r6/compat/authenticated/trixie-security-Release",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-security-InRelease"
+    ],
+    "exit_code": 0,
+    "stdout": "05AB90340C0C5E797F44A8C8254CF3B5AEC0A8F0\n5E04A1E3223A19A20706E20F9904613D4CCE68C6\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://security.debian.org/debian-security/dists/trixie-security/main/binary-amd64/Packages.xz",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-security-Packages.xz"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://deb.debian.org/debian/dists/trixie/InRelease",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-InRelease"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "sqv",
+      "--keyring=/usr/share/keyrings/debian-archive-keyring.pgp",
+      "--cleartext",
+      "--output=/workspace/work/pr31-r5r6/compat/authenticated/trixie-Release",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-InRelease"
+    ],
+    "exit_code": 0,
+    "stdout": "04B54C3CDCA79751B16BC6B5225629DF75B188BD\n41587F7DB8C774BCCF131416762F67A0B2C39DE4\nB8B80B5B623EAB6AD8775C45B7C5D7D6350947F8\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/trixie-Packages.xz"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://security.debian.org/debian-security/pool/updates/main/n/nginx/nginx_1.26.3-3+deb13u9_amd64.deb",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/nginx_1.26.3-3+deb13u9_amd64.deb"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "dpkg-deb",
+      "--extract",
+      "/workspace/work/pr31-r5r6/compat/authenticated/nginx_1.26.3-3+deb13u9_amd64.deb",
+      "/workspace/work/pr31-r5r6/compat/authenticated/root"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://security.debian.org/debian-security/pool/updates/main/n/nginx/nginx-common_1.26.3-3+deb13u9_all.deb",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/nginx-common_1.26.3-3+deb13u9_all.deb"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "dpkg-deb",
+      "--extract",
+      "/workspace/work/pr31-r5r6/compat/authenticated/nginx-common_1.26.3-3+deb13u9_all.deb",
+      "/workspace/work/pr31-r5r6/compat/authenticated/root"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://security.debian.org/debian-security/pool/updates/main/n/nginx/libnginx-mod-stream_1.26.3-3+deb13u9_amd64.deb",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/libnginx-mod-stream_1.26.3-3+deb13u9_amd64.deb"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "dpkg-deb",
+      "--extract",
+      "/workspace/work/pr31-r5r6/compat/authenticated/libnginx-mod-stream_1.26.3-3+deb13u9_amd64.deb",
+      "/workspace/work/pr31-r5r6/compat/authenticated/root"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-js/libnginx-mod-http-js_0.8.9-1_amd64.deb",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/libnginx-mod-http-js_0.8.9-1_amd64.deb"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "dpkg-deb",
+      "--extract",
+      "/workspace/work/pr31-r5r6/compat/authenticated/libnginx-mod-http-js_0.8.9-1_amd64.deb",
+      "/workspace/work/pr31-r5r6/compat/authenticated/root"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "curl",
+      "--fail",
+      "--silent",
+      "--show-error",
+      "--proto",
+      "=https",
+      "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-js/njs_0.8.9-1_amd64.deb",
+      "-o",
+      "/workspace/work/pr31-r5r6/compat/authenticated/njs_0.8.9-1_amd64.deb"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "dpkg-deb",
+      "--extract",
+      "/workspace/work/pr31-r5r6/compat/authenticated/njs_0.8.9-1_amd64.deb",
+      "/workspace/work/pr31-r5r6/compat/authenticated/root"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,280 @@
+{
+  "name": "${DIDAR_COMPOSE_PROJECT:?Set the inspected existing Compose project}",
+  "networks": {
+    "default": {
+      "external": true,
+      "name": "${DIDAR_COMPOSE_NETWORK:?Set the inspected existing Compose network}"
+    }
+  },
+  "services": {
+    "api": {
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully",
+          "required": true
+        }
+      },
+      "environment": {
+        "ADMIN_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "AUTH_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "COOKIE_SECRET": "${COOKIE_SECRET:?Run scripts/configure.mjs first}",
+        "DATABASE_URL": "${DATABASE_URL:?Preserve the reviewed complete existing database URL}",
+        "DIDAR_AUTH_NETWORK_KEY": "${DIDAR_AUTH_NETWORK_KEY:?Configure the shared server-only auth ingress key}",
+        "DIDAR_AUTH_PROXY_PEERS": "127.0.0.1",
+        "DIDAR_ENVIRONMENT": "staging",
+        "DIDAR_PAYMENT_MODE": "sandbox",
+        "DIDAR_PUBLIC_ORIGIN": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "DIDAR_PUBLIC_ORIGIN_VERIFIED": "${DIDAR_PUBLIC_ORIGIN_VERIFIED:-false}",
+        "DIDAR_SEED_DEMO": "false",
+        "FILE_BACKEND_URL": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}/static",
+        "JWT_SECRET": "${JWT_SECRET:?Run scripts/configure.mjs first}",
+        "MERCUR_DISABLE_TELEMETRY": "true",
+        "REDIS_URL": "${REDIS_URL:?Preserve the reviewed existing Redis URL}",
+        "STORE_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "VENDOR_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "DIDAR_AUTH_PROXY_POLICY": "require-proof"
+      },
+      "healthcheck": {
+        "interval": "15s",
+        "retries": 10,
+        "test": [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:9000/didar/catalog').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ],
+        "timeout": "10s"
+      },
+      "image": "${DIDAR_API_IMAGE:?Set reviewed immutable new API image reference}",
+      "networks": {
+        "default": null
+      },
+      "ports": [
+        "127.0.0.1:${DIDAR_AUTH_HOST_PORT:?Set inspected loopback TLS relay host port}:3000"
+      ],
+      "volumes": [
+        {
+          "source": "uploads",
+          "target": "/app/packages/api/.medusa/server/static",
+          "type": "volume",
+          "volume": {}
+        }
+      ],
+      "pull_policy": "never",
+      "restart": "unless-stopped",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "command": [
+        "sh",
+        "-c",
+        "cd packages/api/.medusa/server && exec node /app/packages/api/node_modules/@medusajs/cli/cli.js start --host 127.0.0.1 --port 9000"
+      ],
+      "stop_grace_period": "25s"
+    },
+    "migrate": {
+      "command": [
+        "sh",
+        "-c",
+        "cd packages/api && NODE_ENV=development bun x --no-install medusa db:migrate && NODE_ENV=development bun x --no-install medusa exec ./src/scripts/didar-seed.ts"
+      ],
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy",
+          "required": true
+        },
+        "redis": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "environment": {
+        "ADMIN_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "AUTH_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "COOKIE_SECRET": "${COOKIE_SECRET:?Run scripts/configure.mjs first}",
+        "DATABASE_URL": "${DATABASE_URL:?Preserve the reviewed complete existing database URL}",
+        "DIDAR_AUTH_NETWORK_KEY": "${DIDAR_AUTH_NETWORK_KEY:?Configure the shared server-only auth ingress key}",
+        "DIDAR_AUTH_PROXY_PEERS": "127.0.0.1",
+        "DIDAR_ENVIRONMENT": "staging",
+        "DIDAR_PAYMENT_MODE": "sandbox",
+        "DIDAR_PUBLIC_ORIGIN": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "DIDAR_PUBLIC_ORIGIN_VERIFIED": "${DIDAR_PUBLIC_ORIGIN_VERIFIED:-false}",
+        "DIDAR_SEED_DEMO": "false",
+        "FILE_BACKEND_URL": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}/static",
+        "JWT_SECRET": "${JWT_SECRET:?Run scripts/configure.mjs first}",
+        "MERCUR_DISABLE_TELEMETRY": "true",
+        "REDIS_URL": "${REDIS_URL:?Preserve the reviewed existing Redis URL}",
+        "STORE_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "VENDOR_CORS": "${DIDAR_PUBLIC_ORIGIN:?Set reviewed same-origin HTTPS URL}",
+        "DIDAR_AUTH_PROXY_POLICY": "require-proof"
+      },
+      "image": "${DIDAR_API_IMAGE:?Set reviewed immutable new API image reference}",
+      "networks": {
+        "default": null
+      },
+      "pull_policy": "never",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "postgres": {
+      "environment": {
+        "POSTGRES_DB": "${DIDAR_DB_NAME:?Set inspected existing database name}",
+        "POSTGRES_PASSWORD": "${DIDAR_DB_PASSWORD:?Run scripts/configure.mjs first}",
+        "POSTGRES_USER": "${DIDAR_DB_USER:?Set inspected existing database role}"
+      },
+      "healthcheck": {
+        "interval": "5s",
+        "retries": 20,
+        "test": [
+          "CMD",
+          "pg_isready",
+          "-U",
+          "${DIDAR_DB_USER:?Set inspected existing database role}",
+          "-d",
+          "${DIDAR_DB_NAME:?Set inspected existing database name}"
+        ],
+        "timeout": "5s"
+      },
+      "image": "${DIDAR_POSTGRES_IMAGE:?Preserve reviewed PostgreSQL image reference}",
+      "networks": {
+        "default": null
+      },
+      "volumes": [
+        {
+          "source": "postgres",
+          "target": "/var/lib/postgresql/data",
+          "type": "volume",
+          "volume": {}
+        }
+      ],
+      "pull_policy": "never",
+      "restart": "unless-stopped",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "redis": {
+      "healthcheck": {
+        "interval": "5s",
+        "retries": 20,
+        "test": [
+          "CMD",
+          "redis-cli",
+          "ping"
+        ],
+        "timeout": "3s"
+      },
+      "image": "${DIDAR_REDIS_IMAGE:?Preserve reviewed Redis image reference}",
+      "networks": {
+        "default": null
+      },
+      "pull_policy": "never",
+      "restart": "unless-stopped",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "command": [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--maxmemory",
+        "128mb",
+        "--maxmemory-policy",
+        "noeviction"
+      ],
+      "volumes": [
+        {
+          "type": "volume",
+          "source": "redis",
+          "target": "/data"
+        }
+      ]
+    },
+    "storefront": {
+      "depends_on": {
+        "api": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "environment": {
+        "DIDAR_AUTH_HEALTH_SERVER_NAME": "${DIDAR_AUTH_TLS_SERVER_NAME:?Set certificate DNS SAN used by Nginx and health checks}",
+        "DIDAR_AUTH_INGRESS_HOST": "0.0.0.0",
+        "DIDAR_AUTH_INGRESS_PORT": "3000",
+        "DIDAR_AUTH_INGRESS_TLS_CERT_FILE": "/run/didar-tls/cert.pem",
+        "DIDAR_AUTH_INGRESS_TLS_KEY_FILE": "/run/didar-tls/key.pem",
+        "DIDAR_AUTH_NETWORK_KEY": "${DIDAR_AUTH_NETWORK_KEY:?Configure the shared server-only auth ingress key}",
+        "DIDAR_PRIVATE_NEXT_PORT": "3001",
+        "MEDUSA_BACKEND_URL": "http://127.0.0.1:9000",
+        "NODE_EXTRA_CA_CERTS": "/run/didar-tls/ca.pem",
+        "DIDAR_AUTH_INGRESS_MODE": "verified-relay",
+        "DIDAR_AUTH_INGRESS_PEERS": "${DIDAR_AUTH_INGRESS_PEERS:?Set exact canonical Nginx socket peers observed at relay}",
+        "DIDAR_AUTH_NATIVE_URL": "http://127.0.0.1:9000"
+      },
+      "healthcheck": {
+        "interval": "15s",
+        "retries": 10,
+        "test": [
+          "CMD",
+          "node",
+          "runtime/health.mjs"
+        ],
+        "timeout": "10s"
+      },
+      "image": "${DIDAR_STOREFRONT_IMAGE:?Set reviewed immutable new storefront image reference}",
+      "network_mode": "service:api",
+      "stop_grace_period": "25s",
+      "volumes": [
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${DIDAR_AUTH_TLS_DIR:?Provide a directory with cert.pem and key.pem}",
+          "target": "/run/didar-tls",
+          "type": "bind"
+        }
+      ],
+      "pull_policy": "never",
+      "restart": "unless-stopped",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    }
+  },
+  "volumes": {
+    "postgres": {
+      "external": true,
+      "name": "${DIDAR_POSTGRES_VOLUME:?Set the inspected existing volume name}"
+    },
+    "uploads": {
+      "external": true,
+      "name": "${DIDAR_UPLOADS_VOLUME:?Set the inspected existing volume name}"
+    },
+    "redis": {
+      "external": true,
+      "name": "${DIDAR_REDIS_VOLUME:?Set the inspected existing volume name}"
+    }
+  }
+}

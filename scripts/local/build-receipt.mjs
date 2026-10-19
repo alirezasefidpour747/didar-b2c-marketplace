@@ -16,7 +16,7 @@ function digest(root, paths) {
   return hash.digest('hex')
 }
 export function receipt(root = '.', files) {
-  const inputs = files || capture('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root }).split('\0').filter(path => /^(apps\/|packages\/|bun.lock$|package.json$|scripts\/(build-panels.mjs|prepare-codegen-cache.mjs|mercur-routes.snapshot.json)$)/.test(path) && existsSync(join(root, path)))
+  const inputs = files || capture('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { cwd: root }).split('\0').filter(path => /^(apps\/|packages\/|bun.lock$|package.json$|scripts\/(build-all.mjs|build-panels.mjs|prepare-codegen-cache.mjs|mercur-routes.snapshot.json|ci\/process-receipts.mjs|local\/runtime.mjs)$)/.test(path) && existsSync(join(root, path)))
   for (const marker of ['packages/api/.medusa/server/medusa-config.js', 'apps/storefront/.next/BUILD_ID', 'apps/admin/dist/index.html', 'apps/vendor/dist/index.html'])
     if (!existsSync(join(root, marker))) throw new Error('Production build missing; run local:test without --reuse-build')
   return { platform: process.platform, arch: process.arch, node: process.versions.node, source: digest(root, inputs), outputs: digest(root, ['packages/api/.medusa/server', 'apps/storefront/.next', 'apps/admin/dist', 'apps/vendor/dist']) }

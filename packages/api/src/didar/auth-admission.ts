@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import type { PoolClient } from "pg";
-import { HEADER, normalizePeer, verifyNetwork } from "@didar/auth-network";
+import { HEADER, normalizePeer, verifyNetwork, apiNetworkPolicy } from "@didar/auth-network";
 import { db } from "./db";
 
 export const AUTH_WORK_NAMESPACE = 1145655624; // two-key advisory space, separate from finance
@@ -27,13 +27,14 @@ async function consume(c: Pick<PoolClient, "query">, key: string) {
 async function network(req: any) {
   // Express's global trust-proxy setting is deliberately NOT consulted.
   const peer = normalizePeer(req.socket?.remoteAddress);
+  const { mode, peers } = apiNetworkPolicy();
   const assertion = req.headers[HEADER];
-  if (assertion === undefined) return peer; // explicit direct mode: true peer only
-  const configured = process.env.DIDAR_AUTH_PROXY_PEERS || "";
-  const peers = configured
-    .split(",")
-    .filter(Boolean)
-    .map((p) => normalizePeer(p.trim()));
+  if (assertion === undefined) {
+    // Explicit extension of policy A: a known proxy cannot downgrade to direct
+    // attribution. Truly direct, nonproxy sockets retain the original policy.
+    if (mode === "require-proof" && peers.includes(peer)) throw Error("FORBIDDEN");
+    return peer;
+  }
   if (!peers.includes(peer) || !Buffer.isBuffer(req.rawBody))
     throw Error("FORBIDDEN");
   const proof = verifyNetwork({
