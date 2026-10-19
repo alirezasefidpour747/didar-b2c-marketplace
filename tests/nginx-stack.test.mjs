@@ -4,7 +4,7 @@ import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink, lsta
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner, containerSummary } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner, containerSummary, resolveComposition, verifyPreservedEnvironment, verifyPreservedMounts } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -263,4 +263,37 @@ test('preservation compares all mount fields while treating Docker mount iterati
     const changed = structuredClone(reversed); changed.Mounts[0][field] = value
     assert.notDeepEqual(containerSummary(changed), expected, 'Changed ' + field + ' must remain detectable')
   }
+})
+
+
+test('existing effective configuration is preserved through image defaults and only exact reviewed topology transitions', async () => {
+  const configuration = values(), source = JSON.parse(await readFile(new URL('../scripts/deployment/nginx/compose.topology.json', import.meta.url), 'utf8'))
+  const composition = resolveComposition(source, configuration), defaults = { NODE_VERSION: '24.19.0', PATH: '/usr/local/bin:/usr/bin', EXISTING_IMAGE_DEFAULT: 'preserved' }
+  for (const role of ['api', 'storefront']) {
+    const desired = composition.services[role].environment, effective = { ...defaults, ...desired }
+    assert.doesNotThrow(() => verifyPreservedEnvironment(role, effective, defaults, desired, configuration))
+  }
+  const api = composition.services.api.environment, storefront = composition.services.storefront.environment
+  assert.doesNotThrow(() => verifyPreservedEnvironment('api', { ...defaults, ...api, DIDAR_AUTH_PROXY_POLICY: 'direct', ADMIN_CORS: 'http://old-loopback.test' }, defaults, api, configuration))
+  assert.doesNotThrow(() => verifyPreservedEnvironment('storefront', { ...defaults, ...storefront, DIDAR_AUTH_INGRESS_MODE: 'socket-signer', MEDUSA_BACKEND_URL: 'http://api:9000' }, defaults, storefront, configuration))
+  for (const [role, extra, replacementDefaults, desired] of [
+    ['api', { DIDAR_AGENCY_PROVIDER_MODE: 'existing-custom' }, defaults, api],
+    ['api', { DIDAR_IMAGE_PROCESSOR_THREADS: '8' }, { ...defaults, DIDAR_IMAGE_PROCESSOR_THREADS: '4' }, api],
+    ['api', { NODE_VERSION: '24.22.0' }, defaults, api],
+    ['api', { JWT_SECRET: 'changed-existing-authority' }, defaults, api],
+    ['storefront', { CUSTOM_MERCHANT_MEDIA_SETTING: 'existing-custom' }, defaults, storefront],
+    ['storefront', { NODE_EXTRA_CA_CERTS: '/custom/ca.pem' }, defaults, { ...storefront, NODE_EXTRA_CA_CERTS: '/unreviewed/other.pem' }],
+    ['api', { DIDAR_AUTH_PROXY_POLICY: 'require-proof' }, defaults, { ...api, DIDAR_AUTH_PROXY_POLICY: 'direct' }],
+  ]) assert.throws(() => verifyPreservedEnvironment(role, { ...defaults, ...(role === 'api' ? api : storefront), ...extra }, replacementDefaults, desired, configuration), /EXISTING_CONFIGURATION_WOULD_CHANGE/)
+})
+
+test('existing application mounts cannot be silently dropped, changed or replaced with source/config overlays', () => {
+  const configuration = values(), source = '/var/lib/docker/volumes/' + configuration.DIDAR_UPLOADS_VOLUME + '/_data'
+  const upload = { Type: 'volume', Name: configuration.DIDAR_UPLOADS_VOLUME, Source: source, Destination: '/app/packages/api/.medusa/server/static', RW: true }
+  const tls = { Type: 'bind', Source: configuration.DIDAR_AUTH_TLS_DIR, Destination: '/run/didar-tls', RW: false }
+  assert.doesNotThrow(() => verifyPreservedMounts('api', [upload], configuration, source))
+  assert.doesNotThrow(() => verifyPreservedMounts('storefront', [], configuration, source))
+  assert.doesNotThrow(() => verifyPreservedMounts('storefront', [tls], configuration, source))
+  for (const mounts of [[upload, { Type: 'bind', Source: '/unreviewed/config', Destination: '/app/packages/api/medusa-config.ts', RW: false }], [{ ...upload, Source: '/other/authoritative/source' }], [{ ...upload, RW: false }], [{ ...upload, Name: 'another-volume' }]]) assert.throws(() => verifyPreservedMounts('api', mounts, configuration, source), /UNREVIEWED_EXISTING_MOUNT:api/)
+  for (const mounts of [[tls, { Type: 'bind', Source: '/unreviewed/source', Destination: '/app', RW: false }], [{ ...tls, RW: true }], [{ ...tls, Source: '/different/tls' }], [{ ...tls, Type: 'volume' }]]) assert.throws(() => verifyPreservedMounts('storefront', mounts, configuration, source), /UNREVIEWED_EXISTING_MOUNT:storefront/)
 })

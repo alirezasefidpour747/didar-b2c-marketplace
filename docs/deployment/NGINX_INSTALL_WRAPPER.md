@@ -72,6 +72,61 @@ currently accepts a directly issuing CA; a more complex intermediate chain must
 be reconciled explicitly. Runtime health still performs real TLS verification.
 This is relay TLS checking, not independent public HTTPS acceptance.
 
+## Existing configuration and mounts are not silently dropped
+
+Before any stop, migration or recreation, preflight compares every existing API
+and storefront `Config.Env` value with the replacement image's actual immutable
+`Config.Env` defaults merged with the literal reviewed per-service environment.
+An existing setting is preserved when those effective values match, including
+settings legitimately inherited from an image default. There is no wildcard
+allowlist for `DIDAR_*`, `MERCUR_*`, provider, media, agency or other settings, and
+no arbitrary environment passthrough. Existing settings that would disappear or
+change cause a named rejection without printing either value. Even a differing
+`NODE_VERSION`, custom image default or overridden `PATH` requires explicit
+compatibility/configuration reconciliation; it is never silently exempted.
+
+Only these reviewed transport transitions may differ, and only to the exact new
+values below. Stable JWT/cookie/network keys and DB/cache URLs remain separately
+required to match the existing authority.
+
+| Service | Exact transition keys | Required replacement value |
+| --- | --- | --- |
+| API | `DIDAR_AUTH_PROXY_POLICY` | `require-proof` |
+| API | `DIDAR_AUTH_PROXY_PEERS` | `127.0.0.1` |
+| API | `ADMIN_CORS`, `AUTH_CORS`, `STORE_CORS`, `VENDOR_CORS` | The reviewed same-domain `DIDAR_PUBLIC_ORIGIN` |
+| API | `FILE_BACKEND_URL` | That origin plus `/static` |
+| Storefront | `DIDAR_AUTH_INGRESS_MODE` | `verified-relay` |
+| Storefront | `DIDAR_AUTH_INGRESS_HOST`, `DIDAR_AUTH_INGRESS_PORT`, `DIDAR_PRIVATE_NEXT_PORT` | `0.0.0.0`, `3000`, `3001` respectively |
+| Storefront | `MEDUSA_BACKEND_URL`, `DIDAR_AUTH_NATIVE_URL` | `http://127.0.0.1:9000` |
+| Storefront | `DIDAR_AUTH_INGRESS_PEERS` | The exact observed, reviewed peer list from private configuration |
+| Storefront | `DIDAR_AUTH_INGRESS_TLS_CERT_FILE`, `DIDAR_AUTH_INGRESS_TLS_KEY_FILE` | `/run/didar-tls/cert.pem`, `/run/didar-tls/key.pem` respectively |
+| Storefront | `NODE_EXTRA_CA_CERTS` | `/run/didar-tls/ca.pem` |
+| Storefront | `DIDAR_AUTH_HEALTH_SERVER_NAME` | The reviewed relay certificate DNS name |
+
+API mounts must be exactly the identified existing writable uploads volume at
+`/app/packages/api/.medusa/server/static`, including the inspected volume source.
+Storefront may have no mount yet, or exactly the same private TLS directory
+bound read-only at `/run/didar-tls`. Adding that reviewed read-only TLS bind is an
+explicit transport transition. Any extra existing mount, app-source/config
+overlay, different TLS source or writable TLS mount blocks before quiescence.
+PostgreSQL/Redis and unrelated services remain untouched and their complete
+curated mount/config identities are still compared after each operation.
+
+On rejection, preserve the original configuration and volumes and keep target
+installation blocked. Have the relevant configuration owner and Chief Architect
+review the effective setting/mount diff privately. Add a separately reviewed
+explicit compatible configuration only when justified; do not delete variables,
+change guards, copy arbitrary old environment into the new image, discard a mount
+or claim it was unused to make preflight pass. This task does not authorize that
+future target-specific reconciliation or an unsigned fallback.
+
+The disposable fixture uses separate purpose-specific API, storefront and
+PostgreSQL environment files rather than injecting the whole operator file into
+every service. Its real negative cases request quiescence with an unsupported
+existing API setting and an extra storefront configuration mount, then assert
+all original container IDs/running/start/image states are unchanged and no
+migration container was created. They prove denial precedes lifecycle mutation.
+
 ## Matching kit manifest
 
 The manifest is UTF-8 JSON with exactly these top-level fields:

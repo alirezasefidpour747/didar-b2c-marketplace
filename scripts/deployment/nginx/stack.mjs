@@ -83,7 +83,7 @@ export function versionAtLeast(value, minimum, major) {
 
 // Replacement occurs once; Compose receives escaped dollar signs in stdin JSON.
 // No .env is sourced, and no attacker value is recursively interpolated.
-export function renderComposition(template, configuration) {
+export function resolveComposition(template, configuration) {
   const replace = value => {
     if (typeof value === 'string') return value.replace(/\$\{([A-Z][A-Z0-9_]*)(?:(:\?)[^}]*|:-([^}]*))?\}/g, (_, key, required, fallback) => {
       if (Object.hasOwn(configuration, key)) return configuration[key]
@@ -96,7 +96,10 @@ export function renderComposition(template, configuration) {
   }
   const result = replace(template)
   if (result.services?.storefront?.network_mode !== 'service:api' || result.services?.api?.environment?.DIDAR_AUTH_PROXY_POLICY !== 'require-proof' || result.services?.storefront?.environment?.DIDAR_AUTH_INGRESS_MODE !== 'verified-relay') fail('REVIEWED_TRUST_TOPOLOGY_REQUIRED')
-  return JSON.stringify(result).replace(/\$/g, '$$$$')
+  return result
+}
+export function renderComposition(template, configuration) {
+  return JSON.stringify(resolveComposition(template, configuration)).replace(/\$/g, '$$$$')
 }
 
 async function privateFile(path) {
@@ -177,8 +180,31 @@ export function runner(environment, receipts, privateConfiguration = {}) {
 }
 const canonicalState = value => JSON.stringify(value, (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
 export const containerSummary = c => ({ id: c.Id, name: c.Name, image: c.Image, network_mode: c.HostConfig.NetworkMode, running: c.State.Running, started_at: c.State.StartedAt, ports: c.HostConfig.PortBindings, mounts: c.Mounts.map(m => ({ type: m.Type, name: m.Name, source: m.Source, destination: m.Destination, rw: m.RW })).sort((left, right) => left.destination < right.destination ? -1 : left.destination > right.destination ? 1 : 0) })
-const envOf = c => Object.fromEntries(c.Config.Env.map(value => { const i = value.indexOf('='); return [value.slice(0, i), value.slice(i + 1)] }))
+const envOf = c => Object.fromEntries((c.Config.Env || []).map(value => { const i = value.indexOf('='); return [value.slice(0, i), value.slice(i + 1)] }))
 const label = (c, key) => c.Config.Labels?.['com.docker.compose.' + key]
+
+export function verifyPreservedEnvironment(role, existing, replacementDefaults, desired, configuration) {
+  const origin = configuration.DIDAR_PUBLIC_ORIGIN
+  const transitions = {
+    api: { DIDAR_AUTH_PROXY_POLICY: 'require-proof', DIDAR_AUTH_PROXY_PEERS: '127.0.0.1', ADMIN_CORS: origin, AUTH_CORS: origin, STORE_CORS: origin, VENDOR_CORS: origin, FILE_BACKEND_URL: origin + '/static' },
+    storefront: { DIDAR_AUTH_INGRESS_MODE: 'verified-relay', DIDAR_AUTH_INGRESS_HOST: '0.0.0.0', DIDAR_AUTH_INGRESS_PORT: '3000', DIDAR_PRIVATE_NEXT_PORT: '3001', DIDAR_AUTH_INGRESS_PEERS: configuration.DIDAR_AUTH_INGRESS_PEERS, DIDAR_AUTH_INGRESS_TLS_CERT_FILE: '/run/didar-tls/cert.pem', DIDAR_AUTH_INGRESS_TLS_KEY_FILE: '/run/didar-tls/key.pem', DIDAR_AUTH_HEALTH_SERVER_NAME: configuration.DIDAR_AUTH_TLS_SERVER_NAME, NODE_EXTRA_CA_CERTS: '/run/didar-tls/ca.pem', MEDUSA_BACKEND_URL: 'http://127.0.0.1:9000', DIDAR_AUTH_NATIVE_URL: 'http://127.0.0.1:9000' },
+  }
+  if (!Object.hasOwn(transitions, role)) fail('UNKNOWN_APPLICATION_CONFIGURATION_ROLE')
+  const replacement = { ...replacementDefaults, ...desired }
+  for (const [key, value] of Object.entries(existing)) {
+    if (Object.hasOwn(replacement, key) && replacement[key] === value) continue
+    if (Object.hasOwn(transitions[role], key) && replacement[key] === transitions[role][key]) continue
+    // Report only a safe variable name, never its old/new value.
+    fail('EXISTING_CONFIGURATION_WOULD_CHANGE:' + role + ':' + (/^[A-Z][A-Z0-9_]*$/.test(key) ? key : 'UNREVIEWED_KEY'))
+  }
+}
+export function verifyPreservedMounts(role, mounts, configuration, uploadsSource) {
+  if (role === 'api') {
+    if (mounts.length !== 1 || !uploadsSource || mounts[0].Type !== 'volume' || mounts[0].Name !== configuration.DIDAR_UPLOADS_VOLUME || mounts[0].Source !== uploadsSource || mounts[0].Destination !== '/app/packages/api/.medusa/server/static' || mounts[0].RW !== true) fail('UNREVIEWED_EXISTING_MOUNT:api')
+  } else if (role === 'storefront') {
+    if (mounts.length > 1 || mounts.length === 1 && (mounts[0].Type !== 'bind' || mounts[0].Source !== configuration.DIDAR_AUTH_TLS_DIR || mounts[0].Destination !== '/run/didar-tls' || mounts[0].RW !== false)) fail('UNREVIEWED_EXISTING_MOUNT:storefront')
+  } else fail('UNKNOWN_APPLICATION_MOUNT_ROLE')
+}
 
 export async function inspectPreflight({ configuration: env, bundle, operation, run, currentContainers }) {
   exactKeys(operation, ['format', 'target_config', 'project', 'network_id', 'containers', 'backup', 'edge', 'recovery'], 'INVALID_OPERATION_FIELDS')
@@ -201,11 +227,13 @@ export async function inspectPreflight({ configuration: env, bundle, operation, 
   const volumes = ['DIDAR_POSTGRES_VOLUME', 'DIDAR_REDIS_VOLUME', 'DIDAR_UPLOADS_VOLUME'].map(key => env[key])
   const existingVolumes = JSON.parse(await run('existing-volumes', ['volume', 'inspect', ...volumes]))
   if (existingVolumes.length !== 3 || existingVolumes.some(v => !volumes.includes(v.Name))) fail('EXTERNAL_VOLUME_MISMATCH')
+  const replacementDefaults = {}
   for (const [role, image] of Object.entries(bundle.manifest.images)) {
     if (env['DIDAR_' + role.toUpperCase() + '_IMAGE'] !== image.reference) fail('IMAGE_CONFIGURATION_MISMATCH:' + role)
     const actual = JSON.parse(await run('image-' + role, ['image', 'inspect', image.reference]))[0]
     if (actual.Id !== image.image_id || actual.Os !== 'linux' || actual.Architecture !== 'amd64') fail('IMAGE_ID_PLATFORM_MISMATCH:' + role)
     if (['api', 'storefront'].includes(role) && actual.Config.Labels?.['org.opencontainers.image.revision'] !== bundle.manifest.source_sha) fail('APPLICATION_SOURCE_LABEL_MISMATCH:' + role)
+    replacementDefaults[role] = envOf(actual)
   }
   const containers = {}
   for (const [role, id] of Object.entries({ ...operation.containers, ...currentContainers })) {
@@ -221,6 +249,11 @@ export async function inspectPreflight({ configuration: env, bundle, operation, 
   }
   for (const key of stableKeys) if (envOf(containers.api)[key] !== env[key]) fail('EXISTING_SECRET_OR_CONNECTION_CHANGED:' + key)
   if (envOf(containers.storefront).DIDAR_AUTH_NETWORK_KEY !== env.DIDAR_AUTH_NETWORK_KEY) fail('EXISTING_STOREFRONT_KEY_CHANGED')
+  const desiredComposition = resolveComposition(bundle.composition, env)
+  for (const role of ['api', 'storefront']) {
+    verifyPreservedEnvironment(role, envOf(containers[role]), replacementDefaults[role], desiredComposition.services[role].environment, env)
+    verifyPreservedMounts(role, containers[role].Mounts, env, existingVolumes.find(volume => volume.Name === env.DIDAR_UPLOADS_VOLUME)?.Mountpoint)
+  }
   for (const role of ['postgres', 'redis']) if (containers[role].Image !== bundle.manifest.images[role].image_id || !containers[role].State.Running) fail('PRESERVED_DEPENDENCY_MISMATCH:' + role)
   const allIds = (await run('all-existing-containers', ['ps', '-aq', '--no-trunc'])).split('\n').filter(Boolean)
   const unrelated = []

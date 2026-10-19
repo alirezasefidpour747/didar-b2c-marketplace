@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { randomBytes } from 'node:crypto'
 import { createServer } from 'node:net'
 import { spawn } from 'node:child_process'
-import { bundleFiles, sha256, localEnvironment, redactDiagnostic } from '../scripts/deployment/nginx/stack.mjs'
+import { bundleFiles, sha256, localEnvironment, redactDiagnostic, resolveComposition } from '../scripts/deployment/nginx/stack.mjs'
 
 const output = resolve(process.argv[2] || (() => { throw Error('Explicit new evidence output directory required') })())
 await mkdir(output, { recursive: false })
@@ -95,13 +95,18 @@ try {
     DIDAR_PUBLIC_ORIGIN: 'https://didar.test', DIDAR_PUBLIC_ORIGIN_VERIFIED: 'false', DIDAR_AUTH_HOST_PORT: String(await freePort()), DIDAR_AUTH_INGRESS_PEERS: '127.0.0.1', DIDAR_AUTH_TLS_DIR: tls, DIDAR_AUTH_TLS_SERVER_NAME: 'relay.test',
   }
   await saveEnvironment()
-  const privateRuntime = join(root, 'runtime.env')
-  await save(privateRuntime, Object.entries({ ...env, POSTGRES_USER: 'didar', POSTGRES_DB: 'didar', POSTGRES_PASSWORD: secret, DIDAR_AUTH_PROXY_POLICY: 'require-proof', DIDAR_AUTH_INGRESS_MODE: 'verified-relay' }).map(([key, value]) => key + '=' + value).join('\n') + '\n')
+  const privateRuntime = join(root, 'postgres.env'), apiRuntime = join(root, 'legacy-api.env'), frontendRuntime = join(root, 'legacy-storefront.env')
+  const desiredRuntime = resolveComposition(JSON.parse(await readFile(join(sourceDirectory, 'compose.topology.json'), 'utf8')), env)
+  const legacyApiEnvironment = { ...desiredRuntime.services.api.environment, DIDAR_AUTH_PROXY_POLICY: 'direct' }
+  const legacyFrontendEnvironment = { ...desiredRuntime.services.storefront.environment, DIDAR_AUTH_INGRESS_MODE: 'socket-signer', MEDUSA_BACKEND_URL: 'http://api:9000', DIDAR_AUTH_NATIVE_URL: 'http://api:9000' }
+  const saveLiteralEnvironment = (path, value) => save(path, Object.entries(value).map(([key, entry]) => key + '=' + entry).join('\n') + '\n')
+  await saveLiteralEnvironment(privateRuntime, { POSTGRES_USER: 'didar', POSTGRES_DB: 'didar', POSTGRES_PASSWORD: secret })
+  await saveLiteralEnvironment(apiRuntime, legacyApiEnvironment); await saveLiteralEnvironment(frontendRuntime, legacyFrontendEnvironment)
   const containers = {}
   containers.postgres = await create('postgres', ids.postgres, ['--network', networkName, '--network-alias', 'postgres', '--env-file', privateRuntime, '--mount', 'type=volume,source=' + volumes.postgres + ',target=/var/lib/postgresql/data'], [])
   containers.redis = await create('redis', ids.redis, ['--network', networkName, '--network-alias', 'redis', '--mount', 'type=volume,source=' + volumes.redis + ',target=/data'], ['redis-server', '--appendonly', 'yes'])
-  containers.api = await create('api', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=volume,source=' + volumes.uploads + ',target=/app/packages/api/.medusa/server/static'], ['node', '/app/fixture.mjs', 'api'])
-  containers.storefront = await create('storefront', appImage, ['--network', networkName, '--env-file', privateRuntime, '--mount', 'type=bind,source=' + tls + ',target=/run/didar-tls,readonly'], ['node', '/app/fixture.mjs', 'storefront'])
+  containers.api = await create('api', appImage, ['--network', networkName, '--env-file', apiRuntime, '--mount', 'type=volume,source=' + volumes.uploads + ',target=/app/packages/api/.medusa/server/static'], ['node', '/app/fixture.mjs', 'api'])
+  containers.storefront = await create('storefront', appImage, ['--network', networkName, '--env-file', frontendRuntime, '--mount', 'type=bind,source=' + tls + ',target=/run/didar-tls,readonly'], ['node', '/app/fixture.mjs', 'storefront'])
   for (const id of Object.values(containers)) await docker('start-' + rows.length, ['start', id])
   for (const [role, id] of Object.entries(containers)) { const actual = await inspect(id); assert.equal(actual.Config.Labels['com.docker.compose.container-number'], '1'); assert.equal(actual.Config.Labels['com.docker.compose.oneoff'], 'False'); assert.equal(actual.HostConfig.NetworkMode, networkName); assert.equal(actual.Config.Labels['com.docker.compose.service'], role) }
   cases.push('faithful-numbered-compose-legacy-containers-separate-namespaces')
@@ -145,7 +150,7 @@ try {
     const backupConfig = join(root, 'backup-config-' + sequence), restoreConfig = join(root, 'isolated-config-' + sequence)
     await mkdir(backupConfig, { mode: 0o700 }); await mkdir(restoreConfig, { mode: 0o700 })
     const configurationHashes = {}
-    for (const [name, original] of [['topology_env', environmentFile], ['runtime_env', privateRuntime], ['relay_cert', join(tls, 'cert.pem')], ['relay_key', join(tls, 'key.pem')], ['relay_ca', join(tls, 'ca.pem')]]) {
+    for (const [name, original] of [['topology_env', environmentFile], ['postgres_env', privateRuntime], ['api_env', apiRuntime], ['storefront_env', frontendRuntime], ['relay_cert', join(tls, 'cert.pem')], ['relay_key', join(tls, 'key.pem')], ['relay_ca', join(tls, 'ca.pem')]]) {
       await copyFile(original, join(backupConfig, name)); await chmod(join(backupConfig, name), 0o600)
       await copyFile(join(backupConfig, name), join(restoreConfig, name)); await chmod(join(restoreConfig, name), 0o600)
       const originalHash = sha256(await readFile(original)), recoveredHash = sha256(await readFile(join(restoreConfig, name)))
@@ -185,6 +190,30 @@ try {
   for (const [role, path] of [['module', moduleFile], ['nginx_config', nginxConfig], ['signer_auth', join(kit, 'auth.mjs')], ['signer_sign', join(kit, 'sign.mjs')]]) operation.edge.matched_files[role] = { path, sha256: sha256(await readFile(path)) }
   await saveOperation()
   const preflight = await wrapper('preflight'); assert.equal(preflight.existing_namespace_shared, false); cases.push('separate-namespace-preflight')
+  const baselineApplicationState = {}
+  for (const [role, id] of Object.entries(containers)) { const actual = await inspect(id); baselineApplicationState[role] = { id: actual.Id, running: actual.State.Running, started_at: actual.State.StartedAt, image: actual.Image } }
+  async function assertOriginalApplicationsUntouched() {
+    for (const [role, id] of Object.entries(containers)) { const actual = await inspect(id); assert.deepEqual({ id: actual.Id, running: actual.State.Running, started_at: actual.State.StartedAt, image: actual.Image }, baselineApplicationState[role]) }
+    assert.equal(await docker('no-migration-before-rejection', ['ps', '-aq', '--no-trunc', '--filter', 'label=com.docker.compose.project=' + project, '--filter', 'label=com.docker.compose.service=migrate']), '')
+  }
+  const extraEnvironmentFile = join(root, 'unsupported-api.env')
+  await saveLiteralEnvironment(extraEnvironmentFile, { ...legacyApiEnvironment, DIDAR_IMAGE_PROCESSOR_MODE: 'unreviewed-existing-configuration' })
+  const badApi = await create('negative-api-configuration', appImage, ['--label', 'com.docker.compose.service=api', '--network', networkName, '--env-file', extraEnvironmentFile, '--mount', 'type=volume,source=' + volumes.uploads + ',target=/app/packages/api/.medusa/server/static'], ['node', '/app/fixture.mjs', 'api'])
+  await docker('start-negative-api-configuration', ['start', badApi])
+  operation.containers = { ...containers, api: badApi }; await saveOperation()
+  assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'EXISTING_CONFIGURATION_WOULD_CHANGE:api:DIDAR_IMAGE_PROCESSOR_MODE')
+  await assertOriginalApplicationsUntouched(); assert.equal((await inspect(badApi)).State.Running, true)
+  await docker('remove-owned-negative-api-configuration', ['rm', '--force', badApi]); operation.containers = containers; await saveOperation()
+  cases.push('unreviewed-existing-configuration-rejected-before-any-stop-or-migration')
+  const extraConfigurationDirectory = join(root, 'unreviewed-configuration'); await mkdir(extraConfigurationDirectory, { mode: 0o700 }); await save(join(extraConfigurationDirectory, 'fixture.conf'), 'unreviewed-extra-mount')
+  const badFrontend = await create('negative-storefront-mount', appImage, ['--label', 'com.docker.compose.service=storefront', '--network', networkName, '--env-file', frontendRuntime, '--mount', 'type=bind,source=' + tls + ',target=/run/didar-tls,readonly', '--mount', 'type=bind,source=' + extraConfigurationDirectory + ',target=/run/unreviewed-configuration,readonly'], ['node', '/app/fixture.mjs', 'storefront'])
+  await docker('start-negative-storefront-mount', ['start', badFrontend])
+  operation.containers = { ...containers, storefront: badFrontend }; await saveOperation()
+  assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'UNREVIEWED_EXISTING_MOUNT:storefront')
+  await assertOriginalApplicationsUntouched(); assert.equal((await inspect(badFrontend)).State.Running, true)
+  await docker('remove-owned-negative-storefront-mount', ['rm', '--force', badFrontend]); operation.containers = containers; await saveOperation()
+  cases.push('unreviewed-existing-mount-rejected-before-any-stop-or-migration')
+
   const blocked = structuredClone(operation); operation.target_config = 'BLOCKED'; await saveOperation(); assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'INVALID_BUNDLE_PROVENANCE'); operation = blocked; await saveOperation(); cases.push('protocol-fixture-cannot-authorize-blocked-target-no-mutation')
   const backupStatus = operation.backup.status; operation.backup.status = 'UNVERIFIED'; await saveOperation(); assert.match((await wrapper('quiesce', { expected: [2] })).error, /BACKUP_AND_ISOLATED/); operation.backup.status = backupStatus; await saveOperation(); cases.push('missing-backup-blocked')
   assert.match((await wrapper('preflight', { expected: [2], overrides: { COMPOSE_FILE: '/untrusted/override' } })).error, /UNSAFE_PROCESS_OVERRIDE/); cases.push('stale-compose-override-blocked')
