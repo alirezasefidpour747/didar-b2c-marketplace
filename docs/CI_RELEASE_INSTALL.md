@@ -1,5 +1,11 @@
 # DIDAR release installation handoff
 
+**New Nginx topology releases:** follow `deployment/PR31_RELEASE_PREPARATION.md`
+and the matching `install-kit/` source-bound manifest. The legacy socket-mode
+image verifier and root Compose do not certify Nginx/verified-relay topology.
+`TARGET_CONFIG=BLOCKED` until verified03 discovery; no target installation is
+authorized by this generic guide.
+
 Recipient: **03 — DIDAR Deployment & Runtime QA**. This is a guided existing-server update, not permission for the development agent to access the owner's host. Do not reinstall Debian or reset existing databases/volumes.
 
 ## Obtain and verify the release

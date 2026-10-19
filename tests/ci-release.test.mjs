@@ -46,3 +46,52 @@ test('tampered release archive fails before any Docker load can occur', async ()
     await assert.rejects(loadBundle(dir, sha), /Archive digest mismatch/);
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
+
+// Focused sequencing contract for the real-HTTP fixture used by verify-images.
+const { connectAdminFixture } = await import('../verification/auth-packaging/reviewer/admin-fixture.mjs');
+function adminFixture(failure = {}) {
+  const calls = [];
+  const responses = [
+    { status: 200, body: { token: 'native-secret' } },
+    { status: 403 },
+    { status: 200, body: { token: 'canonical-secret', user: { id: 'demo-admin', role: 'admin' } } },
+    { status: 200 }, { status: 200, body: { user: { id: 'demo-admin', role: 'admin' } } },
+  ];
+  for (const [index, value] of Object.entries(failure)) responses[index] = value;
+  const invoke = async (api, path, options) => { calls.push({ api, path, options }); return responses[calls.length - 1]; };
+  return { calls, run: () => connectAdminFixture({ api: 'http://owned-qa', source: '127.0.0.94', request: invoke,
+    login: (api, source, body) => invoke(api, '/didar/login', { source, body }) }) };
+}
+test('release Admin fixture requires native denial then canonical proof and verified connect', async () => {
+  const f = adminFixture(), receipt = await f.run();
+  assert.deepEqual(f.calls.map(c => c.path), ['/auth/user/emailpass', '/admin/didar/context', '/didar/login', '/admin/didar/connect', '/admin/didar/context']);
+  assert.equal(f.calls[3].options.headers.authorization, 'Bearer native-secret');
+  assert.equal(f.calls[3].options.body.didar_token, 'canonical-secret');
+  assert.equal(receipt.unlinked_context_status, 403);
+  assert.equal(receipt.linked_context_status, 200);
+  assert.ok(!JSON.stringify(receipt).includes('secret'));
+});
+test('release Admin fixture fails closed on premature access, wrong authority, absent proof or denied connect', async () => {
+  for (const failure of [
+    { 0: { status: 401 } }, { 1: { status: 200 } },
+    { 2: { status: 200, body: { token: 'secret', user: { id: 'demo-admin', role: 'customer' } } } },
+    { 2: { status: 200, body: { user: { id: 'demo-admin', role: 'admin' } } } },
+    { 3: { status: 403 } }, { 4: { status: 403 } },
+    { 4: { status: 200, body: { user: { id: 'different-admin', role: 'admin' } } } },
+  ]) await assert.rejects(adminFixture(failure).run());
+});
+
+const { prepareInstallKit, verifyInstallKit, kitFiles } = await import('../scripts/ci/install-kit.mjs');
+test('matching installation kit binds source and every reviewed config byte while target stays blocked', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'didar-kit-'));
+  try {
+    const receipt = await prepareInstallKit(dir, sha);
+    const files = await verifyInstallKit(dir, sha, receipt);
+    assert.equal(files.length, kitFiles.length + 1);
+    await assert.rejects(verifyInstallKit(dir, 'e'.repeat(40), receipt));
+    await writeFile(join(dir, 'install-kit', kitFiles[0]), 'tampered');
+    await assert.rejects(verifyInstallKit(dir, sha, receipt), /Installation kit byte mismatch/);
+    assert.equal(receipt.target_config, 'BLOCKED');
+    assert.ok(kitFiles.every(f => !/\.env$|\.key$|\.pem$/.test(f)));
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});

@@ -72,6 +72,13 @@ try {
     const id = create(name, manifest.images.api.id, ['--network', network, '--env-file', envFile], args);
     step(name, 'docker', ['start', '-a', id]);
     assert.equal(inspect(id).State.ExitCode, 0);
+    // Successful one-shot fixtures have no runtime role. Release their owned
+    // writable layers before creating the next complete application container.
+    const fixture = inspect(id);
+    assert.equal(fixture.Config.Labels['didar.ci.run'], runId);
+    assert.ok(owned.some(item => item.id === id && fixture.Name === '/' + item.name));
+    step('remove-completed-' + name, 'docker', ['rm', '-v', id]);
+    owned.splice(owned.findIndex(item => item.id === id), 1);
   }
   env.NODE_ENV = 'production'; await saveEnv();
   const mount = `type=bind,src=${tls},dst=/run/didar-tls,readonly`;
@@ -99,7 +106,7 @@ try {
   // this newly owned QA DB. Never between its before/after persistence phases.
   step('reset-disposable-probe-counters', 'docker', ['exec', pg, 'psql', '-U', 'postgres', '-d', 'didar_qa', '-v', 'ON_ERROR_STOP=1', '-c', 'DELETE FROM didar_login_attempt']);
   exec('prepare-independent-tools', ['mkdir', '-p', '/tmp/didar-ci-probe/.local']);
-  for (const file of ['common.mjs', 'http.mjs', 'probe.mjs']) step('copy-independent-' + file, 'docker', ['cp', `verification/auth-packaging/reviewer/${file}`, api + ':/tmp/didar-ci-probe/' + file]);
+  for (const file of ['common.mjs', 'http.mjs', 'admin-fixture.mjs', 'probe.mjs']) step('copy-independent-' + file, 'docker', ['cp', `verification/auth-packaging/reviewer/${file}`, api + ':/tmp/didar-ci-probe/' + file]);
   exec('independent-http-before-restart', ['node', '/tmp/didar-ci-probe/probe.mjs', 'before-restart', '/tmp/didar-ci-probe']);
   step('stop-storefront', 'docker', ['stop', '--time', '25', frontend]);
   step('real-api-restart', 'docker', ['restart', '--time', '25', api]); await apiReady();
@@ -109,7 +116,7 @@ try {
   step('copy-independent-evidence', 'docker', ['cp', api + ':/tmp/didar-ci-probe/.', probeDir]);
   const before = JSON.parse(await readFile(join(probeDir, 'http-before-results.json'))), after = JSON.parse(await readFile(join(probeDir, 'http-after-results.json')));
   assert.equal(before.status, 'PASS'); assert.equal(after.status, 'PASS');
-  assert.equal(before.cases, 19); assert.equal(after.cases, 4);
+  assert.equal(before.cases, 20); assert.equal(after.cases, 4);
   const fixture = JSON.parse(await readFile(join(probeDir, 'browser-fixture.json')));
   await writeFile(join(probeDir, 'browser-fixture.json'), JSON.stringify({ ...fixture, root: process.cwd(), api: apiOrigin, web: webOrigin }));
   step('independent-native-customer-browsers', 'node', ['verification/auth-packaging/reviewer/browser.mjs', probeDir]);
@@ -118,7 +125,7 @@ try {
   // These reviewer receipts contain sanitized responses, not fixture tokens or keys.
   for (const name of ['http-before-results.json', 'http-after-results.json', 'browser-verdict.json']) await copyFile(join(probeDir, name), join('.local/ci-evidence', name));
   await cp(join(probeDir, 'screenshots'), '.local/ci-evidence/screenshots', { recursive: true });
-  manifest.verification.independent_artifacts = { status: 'PASS', fresh: { persistent_suite: 'auth-hardening + native-product-targets', independent_http_cases: before.cases + after.cases, browser_journeys: browser.journeys, stages }, runner: 'Separate fresh GitHub-hosted runner, docker-loaded archives; no application source/dependency mounts', limits: ['QA TLS only', 'Fresh fixture has no populated financial history', 'Existing independent probes reused; not a new human independent review'] };
+  manifest.verification.independent_artifacts = { status: 'PASS', fresh: { persistent_suite: 'auth-hardening + native-product-targets', independent_http_cases: before.cases + after.cases, browser_journeys: browser.journeys, stages }, runner: process.env.GITHUB_ACTIONS === 'true' ? 'GitHub-hosted artifact verification job; docker-loaded archives; no application source/dependency mounts' : 'Local managed runner; docker-loaded archives on existing daemon/cache; no application source/dependency mounts', topology: 'LEGACY_SOCKET_SIGNER_DIRECT_POLICY_NOT_NGINX_ACCEPTANCE', limits: ['QA TLS only', 'Fresh fixture has no populated financial history', 'Existing independent probes reused; not a new human independent review'] };
   success = true;
 } finally {
   // Remove only exact resources created here. Preserve every preexisting ID.
