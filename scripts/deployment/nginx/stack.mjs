@@ -170,10 +170,13 @@ export function runner(environment, receipts, privateConfiguration = {}) {
     })
   })
   Object.defineProperty(run, 'enableFixtureDiagnostics', { value: () => { fixtureDiagnostics = true } })
+  Object.defineProperty(run, 'recordFixtureObservation', { value: (stage, observation) => {
+    if (fixtureDiagnostics) receipts.push({ stage, kind: 'FIXTURE_OBSERVATION_NOT_PROCESS_EXIT', observed_at: new Date().toISOString(), observation })
+  } })
   return run
 }
 const canonicalState = value => JSON.stringify(value, (_, entry) => entry && typeof entry === 'object' && !Array.isArray(entry) ? Object.fromEntries(Object.keys(entry).sort().map(key => [key, entry[key]])) : entry)
-const containerSummary = c => ({ id: c.Id, name: c.Name, image: c.Image, network_mode: c.HostConfig.NetworkMode, running: c.State.Running, started_at: c.State.StartedAt, ports: c.HostConfig.PortBindings, mounts: c.Mounts.map(m => ({ type: m.Type, name: m.Name, source: m.Source, destination: m.Destination, rw: m.RW })) })
+export const containerSummary = c => ({ id: c.Id, name: c.Name, image: c.Image, network_mode: c.HostConfig.NetworkMode, running: c.State.Running, started_at: c.State.StartedAt, ports: c.HostConfig.PortBindings, mounts: c.Mounts.map(m => ({ type: m.Type, name: m.Name, source: m.Source, destination: m.Destination, rw: m.RW })).sort((left, right) => left.destination < right.destination ? -1 : left.destination > right.destination ? 1 : 0) })
 const envOf = c => Object.fromEntries(c.Config.Env.map(value => { const i = value.indexOf('='); return [value.slice(0, i), value.slice(i + 1)] }))
 const label = (c, key) => c.Config.Labels?.['com.docker.compose.' + key]
 
@@ -275,7 +278,11 @@ export async function verifyRecoveryEvidence(operation, bundle) {
 async function preserveUnrelated(run, expected) {
   for (const entry of expected) {
     const actual = containerSummary(JSON.parse(await run('preserved-' + entry.id.slice(0, 12), ['inspect', entry.id]))[0])
-    if (canonicalState(actual) !== canonicalState(entry)) fail('UNRELATED_OR_DEPENDENCY_CHANGED')
+    if (canonicalState(actual) !== canonicalState(entry)) {
+      // Curated metadata only: no Config.Env, labels, request data or credentials.
+      run.recordFixtureObservation?.('preservation-mismatch', { resource_id: entry.id, changed_fields: Object.keys(entry).filter(key => canonicalState(entry[key]) !== canonicalState(actual[key])), before: entry, after: actual })
+      fail('UNRELATED_OR_DEPENDENCY_CHANGED')
+    }
   }
 }
 async function atomicPrivate(path, value) {

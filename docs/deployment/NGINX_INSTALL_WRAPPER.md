@@ -231,6 +231,10 @@ Only after separate target installation authorization and satisfied prerequisite
    strict proof policy, exact peer configuration, stable secrets, TLS relay health,
    API loopback health and unsigned private Next auth denial. It compares all
    pre-existing dependency/unrelated container identities/config/running state.
+   Mount lists are sorted by destination because Docker iteration order is not
+   semantic; mount type/name/source/destination/read-write values remain compared.
+   An owned protocol-fixture mismatch records curated before/after metadata and
+   changed fields in its private journal without including `Config.Env` or labels.
 6. Verify actual peers, IPv4/IPv6 isolation, same-origin customer/Admin/Vendor,
    media and public HTTPS via 03's separately authorized runtime workflow before
    reopening traffic. Internal health does not establish those public outcomes.

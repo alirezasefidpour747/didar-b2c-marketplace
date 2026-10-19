@@ -4,7 +4,7 @@ import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink, lsta
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic, runner, containerSummary } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -251,4 +251,16 @@ test('actual failed Docker child records redacted private diagnostics while its 
       assert.match(receipts[0].diagnostic[stream], /REDACTED/)
     }
   } finally { await rm(directory, { recursive: true, force: true }) }
+})
+
+
+test('preservation compares all mount fields while treating Docker mount iteration order as unordered', () => {
+  const original = { Id: 'a'.repeat(64), Name: '/owned-restore-loader', Image: reference('b'), HostConfig: { NetworkMode: 'none', PortBindings: null }, State: { Running: false, StartedAt: '2026-10-19T00:00:00Z' }, Mounts: [{ Type: 'volume', Name: 'isolated-uploads', Source: '/var/lib/docker/volumes/isolated-uploads/_data', Destination: '/restore/uploads', RW: true }, { Type: 'volume', Name: 'isolated-redis', Source: '/var/lib/docker/volumes/isolated-redis/_data', Destination: '/restore/redis', RW: true }] }
+  const expected = containerSummary(original), reversed = structuredClone(original)
+  reversed.Mounts.reverse(); assert.deepEqual(containerSummary(reversed), expected)
+  assert.equal(expected.mounts[0].destination, '/restore/redis')
+  for (const [field, value] of [['Type', 'bind'], ['Name', 'another-volume'], ['Source', '/different/source'], ['Destination', '/different/destination'], ['RW', false]]) {
+    const changed = structuredClone(reversed); changed.Mounts[0][field] = value
+    assert.notDeepEqual(containerSummary(changed), expected, 'Changed ' + field + ' must remain detectable')
+  }
 })
