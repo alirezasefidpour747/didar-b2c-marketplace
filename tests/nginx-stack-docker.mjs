@@ -183,7 +183,7 @@ try {
   for (const [role, path] of [['module', moduleFile], ['nginx_config', nginxConfig], ['signer_auth', join(kit, 'auth.mjs')], ['signer_sign', join(kit, 'sign.mjs')]]) operation.edge.matched_files[role] = { path, sha256: sha256(await readFile(path)) }
   await saveOperation()
   const preflight = await wrapper('preflight'); assert.equal(preflight.existing_namespace_shared, false); cases.push('separate-namespace-preflight')
-  const blocked = structuredClone(operation); operation.target_config = 'BLOCKED'; await saveOperation(); assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'TARGET_CONFIG_BLOCKED'); operation = blocked; await saveOperation(); cases.push('target-blocked-no-mutation')
+  const blocked = structuredClone(operation); operation.target_config = 'BLOCKED'; await saveOperation(); assert.equal((await wrapper('quiesce', { expected: [2] })).error, 'INVALID_BUNDLE_PROVENANCE'); operation = blocked; await saveOperation(); cases.push('protocol-fixture-cannot-authorize-blocked-target-no-mutation')
   const backupStatus = operation.backup.status; operation.backup.status = 'UNVERIFIED'; await saveOperation(); assert.match((await wrapper('quiesce', { expected: [2] })).error, /BACKUP_AND_ISOLATED/); operation.backup.status = backupStatus; await saveOperation(); cases.push('missing-backup-blocked')
   assert.match((await wrapper('preflight', { expected: [2], overrides: { COMPOSE_FILE: '/untrusted/override' } })).error, /UNSAFE_PROCESS_OVERRIDE/); cases.push('stale-compose-override-blocked')
   assert.equal((await wrapper('preflight', { expected: [2], overrides: { COMPOSE_DISABLE_ENV_FILE: '1' } })).error, 'UNSAFE_PROCESS_OVERRIDE:COMPOSE_DISABLE_ENV_FILE'); cases.push('caller-internal-compose-flag-still-blocked')

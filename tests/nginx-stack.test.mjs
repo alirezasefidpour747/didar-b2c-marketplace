@@ -1,7 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink } from 'node:fs/promises'
+import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink, lstat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import { spawnSync } from 'node:child_process'
 import { join, resolve } from 'node:path'
 import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence, redactDiagnostic } from '../scripts/deployment/nginx/stack.mjs'
 
@@ -209,3 +210,22 @@ test('internal Compose environment is not re-entered as operator input, while ca
   assert.throws(() => localEnvironment({ ...operator, COMPOSE_DISABLE_ENV_FILE: '1' }), /UNSAFE_PROCESS_OVERRIDE:COMPOSE_DISABLE_ENV_FILE/)
   assert.throws(() => localEnvironment({ ...operator, COMPOSE_FILE: '/untrusted/override.yml' }), /UNSAFE_PROCESS_OVERRIDE:COMPOSE_FILE/)
 })
+
+
+test('actual CLI denies a protocol fixture in BLOCKED target mode before invoking any Docker command', async () => manifestFixture(async ({ directory, manifest, save }) => {
+  manifest.kind = 'didar-nginx-wrapper-protocol-fixture'
+  for (const name of ['artifact_verification', 'independent_review']) {
+    const path = join(directory, manifest[name].path), receipt = JSON.parse(await readFile(path, 'utf8'))
+    receipt.status = 'FIXTURE_ONLY'; await writeFile(path, JSON.stringify(receipt)); manifest[name].sha256 = sha256(await readFile(path))
+  }
+  const environmentFile = join(directory, 'private.env'), operation = join(directory, 'operation.json'), bin = join(directory, 'bin'), marker = join(directory, 'docker-invoked')
+  await writeFile(environmentFile, envText(values()), { mode: 0o600 })
+  await writeFile(operation, JSON.stringify({ target_config: 'BLOCKED' }), { mode: 0o600 })
+  await mkdir(bin)
+  const docker = join(bin, 'docker')
+  await writeFile(docker, '#!' + process.execPath + '\nrequire("node:fs").writeFileSync(' + JSON.stringify(marker) + ',"unexpected invocation");process.exit(73)\n', { mode: 0o700 })
+  const result = spawnSync(process.execPath, [resolve(import.meta.dirname, '../scripts/deployment/nginx/stack.mjs'), environmentFile, join(directory, 'manifest.json'), await save(), operation, 'quiesce'], { encoding: 'utf8', env: { PATH: bin } })
+  assert.equal(result.status, 2); assert.equal(result.signal, null); assert.equal(result.error, undefined)
+  assert.equal(result.stderr.trim(), 'INVALID_BUNDLE_PROVENANCE')
+  await assert.rejects(lstat(marker), { code: 'ENOENT' })
+}))
