@@ -105,3 +105,19 @@ test('legacy verifier success cannot authorize Nginx topology publication', () =
   m.install_kit = { target_config: 'BLOCKED' };
   assert.throws(() => requirePublishableBundle(m), /NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED/);
 });
+
+const { reserveLoopbackPorts, assertLoopbackMappings } = await import('../scripts/ci/loopback-ports.mjs');
+test('real fixture ports are distinct and only the exact loopback mappings survive restart', async () => {
+  const [api, ingress] = await reserveLoopbackPorts();
+  assert.notEqual(api, ingress);
+  assert.ok([api, ingress].every(p => Number.isInteger(p) && p > 0 && p <= 65535));
+  const expected = { '9000/tcp': api, '3000/tcp': ingress };
+  const mappings = Object.fromEntries(Object.entries(expected).map(([key, value]) => [key, [{ HostIp: '127.0.0.1', HostPort: String(value) }]]));
+  assert.doesNotThrow(() => assertLoopbackMappings(mappings, expected));
+  for (const change of [
+    m => { m['9000/tcp'][0].HostPort = String(api + 1); },
+    m => { m['9000/tcp'][0].HostIp = '0.0.0.0'; },
+    m => { m['3001/tcp'] = [{ HostIp: '127.0.0.1', HostPort: '3001' }]; },
+    m => { m['3000/tcp'].push({ HostIp: '::', HostPort: String(ingress) }); },
+  ]) { const m = structuredClone(mappings); change(m); assert.throws(() => assertLoopbackMappings(m, expected)); }
+});

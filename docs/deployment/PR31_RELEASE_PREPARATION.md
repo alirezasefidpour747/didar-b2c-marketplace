@@ -13,7 +13,9 @@ application authorization. `native-product-targets.test.ts` deliberately removes
 its disposable Admin link. The manual image verifier must then prove unlinked
 context403, native authentication, canonical DIDAR Admin proof, authorized
 `/admin/didar/connect`, and context200 for `demo-admin`. It establishes this link
-before its restart snapshot. The existing after-restart context assertion now
+before its restart snapshot. The verifier also reserves distinct explicit host
+loopback ports and asserts their mappings before and after restart; ephemeral
+Docker host-port reassignment must not invalidate readiness or replay timing. The existing after-restart context assertion now
 also proves linkage survives restart. No SQL grant, bypass, quota reset between
 persistence phases, or private-context relaxation is permitted.
 

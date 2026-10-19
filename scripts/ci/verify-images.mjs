@@ -7,6 +7,7 @@ import { mkdtemp, mkdir, writeFile, readFile, rm, copyFile, cp } from 'node:fs/p
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { loadBundle, checksums, command } from './release.mjs';
+import { reserveLoopbackPorts, assertLoopbackMappings } from './loopback-ports.mjs';
 
 const dir = resolve(process.argv[2]);
 const sha = process.env.DIDAR_RELEASE_SOURCE;
@@ -82,11 +83,12 @@ try {
   }
   env.NODE_ENV = 'production'; await saveEnv();
   const mount = `type=bind,src=${tls},dst=/run/didar-tls,readonly`;
-  api = create('api', manifest.images.api.id, ['--network', network, '--env-file', envFile, '--mount', mount, '-p', '127.0.0.1::9000', '-p', '127.0.0.1::3000']);
+  const [apiPort, ingressPort] = await reserveLoopbackPorts();
+  const expectedPorts = { '9000/tcp': apiPort, '3000/tcp': ingressPort };
+  api = create('api', manifest.images.api.id, ['--network', network, '--env-file', envFile, '--mount', mount, '-p', `127.0.0.1:${apiPort}:9000`, '-p', `127.0.0.1:${ingressPort}:3000`]);
   step('start-api', 'docker', ['start', api]);
   const ports = inspect(api).NetworkSettings.Ports;
-  assert.ok(!ports['3001/tcp']);
-  for (const key of ['9000/tcp', '3000/tcp']) assert.ok(ports[key].every(p => p.HostIp === '127.0.0.1'));
+  assertLoopbackMappings(ports, expectedPorts);
   const apiOrigin = `http://127.0.0.1:${ports['9000/tcp'][0].HostPort}`;
   const webOrigin = `https://127.0.0.1:${ports['3000/tcp'][0].HostPort}`;
   const apiReady = () => wait(async () => { try { return (await fetch(apiOrigin + '/health', { signal: AbortSignal.timeout(5000) })).status === 200; } catch { return false; } }, 'API');
@@ -109,7 +111,9 @@ try {
   for (const file of ['common.mjs', 'http.mjs', 'admin-fixture.mjs', 'probe.mjs']) step('copy-independent-' + file, 'docker', ['cp', `verification/auth-packaging/reviewer/${file}`, api + ':/tmp/didar-ci-probe/' + file]);
   exec('independent-http-before-restart', ['node', '/tmp/didar-ci-probe/probe.mjs', 'before-restart', '/tmp/didar-ci-probe']);
   step('stop-storefront', 'docker', ['stop', '--time', '25', frontend]);
-  step('real-api-restart', 'docker', ['restart', '--time', '25', api]); await apiReady();
+  step('real-api-restart', 'docker', ['restart', '--time', '25', api]);
+  assertLoopbackMappings(inspect(api).NetworkSettings.Ports, expectedPorts);
+  await apiReady();
   step('restart-storefront', 'docker', ['start', frontend]); await frontReady();
   exec('independent-http-after-restart', ['node', '/tmp/didar-ci-probe/probe.mjs', 'after-restart', '/tmp/didar-ci-probe']);
   const probeDir = join(root, 'probe'); await mkdir(probeDir);
