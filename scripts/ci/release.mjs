@@ -100,9 +100,16 @@ async function build(dir) {
   await copyFile('docs/CI_RELEASE_INSTALL.md', join(dir, 'INSTALL.md'));
   await checksums(dir);
 }
-async function publish(dir) {
-  const m = await loadBundle(dir, process.env.DIDAR_RELEASE_SOURCE);
+export function requirePublishableBundle(m) {
   assert.equal(m.verification.independent_artifacts.status, 'PASS');
+  // The legacy socket verifier cannot authorize the new first-hop topology.
+  // Fail closed until its no-overlay artifact gate is implemented and reviewed.
+  assert.ok(!m.install_kit, 'NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED');
+}
+async function publish(dir) {
+  const candidate = validateManifest(JSON.parse(await readFile(join(dir, 'release-manifest.json'))), process.env.DIDAR_RELEASE_SOURCE);
+  requirePublishableBundle(candidate);
+  const m = await loadBundle(dir, process.env.DIDAR_RELEASE_SOURCE);
   const root = await mkdtemp(join(process.env.RUNNER_TEMP || tmpdir(), 'didar-registry-'));
   const authenticated = join(root, 'authenticated'), anonymous = join(root, 'anonymous');
   await mkdir(authenticated, { mode: 0o700 }); await mkdir(anonymous, { mode: 0o700 });

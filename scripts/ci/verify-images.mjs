@@ -126,6 +126,10 @@ try {
   for (const name of ['http-before-results.json', 'http-after-results.json', 'browser-verdict.json']) await copyFile(join(probeDir, name), join('.local/ci-evidence', name));
   await cp(join(probeDir, 'screenshots'), '.local/ci-evidence/screenshots', { recursive: true });
   manifest.verification.independent_artifacts = { status: 'PASS', fresh: { persistent_suite: 'auth-hardening + native-product-targets', independent_http_cases: before.cases + after.cases, browser_journeys: browser.journeys, stages }, runner: process.env.GITHUB_ACTIONS === 'true' ? 'GitHub-hosted artifact verification job; docker-loaded archives; no application source/dependency mounts' : 'Local managed runner; docker-loaded archives on existing daemon/cache; no application source/dependency mounts', topology: 'LEGACY_SOCKET_SIGNER_DIRECT_POLICY_NOT_NGINX_ACCEPTANCE', limits: ['QA TLS only', 'Fresh fixture has no populated financial history', 'Existing independent probes reused; not a new human independent review'] };
+  if (manifest.install_kit) {
+    manifest.verification.legacy_package = manifest.verification.independent_artifacts;
+    manifest.verification.independent_artifacts = { status: 'BLOCKED_NGINX_ARTIFACT_ACCEPTANCE', reason: 'Legacy socket verification is component evidence only; reviewed no-overlay Nginx artifact gate required' };
+  }
   success = true;
 } finally {
   // Remove only exact resources created here. Preserve every preexisting ID.
@@ -148,3 +152,6 @@ try {
 if (!success) throw Error('Independent image verification failed');
 await writeFile(join(dir, 'release-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 await checksums(dir);
+
+// Keep the automatic verified-release upload closed for new topology bundles.
+if (manifest.install_kit) throw Error('NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED');

@@ -95,3 +95,13 @@ test('matching installation kit binds source and every reviewed config byte whil
     assert.ok(kitFiles.every(f => !/\.env$|\.key$|\.pem$/.test(f)));
   } finally { await rm(dir, { recursive: true, force: true }); }
 });
+
+const { requirePublishableBundle } = await import('../scripts/ci/release.mjs');
+test('legacy verifier success cannot authorize Nginx topology publication', () => {
+  const m = fixture();
+  assert.throws(() => requirePublishableBundle(m));
+  m.verification.independent_artifacts.status = 'PASS';
+  assert.doesNotThrow(() => requirePublishableBundle(m));
+  m.install_kit = { target_config: 'BLOCKED' };
+  assert.throws(() => requirePublishableBundle(m), /NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED/);
+});

@@ -106,7 +106,12 @@ Keep two explicit acceptance records:
    overlays or app/dependency workspace mounts. Secret/certificate/config-only
    mounts and fresh owned data volumes are allowed; inspect every mount.
 
-The existing `didar-release.yml` verify job covers only record1. Its `PASS`
+The existing `didar-release.yml` verify job covers only record1. New topology
+bundles are therefore explicitly blocked from automatic verified-release upload
+and GHCR publication (`NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED`) until a
+separately reviewed no-overlay artifact gate is implemented. Do not remove this
+guard to dispatch a release. This is an explicit remaining automation gap, not
+a claim that the full future release pipeline already passes. Its `PASS`
 field must not be treated as record2 or final topology release acceptance. The
 prior `full-ninth` Nginx proof used six API overlays; inherit its source design
 and unchanged behavior evidence explicitly, but do not substitute it for the
