@@ -23,7 +23,9 @@ function authenticate(r) {
     if (r.variables.request_body_file || (!body && (Number(length || 0) > 0 || r.headersIn['Transfer-Encoding']))) {
       r.return(413); return
     }
-    const raw = body || Buffer.alloc(0)
+    // njs0.8.9 may expose an empty requestBuffer with a detached backing
+    // store. Hash a fresh empty buffer; preserve every nonempty raw byte.
+    const raw = body && body.length ? body : Buffer.alloc(0)
     if (raw.length > 1200000) { r.return(413); return }
     r.variables.didar_network_proof = signer.signNetwork({
       key: process.env.DIDAR_AUTH_NETWORK_KEY,

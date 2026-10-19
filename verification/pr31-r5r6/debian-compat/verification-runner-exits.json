@@ -1,0 +1,26 @@
+[
+  {
+    "stage": "unit-contract-final",
+    "argv": [
+      "node",
+      "--test",
+      "scripts/deployment/nginx/compat/compat.test.mjs",
+      "scripts/deployment/nginx/sign.test.mjs"
+    ],
+    "started_at": "2026-10-19T06:14:44.198053+00:00",
+    "finished_at": "2026-10-19T06:14:44.481358+00:00",
+    "exit_code": 0
+  },
+  {
+    "stage": "https-normalized-final",
+    "argv": [
+      "node",
+      "scripts/deployment/nginx/compat/verify-debian.mjs",
+      "/workspace/work/pr31-r5r6/compat/authenticated",
+      "/workspace/work/pr31-r5r6/compat/https-normalized-final"
+    ],
+    "started_at": "2026-10-19T06:14:44.481474+00:00",
+    "finished_at": "2026-10-19T06:14:45.000883+00:00",
+    "exit_code": 0
+  }
+]

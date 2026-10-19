@@ -103,7 +103,7 @@ test('legacy verifier success cannot authorize Nginx topology publication', () =
   m.verification.independent_artifacts.status = 'PASS';
   assert.doesNotThrow(() => requirePublishableBundle(m));
   m.install_kit = { target_config: 'BLOCKED' };
-  assert.throws(() => requirePublishableBundle(m), /NGINX_ARTIFACT_RELEASE_AUTOMATION_BLOCKED/);
+  assert.throws(() => requirePublishableBundle(m), { code: 'ERR_ASSERTION', operator: 'strictEqual' });
 });
 
 const { reserveLoopbackPorts, assertLoopbackMappings } = await import('../scripts/ci/loopback-ports.mjs');

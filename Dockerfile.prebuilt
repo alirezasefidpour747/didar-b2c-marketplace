@@ -1,7 +1,7 @@
 # Packaging of an already built, tested JS checkout. See scripts/build-prepared-images.sh.
 # The API adds the bounded FFmpeg processor from Debian; this OS package step needs repository access.
-FROM node:24-bookworm-slim AS prepared
-COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
+FROM node:24.19.0-bookworm-slim@sha256:e5a8dee7bc1e6a215d224a7ef8206f7e77271bc3cabd5febf2beafac0674f174 AS prepared
+COPY --from=oven/bun:1.4.3@sha256:c017a211c49a21adc0e49dda7b60ac8112887c3d9465e01427f434ed107c830e /usr/local/bin/bun /usr/local/bin/bun
 WORKDIR /app
 COPY . .
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 MERCUR_DISABLE_TELEMETRY=true

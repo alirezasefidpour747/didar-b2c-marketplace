@@ -11,14 +11,18 @@ import { observer } from './process.mjs'
 import { render } from '../deployment/nginx/render.mjs'
 
 const input = JSON.parse(await readFile(resolve(process.argv[2]), 'utf8'))
-for (const key of ['source_sha', 'api_image', 'frontend_base_image', 'postgres_image', 'redis_image', 'nginx_image', 'portable_frontend', 'repository', 'output_dir']) if (!input[key]) throw Error('Explicit runtime input required: ' + key)
+for (const key of ['source_sha', 'api_image', 'frontend_base_image', 'postgres_image', 'redis_image', 'nginx_image', 'repository', 'output_dir']) if (!input[key]) throw Error('Explicit runtime input required: ' + key)
+const packaged = input.packaged_images === true
+if (packaged) {
+  if (input.portable_frontend || input.api_patch_files) throw Error('Packaged verification forbids application overlays')
+} else if (!input.portable_frontend) throw Error('Legacy QA requires explicit portable_frontend')
 if (!/^[a-f0-9]{40}$/.test(input.source_sha)) throw Error('Exact candidate revision required')
 const output = resolve(input.output_dir), repo = resolve(input.repository), runId = 'topology-' + Date.now() + '-' + randomBytes(4).toString('hex')
 await mkdir(output, { recursive: true })
 const harnessDirectory = join(output, 'harness-source')
 await mkdir(harnessDirectory)
 const harnessHashes = []
-for (const name of ['stack.mjs', 'application.mjs', 'process.mjs', 'lifecycle.mjs', 'origin.mjs']) {
+for (const name of ['stack.mjs', 'application.mjs', 'process.mjs', 'lifecycle.mjs', 'origin.mjs', 'media.mjs']) {
   const bytes = await readFile(new URL('./' + name, import.meta.url))
   await writeFile(join(harnessDirectory, name), bytes, { flag: 'wx' })
   harnessHashes.push({ path: 'scripts/topology/' + name, sha256: createHash('sha256').update(bytes).digest('hex') })
@@ -103,7 +107,7 @@ try {
   await command('qa-certificate', 'openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(tls, 'key.pem'), '-out', join(tls, 'cert.pem'), '-days', '1', '-subj', '/CN=didar.test', '-addext', 'subjectAltName=DNS:didar.test,DNS:localhost,IP:127.0.0.1,IP:' + apiIp + ',IP:' + edgeIp, '-addext', 'basicConstraints=critical,CA:TRUE'])
   // API source + compiled changes only. Every overlay byte is provenance-hashed;
   // the base OCI label remains 874 and is explicitly distinguished from source.
-  const patchFiles = input.api_patch_files || ['packages/api/medusa-config.ts', 'packages/api/src/didar/auth-admission.ts', 'packages/api/.medusa/server/medusa-config.js', 'packages/api/.medusa/server/src/didar/auth-admission.js', 'packages/auth-network/index.cjs', 'packages/auth-network/index.d.ts']
+  const patchFiles = packaged ? [] : input.api_patch_files || ['packages/api/medusa-config.ts', 'packages/api/src/didar/auth-admission.ts', 'packages/api/.medusa/server/medusa-config.js', 'packages/api/.medusa/server/src/didar/auth-admission.js', 'packages/auth-network/index.cjs', 'packages/auth-network/index.d.ts']
   const overlay = []
   for (const path of patchFiles) {
     assert.ok(!path.startsWith('/') && !path.split('/').includes('..'))
@@ -131,7 +135,7 @@ try {
   })
   env.NODE_ENV = 'production'; await saveEnv()
   frontend = await create('frontend', input.frontend_base_image, ['--network', 'container:' + api, '--env-file', envFile, '-w', '/app'], ['node', 'runtime/storefront.mjs'])
-  await copy('portable-frontend', resolve(input.portable_frontend) + '/.', frontend, '/app/')
+  if (!packaged) await copy('portable-frontend', resolve(input.portable_frontend) + '/.', frontend, '/app/')
   await copy('frontend-tls', tls, frontend, '/run/didar-tls')
   await docker('frontend-tls-path', ['start', frontend])
   // A production package must never be hand-edited to bypass PACKAGING checks.
@@ -144,9 +148,20 @@ try {
   const mapping = (await inspect(edge, 'nginx-final-listeners')).NetworkSettings.Ports['8443/tcp']
   assert.equal(mapping.length, 1); assert.equal(mapping[0].HostIp, '127.0.0.1')
   assert.equal(mapping[0].HostPort, publicPort)
-  const runtime = { run_id: runId, source_sha: input.source_sha, network, api, frontend, edge, nginx_image: input.nginx_image, ca_file: join(tls, 'cert.pem'), edge_ip: edgeIp, public_host: '127.0.0.1', public_port: Number(publicPort), edge_listen_port: 8443, relay_ip: apiIp, relay_port: 3000, relay_tls_name: 'didar.test', key_file: keyFile, output_dir: join(output, 'application'), owner_label: labelName, lifecycle_output: join(output, 'lifecycle'), nginx_config_file: join(config, 'nginx.conf'), edge_ca_file: join(tls, 'cert.pem'), origin, frontend_manifest_sha256: hash(await readFile(join(input.portable_frontend, 'PACKAGING.json'))), upload_volume: uploadVolume, repository: repo, origin_output: join(output, 'origin') }
+  const frontendPackaging = JSON.parse(await docker('read-actual-frontend-packaging', ['exec', frontend, 'node', '-e', "process.stdout.write(require('node:fs').readFileSync('/app/PACKAGING.json','utf8'))"]))
+  const actualManifestHash = await docker('actual-package-manifest-hash', ['exec', frontend, 'node', '-e', "process.stdout.write(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('/app/PACKAGING.json')).digest('hex'))"])
+  if (!packaged) assert.equal(actualManifestHash, hash(await readFile(join(input.portable_frontend, 'PACKAGING.json'))))
+  if (packaged) {
+    assert.equal(frontendPackaging.source_sha, input.source_sha, 'Actual portable package must match candidate source')
+    for (const [role, id] of [['api', api], ['storefront', frontend]]) {
+      const state = await inspect(id, 'packaged-image-' + role)
+      assert.equal(state.Image, input.image_ids[role]); assert.equal(state.Config.Labels['org.opencontainers.image.revision'], input.source_sha)
+      assert.ok(state.Mounts.every(m => role === 'api' && m.Type === 'volume' && m.Name === uploadVolume))
+    }
+  }
+  const runtime = { run_id: runId, source_sha: input.source_sha, network, api, frontend, edge, nginx_image: input.nginx_image, ca_file: join(tls, 'cert.pem'), edge_ip: edgeIp, public_host: '127.0.0.1', public_port: Number(publicPort), edge_listen_port: 8443, relay_ip: apiIp, relay_port: 3000, relay_tls_name: 'didar.test', key_file: keyFile, output_dir: join(output, 'application'), owner_label: labelName, lifecycle_output: join(output, 'lifecycle'), nginx_config_file: join(config, 'nginx.conf'), edge_ca_file: join(tls, 'cert.pem'), origin, frontend_manifest_sha256: actualManifestHash, upload_volume: uploadVolume, repository: repo, origin_output: join(output, 'origin') }
   const runtimeFile = join(root, 'runtime.json'); await writeFile(runtimeFile, JSON.stringify(runtime), { mode: 0o600 })
-  await writeFile(join(output, 'provenance.json'), JSON.stringify({ source_sha: input.source_sha, api_base_image: input.api_image, api_overlay: overlay, frontend_packaging: JSON.parse(await readFile(join(input.portable_frontend, 'PACKAGING.json'))), nginx_image: input.nginx_image, network: { id: network, api_ip: apiIp, edge_ip: edgeIp }, origin, distinction: 'OCI API base identity is accepted874; candidate application source/compiled overlays are separately hashed, not a published replacement image or release' }, null, 2) + '\n')
+  await writeFile(join(output, 'provenance.json'), JSON.stringify({ source_sha: input.source_sha, api_base_image: input.api_image, api_overlay: overlay, frontend_packaging: frontendPackaging, nginx_image: input.nginx_image, network: { id: network, api_ip: apiIp, edge_ip: edgeIp }, origin, packaged_images: packaged, image_ids: input.image_ids || null, distinction: packaged ? 'Fresh source-bound immutable API/storefront images. No application overlays, source mounts or dependency injection.' : 'OCI API base identity is accepted874; candidate application source/compiled overlays are separately hashed, not a published replacement image or release' }, null, 2) + '\n')
   const saveVerificationLog = async (name, result) => {
     let text = Buffer.concat([result.stdout, result.stderr]).toString('utf8')
     const secrets = [...Object.entries(env).filter(([name]) => /SECRET|KEY|PASSWORD/.test(name)).map(([, value]) => value), 'DidarDemo2026!', 'DidarNative2026!', 'TopologyDisposable2026!', 'DisposableWrong2026!']
@@ -166,6 +181,10 @@ try {
   // This unchanged suite deliberately restarts its own labelled PostgreSQL and
   // spawns a fresh compiled API on the test host. Keep Docker authority on the
   // runner; never mount its socket or Docker CLI into the application.
+  if (packaged) {
+    const mediaResult = await command('actual-image-media-regressions', process.execPath, [join(repo, 'scripts/topology/media.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
+    verificationOutcomes.media = mediaResult.code; await saveVerificationLog('media', mediaResult)
+  } else {
   const hostPorts = {}
   for (const [role, id, port] of [['postgres', pg, '5432/tcp'], ['redis', redis, '6379/tcp']]) {
     const state = await inspect(id, 'host-media-' + role + '-mapping')
@@ -178,6 +197,7 @@ try {
   const mediaResult = await command('same-origin-real-media-regressions', 'bun', ['test', join(repo, 'tests/content.test.ts')], { timeout: 1200000, expected: [0, 1], env: mediaEnv })
   verificationOutcomes.media = mediaResult.code
   await saveVerificationLog('media', mediaResult)
+  }
   const lifecycleResult = await command('real-lifecycle-compatible-bundle-recovery', process.execPath, [join(repo, 'scripts/topology/lifecycle.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
   verificationOutcomes.lifecycle = lifecycleResult.code; await saveVerificationLog('lifecycle', lifecycleResult)
   {
@@ -188,7 +208,7 @@ try {
     const original = { api, frontend };
     const originalImage = await inspect(api, 'recreate-original-api-image');
     const oldNamespace = await docker('recreate-namespace-before', ['exec', api, 'readlink', '/proc/self/ns/net']);
-    const manifestExpected = hash(await readFile(join(input.portable_frontend, 'PACKAGING.json')));
+    const manifestExpected = actualManifestHash;
     const mediaPath = '/static/topology-recovery.txt'; // lifecycle created this in owned uploadVolume
     const rootHttp = async (path, { body, headers = {} } = {}) => {
       const script = String.raw`const https=require('node:https'),fs=require('node:fs');let raw='';process.stdin.on('data',x=>raw+=x);process.stdin.on('end',()=>{const x=JSON.parse(raw),req=https.request(x.url,{ca:fs.readFileSync(x.ca),method:x.body?'POST':'GET',headers:{...(x.body?{'content-type':'application/json','content-length':Buffer.byteLength(x.body)}:{}),...x.headers}},res=>{const chunks=[];res.on('data',b=>chunks.push(b));res.on('end',()=>{const b=Buffer.concat(chunks);let json;try{json=JSON.parse(b)}catch{}process.stdout.write(JSON.stringify({status:res.statusCode,json,sha256:require('node:crypto').createHash('sha256').update(b).digest('hex')}))})});req.on('error',e=>{console.error(e.code||'REQUEST_ERROR');process.exitCode=1});req.end(x.body)})`;
@@ -253,7 +273,7 @@ try {
     assert.deepEqual(await snapshot(), before);
     frontend = await create('frontend', input.frontend_base_image, ['--network', 'container:' + api, '--env-file', envFile, '-w', '/app'], ['node', 'runtime/storefront.mjs']);
     assert.notEqual(frontend, original.frontend);
-    await copy('recreate-whole-portable-frontend', resolve(input.portable_frontend) + '/.', frontend, '/app/');
+    if (!packaged) await copy('recreate-whole-portable-frontend', resolve(input.portable_frontend) + '/.', frontend, '/app/');
     await copy('recreate-frontend-tls', tls, frontend, '/run/didar-tls');
     await docker('recreate-start-original-supervisor', ['start', frontend]);
     await wait('Recreated packaged frontend', async () => (await command('recreated-frontend-health-' + Date.now(), 'docker', ['exec', frontend, 'node', 'runtime/health.mjs'], { expected: [0, 1] })).code === 0, 180000);
@@ -289,7 +309,7 @@ try {
     for (const [path, email] of [['/auth/user/emailpass', 'native-admin@didar.test'], ['/auth/member/emailpass', 'native-supplier@didar.test']]) { const login = await rootHttp(path, { body: { email, password: 'DidarNative2026!' } }); assert.equal(login.status, 200); nativeStatuses.push(login.status) }
     runtime.api = api; runtime.frontend = frontend; runtime.relay_ip = newIp;
     await writeFile(runtimeFile, JSON.stringify(runtime), { mode: 0o600 });
-    await writeFile(join(recreateOutput, 'result.json'), JSON.stringify({ status: 'PASS', source_sha: input.source_sha, run_id: runId, old_container_ids: original, new_container_ids: { api, frontend }, old_namespace_observation: oldNamespace, new_namespace_observation: namespace, frontend_namespace: frontNamespace, namespace_inode_changed: oldNamespace !== namespace, kernel_inode_distinctness_claimed: false, old_docker_sandbox_id: originalImage.NetworkSettings.SandboxID, new_docker_sandbox_id: candidate.NetworkSettings.SandboxID, old_sandbox_key: originalImage.NetworkSettings.SandboxKey, new_sandbox_key: candidate.NetworkSettings.SandboxKey, frontend_network_mode: joinedFront.HostConfig.NetworkMode, shared_loopback_health: sharedHealth, private_unsigned_statuses: privateAuth, bridge_private_denials_curl_exit: [7, 7], observed_frozen_api_ip: newIp, fail_closed_status_while_down: closed.status, preserved_customer_session: 200, media_sha256: staticAfter.sha256, state_before: before, state_after_before_new_auth: preservedAfter, fresh_customer_login: newCustomer.status, native_admin_vendor_logins: nativeStatuses, six_overlays_matched: true, manifest_sha256: packageHash, exact_config_delta: 'Only inspected fixed relay upstream IPv4 address', trusted_sender_allowlists_unchanged: true, old_fixed_upstream_ip: apiIp, new_fixed_upstream_ip: newIp, relay_tls_name_and_ca_unchanged: true, long_recreate_fresh_replay_claimed: false, no_schema_seed_or_auth_counter_reset: true }, null, 2) + '\n');
+    await writeFile(join(recreateOutput, 'result.json'), JSON.stringify({ status: 'PASS', source_sha: input.source_sha, run_id: runId, old_container_ids: original, new_container_ids: { api, frontend }, old_namespace_observation: oldNamespace, new_namespace_observation: namespace, frontend_namespace: frontNamespace, namespace_inode_changed: oldNamespace !== namespace, kernel_inode_distinctness_claimed: false, old_docker_sandbox_id: originalImage.NetworkSettings.SandboxID, new_docker_sandbox_id: candidate.NetworkSettings.SandboxID, old_sandbox_key: originalImage.NetworkSettings.SandboxKey, new_sandbox_key: candidate.NetworkSettings.SandboxKey, frontend_network_mode: joinedFront.HostConfig.NetworkMode, shared_loopback_health: sharedHealth, private_unsigned_statuses: privateAuth, bridge_private_denials_curl_exit: [7, 7], observed_frozen_api_ip: newIp, fail_closed_status_while_down: closed.status, preserved_customer_session: 200, media_sha256: staticAfter.sha256, state_before: before, state_after_before_new_auth: preservedAfter, fresh_customer_login: newCustomer.status, native_admin_vendor_logins: nativeStatuses, six_overlays_matched: !packaged, application_overlays: overlay.length, packaged_images: packaged, manifest_sha256: packageHash, exact_config_delta: 'Only inspected fixed relay upstream IPv4 address', trusted_sender_allowlists_unchanged: true, old_fixed_upstream_ip: apiIp, new_fixed_upstream_ip: newIp, relay_tls_name_and_ca_unchanged: true, long_recreate_fresh_replay_claimed: false, no_schema_seed_or_auth_counter_reset: true }, null, 2) + '\n');
     verificationOutcomes.force_recreate = 0;
   }
   

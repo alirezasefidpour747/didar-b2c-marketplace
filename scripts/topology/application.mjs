@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url)
 const { signNetwork } = require('../../packages/auth-network/index.cjs')
 const config = JSON.parse(await readFile(resolve(process.argv[2]), 'utf8'))
 for (const field of ['run_id', 'source_sha', 'network', 'api', 'frontend', 'edge', 'nginx_image', 'ca_file', 'edge_ip', 'public_host', 'relay_ip', 'key_file', 'output_dir', 'owner_label']) if (!config[field]) throw Error('Missing explicit runtime field: ' + field)
-if (!/^[a-f0-9]{40}$/.test(config.source_sha) || !/@sha256:[a-f0-9]{64}$/.test(config.nginx_image)) throw Error('Exact candidate source and pinned Nginx image required')
+if (!/^[a-f0-9]{40}$/.test(config.source_sha) || !/(?:@|^)sha256:[a-f0-9]{64}$/.test(config.nginx_image)) throw Error('Exact candidate source and pinned Nginx image required')
 const output = resolve(config.output_dir), stages = [], results = [], owned = []
 await mkdir(output, { recursive: true })
 const command = observer(output, stages)

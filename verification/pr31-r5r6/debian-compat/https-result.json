@@ -1,0 +1,392 @@
+{
+  "status": "PASS",
+  "scope": "isolated exact Debian binaries on Debian13 executor, not target installation",
+  "nginx": "1.26.3-3+deb13u9",
+  "njs": "0.8.9-1",
+  "packages": {
+    "status": "PASS",
+    "scope": "isolated extraction, no installation",
+    "architecture": "amd64",
+    "packages": [
+      {
+        "Package": "nginx",
+        "Version": "1.26.3-3+deb13u9",
+        "Installed-Size": "1556",
+        "Maintainer": "Debian Nginx Maintainers <pkg-nginx-maintainers@alioth-lists.debian.net>",
+        "Architecture": "amd64",
+        "Replaces": "nginx-core (<< 1.22.1-6~), nginx-extras (<< 1.22.1-6~), nginx-light (<< 1.22.1-6~)",
+        "Provides": "httpd, httpd-cgi, nginx-abi-1.26.3-1",
+        "Depends": "libc6 (>= 2.34), libcrypt1 (>= 1:4.1.0), libpcre2-8-0 (>= 10.22), libssl3t64 (>= 3.0.0), zlib1g (>= 1:1.1.4), iproute2, nginx-common (= 1.26.3-3+deb13u9)",
+        "Breaks": "nginx-core (<< 1.22.1-6~), nginx-extras (<< 1.22.1-6~), nginx-light (<< 1.22.1-6~)",
+        "Description": "small, powerful, scalable web/proxy server",
+        "Homepage": "https://nginx.org",
+        "Description-md5": "cb534cf82475d3e706f730549c99229f",
+        "Section": "httpd",
+        "Priority": "optional",
+        "Filename": "pool/updates/main/n/nginx/nginx_1.26.3-3+deb13u9_amd64.deb",
+        "Size": "613276",
+        "SHA256": "29258fa0e2f4c9162a95eda2c36cf84ee8f57289a14c58fb7e6d3868c61a5db3",
+        "url": "https://security.debian.org/debian-security/pool/updates/main/n/nginx/nginx_1.26.3-3+deb13u9_amd64.deb"
+      },
+      {
+        "Package": "nginx-common",
+        "Source": "nginx",
+        "Version": "1.26.3-3+deb13u9",
+        "Installed-Size": "305",
+        "Maintainer": "Debian Nginx Maintainers <pkg-nginx-maintainers@alioth-lists.debian.net>",
+        "Architecture": "all",
+        "Replaces": "nginx (<< 1.22.1-8)",
+        "Depends": "debconf (>= 0.5) | debconf-2.0",
+        "Suggests": "fcgiwrap, nginx-doc, ssl-cert",
+        "Breaks": "nginx (<< 1.22.1-8)",
+        "Description": "small, powerful, scalable web/proxy server - common files",
+        "Homepage": "https://nginx.org",
+        "Description-md5": "9e23931d84d07adbee5412aefdad8a90",
+        "Multi-Arch": "foreign",
+        "Section": "httpd",
+        "Priority": "optional",
+        "Filename": "pool/updates/main/n/nginx/nginx-common_1.26.3-3+deb13u9_all.deb",
+        "Size": "111548",
+        "SHA256": "d0eab69fa763305d11bd623418118b61da1738aacd1390cd4465b7773289df1c",
+        "url": "https://security.debian.org/debian-security/pool/updates/main/n/nginx/nginx-common_1.26.3-3+deb13u9_all.deb"
+      },
+      {
+        "Package": "libnginx-mod-stream",
+        "Source": "nginx",
+        "Version": "1.26.3-3+deb13u9",
+        "Installed-Size": "294",
+        "Maintainer": "Debian Nginx Maintainers <pkg-nginx-maintainers@alioth-lists.debian.net>",
+        "Architecture": "amd64",
+        "Depends": "nginx-abi-1.26.3-1, libc6 (>= 2.33)",
+        "Description": "Stream module for Nginx",
+        "Homepage": "https://nginx.org",
+        "Description-md5": "ba1a6cc2e678c099e6cc2d0f828a0706",
+        "Recommends": "nginx",
+        "Section": "httpd",
+        "Priority": "optional",
+        "Filename": "pool/updates/main/n/nginx/libnginx-mod-stream_1.26.3-3+deb13u9_amd64.deb",
+        "Size": "154152",
+        "SHA256": "31503877739cdb8f0423ad3b43ac36d73beb50d6a0d4ff05b190b377c5014d2a",
+        "url": "https://security.debian.org/debian-security/pool/updates/main/n/nginx/libnginx-mod-stream_1.26.3-3+deb13u9_amd64.deb"
+      },
+      {
+        "Package": "libnginx-mod-http-js",
+        "Source": "libnginx-mod-js",
+        "Version": "0.8.9-1",
+        "Installed-Size": "1048",
+        "Maintainer": "Debian Nginx Maintainers <pkg-nginx-maintainers@alioth-lists.debian.net>",
+        "Architecture": "amd64",
+        "Depends": "libnginx-mod-stream (<< 1.26.3.1~), libnginx-mod-stream (>= 1.26.3), nginx-abi-1.26.3-1, libc6 (>= 2.38), libxml2 (>= 2.7.4)",
+        "Recommends": "nginx",
+        "Description": "JavaScript HTTP module for Nginx",
+        "Homepage": "https://nginx.org/en/docs/njs/",
+        "Description-md5": "61959d74cc01dded460ac2dee5c00467",
+        "Section": "httpd",
+        "Priority": "optional",
+        "Filename": "pool/main/libn/libnginx-mod-js/libnginx-mod-http-js_0.8.9-1_amd64.deb",
+        "Size": "340476",
+        "MD5sum": "a2a5ffa632e22b261a2541346e9f2a16",
+        "SHA256": "2892f45cb35b3893f4d331d817ad88f5fece1934dc8b83acfe6eaa6d321a6e2c",
+        "url": "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-js/libnginx-mod-http-js_0.8.9-1_amd64.deb"
+      },
+      {
+        "Package": "njs",
+        "Source": "libnginx-mod-js",
+        "Version": "0.8.9-1",
+        "Installed-Size": "892",
+        "Maintainer": "Debian Nginx Maintainers <pkg-nginx-maintainers@alioth-lists.debian.net>",
+        "Architecture": "amd64",
+        "Depends": "libnginx-mod-stream (>= 1.26.3), libnginx-mod-stream (<< 1.26.3.1~), libc6 (>= 2.38), libedit2 (>= 3.1-20130611-0), libpcre2-8-0 (>= 10.32), libssl3t64 (>= 3.0.0)",
+        "Description": "JavaScript for Nginx command-line utility",
+        "Homepage": "https://nginx.org/en/docs/njs/",
+        "Description-md5": "78202d4daf8eea0a23c80e3f50fdd4f7",
+        "Section": "httpd",
+        "Priority": "optional",
+        "Filename": "pool/main/libn/libnginx-mod-js/njs_0.8.9-1_amd64.deb",
+        "Size": "294676",
+        "MD5sum": "94e8fecbf6e025758266734a58876f0c",
+        "SHA256": "6a411db62c936cbd9d1edf913f3ae8db2b7cf86a7a71f6e162b43a4c8e6a179b",
+        "url": "https://deb.debian.org/debian/pool/main/libn/libnginx-mod-js/njs_0.8.9-1_amd64.deb"
+      }
+    ]
+  },
+  "sourceHashes": {
+    "sign.mjs": "9d333c664a8d3589b154b5515f4df5a25d626d7c7c291625d59e01ead694632e",
+    "auth.mjs": "6c47d760904a25f023d2fc14c275f02fc976a210fb65a9c8bc82a150dbaa2329"
+  },
+  "binaryHashes": {
+    "nginx": "254fac73e79add393fef33f514bc91b8a98ad1966c2b43c77a98c9359580a6d8",
+    "njs": "29bac97eef7fc21051c877abef468fd451d1f36fb1ddf87415c08e38be6226df",
+    "httpJsModule": "39e97faed2cf541efcc0f88beb70987740291b0b54e93fdd9ed8060d077f1e38"
+  },
+  "cases": [
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/register",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/register",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/register",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/api/didar/register",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/login",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/login",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/login",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/login",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.1",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/login?q=%2f&x=+",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/register",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/register",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/register",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/api/didar/register",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/login",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/login",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/login",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/login",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 0,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 35,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 7,
+      "status": 200
+    },
+    {
+      "name": "raw-https-signed-socket",
+      "source": "127.0.0.2",
+      "path": "/didar/register?z=1&z=2",
+      "bytes": 1200000,
+      "status": 200
+    },
+    {
+      "name": "fail-closed-negative",
+      "path": "/didar/login",
+      "status": 415
+    },
+    {
+      "name": "fail-closed-negative",
+      "path": "/didar/login",
+      "status": 413
+    },
+    {
+      "name": "fail-closed-negative",
+      "path": "/didar/login",
+      "status": 405
+    },
+    {
+      "name": "fail-closed-negative",
+      "path": "/api/didar/%6cogin",
+      "status": 400
+    },
+    {
+      "name": "missing-key",
+      "status": 503
+    },
+    {
+      "name": "rewritten-peer",
+      "status": 503
+    }
+  ],
+  "vectors": 36,
+  "invalidPeers": 5,
+  "freshDistinctNonces": 32,
+  "limitations": [
+    "No target-server installation, module-path or public HTTPS acceptance performed"
+  ],
+  "capabilities": [
+    "crypto SHA256/HMAC",
+    "WebCrypto CSPRNG",
+    "requestBuffer raw bytes",
+    "process.env inherited key",
+    "original realip_remote_addr socket",
+    "TLS verify CA/SAN",
+    "base64url",
+    "dynamic-module ABI loading"
+  ]
+}

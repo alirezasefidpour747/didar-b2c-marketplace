@@ -1,0 +1,110 @@
+{
+  "docker.io": [
+    "26.1.5+dfsg1-9+deb13u1",
+    "142fe32f839a20720b2e6074b8d28d883b01bc45345f7315586b0c2d348dae87"
+  ],
+  "docker-cli": [
+    "26.1.5+dfsg1-9+deb13u1",
+    "e78ac35b7a21652546ca1a739f63e4f31fe52e4385a9baf7020be400c594f23d"
+  ],
+  "containerd": [
+    "1.7.24~ds1-6+deb13u1",
+    "ed708deb96fe476a3bce4efa5c0538dfbcf717ab9a7c7944ba7260342c25899c"
+  ],
+  "runc": [
+    "1.1.15+ds1-2+b4",
+    "fad4f807a369677f0954bd4c61e56ddb2dd8b3f4aec30c3834c3165fc6d3c19f"
+  ],
+  "docker-compose": [
+    "2.26.1-4",
+    "47681197cb2b1ab88206b42a1a92fc75f50d9530a6322d03494a473eed0408ea"
+  ],
+  "iptables": [
+    "1.8.11-2",
+    "95ba166bb68a76ca1513196dd59d91e3c33b2096884c6de80406f302b18a030e"
+  ],
+  "tini": [
+    "0.19.0-3+b8",
+    "a443b12107331f67836a64cb6efe1dd92d2765e15568eb4567dccb409a8cd2a0"
+  ],
+  "libsystemd0": [
+    "257.13-1~deb13u1",
+    "ab0d4127b5e46e6f8c015a1db15a62ba9ae274cdefa150083adf90ada0600ea1"
+  ],
+  "libseccomp2": [
+    "2.6.0-2",
+    "89d5138e05fb6a86b9afd8b54dc0fb4b14f4c27c05e6c5f767c2132bdf808531"
+  ],
+  "libip4tc2": [
+    "1.8.11-2",
+    "762e4d9c7f86b3fdaefee2baf61ce40073d46d7602651433f2cb7a5eabfb47b4"
+  ],
+  "libip6tc2": [
+    "1.8.11-2",
+    "d5ecaad5595dc88d08f317997beb53a4906c45ea79ee14ec89103f72573e3f99"
+  ],
+  "libxtables12": [
+    "1.8.11-2",
+    "4de5aa59faef5e98d6ba9f5f521a915be5641f224f597862f8d29e8319e8db16"
+  ],
+  "netbase": [
+    "6.5",
+    "76bafa92947ebd37b0a6f9ec6570412041f56edebc1c66d323731216d318471e"
+  ],
+  "libmnl0": [
+    "1.0.5-3",
+    "4ec9c1096e0b954e3bdb03a62314ee7f49999045d3d55be3e4ded520ffc9baf5"
+  ],
+  "libnetfilter-conntrack3": [
+    "1.1.0-1",
+    "ffbac5d06fbe432d5171f2eb5b2504968377f27be133f72c81e71250a9957506"
+  ],
+  "libnfnetlink0": [
+    "1.0.2-3",
+    "5e4c3c40a04ffdb4139e4bef1136585e151a8eb8c71efa6c7250b636b3c0d1b1"
+  ],
+  "libnftnl11": [
+    "1.2.9-1",
+    "1b3eae46bfb9c6ab44e404797fb45278045f926d73974a84097ad47a3e27d983"
+  ],
+  "libcap2": [
+    "1:2.75-10+deb13u1+b3",
+    "89fc4d34fc7a28ad6f0fcd0c561ab253b9dedf6f77f5a000b47c276c8295bf67"
+  ],
+  "openssl": [
+    "3.5.7-1~deb13u3",
+    "43a9cbcf2a8a0e1f0a1c3f5a33ee1f56b269690e7a2129f2b2d0582e789589d7"
+  ],
+  "libssl3t64": [
+    "3.5.7-1~deb13u3",
+    "ff16bc048bcd7d1b256094450b79c77947d8e76fe2a24bd99b91021d591fa074"
+  ],
+  "libzstd1": [
+    "1.5.7+dfsg-1",
+    "2f6a2aeacfc925eba8b00ac9139bc4bfccf8cacb09eb93de067074b26948eef9"
+  ],
+  "zlib1g": [
+    "1:1.3.dfsg+really1.3.1-1+b1",
+    "015be740d6236ad114582dea500c1d907f29e16d6db00566ca32fb68d71ac90d"
+  ],
+  "openssl-provider-legacy": [
+    "3.5.7-1~deb13u3",
+    "c12e0266c4780749a4702b8959ac979689f4182e18eed85a8a5eb90ed0e16eab"
+  ],
+  "libstdc++6": [
+    "14.2.0-19",
+    "ab1fa05837aa7a92aae748fd07a18a35f7d18bb4a71c4724fe2bbf0e32089de0"
+  ],
+  "libgcc-s1": [
+    "14.2.0-19",
+    "3c71917b490d1a17aed43196a2787a256ecf060526cdb20216a74bedc061b150"
+  ],
+  "gcc-14-base": [
+    "14.2.0-19",
+    "5b6825de4263824b78c4c51f6476414f3b4e89c2ab63e81dc8b9b5501e867cf6"
+  ],
+  "ca-certificates": [
+    "20250419",
+    "ef590f89563aa4b46c8260d49d1cea0fc1b181d19e8df3782694706adf05c184"
+  ]
+}

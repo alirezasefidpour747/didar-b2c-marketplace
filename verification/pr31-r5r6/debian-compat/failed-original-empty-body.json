@@ -1,0 +1,6 @@
+{
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: <html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body>\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n\n\n503 !== 200\n",
+  "stack": "AssertionError [ERR_ASSERTION]: <html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body>\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n\n\n503 !== 200\n\n    at file:///workspace/work/didar-pr30-implementation/scripts/deployment/nginx/compat/verify-debian.mjs:117:12\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)",
+  "cases": []
+}

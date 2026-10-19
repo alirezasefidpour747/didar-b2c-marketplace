@@ -1,0 +1,38 @@
+{
+  "scope": "Exact isolated Debian module compatibility; not target installation or final packaged application acceptance",
+  "source_at_execution": "Working tree on PR31 d5ba9d7 base, uncommitted auth zero-length normalization only; exact signer hashes recorded in https-result.json",
+  "fresh": {
+    "unit_contracts": 9,
+    "unit_runner_exit": 0,
+    "https_cases": 38,
+    "https_runner_exit": 0,
+    "njs_vectors": 36,
+    "invalid_peer_vectors": 5
+  },
+  "prior_failures": [
+    {
+      "stage": "first harness startup",
+      "observed_process_exit": 1,
+      "cause": "Array.map(resolve) passed extra arguments; fixed fixture, no application operation reached"
+    },
+    {
+      "stage": "nginx config fixture stderr",
+      "observed_process_exit": 1,
+      "cause": "Nginx could not open /dev/stderr backed by Node socket; changed fixture error_log to owned file"
+    },
+    {
+      "stage": "original reviewed auth empty rawbody",
+      "observed_process_exit": 1,
+      "cause": "HTTP503 caused by njs0.8.9 detached zero-length requestBuffer; minimal fresh-empty-buffer normalization applied"
+    }
+  ],
+  "diagnostic_only": {
+    "https-fourth": "Observed invalid empty body failclosed503 while diagnosing original handler; superseded by normalized32rawproof accepted run, not acceptance evidence"
+  },
+  "not_executed_locally": [
+    "Docker edge build/run",
+    "Docker26/Compose2.26 daemon image build/run",
+    "owner-server changes",
+    "public Internet HTTPS"
+  ]
+}

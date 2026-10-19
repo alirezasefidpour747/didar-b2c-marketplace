@@ -4,10 +4,21 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 export const kitFiles = [
+  'scripts/ci/operator-bundle.mjs',
+  'scripts/ci/topology-receipt.mjs',
   'docs/AUTH_DEPLOYMENT_PACKAGING.md',
   'docs/AUTH_NETWORK_TRUST_AND_THROTTLING.md',
   'docs/deployment/NGINX_VERIFIED_TOPOLOGY.md',
   'docs/deployment/PR31_RELEASE_PREPARATION.md',
+  'docs/deployment/PR31_R5_R6.md',
+  'docs/deployment/NGINX_INSTALL_WRAPPER.md',
+  'docs/deployment/DEBIAN_NJS_COMPATIBILITY.md',
+  'scripts/deployment/nginx/stack.mjs',
+  'scripts/deployment/nginx/compat/Dockerfile',
+  'scripts/deployment/nginx/compat/Dockerfile.daemon',
+  'scripts/deployment/nginx/compat/fetch-debian.py',
+  'scripts/deployment/nginx/compat/runtime-pins.json',
+  'scripts/deployment/nginx/compat/daemon-pins.json',
   'scripts/deployment/nginx/sign.mjs',
   'scripts/deployment/nginx/auth.mjs',
   'scripts/deployment/nginx/README.md',

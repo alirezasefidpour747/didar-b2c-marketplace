@@ -14,7 +14,7 @@ const run = (name, command, args) => {
 let status = 'FAIL';
 try {
   if (!process.versions.node.startsWith('24.')) throw Error('Node.js 24 required');
-  run('automation-contracts', 'node', ['--test', 'tests/ci-release.test.mjs']);
+  run('automation-contracts', 'node', ['--test', 'tests/ci-release.test.mjs', 'tests/topology-artifacts.test.mjs', 'tests/operator-bundle.test.mjs', 'tests/nginx-stack.test.mjs', 'scripts/deployment/nginx/compat/compat.test.mjs']);
   run('native-sdk-lint-contracts', 'node', ['--test', 'tests/native-sdk-lint.test.mjs']);
   run('auth-relay-config-contracts', 'node', ['--test', 'tests/auth-network-relay.test.mjs']);
   run('nginx-signer-contracts', 'node', ['--test', 'scripts/deployment/nginx/sign.test.mjs']);
