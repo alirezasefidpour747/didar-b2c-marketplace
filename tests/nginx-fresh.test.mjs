@@ -11,7 +11,7 @@ import { provisionNetworkKey, validateFreshConfiguration, assertDaemonPreserved,
 import { sha256, parseConfiguration, actions, canonicalState } from '../scripts/deployment/nginx/stack.mjs'
 
 const image = c => 'sha256:' + c.repeat(64)
-const env = () => ({ DIDAR_COMPOSE_PROJECT: 'new-staging', DIDAR_COMPOSE_NETWORK: 'new-staging-net', DIDAR_POSTGRES_VOLUME: 'new-pg', DIDAR_REDIS_VOLUME: 'new-cache', DIDAR_UPLOADS_VOLUME: 'new-media', DIDAR_API_IMAGE: image('a'), DIDAR_STOREFRONT_IMAGE: image('b'), DIDAR_POSTGRES_IMAGE: image('c'), DIDAR_REDIS_IMAGE: image('d'), DIDAR_DB_USER: 'newuser', DIDAR_DB_NAME: 'newdb', DIDAR_DB_PASSWORD: 'db'.repeat(32), DATABASE_URL: 'postgres://newuser:' + 'db'.repeat(32) + '@postgres:5432/newdb', REDIS_URL: 'redis://redis:6379/0', JWT_SECRET: 'jwt'.repeat(32), COOKIE_SECRET: 'cookie'.repeat(32), DIDAR_AUTH_NETWORK_KEY: 'net'.repeat(32), DIDAR_PUBLIC_ORIGIN: 'https://new.example.test', DIDAR_PUBLIC_ORIGIN_VERIFIED: 'false', DIDAR_AUTH_HOST_PORT: '23000', DIDAR_AUTH_INGRESS_PEERS: 'PENDING', DIDAR_AUTH_TLS_DIR: '/private/new-tls', DIDAR_AUTH_TLS_SERVER_NAME: 'new-relay.example.test' })
+const env = () => ({ DIDAR_COMPOSE_PROJECT: 'new-staging', DIDAR_COMPOSE_NETWORK: 'new-staging-net', DIDAR_POSTGRES_VOLUME: 'new-pg', DIDAR_REDIS_VOLUME: 'new-cache', DIDAR_UPLOADS_VOLUME: 'new-media', DIDAR_API_IMAGE: image('a'), DIDAR_STOREFRONT_IMAGE: image('b'), DIDAR_POSTGRES_IMAGE: image('c'), DIDAR_REDIS_IMAGE: image('d'), DIDAR_DB_USER: 'newuser', DIDAR_DB_NAME: 'newdb', DIDAR_DB_PASSWORD: 'db'.repeat(32), DATABASE_URL: 'postgres://newuser:' + 'db'.repeat(32) + '@postgres:5432/newdb?sslmode=disable', REDIS_URL: 'redis://redis:6379/0', JWT_SECRET: 'jwt'.repeat(32), COOKIE_SECRET: 'cookie'.repeat(32), DIDAR_AUTH_NETWORK_KEY: 'net'.repeat(32), DIDAR_PUBLIC_ORIGIN: 'https://new.example.test', DIDAR_PUBLIC_ORIGIN_VERIFIED: 'false', DIDAR_AUTH_HOST_PORT: '23000', DIDAR_AUTH_INGRESS_PEERS: 'PENDING', DIDAR_AUTH_TLS_DIR: '/private/new-tls', DIDAR_AUTH_TLS_SERVER_NAME: 'new-relay.example.test' })
 const baseline = () => ({ containers: { legacy: { running: true, image: 'legacy', configuration_sha256: 'secret-hash' } }, networks: { bridgeid: { name: 'legacy_net' } }, volumes: { legacy_db: { sha256: 'legacy-hash' } } })
 async function directory(fn) { const dir = await mkdtemp(join(tmpdir(), 'didar-fresh-unit-')); try { await fn(dir) } finally { await rm(dir, { recursive: true, force: true }) } }
 
@@ -36,6 +36,11 @@ test('PENDING is an explicit preparation-only parser state; existing lifecycle s
 test('fresh dependency URLs cannot silently reuse legacy host/DB/cache; secrets and HTTPS state are distinct', () => {
   validateFreshConfiguration(env())
   for (const change of [{ DATABASE_URL: env().DATABASE_URL.replace('@postgres:', '@legacy-db:') }, { DATABASE_URL: env().DATABASE_URL + '?options=legacy' }, { DATABASE_URL: env().DATABASE_URL.replace('/newdb', '/legacydb') }, { REDIS_URL: 'redis://legacy-cache:6379/0' }, { REDIS_URL: 'redis://redis:6379/1' }, { COOKIE_SECRET: env().JWT_SECRET }, { DIDAR_DB_PASSWORD: 'short' }, { DIDAR_PUBLIC_ORIGIN_VERIFIED: 'true' }]) assert.throws(() => validateFreshConfiguration({ ...env(), ...change }), /FRESH|STRONG/)
+})
+
+test('private-bridge PostgreSQL requires the exact accepted SSL mode; implicit TLS and extra/duplicate options fail', () => {
+  validateFreshConfiguration(env())
+  for (const query of ['', '?sslmode=require', '?sslmode=disable&sslmode=require', '?sslmode=disable&application_name=unreviewed', '?sslmode=disable&', '?sslmode=disable#fragment']) assert.throws(() => validateFreshConfiguration({ ...env(), DATABASE_URL: env().DATABASE_URL.replace('?sslmode=disable', query) }), /FRESH_LOCAL_DEPENDENCY/)
 })
 
 test('whole-daemon preservation rejects changed, removed and newly created unrelated resources', () => {

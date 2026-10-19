@@ -46,7 +46,7 @@ redis:7-bookworm@sha256:cd745595f143052dd6a743bc5651d3ce4b03979fe5c99c7fcfab7346
 
 نام project، bridge network و سه volumeِ PostgreSQL/Redis/uploads باید تازه و با همهٔ legacy و سرویس‌های دیگر متفاوت باشند. collision موجب توقف است؛ هیچ adopt، reuse، volume reset، demo seed یا حذف منبع انجام نمی‌شود. baseline کل daemon قبل از ساخت گرفته می‌شود؛ تغییر کانتینرها، configها و endpointهای قبلی یا ظهور منابع خارج از journal مسیر را می‌بندد. هم‌زمان روی این Docker daemon عملیات نامرتبط اجرا نکنید.
 
-fresh DB/cache فقط با hostهای ثابت داخلی `postgres:5432` و `redis:6379/0` مصرف می‌شوند. wrapper اتصال به DB/cache قدیمی را نمی‌پذیرد. چهار secret جدید و متمایز فقط متعلق به fresh هستند: JWT، COOKIE، DB password و network key. هیچ secret legacy خوانده، تغییر یا rotate نمی‌شود. native identity/tenant authorities و signed-ingress/private-Next application همان release پذیرفته‌شده باقی می‌مانند.
+fresh DB/cache فقط با hostهای ثابت داخلی `postgres:5432` و `redis:6379/0` مصرف می‌شوند. PostgreSQL همین bridge خصوصی، TLS endpoint ندارد؛ قرارداد پذیرفته‌شدهٔ release برای آن دقیقاً `?sslmode=disable` است. این flag فقط اتصال DB خصوصی تازه را مشخص می‌کند و TLS عمومی/relay را تغییر نمی‌دهد؛ حذف آن باعث تلاش TLS پیش‌فرض Medusa روی hostname داخلی و شکست migration می‌شود. queryهای دیگر/تکراری پذیرفته نیستند. wrapper اتصال به DB/cache قدیمی را نمی‌پذیرد. چهار secret جدید و متمایز فقط متعلق به fresh هستند: JWT، COOKIE، DB password و network key. هیچ secret legacy بازاستفاده، تغییر، rotate یا در شواهد منتشر نمی‌شود؛ baseline محافظت از منابع، Config کانتینرها را فقط در حافظه برای hash مقایسه می‌کند. native identity/tenant authorities و signed-ingress/private-Next application همان release پذیرفته‌شده باقی می‌مانند.
 
 هدف runtime نهایی:
 
@@ -95,7 +95,7 @@ mkdir -m 0700 /absolute/new-fresh-private
   /absolute/new-fresh-private/network.key
 ```
 
-این کار key را با CSPRNG و `wx` فقط یک‌بار می‌نویسد و مقدار/hash آن را چاپ نمی‌کند. برای JWT، COOKIE و DB password از secret manager یا CSPRNG مستقل استفاده و فقط در private fresh config قرار دهید. کلید networkِ تازه یکسان به **Nginx signer تازه، API تازه و relay تازه** داده می‌شود؛ به legacy داده نمی‌شود. `DATABASE_URL` باید credentials همین DB تازه و `postgres:5432/<fresh-db>` و Redis URL باید `redis://redis:6379/0` باشد. `DIDAR_PUBLIC_ORIGIN_VERIFIED=false` باقی می‌ماند.
+این کار key را با CSPRNG و `wx` فقط یک‌بار می‌نویسد و مقدار/hash آن را چاپ نمی‌کند. برای JWT، COOKIE و DB password از secret manager یا CSPRNG مستقل استفاده و فقط در private fresh config قرار دهید. کلید networkِ تازه یکسان به **Nginx signer تازه، API تازه و relay تازه** داده می‌شود؛ به legacy داده نمی‌شود. `DATABASE_URL` باید credentials همین DB تازه و `postgres:5432/<fresh-db>?sslmode=disable` و Redis URL باید `redis://redis:6379/0` باشد. `DIDAR_PUBLIC_ORIGIN_VERIFIED=false` باقی می‌ماند.
 
 در مرحلهٔ preparation فقط `DIDAR_AUTH_INGRESS_PEERS=PENDING` مجاز است؛ این مقدار peer یا allowlist نیست و هیچ frontend/relay با آن شروع نمی‌شود. پس از observation واقعی، فقط از مسیر `fresh-bind-peer` به peer دقیق تبدیل می‌شود. JWT/COOKIE/DB/network key در میانهٔ این انتقال ثابت می‌مانند.
 

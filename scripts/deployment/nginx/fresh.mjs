@@ -59,7 +59,10 @@ export async function provisionNetworkKey(path) {
 
 export function validateFreshConfiguration(env) {
   const db = new URL(env.DATABASE_URL), redis = new URL(env.REDIS_URL)
-  if (!['postgres:', 'postgresql:'].includes(db.protocol) || db.hostname !== 'postgres' || db.port !== '5432' || db.pathname !== '/' + env.DIDAR_DB_NAME || decodeURIComponent(db.username) !== env.DIDAR_DB_USER || decodeURIComponent(db.password) !== env.DIDAR_DB_PASSWORD || db.search || db.hash || redis.href !== 'redis://redis:6379/0') fail('FRESH_LOCAL_DEPENDENCY_URLS_REQUIRED')
+  // Match the accepted private-bridge PostgreSQL transport explicitly. Medusa's
+  // derived module connections otherwise infer TLS for a non-localhost host.
+  // This does not alter relay/public TLS or existing-server URL preservation.
+  if (!['postgres:', 'postgresql:'].includes(db.protocol) || db.hostname !== 'postgres' || db.port !== '5432' || db.pathname !== '/' + env.DIDAR_DB_NAME || decodeURIComponent(db.username) !== env.DIDAR_DB_USER || decodeURIComponent(db.password) !== env.DIDAR_DB_PASSWORD || db.search !== '?sslmode=disable' || db.hash || redis.href !== 'redis://redis:6379/0') fail('FRESH_LOCAL_DEPENDENCY_URLS_REQUIRED')
   if (env.DIDAR_PUBLIC_ORIGIN_VERIFIED !== 'false') fail('FRESH_PUBLIC_HTTPS_NOT_VERIFIED')
   if (env.DIDAR_AUTH_TLS_DIR.includes(',')) fail('FRESH_LITERAL_TLS_MOUNT_PATH_REQUIRED')
   if (new Set([env.JWT_SECRET, env.COOKIE_SECRET, env.DIDAR_AUTH_NETWORK_KEY, env.DIDAR_DB_PASSWORD]).size !== 4 || [env.JWT_SECRET, env.COOKIE_SECRET, env.DIDAR_AUTH_NETWORK_KEY, env.DIDAR_DB_PASSWORD].some(value => Buffer.byteLength(value) < 32)) fail('DISTINCT_STRONG_FRESH_SECRETS_REQUIRED')
