@@ -154,10 +154,28 @@ export function redactDiagnostic(bytes, ...sources) {
 // counts and fixed classes only. SQL, relation names and private paths stay out.
 export function sanitizeFixtureObservation(stage, observation) {
   if (!observation || typeof observation !== 'object' || Array.isArray(observation)) return null
-  if (stage !== 'fresh-postgres-logical-difference') return Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(observation, key)).map(key => [key, observation[key]]))
+  if (!['fresh-postgres-logical-difference', 'fresh-postgres-ddl-difference'].includes(stage)) return Object.fromEntries(['role', 'container_id', 'container_exit_code', 'running', 'health', 'oom_killed', 'resource_id', 'changed_fields'].filter(key => Object.hasOwn(observation, key)).map(key => [key, observation[key]]))
   const keys = (value, expected) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === expected.length && expected.every(key => Object.hasOwn(value, key))
   const digest = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
   const count = value => Number.isSafeInteger(value) && value >= 0 && value <= 1000000000
+  if (stage === 'fresh-postgres-ddl-difference') {
+    const enums = {
+      KEYWORD: ['CREATE', 'TABLE', 'INDEX', 'UNIQUE', 'CONSTRAINT', 'CHECK', 'WHERE', 'AND', 'OR', 'NOT', 'IS', 'NULL', 'ANY', 'ALL', 'BETWEEN', 'IN', 'ON', 'USING', 'ONLY', 'DEFAULT', 'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'WITH', 'WITHOUT', 'AS', 'SELECT', 'FROM', 'TRUE', 'FALSE', 'COLLATE', 'ASC', 'DESC', 'NULLS', 'FIRST', 'LAST', 'INCLUDE', 'TABLESPACE', 'DEFERRABLE', 'INITIALLY', 'DEFERRED', 'IMMEDIATE', 'MATCH', 'FULL', 'SIMPLE', 'PARTIAL', 'NO', 'ACTION', 'RESTRICT', 'CASCADE', 'SET', 'UPDATE', 'DELETE', 'ALTER', 'ADD', 'DROP', 'COLUMN', 'VALID', 'VALIDATE', 'STORED', 'GENERATED', 'ALWAYS', 'BY', 'IDENTITY'],
+      OPERATOR: ['EQ', 'NE', 'LT', 'GT', 'LE', 'GE', 'CAST', 'PLUS', 'MINUS', 'STAR', 'SLASH', 'CONCAT', 'REGEX', 'NOT_REGEX', 'REGEX_I', 'NOT_REGEX_I', 'LIKE', 'NOT_LIKE', 'ILIKE', 'NOT_ILIKE', 'JSON_GET', 'JSON_GET_TEXT', 'CONTAINS', 'CONTAINED_BY', 'HAS_KEY', 'HAS_ALL_KEYS', 'HAS_ANY_KEY', 'OVERLAP', 'BIT_AND', 'BIT_OR', 'BIT_XOR', 'MODULO', 'ASSIGN'],
+      PUNCTUATION: ['LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'COMMA', 'DOT', 'SEMICOLON'],
+    }
+    const token = value => {
+      if (typeof value !== 'string') return false
+      const parts = value.split(':')
+      return parts.length === 2 && Object.hasOwn(enums, parts[0]) && enums[parts[0]].includes(parts[1]) || parts.length === 3 && ['IDENTIFIER', 'STRING_LITERAL', 'NUMBER', 'COMMENT', 'OTHER'].includes(parts[0]) && digest(parts[1]) && /^(0|[1-9][0-9]{0,9})$/.test(parts[2]) && count(Number(parts[2]))
+    }
+    if (!keys(observation, ['kind', 'changed_line_count', 'lines']) || observation.kind !== 'POSTGRES_DDL_DIFFERENCE_V1' || !count(observation.changed_line_count) || !Array.isArray(observation.lines) || observation.lines.length > 10 || observation.lines.length > observation.changed_line_count) return null
+    for (const line of observation.lines) {
+      if (!keys(line, ['section_type', 'section_identity_sha256', 'source_line', 'restored_line', 'source_line_sha256', 'restored_line_sha256', 'source_token_count', 'restored_token_count', 'source_tokens', 'restored_tokens']) || !['TABLE', 'INDEX'].includes(line.section_type) || !digest(line.section_identity_sha256) || !digest(line.source_line_sha256) || !digest(line.restored_line_sha256) || !['source_line', 'restored_line', 'source_token_count', 'restored_token_count'].every(key => count(line[key]))) return null
+      for (const side of ['source', 'restored']) if (!Array.isArray(line[side + '_tokens']) || line[side + '_tokens'].length > 256 || line[side + '_tokens'].length > line[side + '_token_count'] || !line[side + '_tokens'].every(token)) return null
+    }
+    return structuredClone(observation)
+  }
   const lineClasses = ['BLANK', 'COMMENT', 'COPY_HEADER', 'COPY_DATA', 'COPY_END', 'SEQUENCE_STATE', 'SQL', 'EOF']
   const sectionClasses = ['HEADER', 'TABLE_DATA', 'SEQUENCE_SET', 'TABLE', 'INDEX', 'CONSTRAINT', 'FK_CONSTRAINT', 'SEQUENCE', 'SCHEMA', 'FUNCTION', 'TYPE', 'EXTENSION', 'ACL', 'COMMENT', 'DEFAULT', 'OTHER']
   if (!keys(observation, ['kind', 'source_sha256', 'restored_sha256', 'source_line_count', 'restored_line_count', 'source_byte_count', 'restored_byte_count', 'section_order_equal', 'differing_section_count', 'first_difference', 'section_differences']) || observation.kind !== 'POSTGRES_DUMP_DIFFERENCE_V1' || !digest(observation.source_sha256) || !digest(observation.restored_sha256) || !['source_line_count', 'restored_line_count', 'source_byte_count', 'restored_byte_count', 'differing_section_count'].every(key => count(observation[key])) || typeof observation.section_order_equal !== 'boolean') return null

@@ -4,7 +4,7 @@ import { mkdtemp, chmod, writeFile, readFile, symlink, lstat } from 'node:fs/pro
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { randomBytes } from 'node:crypto'
-import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference } from './fresh-restore.mjs'
+import { restoreResourceNames, restoreOwnershipArguments, verifyNewPrivateDestination, runFreshRestore, runFreshCheckpoint, verifyCheckpointApplications, describePostgresDumpDifference, recordPostgresDumpDifference, tokenizePostgresDDL, describePostgresDDLDifference } from './fresh-restore.mjs'
 import { runner, canonicalState, sha256, sanitizeFixtureObservation } from './stack.mjs'
 import { observeDaemon, assertDaemonPreserved } from './fresh.mjs'
 
@@ -30,14 +30,54 @@ test('Postgres diagnostics identify row tampering versus ordering without author
   assert.equal(describePostgresDumpDifference(sequence, sequence.replace(', 7,', ', 8,')).first_difference.source_class, 'SEQUENCE_STATE')
 })
 
+test('DDL token diagnostics retain only fixed SQL enums and whole-private-token hashes', () => {
+  const sql = 'CREATE TABLE "PRIVATE_IDENTIFIER" (x text DEFAULT E\'PRIVATE_LITERAL\\\' STILL_PRIVATE\', y text DEFAULT $body$PRIVATE_DOLLAR\nSELECT SECRET$body$); /* PRIVATE_COMMENT /* NESTED_SECRET */ END_SECRET */ -- PRIVATE_LINE_COMMENT\n'
+  const tokens = tokenizePostgresDDL(sql), serialized = JSON.stringify(tokens)
+  for (const value of ['PRIVATE_IDENTIFIER', 'PRIVATE_LITERAL', 'STILL_PRIVATE', 'PRIVATE_DOLLAR', 'SECRET', 'PRIVATE_COMMENT', 'NESTED_SECRET', 'END_SECRET', 'PRIVATE_LINE_COMMENT']) assert.equal(serialized.includes(value), false)
+  assert.equal(tokens.includes('KEYWORD:SELECT'), false) // SELECT is inside one dollar literal.
+  assert.equal(tokens.includes('KEYWORD:CREATE'), true)
+  assert.equal(tokens.filter(token => token.startsWith('STRING_LITERAL:')).length, 2)
+  assert.equal(tokens.filter(token => token.startsWith('COMMENT:')).length, 2)
+  assert.equal(tokenizePostgresDDL("DEFAULT 'unterminated PRIVATE_LITERAL SELECT").includes('KEYWORD:SELECT'), false)
+})
+
+test('changed DDL token producer matches strict sanitizer and never canonicalizes checks/indexes', () => {
+  const prefix = '-- Name: public_fixture; Type: TABLE; Schema: public; Owner: -\n', source = prefix + "CREATE TABLE public.public_fixture (value text CONSTRAINT x CHECK (NOT (value = ANY (ARRAY['PRIVATE_LITERAL'::text]))));\n", restored = prefix + "CREATE TABLE public.public_fixture (value text CONSTRAINT x CHECK (value <> ALL (ARRAY['PRIVATE_LITERAL'::text])));\n"
+  const result = describePostgresDDLDifference(source, restored)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-ddl-difference', result), result)
+  assert.equal(result.changed_line_count, 1)
+  assert.equal(result.lines[0].source_line, 2)
+  assert.equal(result.lines[0].source_tokens.includes('KEYWORD:NOT'), true)
+  assert.equal(result.lines[0].restored_tokens.includes('KEYWORD:ALL'), true)
+  assert.equal(result.lines[0].restored_tokens.includes('OPERATOR:NE'), true)
+  assert.notEqual(result.lines[0].source_line_sha256, result.lines[0].restored_line_sha256)
+  assert.equal(JSON.stringify(result).includes('PRIVATE_LITERAL'), false)
+  const rows = privateSqlFixture(['1\tCOPY_ROW_PRIVATE'])
+  assert.deepEqual(describePostgresDDLDifference(rows, rows.replace('COPY_ROW_PRIVATE', 'COPY_ROW_CHANGED')).lines, [])
+  const many = Array.from({ length: 15 }, (_, i) => 'ALTER TABLE x ADD CONSTRAINT c' + i + ' CHECK (' + Array(200).fill('value = 1').join(' AND ') + ');').join('\n')
+  const bounded = describePostgresDDLDifference(prefix + many, prefix + many.replaceAll('value = 1', 'value = 2'))
+  assert.equal(bounded.changed_line_count, 15)
+  assert.equal(bounded.lines.length, 10)
+  assert.equal(bounded.lines.every(line => line.source_tokens.length <= 256 && line.restored_tokens.length <= 256), true)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-ddl-difference', bounded), bounded)
+  const embedded = prefix + "CREATE TABLE x (value text DEFAULT $private$before\n-- Name: PRIVATE_FAKE_SECTION; Type: TABLE; Schema: public; Owner: -\nSECRET_LITERAL SELECT\n$private$);\n"
+  const embeddedResult = describePostgresDDLDifference(embedded, embedded.replace('SECRET_LITERAL SELECT', 'CHANGED_SECRET SELECT'))
+  assert.equal(embeddedResult.lines.length, 1)
+  assert.equal(embeddedResult.lines[0].source_tokens.includes('KEYWORD:SELECT'), false)
+  assert.equal(JSON.stringify(embeddedResult).includes('PRIVATE_FAKE_SECTION'), false)
+  assert.deepEqual(sanitizeFixtureObservation('fresh-postgres-ddl-difference', embeddedResult), embeddedResult)
+})
+
 test('mismatching dump copies remain private0600 and only hash/count diagnostics reach observer', async () => {
   const root = await mkdtemp(join(tmpdir(), 'didar-private-dump-diagnostic-')); await chmod(root, 0o700)
   const source = privateSqlFixture(['1\tPRIVATE_SQL_NEVER_UPLOAD']), restored = privateSqlFixture(['1\tPRIVATE_SQL_CHANGED']), observed = []
   const run = async (stage, args) => { await writeFile(args[2], stage.includes('-source-') ? source : restored, { mode: 0o644 }); return '' }
   run.recordFixtureObservation = (stage, observation) => observed.push({ stage, observation })
   const diagnostic = await recordPostgresDumpDifference({ sourceContainer: '1'.repeat(64), restoredContainer: '2'.repeat(64), run, backupDir: root, sourceDigest: sha256(source) + '  /tmp/didar-comparison-normalized.sql', restoredDigest: sha256(restored) + '  /tmp/didar-comparison-normalized.sql' })
-  assert.equal(observed.length, 1)
+  assert.equal(observed.length, 2)
   assert.equal(observed[0].stage, 'fresh-postgres-logical-difference')
+  assert.equal(observed[1].stage, 'fresh-postgres-ddl-difference')
+  assert.deepEqual(sanitizeFixtureObservation(observed[1].stage, observed[1].observation), observed[1].observation)
   assert.equal(JSON.stringify(observed).includes('PRIVATE_SQL'), false)
   assert.deepEqual(observed[0].observation, diagnostic)
   for (const file of ['postgres.source.normalized.private.sql', 'postgres.restored.normalized.private.sql', 'postgres-difference.sanitized.json']) assert.equal((await lstat(join(root, file))).mode & 0o777, 0o600)

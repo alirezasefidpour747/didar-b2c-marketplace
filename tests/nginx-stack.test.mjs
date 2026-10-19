@@ -20,6 +20,43 @@ const values = () => ({
 const envText = object => Object.entries(object).map(([key, value]) => key + '=' + value).join('\n') + '\n'
 
 const postgresDifference = () => ({ kind: 'POSTGRES_DUMP_DIFFERENCE_V1', source_sha256: sha256('source'), restored_sha256: sha256('restored'), source_line_count: 10, restored_line_count: 10, source_byte_count: 100, restored_byte_count: 100, section_order_equal: true, differing_section_count: 1, first_difference: { source_line: 8, restored_line: 8, source_class: 'COPY_DATA', restored_class: 'COPY_DATA', source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line') }, section_differences: [{ section_type: 'TABLE_DATA', section_identity_sha256: sha256('section'), source_sha256: sha256('source-section'), restored_sha256: sha256('restored-section'), source_lines: 2, restored_lines: 2, source_rows: 1, restored_rows: 1, row_multiset_equal: false }] })
+const ddlDifference = () => ({ kind: 'POSTGRES_DDL_DIFFERENCE_V1', changed_line_count: 1, lines: [{ section_type: 'TABLE', section_identity_sha256: sha256('section'), source_line: 10, restored_line: 10, source_line_sha256: sha256('source-line'), restored_line_sha256: sha256('restored-line'), source_token_count: 3, restored_token_count: 3, source_tokens: ['KEYWORD:CHECK', 'PUNCTUATION:LPAREN', 'IDENTIFIER:' + sha256('private-identifier') + ':18'], restored_tokens: ['KEYWORD:CHECK', 'PUNCTUATION:LPAREN', 'OPERATOR:NE'] }] })
+
+test('DDL diagnostic allows bounded fixed SQL token enums and hash/length-only private tokens in QA observations', () => {
+  const observation = ddlDifference(), receipts = [], run = runner({}, receipts)
+  run.recordFixtureObservation('fresh-postgres-ddl-difference', observation); assert.deepEqual(receipts, [])
+  run.enableFixtureDiagnostics(); run.recordFixtureObservation('fresh-postgres-ddl-difference', observation)
+  assert.deepEqual(receipts[0].observation, observation); assert.equal(Object.hasOwn(receipts[0], 'code'), false)
+  const text = JSON.stringify(receipts); assert.equal(text.includes('private-identifier'), false)
+  observation.lines[0].source_tokens[0] = 'PRIVATE_SQL_CANARY'
+  assert.equal(receipts[0].observation.lines[0].source_tokens[0], 'KEYWORD:CHECK')
+})
+
+test('DDL diagnostic rejects raw tokens, unknown enums/keys, malformed hashes/counts and over-limit arrays', () => {
+  const changes = [
+    value => { value.raw_sql = 'PRIVATE_SQL_CANARY' },
+    value => { value.lines[0].section_name = 'PRIVATE_SQL_CANARY' },
+    value => { value.lines[0].section_type = 'TABLE_DATA' },
+    value => { value.lines[0].source_tokens = ['PRIVATE_SQL_CANARY'] },
+    value => { value.lines[0].source_tokens = ['KEYWORD:PRIVATE_SQL_CANARY'] },
+    value => { value.lines[0].source_tokens = ['__proto__:PRIVATE_SQL_CANARY'] },
+    value => { value.lines[0].source_tokens = ['IDENTIFIER:PRIVATE_SQL_CANARY:18'] },
+    value => { value.lines[0].source_tokens = ['IDENTIFIER:' + sha256('id') + ':01'] },
+    value => { value.lines[0].source_tokens = ['STRING_LITERAL:' + sha256('private') + ':1000000001'] },
+    value => { value.lines[0].source_tokens = ['COMMENT:' + sha256('private') + ':-1'] },
+    value => { value.lines[0].source_tokens = [null] },
+    value => { value.lines[0].source_token_count = 0 },
+    value => { value.lines[0].source_tokens = Array(257).fill('KEYWORD:CHECK'); value.lines[0].source_token_count = 257 },
+    value => { value.lines = Array(11).fill(value.lines[0]); value.changed_line_count = 11 },
+  ]
+  const receipts = [], run = runner({}, receipts); run.enableFixtureDiagnostics()
+  for (const change of changes) {
+    const value = ddlDifference(); change(value)
+    assert.equal(sanitizeFixtureObservation('fresh-postgres-ddl-difference', value), null)
+    run.recordFixtureObservation('fresh-postgres-ddl-difference', value)
+  }
+  assert.deepEqual(receipts, [])
+})
 
 test('PostgreSQL mismatch observation retains only strict hash/count/enum evidence in enabled QA journals', () => {
   const observation = postgresDifference(), receipts = [], run = runner({}, receipts)

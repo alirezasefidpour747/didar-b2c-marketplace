@@ -10,6 +10,87 @@ const same = (a, b) => canonicalState(a) === canonicalState(b)
 const id = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
 const name = value => typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}$/.test(value)
 const redisDigestScript = "local k=redis.call('KEYS','*');table.sort(k);local a={};for _,v in ipairs(k) do a[#a+1]=redis.sha1hex(v)..':'..redis.sha1hex(redis.call('DUMP',v))..':'..redis.call('PEXPIRETIME',v) end;return redis.sha1hex(table.concat(a,'\\n'))"
+const ddlKeywords = new Set('CREATE TABLE INDEX UNIQUE CONSTRAINT CHECK WHERE AND OR NOT IS NULL ANY ALL BETWEEN IN ON USING ONLY DEFAULT PRIMARY KEY FOREIGN REFERENCES WITH WITHOUT AS SELECT FROM TRUE FALSE COLLATE ASC DESC NULLS FIRST LAST INCLUDE TABLESPACE DEFERRABLE INITIALLY DEFERRED IMMEDIATE MATCH FULL SIMPLE PARTIAL NO ACTION RESTRICT CASCADE SET UPDATE DELETE ALTER ADD DROP COLUMN VALID VALIDATE STORED GENERATED ALWAYS BY IDENTITY'.split(' '))
+const ddlOperators = Object.entries({ '!~~*': 'NOT_ILIKE', '~~*': 'ILIKE', '!~~': 'NOT_LIKE', '~~': 'LIKE', '!~*': 'NOT_REGEX_I', '!~': 'NOT_REGEX', '~*': 'REGEX_I', '->>': 'JSON_GET_TEXT', '->': 'JSON_GET', '::': 'CAST', '<>': 'NE', '!=': 'NE', '<=': 'LE', '>=': 'GE', '||': 'CONCAT', '@>': 'CONTAINS', '<@': 'CONTAINED_BY', '?&': 'HAS_ALL_KEYS', '?|': 'HAS_ANY_KEY', '&&': 'OVERLAP', ':=': 'ASSIGN', '=': 'EQ', '<': 'LT', '>': 'GT', '+': 'PLUS', '-': 'MINUS', '*': 'STAR', '/': 'SLASH', '~': 'REGEX', '?': 'HAS_KEY', '&': 'BIT_AND', '|': 'BIT_OR', '#': 'BIT_XOR', '%': 'MODULO' }).sort((a, b) => b[0].length - a[0].length)
+const ddlPunctuation = { '(': 'LPAREN', ')': 'RPAREN', '[': 'LBRACKET', ']': 'RBRACKET', ',': 'COMMA', '.': 'DOT', ';': 'SEMICOLON' }
+
+function lexPostgresDDL(text) {
+  const result = []; let offset = 0, line = 1
+  while (offset < text.length) {
+    const start = offset, first = text[offset], rest = text.slice(offset); let category = 'OTHER', symbol
+    if (/\s/.test(first)) { while (offset < text.length && /\s/.test(text[offset])) offset++ }
+    else if (rest.startsWith('--')) { category = 'COMMENT'; const end = text.indexOf('\n', offset); offset = end < 0 ? text.length : end }
+    else if (rest.startsWith('/*')) {
+      category = 'COMMENT'; offset += 2; let depth = 1
+      while (offset < text.length && depth) { if (text.startsWith('/*', offset)) { depth++; offset += 2 } else if (text.startsWith('*/', offset)) { depth--; offset += 2 } else offset++ }
+    } else {
+      const dollar = /^(?:\$[A-Za-z_][A-Za-z_0-9]*\$|\$\$)/.exec(rest)?.[0], prefixed = /^[eEbBxXnN]'/.test(rest)
+      if (dollar) { category = 'STRING_LITERAL'; const end = text.indexOf(dollar, offset + dollar.length); offset = end < 0 ? text.length : end + dollar.length }
+      else if (first === "'" || first === '"' || prefixed) {
+        const quote = prefixed ? "'" : first; category = quote === '"' ? 'IDENTIFIER' : 'STRING_LITERAL'; offset += prefixed ? 2 : 1
+        while (offset < text.length) { if (text[offset] === '\\') { offset = Math.min(text.length, offset + 2) } else if (text[offset] === quote) { if (text[offset + 1] === quote) offset += 2; else { offset++; break } } else offset++ }
+      } else {
+        const identifier = /^[A-Za-z_\u0080-\uFFFF][A-Za-z_0-9$\u0080-\uFFFF]*/.exec(rest)?.[0], number = /^[0-9]+(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?/.exec(rest)?.[0], operator = ddlOperators.find(([raw]) => rest.startsWith(raw))
+        if (identifier) { offset += identifier.length; category = ddlKeywords.has(identifier.toUpperCase()) ? 'KEYWORD' : 'IDENTIFIER'; if (category === 'KEYWORD') symbol = identifier.toUpperCase() }
+        else if (number) { offset += number.length; category = 'NUMBER' }
+        else if (operator) { offset += operator[0].length; category = 'OPERATOR'; symbol = operator[1] }
+        else if (ddlPunctuation[first]) { offset++; category = 'PUNCTUATION'; symbol = ddlPunctuation[first] }
+        else offset += String.fromCodePoint(text.codePointAt(offset)).length
+      }
+    }
+    const raw = text.slice(start, offset), encoded = symbol ? category + ':' + symbol : category + ':' + sha256(raw) + ':' + Buffer.byteLength(raw), lineCount = raw.split('\n').length - 1
+    result.push({ encoded, start_line: line, end_line: line + lineCount }); line += lineCount
+  }
+  return result
+}
+
+export const tokenizePostgresDDL = text => lexPostgresDDL(text).map(token => token.encoded)
+
+export function describePostgresDDLDifference(source, restored) {
+  const sections = bytes => {
+    const result = new Map(), counts = new Map(); let section = null, copying = false, quote = null, dollar = null, commentDepth = 0
+    const lines = bytes.toString('utf8').split('\n')
+    for (let position = 0; position < lines.length; position++) {
+      const value = lines[position]
+      if (!copying && !quote && !dollar && !commentDepth && /^-- Name: /.test(value)) {
+        const raw = sha256(value), occurrence = counts.get(raw) || 0; counts.set(raw, occurrence + 1)
+        const type = /; Type: (TABLE|INDEX); Schema:/.exec(value)?.[1]
+        section = type ? { type, identity: sha256(raw + ':' + occurrence), start: position + 1, lines: [] } : null
+        if (section) result.set(section.identity, section)
+      }
+      if (section) section.lines.push(value)
+      if (copying && value === '\\.') copying = false
+      else if (!copying && !quote && !dollar && !commentDepth && /^COPY .* FROM stdin;$/.test(value)) copying = true
+      else if (!copying) {
+        // A header-shaped line inside a multiline literal/comment is data,
+        // never a fresh pg_dump section or a new lexer trust boundary.
+        for (let cursor = 0; cursor < value.length;) {
+          if (dollar) { const end = value.indexOf(dollar, cursor); if (end < 0) break; cursor = end + dollar.length; dollar = null }
+          else if (quote) { if (value[cursor] === '\\') cursor += 2; else if (value[cursor] === quote) { if (value[cursor + 1] === quote) cursor += 2; else { quote = null; cursor++ } } else cursor++ }
+          else if (commentDepth) { if (value.startsWith('/*', cursor)) { commentDepth++; cursor += 2 } else if (value.startsWith('*/', cursor)) { commentDepth--; cursor += 2 } else cursor++ }
+          else if (value.startsWith('--', cursor)) break
+          else if (value.startsWith('/*', cursor)) { commentDepth = 1; cursor += 2 }
+          else if (value[cursor] === "'" || value[cursor] === '"') quote = value[cursor++]
+          else { const tag = value[cursor] === '$' && /^(?:\$[A-Za-z_][A-Za-z_0-9]*\$|\$\$)/.exec(value.slice(cursor))?.[0]; if (tag) { dollar = tag; cursor += tag.length } else cursor++ }
+        }
+      }
+    }
+    return result
+  }
+  const left = sections(Buffer.from(source)), right = sections(Buffer.from(restored)), lines = []; let changed = 0
+  for (const [identity, a] of left) {
+    const b = right.get(identity); if (!b || a.type !== b.type) continue
+    const aTokens = lexPostgresDDL(a.lines.join('\n')), bTokens = lexPostgresDDL(b.lines.join('\n'))
+    for (let position = 0; position < Math.max(a.lines.length, b.lines.length); position++) {
+      const aLine = a.lines[position] || '', bLine = b.lines[position] || ''
+      if (aLine === bLine) continue
+      changed++; if (lines.length >= 10) continue
+      const sourceTokens = aTokens.filter(token => token.start_line <= position + 1 && token.end_line >= position + 1).map(token => token.encoded), restoredTokens = bTokens.filter(token => token.start_line <= position + 1 && token.end_line >= position + 1).map(token => token.encoded)
+      lines.push({ section_type: a.type, section_identity_sha256: identity, source_line: a.start + position, restored_line: b.start + position, source_line_sha256: sha256(aLine), restored_line_sha256: sha256(bLine), source_token_count: sourceTokens.length, restored_token_count: restoredTokens.length, source_tokens: sourceTokens.slice(0, 256), restored_tokens: restoredTokens.slice(0, 256) })
+    }
+  }
+  return { kind: 'POSTGRES_DDL_DIFFERENCE_V1', changed_line_count: changed, lines }
+}
 
 // Diagnostics only: these classifications never authorize a mismatching dump.
 // Raw SQL stays in the caller's private backup directory, outside CI uploads.
@@ -89,6 +170,9 @@ export async function recordPostgresDumpDifference({ sourceContainer, restoredCo
   if (diagnostic.source_sha256 !== sourceDigest.split(' ')[0] || diagnostic.restored_sha256 !== restoredDigest.split(' ')[0]) fail('FRESH_POSTGRES_DIAGNOSTIC_SUBJECT_CHANGED')
   await writeFile(join(backupDir, 'postgres-difference.sanitized.json'), JSON.stringify(diagnostic, null, 2) + '\n', { mode: 0o600, flag: 'wx' })
   run.recordFixtureObservation?.('fresh-postgres-logical-difference', diagnostic)
+  const ddl = describePostgresDDLDifference(await readFile(sourcePath), await readFile(restoredPath))
+  await writeFile(join(backupDir, 'postgres-ddl-difference.sanitized.json'), JSON.stringify(ddl, null, 2) + '\n', { mode: 0o600, flag: 'wx' })
+  run.recordFixtureObservation?.('fresh-postgres-ddl-difference', ddl)
   return diagnostic
 }
 
