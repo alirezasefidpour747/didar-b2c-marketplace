@@ -22,7 +22,7 @@ await mkdir(output, { recursive: true })
 const harnessDirectory = join(output, 'harness-source')
 await mkdir(harnessDirectory)
 const harnessHashes = []
-for (const name of ['stack.mjs', 'application.mjs', 'process.mjs', 'lifecycle.mjs', 'origin.mjs', 'media.mjs']) {
+for (const name of ['stack.mjs', 'application.mjs', 'process.mjs', 'lifecycle.mjs', 'origin.mjs', 'media.mjs', 'history-fixture.mjs']) {
   const bytes = await readFile(new URL('./' + name, import.meta.url))
   await writeFile(join(harnessDirectory, name), bytes, { flag: 'wx' })
   harnessHashes.push({ path: 'scripts/topology/' + name, sha256: createHash('sha256').update(bytes).digest('hex') })
@@ -198,6 +198,11 @@ try {
   verificationOutcomes.media = mediaResult.code
   await saveVerificationLog('media', mediaResult)
   }
+  if (packaged) {
+    const history = await docker('canonical-sandbox-populated-history', ['exec', '-w', '/app', api, 'bun', 'scripts/topology/history-fixture.mjs'], { timeout: 300000 })
+    await writeFile(join(output, 'populated-history.json'), history + '\n')
+    assert.equal(JSON.parse(history).status, 'PASS'); verificationOutcomes.history = 0
+  }
   const lifecycleResult = await command('real-lifecycle-compatible-bundle-recovery', process.execPath, [join(repo, 'scripts/topology/lifecycle.mjs'), runtimeFile], { timeout: 300000, expected: [0, 1] })
   verificationOutcomes.lifecycle = lifecycleResult.code; await saveVerificationLog('lifecycle', lifecycleResult)
   {
@@ -221,7 +226,7 @@ try {
     const preservedSession = customer.json.token;
     const staticBefore = await rootHttp(mediaPath); assert.equal(staticBefore.status, 200);
     const snapshot = async () => {
-      const script = String.raw`const{Pool}=require('/app/packages/api/node_modules/pg'),c=require('node:crypto'),fs=require('node:fs');const p=new Pool({connectionString:process.env.DATABASE_URL});(async()=>{if(process.env.DIDAR_DISPOSABLE_QA!=='true')throw Error('Disposable required');const names=['didar_product','didar_offer','didar_inventory_item','didar_order','didar_fin_event','didar_fin_posting','didar_user','didar_native_actor','didar_native_seller','didar_media_asset','didar_media_variant','didar_media_video','didar_content_page','didar_content_version','didar_content_publication','didar_login_attempt'];const tables={};for(const name of names){tables[name]=(await p.query("SELECT count(*)::int n,md5(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text)::text,'[]')) h FROM "+name+' t')).rows[0]}const secrets={};for(const name of ['JWT_SECRET','COOKIE_SECRET','DIDAR_AUTH_NETWORK_KEY'])secrets[name]=c.createHash('sha256').update(process.env[name]).digest('hex');process.stdout.write(JSON.stringify({tables,secrets,media:c.createHash('sha256').update(fs.readFileSync('/app/packages/api/.medusa/server/static/topology-recovery.txt')).digest('hex')}))})().finally(()=>p.end())`;
+      const script = String.raw`const{Pool}=require('/app/packages/api/node_modules/pg'),c=require('node:crypto'),fs=require('node:fs');const p=new Pool({connectionString:process.env.DATABASE_URL});(async()=>{if(process.env.DIDAR_DISPOSABLE_QA!=='true')throw Error('Disposable required');const names=['didar_product','didar_offer','didar_inventory_item','didar_order','didar_order_line','didar_payment_attempt','didar_fin_event','didar_fin_posting','didar_user','didar_native_actor','didar_native_seller','didar_media_asset','didar_media_variant','didar_media_video','didar_content_page','didar_content_version','didar_content_publication','didar_login_attempt'];const tables={};for(const name of names){tables[name]=(await p.query("SELECT count(*)::int n,md5(coalesce(jsonb_agg(to_jsonb(t) ORDER BY to_jsonb(t)::text)::text,'[]')) h FROM "+name+' t')).rows[0]}const secrets={};for(const name of ['JWT_SECRET','COOKIE_SECRET','DIDAR_AUTH_NETWORK_KEY'])secrets[name]=c.createHash('sha256').update(process.env[name]).digest('hex');process.stdout.write(JSON.stringify({tables,secrets,media:c.createHash('sha256').update(fs.readFileSync('/app/packages/api/.medusa/server/static/topology-recovery.txt')).digest('hex')}))})().finally(()=>p.end())`;
       return JSON.parse(await docker('recreate-state-snapshot-' + Date.now(), ['exec', api, 'node', '-e', script]));
     };
     const before = await snapshot(); // includes nonce/counter rows AFTER the initial login

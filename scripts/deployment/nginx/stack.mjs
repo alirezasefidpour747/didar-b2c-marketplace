@@ -231,12 +231,30 @@ function assertPrerequisites(operation, configuration, bundle) {
     if (role === 'signer_auth' && value.sha256 !== bundle.manifest.files['auth.mjs'] || role === 'signer_sign' && value.sha256 !== bundle.manifest.files['sign.mjs']) fail('SIGNER_BUNDLE_MISMATCH')
   }
 }
-async function verifyPrerequisiteFiles(operation) {
+export async function verifyPrerequisiteFiles(operation, configuration) {
   for (const item of [
     { path: operation.backup.evidence_file, sha256: operation.backup.evidence_sha256 },
     { path: operation.edge.discovery_file, sha256: operation.edge.discovery_sha256 },
     ...Object.values(operation.edge.matched_files),
   ]) if (sha256(await readFile(item.path)) !== item.sha256) fail('OPERATION_EVIDENCE_OR_EDGE_HASH_CHANGED')
+  const backup = JSON.parse(await readFile(operation.backup.evidence_file, 'utf8'))
+  if (backup.status !== 'PASS' || canonicalState(backup.source_container_ids) !== canonicalState(operation.containers)) fail('BACKUP_EVIDENCE_SUBJECT_MISMATCH')
+  if (operation.target_config === 'DISPOSABLE_QA') {
+    if (backup.scope !== 'WRAPPER_PROTOCOL_FIXTURE' || backup.database_restoration !== 'PASS') fail('DISPOSABLE_BACKUP_RECEIPT_REQUIRED')
+  } else {
+    exactKeys(backup.restoration, ['postgres', 'redis', 'uploads', 'configuration'], 'COMPLETE_ISOLATED_RESTORATION_REQUIRED')
+    exactKeys(backup.isolated_volumes, ['postgres', 'redis', 'uploads'], 'ISOLATED_RESTORATION_VOLUMES_REQUIRED')
+    const destinations = Object.values(backup.isolated_volumes), authoritative = [configuration.DIDAR_POSTGRES_VOLUME, configuration.DIDAR_REDIS_VOLUME, configuration.DIDAR_UPLOADS_VOLUME]
+    if (Object.values(backup.restoration).some(status => status !== 'PASS') || destinations.some(name => !ownedName(name) || authoritative.includes(name)) || new Set(destinations).size !== 3) fail('COMPLETE_ISOLATED_RESTORATION_REQUIRED')
+  }
+}
+export async function verifyRecoveryEvidence(operation, bundle) {
+  const bytes = await readFile(operation.recovery.evidence_file)
+  if (sha256(bytes) !== operation.recovery.evidence_sha256) fail('RECOVERY_EVIDENCE_HASH_MISMATCH')
+  const recovery = JSON.parse(bytes)
+  if (recovery.status !== 'PASS' || recovery.from_bundle_sha256 !== operation.recovery.from_bundle_sha256 || recovery.to_bundle_sha256 !== bundle.hash || recovery.source_sha !== bundle.manifest.source_sha || recovery.database_compatible !== true || recovery.secret_version !== operation.edge.secret_version) fail('RECOVERY_EVIDENCE_SUBJECT_MISMATCH')
+  for (const role of ['api', 'storefront']) if (recovery.images?.[role] !== bundle.manifest.images[role].image_id) fail('RECOVERY_EVIDENCE_IMAGE_MISMATCH')
+  for (const [role, item] of Object.entries(operation.edge.matched_files)) if (recovery.edge_hashes?.[role] !== item.sha256) fail('RECOVERY_EVIDENCE_EDGE_MISMATCH')
 }
 async function preserveUnrelated(run, expected) {
   for (const entry of expected) {
@@ -265,7 +283,7 @@ export async function operate({ action, configuration, bundle, operation, run, s
   const compose = async (stage, args) => run(stage, ['compose', '--project-name', configuration.DIDAR_COMPOSE_PROJECT, '--project-directory', bundle.root, '--env-file', '/dev/null', '-f', '-', ...args], renderComposition(bundle.composition, configuration))
   await compose('compose-config-validation', ['config', '--quiet'])
   if (['preflight', 'status'].includes(action)) return { status: operation.target_config === 'BLOCKED' ? 'TARGET_CONFIG_BLOCKED' : 'PREFLIGHT_ONLY', source_sha: base.source_sha, docker_version: before.docker_version, compose_version: before.compose_version, target_config: operation.target_config, legacy_bundle: 'UNIDENTIFIED_UNLESS_SEPARATELY_VERIFIED', existing_namespace_shared: before.containers.storefront.HostConfig.NetworkMode === 'container:' + before.containers.api.Id }
-  assertPrerequisites(operation, configuration, bundle); await verifyPrerequisiteFiles(operation)
+  assertPrerequisites(operation, configuration, bundle); await verifyPrerequisiteFiles(operation, configuration)
   if (!literalPath(statePath)) fail('PRIVATE_STATE_PATH_REQUIRED')
   if (action === 'quiesce') {
     // Exact IDs rather than a project-wide stop: PG, Redis and unrelated services never stop.
@@ -288,6 +306,7 @@ export async function operate({ action, configuration, bundle, operation, run, s
   if (action === 'recover') {
     exactKeys(operation.recovery, ['status', 'from_bundle_sha256', 'to_bundle_sha256', 'evidence_file', 'evidence_sha256'], 'MATCHED_BUNDLE_RECOVERY_REQUIRED')
     if (operation.recovery.status !== 'VERIFIED' || operation.recovery.from_bundle_sha256 !== state.bundle_sha256 || operation.recovery.to_bundle_sha256 !== bundle.hash || !literalPath(operation.recovery.evidence_file) || !hashPattern.test(operation.recovery.evidence_sha256) || sha256(await readFile(operation.recovery.evidence_file)) !== operation.recovery.evidence_sha256) fail('UNVERIFIED_RECOVERY_BUNDLE')
+    await verifyRecoveryEvidence(operation, bundle)
     if (state.configuration_sha256 !== base.configuration_sha256 && stableKeys.some(key => envOf(before.containers.api)[key] !== configuration[key])) fail('RECOVERY_SECRETS_CHANGED')
   }
   if (action === 'recreate' || action === 'recover') {

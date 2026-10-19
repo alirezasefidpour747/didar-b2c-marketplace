@@ -30,7 +30,7 @@ try {
   assert.ok(ready, 'Isolated Debian Docker26 daemon failed readiness')
   const version = await docker('exact-daemon-version', ['exec', id, 'docker', 'version', '--format', '{{json .Server}}'])
   const compose = await docker('exact-compose-version', ['exec', id, 'docker', 'compose', 'version', '--short'])
-  assert.match(JSON.parse(version).Version, /^26\.1\.5(?:\+dfsg1)?$/); assert.equal(compose.replace(/^v/, ''), '2.26.1')
+  assert.match(JSON.parse(version).Version, /^26\.1\.5(?:\+dfsg1)?$/); assert.match(compose, /^v?2\.26\.1(?:-4)?$/)
   const result = await run('real-wrapper-lifecycle-and-safe-failures', 'docker', ['exec', '-e', 'DIDAR_WRAPPER_SOURCE_SHA=' + source, '-w', '/qa', id, 'node', 'tests/nginx-stack-docker.mjs', '/qa/evidence'], { timeout: 1800000, expected: [0, 1] })
   await docker('retrieve-fixture-evidence', ['cp', id + ':/qa/evidence', join(output, 'fixture')])
   assert.equal(result.code, 0)

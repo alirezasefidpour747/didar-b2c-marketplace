@@ -197,7 +197,11 @@ references to isolated destinations. Preserve the immutable recovery artifacts.
 Never test restoration over authoritative live volumes. Record IDs, checksums,
 restore commands and actual exits, and identity/commerce/media/session-state
 comparisons in the referenced private evidence. The wrapper verifies the exact
-operator-declared evidence file/hash and its bound source IDs; it does not
+operator-declared evidence file/hash and its bound source IDs; production receipts
+also require `status=PASS`, a `restoration` object with `postgres`, `redis`,
+`uploads`, `configuration` all `PASS`, and `isolated_volumes` with three distinct
+PostgreSQL/Redis/uploads names different from all authoritative volume names.
+This evidence check does not
 perform or replace backup/restore or manufacture restoration evidence.
 
 The host Nginx module/config/signer files are hashed before every mutation, and
@@ -268,7 +272,10 @@ Other operation fields remain mandatory and reflect current stopped container ID
 and actual backup/edge facts. The recovery evidence must establish data/schema
 compatibility, both immutable application images, config/signer/module identities,
 secret versions and previously executed compatible-bundle recovery. The wrapper
-checks exact evidence bytes and from/to bundle identities; independent review
+checks exact evidence bytes and parsed `status=PASS`, `from_bundle_sha256`,
+`to_bundle_sha256`, `source_sha`, `database_compatible=true`, `secret_version`,
+`images` (both target image IDs) and `edge_hashes` (`module`, `nginx_config`,
+`signer_auth`, `signer_sign`) against the selected bundle/operation. Independent review
 must assess their substantive recovery proof. Run `recover`, then separate
 `health`, actual-peer and authorized journeys before reopening. On failure leave
 auth closed and preserve the observed exits. Never flush budgets/nonces, rotate

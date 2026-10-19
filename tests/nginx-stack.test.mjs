@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, writeFile, mkdir, rm, copyFile, chmod, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main } from '../scripts/deployment/nginx/stack.mjs'
+import { parseConfiguration, localEnvironment, renderComposition, readBundle, versionAtLeast, sha256, bundleFiles, actions, main, verifyPrerequisiteFiles, verifyRecoveryEvidence } from '../scripts/deployment/nginx/stack.mjs'
 
 const reference = byte => 'sha256:' + byte.repeat(64)
 const values = () => ({
@@ -142,3 +142,46 @@ test('protocol fixture receipts are explicit and can never become production aut
   await assert.rejects(readBundle(path, digest), /INVALID_BUNDLE_PROVENANCE/)
   assert.equal((await readBundle(path, digest, { allowFixture: true })).manifest.kind, 'didar-nginx-wrapper-protocol-fixture')
 }))
+
+
+test('backup prerequisite evidence is bound to actual source IDs and complete isolated production restoration', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'didar-wrapper-backup-'))
+  try {
+    const path = join(root, 'backup.json'), discovery = join(root, 'discovery.json')
+    await writeFile(discovery, JSON.stringify({ status: 'OPERATOR_VERIFIED_DISCOVERY' }))
+    const containers = Object.fromEntries(['api', 'storefront', 'postgres', 'redis'].map((role, n) => [role, 'abcd'[n].repeat(64)]))
+    const original = { status: 'PASS', source_container_ids: containers, restoration: { postgres: 'PASS', redis: 'PASS', uploads: 'PASS', configuration: 'PASS' }, isolated_volumes: { postgres: 'isolated-postgres', redis: 'isolated-redis', uploads: 'isolated-uploads' } }
+    const operation = { target_config: 'VERIFIED', containers, backup: { evidence_file: path }, edge: { discovery_file: discovery, discovery_sha256: sha256(await readFile(discovery)), matched_files: {} } }
+    const save = async receipt => { await writeFile(path, JSON.stringify(receipt)); operation.backup.evidence_sha256 = sha256(await readFile(path)) }
+    await save(original); await verifyPrerequisiteFiles(operation, values())
+    for (const change of [
+      { source_container_ids: { ...containers, api: 'f'.repeat(64) } },
+      { status: 'INHERITED' },
+      { restoration: { ...original.restoration, redis: 'UNEXECUTED' } },
+      { restoration: { postgres: 'PASS' } },
+      { isolated_volumes: { ...original.isolated_volumes, postgres: values().DIDAR_POSTGRES_VOLUME } },
+      { isolated_volumes: { postgres: 'same', redis: 'same', uploads: 'other' } },
+    ]) {
+      await save({ ...original, ...change })
+      await assert.rejects(verifyPrerequisiteFiles(operation, values()), /BACKUP_EVIDENCE_SUBJECT|COMPLETE_ISOLATED|ISOLATED_RESTORATION/)
+    }
+    await save(original); await writeFile(path, 'tampered')
+    await assert.rejects(verifyPrerequisiteFiles(operation, values()), /OPERATION_EVIDENCE_OR_EDGE_HASH_CHANGED/)
+  } finally { await rm(root, { recursive: true, force: true }) }
+})
+
+test('matched recovery receipt cannot substitute source/image/config/signer/key-version or database compatibility', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'didar-wrapper-recovery-'))
+  try {
+    const path = join(root, 'recovery.json'), bundle = { hash: 'b'.repeat(64), manifest: { source_sha: 'c'.repeat(40), images: { api: { image_id: reference('d') }, storefront: { image_id: reference('e') } } } }
+    const operation = { recovery: { from_bundle_sha256: 'a'.repeat(64), evidence_file: path }, edge: { secret_version: 'stable-v1', matched_files: { module: { sha256: 'f'.repeat(64) }, nginx_config: { sha256: 'e'.repeat(64) }, signer_auth: { sha256: 'd'.repeat(64) }, signer_sign: { sha256: 'c'.repeat(64) } } } }
+    const original = { status: 'PASS', from_bundle_sha256: operation.recovery.from_bundle_sha256, to_bundle_sha256: bundle.hash, source_sha: bundle.manifest.source_sha, database_compatible: true, secret_version: operation.edge.secret_version, images: { api: reference('d'), storefront: reference('e') }, edge_hashes: Object.fromEntries(Object.entries(operation.edge.matched_files).map(([role, file]) => [role, file.sha256])) }
+    const save = async receipt => { await writeFile(path, JSON.stringify(receipt)); operation.recovery.evidence_sha256 = sha256(await readFile(path)) }
+    await save(original); await verifyRecoveryEvidence(operation, bundle)
+    for (const change of [
+      { from_bundle_sha256: 'f'.repeat(64) }, { to_bundle_sha256: 'f'.repeat(64) }, { source_sha: 'f'.repeat(40) }, { database_compatible: false }, { secret_version: 'new-unapproved-key' }, { status: 'UNIDENTIFIED_LEGACY' }, { images: { ...original.images, api: reference('f') } }, { edge_hashes: { ...original.edge_hashes, signer_auth: 'f'.repeat(64) } }, { edge_hashes: { ...original.edge_hashes, module: 'a'.repeat(64) } },
+    ]) { await save({ ...original, ...change }); await assert.rejects(verifyRecoveryEvidence(operation, bundle), /RECOVERY_EVIDENCE_(SUBJECT|IMAGE|EDGE)_MISMATCH/) }
+    await save(original); await writeFile(path, 'tampered')
+    await assert.rejects(verifyRecoveryEvidence(operation, bundle), /RECOVERY_EVIDENCE_HASH_MISMATCH/)
+  } finally { await rm(root, { recursive: true, force: true }) }
+})

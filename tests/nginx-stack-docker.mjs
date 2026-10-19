@@ -170,14 +170,14 @@ try {
   const recoveryEvidence = join(root, 'recovery-evidence.json')
   manifest.files['recovery-note.json'] = sha256('matched-protocol-fixture-recovery')
   await save(join(kit, 'recovery-note.json'), 'matched-protocol-fixture-recovery'); bundleB = await saveManifest()
-  await save(recoveryEvidence, JSON.stringify({ status: 'PASS', scope: 'MATCHED_PROTOCOL_FIXTURE_ONLY', from_bundle_sha256: bundleA, to_bundle_sha256: bundleB, source_sha: source, database_compatible: true }))
+  await save(recoveryEvidence, JSON.stringify({ status: 'PASS', scope: 'MATCHED_PROTOCOL_FIXTURE_ONLY', from_bundle_sha256: bundleA, to_bundle_sha256: bundleB, source_sha: source, database_compatible: true, secret_version: operation.edge.secret_version, images: { api: appImage, storefront: appImage }, edge_hashes: Object.fromEntries(Object.entries(operation.edge.matched_files).map(([role, value]) => [role, value.sha256])) }))
   operation.recovery = { status: 'UNVERIFIED', from_bundle_sha256: bundleA, to_bundle_sha256: bundleB, evidence_file: recoveryEvidence, evidence_sha256: sha256(await readFile(recoveryEvidence)) }; await saveOperation()
   assert.match((await wrapper('recover', { expected: [2] })).error, /UNVERIFIED_RECOVERY/); cases.push('unverified-legacy-recovery-blocked')
   operation.recovery.status = 'VERIFIED'; await saveOperation(); await wrapper('recover'); await wrapper('health'); cases.push('matched-bundle-recovery-separate-cli-health')
   const recovered = JSON.parse(await readFile(stateFile, 'utf8')); assert.deepEqual(await snapshot({ ...containers, ...recovered.containers }), before)
   for (const id of baseBefore) await inspect(id)
   const version = JSON.parse(await docker('actual-docker-version-final', ['version', '--format', '{{json .Server}}'])).Version, composeVersion = await docker('actual-compose-version-final', ['compose', 'version', '--short'])
-  await save(join(output, 'result.json'), JSON.stringify({ status: 'PASS', scope: 'WRAPPER_PROTOCOL_ONLY_NOT_R5_APPLICATION_TARGET_ACCEPTANCE', source_sha: source, docker_version: version, compose_version: composeVersion, exact_observed_upstream_version_pair: /^26\.1\.5(?:[+~-].*)?$/.test(version) && composeVersion.replace(/^v/, '') === '2.26.1', cases, original_bundle_sha256: bundleA, recovery_bundle_sha256: bundleB, images: { fixture: appImage, postgres: ids.postgres, redis: ids.redis }, preserved_state: before, target_config: 'BLOCKED', public_https: 'NOT_VERIFIED' }, null, 2) + '\n')
+  await save(join(output, 'result.json'), JSON.stringify({ status: 'PASS', scope: 'WRAPPER_PROTOCOL_ONLY_NOT_R5_APPLICATION_TARGET_ACCEPTANCE', source_sha: source, docker_version: version, compose_version: composeVersion, exact_observed_upstream_version_pair: /^26\.1\.5(?:[+~-].*)?$/.test(version) && /^v?2\.26\.1(?:-4)?$/.test(composeVersion), exact_target_binary: false, target_binary_provenance: 'NOT_OBSERVED', cases, original_bundle_sha256: bundleA, recovery_bundle_sha256: bundleB, images: { fixture: appImage, postgres: ids.postgres, redis: ids.redis }, preserved_state: before, target_config: 'BLOCKED', public_https: 'NOT_VERIFIED' }, null, 2) + '\n')
   success = true
 } finally {
   const journal = environmentFile + '.didar-nginx-journal'

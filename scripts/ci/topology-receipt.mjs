@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-export const requiredCategories = ['application', 'browser', 'origin', 'media', 'lifecycle', 'force_recreate']
+export const requiredCategories = ['application', 'browser', 'origin', 'media', 'history', 'lifecycle', 'force_recreate']
 export function validateTopologyReceipt(m, r) {
   assert.equal(r.status, 'PASS'); assert.equal(r.source_sha, m.source_sha)
   assert.deepEqual(r.image_ids, Object.fromEntries(Object.entries(m.images).map(([k,v]) => [k, v.id])))
