@@ -129,7 +129,6 @@ jobs:
             .local/seller-journey-evidence/*.json
             .local/seller-journey-evidence/*.png
             .local/seller-journey-evidence/*.srt
-            .local/seller-journey-evidence/seller-journey-raw.webm
             .local/seller-journey-evidence/seller-journey-fa.mp4
           include-hidden-files: true
           if-no-files-found: warn
@@ -144,7 +143,6 @@ jobs:
             .local/fresh-install-evidence/install-kit-candidate.tar.gz
             .local/fresh-install-evidence/install-kit-candidate.tar.gz.sha256
             .local/fresh-install-evidence/browser/**/*.json
-            .local/fresh-install-evidence/browser/**/*.png
           include-hidden-files: true
           if-no-files-found: warn
           retention-days: 30

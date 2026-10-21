@@ -34,6 +34,9 @@ export async function execute(contextFile, output) {
   assert.equal(source.status, 0)
   const auditSource = source.stdout.trim(), ca = await readFile(c.browser.ca_file)
   const save = (name, value) => writeFile(join(output, name), typeof value === 'string' ? value : JSON.stringify(value, null, 2) + '\n', { mode: 0o600 })
+  let fatalDiagnostic = null
+  const privacyMasks = []
+  let privacyTimer, privacyBusy = false
   let browser, bc, page, video, start = Date.now(), success = false, current = 'preflight'
   const api = async (label, path, { token = '', seller, body, expected = [200] } = {}) => {
     const payload = body === undefined ? undefined : Buffer.from(JSON.stringify(body))
@@ -62,10 +65,10 @@ export async function execute(contextFile, output) {
       rows.push({ id, status: 'FAIL', diagnostic: safe(e.message), error_sha256: digest(String(e.message)), at_ms: Date.now() - start })
       if (!optionalUI) throw e
       gaps.push({ id, status: 'NOT_MET_UI_PATH', detail: 'Observed UI step failed; see actual screenshot/video. Subsequent API-assisted exploration is separate, not a successful UI fallback.' })
-      await page.screenshot({ path: join(output, id + '-failure.png'), fullPage: true }); return null
+      await shot(id + '-failure'); return null
     }
   }
-  const shot = async name => { const path = join(output, name + '.png'); await page.screenshot({ path, fullPage: true }); screenshots.push({ file: name + '.png', sha256: digest(await readFile(path)) }) }
+  const shot = async name => { const path = join(output, name + '.png'); await page.screenshot({ path, fullPage: true, mask:[page.locator('input[type=email],input[name=email],input[type=password]'),page.getByText(/[^\s]+@[^\s]+\.invalid/,{exact:true})], maskColor:'#000000' }); screenshots.push({ file: name + '.png', sha256: digest(await readFile(path)) }) }
   const waitPost = (path, status = 200) => {
     const p = page.waitForResponse(r => new URL(r.url()).pathname === path && r.request().method() === 'POST', { timeout: 45000 }); p.catch(() => {})
     return async () => { const r = await p; assert.ok((Array.isArray(status) ? status : [status]).includes(r.status()), 'UI_POST_' + path + '_' + r.status()); return r.json() }
@@ -90,19 +93,28 @@ export async function execute(contextFile, output) {
   const suffix = randomBytes(8).toString('hex'), business = 'آزمون فروشنده ' + suffix
   const email = 'seller-' + suffix + '@audit.didar.invalid', password = 'A1!' + randomBytes(24).toString('base64url')
   const supplierEmail = 'supplier-' + suffix + '@audit.didar.invalid', supplierPassword = 'S1!' + randomBytes(24).toString('base64url')
-  secretValues.push(password, supplierPassword)
+  secretValues.push(password, supplierPassword, email, supplierEmail, c.admin.DIDAR_BOOTSTRAP_EMAIL)
   try {
     const verdict = JSON.parse(await readFile(join(c.browser.output_dir, '..', 'result-complete.json')))
     assert.equal(verdict.status, 'PASS_SCOPED_FRESH_INSTALL_QA')
     const ownership = privateJSON(c.environmentFile + '.didar-nginx-state.json')
+    assert.equal(ownership.phase,'HEALTHY'); assert.equal(ownership.source_sha,applicationSource)
+    assert.deepEqual(ownership.containers,{api:c.ids.api,storefront:c.ids.storefront})
+    assert.equal(c.project,c.env.DIDAR_COMPOSE_PROJECT); assert.equal(c.operation.project,c.project)
+    for(const role of ['postgres','redis'])assert.equal(c.ids[role],c.operation.backup.source_container_ids[role])
+    const dependencyOwners=[]
     for (const role of ['api', 'storefront', 'postgres', 'redis']) {
       const image = JSON.parse(docker('verify_audit_image_' + role, ['inspect', c.ids[role]]))[0]
-      assert.equal(image.Config.Labels['didar.disposable-qa'], 'true'); assert.equal(image.Config.Labels['didar.fresh-owner'], ownership.token); assert.equal(image.Config.Labels['com.docker.compose.project'], c.project)
+      assert.equal(image.Config.Labels['didar.disposable-qa'], 'true'); assert.equal(image.Config.Labels['com.docker.compose.project'], c.project)
+      if (role === 'postgres' || role === 'redis') {
+        assert.match(image.Config.Labels['didar.fresh-owner'],/^[a-f0-9]{48}$/); dependencyOwners.push(image.Config.Labels['didar.fresh-owner'])
+      }
       if (role === 'api' || role === 'storefront') {
         assert.equal(image.Config.Labels['org.opencontainers.image.revision'], applicationSource)
         assert.equal(image.Image, role === 'api' ? 'sha256:1ffb2c40294dd899bfe6c4c76224cf7d0e3d5fe7e75e732e12f5d0a15c8911cf' : 'sha256:b928edafdf670fa6ace1fcff550571d73cc5828b3bfdb2d0ed4a9ed914c86d10')
       }
     }
+    assert.equal(dependencyOwners[0],dependencyOwners[1])
     const before = sql('baseline_authority_counts', "SELECT json_build_object('orders',(SELECT count(*) FROM didar_order),'payments',(SELECT count(*) FROM didar_payment_attempt),'journals',(SELECT count(*) FROM didar_fin_journal))")
     await save('runtime-before.json', { samples: metrics('runtime_before'), runner: c.runnerRuntime, capacity_is_not_load_test: true })
     const require = createRequire(resolve('package.json')), { chromium } = require('@playwright/test')
@@ -110,6 +122,21 @@ export async function execute(contextFile, output) {
     bc = await browser.newContext({ viewport: { width: 1280, height: 900 }, ignoreHTTPSErrors: true, recordVideo: { dir: join(output, 'raw-video'), size: { width: 1280, height: 900 } } })
     page = await bc.newPage(); video = page.video(); start = Date.now()
     page.setDefaultTimeout(18000)
+    const observePrivacy = async () => {
+      if (privacyBusy) return
+      privacyBusy=true
+      try {
+        const rects=await page.evaluate(()=>{
+          const boxes=[];const add=r=>{if(r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight) boxes.push({x:Math.max(0,Math.floor(r.x)-6),y:Math.max(0,Math.floor(r.y)-6),w:Math.ceil(r.width)+12,h:Math.ceil(r.height)+12})}
+          for(const e of document.querySelectorAll('input[type=email],input[name=email],input[type=password]'))add(e.getBoundingClientRect())
+          const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT)
+          let node;while((node=walker.nextNode()))if(!['SCRIPT','STYLE'].includes(node.parentElement?.tagName)&&/[^\s]+@[^\s]+/.test(node.textContent||'')){const r=document.createRange();r.selectNodeContents(node);add(r.getBoundingClientRect())}
+          return boxes
+        })
+        privacyMasks.push({at_ms:Date.now()-start,rects})
+      } catch {} finally {privacyBusy=false}
+    }
+    await observePrivacy(); privacyTimer=setInterval(observePrivacy,100)
     let nativeRegistered = false
     const nativeRegistrationUI = await step('native-registration', 'محیط disposable؛ نسخهٔ برنامه ثابت است. ثبت‌نام واقعی عضو Mercur؛ نه تأیید تجاری دیدار.', async () => {
       await page.goto(c.browser.origin + '/seller/register')
@@ -133,7 +160,7 @@ export async function execute(contextFile, output) {
     else {
       captions.push({ at_ms: Date.now() - start, text: 'مسیر UI بالا ناقص/ناموفق است؛ ادامه صرفاً با API موجود برای بررسی مستقل مراحل بعدی، نه اصلاح برنامه.' })
       const own = await api('own_native_sellers_before_fallback', '/vendor/sellers', {token:member,expected:[200]})
-      const existing = (own.seller_members || []).map(x=>x.seller).find(x => x.email === email)
+      const existing = (own.seller_members || []).map(x=>x.seller).find(x => x.name === business)
       seller = existing?.id || (await api('API_ASSISTED_native_shop_setup', '/vendor/sellers', { token: member, body: { name: business, email, member_email: email, currency_code: 'irr' }, expected: [201] })).seller.id
     }
     member = await login('/auth/member/emailpass', email, password)
@@ -213,7 +240,13 @@ export async function execute(contextFile, output) {
       await signIn('seller', email, password, business); await nativePage('seller'); await page.getByRole('button',{name:'موجودی و عرضه',exact:true}).click(); const form = page.getByTestId('new-offer-form')
       await form.locator('select[name=product_id]').selectOption(ids.product); await form.locator('input[name=weight_mg]').fill('1500'); await form.locator('input[name=quantity]').fill('0')
       const done = waitPost('/vendor/didar/manage'); await form.getByRole('button', { name: 'ثبت عرضه من', exact: true }).click(); ids.aggregate_offer = (await done()).id; await shot('vendor-offer-submitted')
-    })
+    }, {optionalUI:true})
+    if (!ids.aggregate_offer) {
+      captions.push({at_ms:Date.now()-start,text:'UI عرضه در بالا ناموفق است. ادامه صرفاً API-assisted است؛ این شکست برنامه پنهان یا اصلاح نمی‌شود.'})
+      const state=await api('own_offer_before_API_assist','/vendor/didar/manage',{token:member,seller})
+      const existing=state.products?.find(p=>p.id===ids.product)?.offers?.find(o=>o.supplier_id===sid&&o.stock_mode==='legacy'&&o.quantity===0&&o.weight_mg===1500)
+      ids.aggregate_offer=existing?.id||(await api('API_ASSISTED_first_offer','/vendor/didar/manage',{token:member,seller,body:offerInput})).id
+    }
     await grant('CREATE_OWN_OFFER', false); await api('revoked_offer_grant_immediate_denial', '/vendor/didar/manage', { token: member, seller, body: offerInput, expected: [403] })
     await grant('CREATE_OWN_INTAKE', true)
     await step('exact-uid-api-intake', 'مرحلهٔ API-assisted و صریح: پذیرش یک قطعهٔ مصنوعی با وزن واقعی، UID مستقل و RFID اختیاری؛ هیچ پرداختی اجرا نمی‌شود.', async () => {
@@ -252,14 +285,17 @@ export async function execute(contextFile, output) {
     await save('runtime-after.json', { samples: metrics('runtime_after'), docker_root_usage: docker('docker_disk_usage', ['system', 'df', '--format', '{{json .}}']).split('\n').map(x => JSON.parse(x)), capacity_is_not_load_test: true })
     gaps.push({ id: 'REGISTRATION_INTEGRATION', status: 'SEPARATE_AUTHORITIES_OBSERVED', detail: 'Native Member/Seller and canonical supplier are separate authorities; explicit Admin mapping and dual proof remain required. Native shell does not establish native gold ProductChange/Offer reuse.' })
     success = true
+  } catch(error) { fatalDiagnostic = safe(error.message); throw error
   } finally {
     if (page) { captions.push({ at_ms: Date.now() - start, text: 'پایان audit baseline؛ technical evidence با پذیرش کسب‌وکار، معماری یا آمادگی release یکسان نیست.' }); await page.waitForTimeout(1800).catch(() => {}); await shot('final-observed-state').catch(() => {}) }
+    if (privacyTimer) clearInterval(privacyTimer)
+    await save('privacy-masks.json', {format:1,viewport:{width:1280,height:900},samples:privacyMasks,policy:'Recording-only redaction of email/password input fields and visible email text. Application DOM and business behavior unchanged.'})
     if (bc) await bc.close(); if (browser) await browser.close()
     if (video) await video.saveAs(join(output, 'seller-journey-raw.webm'))
     const end = Date.now() - start
     const stamp = n => { const s = Math.max(0, n / 1000); return String(Math.floor(s / 3600)).padStart(2, '0') + ':' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ':' + String(Math.floor(s) % 60).padStart(2, '0') + ',' + String(Math.floor(n % 1000)).padStart(3, '0') }
     await save('captions-fa.srt', captions.map((x, i) => `${i + 1}\n${stamp(x.at_ms)} --> ${stamp((captions[i + 1]?.at_ms || end) - 1)}\n${x.text}\n`).join('\n'))
-    await save('audit-results.json', { status: success ? 'AUDIT_EXECUTED_WITH_EXPLICIT_GAPS' : 'AUDIT_FAILED', application_source_sha: applicationSource, verification_source_sha: auditSource, run_id: process.env.GITHUB_RUN_ID, failed_stage: success ? null : current, rows, http, gaps, screenshots, ids, process_exits: processExits, synthetic_data_only: true, preview_hosting: 'NOT_PROVISIONED_OWNER_REQUEST', business_acceptance: 'NOT_INFERRED', architecture_acceptance: 'NOT_INFERRED', release_readiness: 'NOT_AUTHORIZED', tls: 'Node CA/hostname verified; ephemeral browser QA certificate ignored; no target HTTPS acceptance', credential_artifacts: 'NONE; private context excluded' })
+    await save('audit-results.json', { status: success ? 'AUDIT_EXECUTED_WITH_EXPLICIT_GAPS' : 'AUDIT_FAILED', application_source_sha: applicationSource, verification_source_sha: auditSource, run_id: process.env.GITHUB_RUN_ID, failed_stage: success ? null : current, failure_diagnostic: fatalDiagnostic, rows, http, gaps, screenshots, ids, process_exits: processExits, synthetic_data_only: true, preview_hosting: 'NOT_PROVISIONED_OWNER_REQUEST', business_acceptance: 'NOT_INFERRED', architecture_acceptance: 'NOT_INFERRED', release_readiness: 'NOT_AUTHORIZED', tls: http.length ? 'Actual HTTP used Node CA/hostname validation; ephemeral browser QA certificate ignored; target HTTPS NOT_VERIFIED' : 'NOT_EXECUTED_NO_HTTP', credential_artifacts: 'NONE; private context excluded' })
   }
 }
 
