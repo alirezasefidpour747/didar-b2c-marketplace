@@ -35,6 +35,7 @@ export async function execute(contextFile, output) {
   const auditSource = source.stdout.trim(), ca = await readFile(c.browser.ca_file)
   const save = (name, value) => writeFile(join(output, name), typeof value === 'string' ? value : JSON.stringify(value, null, 2) + '\n', { mode: 0o600 })
   let fatalDiagnostic = null
+  const finalization = []
   const privacyMasks = []
   let privacyTimer, privacyBusy = false
   let browser, bc, page, video, start = Date.now(), success = false, current = 'preflight'
@@ -60,18 +61,18 @@ export async function execute(contextFile, output) {
   }
   const step = async (id, text, fn, { optionalUI = false } = {}) => {
     current = id; captions.push({ at_ms: Date.now() - start, text })
-    try { const result = await fn(); rows.push({ id, status: 'OBSERVED', at_ms: Date.now() - start }); await page.waitForTimeout(1300); return result }
+    try { const result = await fn(); rows.push({ id, status: 'OBSERVED', at_ms: Date.now() - start }); await save('progress.json',{application_source_sha:applicationSource,verification_source_sha:auditSource,current,rows,http,ids}); await page.waitForTimeout(1300); return result }
     catch (e) {
-      rows.push({ id, status: 'FAIL', diagnostic: safe(e.message), error_sha256: digest(String(e.message)), at_ms: Date.now() - start })
+      rows.push({ id, status: 'FAIL', diagnostic: safe(e.message), error_sha256: digest(String(e.message)), at_ms: Date.now() - start }); await save('progress.json',{application_source_sha:applicationSource,verification_source_sha:auditSource,current,rows,http,ids})
       if (!optionalUI) throw e
       gaps.push({ id, status: 'NOT_MET_UI_PATH', detail: 'Observed UI step failed; see actual screenshot/video. Subsequent API-assisted exploration is separate, not a successful UI fallback.' })
       await shot(id + '-failure'); return null
     }
   }
   const shot = async name => { const path = join(output, name + '.png'); await page.screenshot({ path, fullPage: true, mask:[page.locator('input[type=email],input[name=email],input[type=password]'),page.getByText(/[^\s]+@[^\s]+\.invalid/,{exact:true})], maskColor:'#000000' }); screenshots.push({ file: name + '.png', sha256: digest(await readFile(path)) }) }
-  const waitPost = (path, status = 200) => {
+  const waitPost = (path, status = 200, readBody = true) => {
     const p = page.waitForResponse(r => new URL(r.url()).pathname === path && r.request().method() === 'POST', { timeout: 45000 }); p.catch(() => {})
-    return async () => { const r = await p; assert.ok((Array.isArray(status) ? status : [status]).includes(r.status()), 'UI_POST_' + path + '_' + r.status()); return r.json() }
+    return async () => { const r = await p; assert.ok((Array.isArray(status) ? status : [status]).includes(r.status()), 'UI_POST_' + path + '_' + r.status()); return readBody ? r.json() : null }
   }
   const reset = async () => { await page.goto(c.browser.origin + '/login'); await page.evaluate(() => { localStorage.clear(); sessionStorage.clear() }); await bc.clearCookies() }
   const signIn = async (surface, email, password, sellerName) => {
@@ -202,7 +203,7 @@ export async function execute(contextFile, output) {
     await step('vendor-dual-proof', 'ورود Vendor با هویت بومی و اثبات جداگانهٔ حساب دیدار؛ مالک بودن Seller مجوز نوشتن طلا نمی‌دهد.', async () => {
       await signIn('seller', email, password, business); await page.goto(c.browser.origin + '/seller/didar')
       await page.getByLabel('ایمیل حساب دیدار', { exact: true }).fill(supplierEmail); await page.getByLabel('رمز حساب دیدار', { exact: true }).fill(supplierPassword)
-      const done = waitPost('/vendor/didar/connect'); await page.getByRole('button', { name: 'اتصال امن حساب', exact: true }).click(); await done(); await shot('vendor-linked-no-gold-grant')
+      const done = waitPost('/vendor/didar/connect',200,false); await page.getByRole('button', { name: 'اتصال امن حساب', exact: true }).click(); await done(); await page.getByRole('button',{name:'تازه‌سازی مدیریت',exact:true}).waitFor(); await shot('vendor-linked-no-gold-grant')
     })
     const owned = await api('owned_onboarding_after_link', '/vendor/didar/onboarding', { token: member, seller }); assert.equal(owned.supplier.id, sid)
     const leaves = owned.categories.filter(x => x.kind === 'subcategory'); assert.ok(leaves.length); leaf = leaves[0]
@@ -290,12 +291,15 @@ export async function execute(contextFile, output) {
     if (page) { captions.push({ at_ms: Date.now() - start, text: 'پایان audit baseline؛ technical evidence با پذیرش کسب‌وکار، معماری یا آمادگی release یکسان نیست.' }); await page.waitForTimeout(1800).catch(() => {}); await shot('final-observed-state').catch(() => {}) }
     if (privacyTimer) clearInterval(privacyTimer)
     await save('privacy-masks.json', {format:1,viewport:{width:1280,height:900},samples:privacyMasks,policy:'Recording-only redaction of email/password input fields and visible email text. Application DOM and business behavior unchanged.'})
-    if (bc) await bc.close(); if (browser) await browser.close()
-    if (video) await video.saveAs(join(output, 'seller-journey-raw.webm'))
+    const finish = async (stage,fn) => {try{await fn();finalization.push({stage,status:'SUCCESS'})}catch(error){finalization.push({stage,status:'FAIL',diagnostic:safe(error.message)})}}
+    if (bc) await finish('browser-context-close',()=>bc.close())
+    if (video) await finish('save-actual-video-before-browser-close',()=>video.saveAs(join(output,'seller-journey-raw.webm')))
+    if (browser) await finish('browser-close',()=>browser.close())
     const end = Date.now() - start
     const stamp = n => { const s = Math.max(0, n / 1000); return String(Math.floor(s / 3600)).padStart(2, '0') + ':' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ':' + String(Math.floor(s) % 60).padStart(2, '0') + ',' + String(Math.floor(n % 1000)).padStart(3, '0') }
     await save('captions-fa.srt', captions.map((x, i) => `${i + 1}\n${stamp(x.at_ms)} --> ${stamp((captions[i + 1]?.at_ms || end) - 1)}\n${x.text}\n`).join('\n'))
-    await save('audit-results.json', { status: success ? 'AUDIT_EXECUTED_WITH_EXPLICIT_GAPS' : 'AUDIT_FAILED', application_source_sha: applicationSource, verification_source_sha: auditSource, run_id: process.env.GITHUB_RUN_ID, failed_stage: success ? null : current, failure_diagnostic: fatalDiagnostic, rows, http, gaps, screenshots, ids, process_exits: processExits, synthetic_data_only: true, preview_hosting: 'NOT_PROVISIONED_OWNER_REQUEST', business_acceptance: 'NOT_INFERRED', architecture_acceptance: 'NOT_INFERRED', release_readiness: 'NOT_AUTHORIZED', tls: http.length ? 'Actual HTTP used Node CA/hostname validation; ephemeral browser QA certificate ignored; target HTTPS NOT_VERIFIED' : 'NOT_EXECUTED_NO_HTTP', credential_artifacts: 'NONE; private context excluded' })
+    await save('audit-results.json', { status: success && !finalization.some(x=>x.status==='FAIL') ? 'AUDIT_EXECUTED_WITH_EXPLICIT_GAPS' : 'AUDIT_FAILED', application_source_sha: applicationSource, verification_source_sha: auditSource, run_id: process.env.GITHUB_RUN_ID, failed_stage: success ? null : current, failure_diagnostic: fatalDiagnostic, finalization, rows, http, gaps, screenshots, ids, process_exits: processExits, synthetic_data_only: true, preview_hosting: 'NOT_PROVISIONED_OWNER_REQUEST', business_acceptance: 'NOT_INFERRED', architecture_acceptance: 'NOT_INFERRED', release_readiness: 'NOT_AUTHORIZED', tls: http.length ? 'Actual HTTP used Node CA/hostname validation; ephemeral browser QA certificate ignored; target HTTPS NOT_VERIFIED' : 'NOT_EXECUTED_NO_HTTP', credential_artifacts: 'NONE; private context excluded' })
+    if(finalization.some(x=>x.status==='FAIL'))throw Error('AUDIT_FINALIZATION_FAILED')
   }
 }
 
