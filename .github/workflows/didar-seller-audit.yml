@@ -1,0 +1,150 @@
+name: DIDAR existing seller journey audit
+
+on:
+  push:
+    branches: [audit/seller-journey-feedback-loop]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: didar-seller-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/audit/seller-journey-feedback-loop'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CI: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+      MERCUR_DISABLE_TELEMETRY: 'true'
+      DIDAR_RELEASE_SOURCE: 0c4b047baa9dbe37cd1876159c15d22b40cf7cac
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - name: Install locked source-test and browser dependencies only
+        run: |
+          set -euo pipefail
+          mkdir -p .local/fresh-install-evidence
+          trap 'code=$?; printf "{\"stage\":\"source-browser-dependencies\",\"exit_code\":%s}\n" "$code" > .local/fresh-install-evidence/dependency-runner-exit.json; exit "$code"' EXIT
+          bun install --frozen-lockfile
+          bunx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ffmpeg fonts-noto-core
+      - name: Focused source/protocol checks
+        run: |
+          set -euo pipefail
+          mkdir -p .local/fresh-install-evidence
+          set +e
+          node --test tests/nginx-fresh.test.mjs tests/nginx-stack.test.mjs tests/operator-bundle.test.mjs tests/auth-network-relay.test.mjs tests/topology-artifacts.test.mjs scripts/deployment/nginx/fresh-restore.test.mjs tests/fresh-operator-bundle.test.mjs tests/fresh-browser.test.mjs tests/fresh-readback.test.mjs tests/fresh-kit-export.test.mjs tests/seller-audit.test.mjs
+          code=$?
+          printf '{"stage":"focused-source-checks","exit_code":%s}\n' "$code" > .local/fresh-install-evidence/source-check-exit.json
+          exit "$code"
+      - name: Download exact unchanged final release ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          trap 'code=$?; printf "{\"stage\":\"download-exact-final-zip\",\"exit_code\":%s}\n" "$code" > .local/fresh-install-evidence/download-runner-exit.json; exit "$code"' EXIT
+          gh api repos/alirezasefidpour747/didar-b2c-marketplace/actions/artifacts/12178302167/zip > "$RUNNER_TEMP/didar-final-release.zip"
+          test "$(stat --format=%s "$RUNNER_TEMP/didar-final-release.zip")" = 855651700
+          printf '%s  %s\n' 53491cee474fee8573be7e630530f8f8e3d253920c0911e5e77a978e0f694a58 "$RUNNER_TEMP/didar-final-release.zip" | sha256sum --check -
+      - name: Build only the pinned compatible Debian Nginx/njs QA edge
+        run: |
+          set -euo pipefail
+          trap 'code=$?; printf "{\"stage\":\"build-debian-qa-edge-only\",\"exit_code\":%s}\n" "$code" > .local/fresh-install-evidence/edge-build-runner-exit.json; exit "$code"' EXIT
+          bash scripts/ci/prepare-compat-context.sh edge "$RUNNER_TEMP/fresh-edge-context"
+          docker build --platform linux/amd64 --build-arg SOURCE_SHA="$DIDAR_RELEASE_SOURCE" -t didar-fresh-qa-edge "$RUNNER_TEMP/fresh-edge-context"
+          echo "DIDAR_QA_NGINX_IMAGE=$(docker image inspect --format '{{.Id}}' didar-fresh-qa-edge)" >> "$GITHUB_ENV"
+      - name: Real fresh initialization and isolated restoration
+        run: |
+          set +e
+          node scripts/ci/verify-fresh-install.mjs prepare "$RUNNER_TEMP/didar-final-release.zip" "$RUNNER_TEMP/didar-fresh-private" .local/fresh-install-evidence
+          code=$?
+          printf '{"stage":"fresh-prepare","exit_code":%s}\n' "$code" > .local/fresh-install-evidence/prepare-runner-exit.json
+          exit "$code"
+      - name: Retain encrypted disposable-QA backup for actual readback
+        id: backup
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fresh-encrypted-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .local/fresh-install-evidence/initial-backup.aes256gcm
+            .local/fresh-install-evidence/initial-restore-receipt.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+      - name: Independently download the uploaded encrypted backup bytes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: fresh-encrypted-backup-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fresh-backup-readback
+      - name: Signed actual-peer binding, native journeys, persistence and protected recovery
+        env:
+          FRESH_BACKUP_ARTIFACT_URL: ${{ steps.backup.outputs.artifact-url }}
+        run: |
+          set +e
+          node scripts/ci/verify-fresh-install.mjs complete "$RUNNER_TEMP/didar-final-release.zip" "$RUNNER_TEMP/didar-fresh-private" .local/fresh-install-evidence "$RUNNER_TEMP/fresh-backup-readback"
+          code=$?
+          printf '{"stage":"fresh-complete","exit_code":%s}\n' "$code" > .local/fresh-install-evidence/complete-runner-exit.json
+          exit "$code"
+      - name: Record actual seller journey without application patches
+        run: |
+          set +e
+          node verification/seller-journey/audit.mjs "$RUNNER_TEMP/didar-fresh-private/context.private.json" .local/seller-journey-evidence
+          code=$?
+          mkdir -p .local/seller-journey-evidence
+          printf '{"stage":"seller-journey-audit","exit_code":%s}\n' "$code" > .local/seller-journey-evidence/audit-runner-exit.json
+          exit "$code"
+      - name: Caption the actual baseline recording in Persian
+        if: always()
+        run: |
+          set +e
+          if test -f .local/seller-journey-evidence/seller-journey-raw.webm; then
+            node verification/seller-journey/render-recording.mjs .local/seller-journey-evidence
+            code=$?
+          else
+            code=66
+          fi
+          mkdir -p .local/seller-journey-evidence
+          printf '{"stage":"caption-recording","exit_code":%s}\n' "$code" > .local/seller-journey-evidence/caption-runner-exit.json
+          exit "$code"
+      - name: Always retain seller audit and actual recording
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: seller-journey-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .local/seller-journey-evidence/*.json
+            .local/seller-journey-evidence/*.png
+            .local/seller-journey-evidence/*.srt
+            .local/seller-journey-evidence/seller-journey-raw.webm
+            .local/seller-journey-evidence/seller-journey-fa.mp4
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Always preserve sanitized observed evidence only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: fresh-install-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .local/fresh-install-evidence/*.json
+            .local/fresh-install-evidence/install-kit-candidate.tar.gz
+            .local/fresh-install-evidence/install-kit-candidate.tar.gz.sha256
+            .local/fresh-install-evidence/browser/**/*.json
+            .local/fresh-install-evidence/browser/**/*.png
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30

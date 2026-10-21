@@ -101,7 +101,7 @@ async function snapshot(stage) {
 let success = false
 try {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'This full-capacity harness is for a dedicated disposable Actions runner only')
-  assert.equal(process.env.GITHUB_REF, 'refs/heads/ops/fresh-staging-install-0c4b047')
+  assert.ok(['refs/heads/ops/fresh-staging-install-0c4b047', 'refs/heads/audit/seller-journey-feedback-loop'].includes(process.env.GITHUB_REF), 'Reviewed disposable verification branch required')
   if (phase === 'prepare') {
     await mkdir(root, { recursive: false, mode: 0o700 })
     const info = JSON.parse(await docker('capacity-docker-root', ['info', '--format', '{{json .}}'])), storage = await statfs(info.DockerRootDir)

@@ -1,5 +1,9 @@
 # Mercur Marketplace Project
 
+## Standing owner policy: short development feedback loop
+
+Apply [Development Feedback Loop](docs/DEVELOPMENT_FEEDBACK_LOOP.md): extract approved acceptance criteria first, deliver one complete journey, update an isolated compatible preview after applicable checks, and provide exact SHA, secure test-access reference, journey recording and criterion-to-evidence mapping. Report missing hosting honestly. Keep technical, business, architecture and release acceptance separate. This does not authorize owner-server access, staging changes, legacy migration, merge or another feature phase.
+
 **This is a Mercur marketplace project — an open-source AI-native multi-vendor marketplace built on MedusaJS v2.**
 
 ## Standing owner policy: architecture, integration and staging delivery
